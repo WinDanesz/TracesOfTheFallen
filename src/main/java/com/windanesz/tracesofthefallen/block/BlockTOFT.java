@@ -1,5 +1,6 @@
 package com.windanesz.tracesofthefallen.block;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyDirection;
@@ -163,7 +164,7 @@ public class BlockTOFT extends BlockContainer {
 		return this.lootTable;
 	}
 
-	public BlockTOFT setLootTable(ResourceLocation lootTable) {
+	public Block setLootTable(ResourceLocation lootTable) {
 		this.lootTable = lootTable;
 		return this;
 	}

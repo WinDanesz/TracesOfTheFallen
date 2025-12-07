@@ -55,17 +55,17 @@ public class ModBlocks {
 	public static void registerBlocks(RegistryEvent.Register<Block> event) {
 		IForgeRegistry<Block> registry = event.getRegistry();
 		registerBlock(registry, "lost_cargo", new BlockTOFT(Material.WOOD).setLootTable(new ResourceLocation(TracesOfTheFallen.MODID, "chests/lost_cargo")));
-		registerBlock(registry, "lost_crate_potions", new BlockTOFT(Material.WOOD).setLootTable(new ResourceLocation(TracesOfTheFallen.MODID, "chests/lost_cargo")));
-		registerBlock(registry, "skeleton_crate", new BlockRemains(Material.WOOD).setLootTable(new ResourceLocation(TracesOfTheFallen.MODID, "chests/lost_cargo")));
-		registerBlock(registry, "bush_crate", new BlockTOFT(Material.WOOD).setLootTable(new ResourceLocation(TracesOfTheFallen.MODID, "chests/lost_cargo")).setSpawnGoblins(true));
+		registerBlock(registry, "lost_crate_potions", new BlockTOFT(Material.WOOD).setLootTable(new ResourceLocation(TracesOfTheFallen.MODID, "blocks/lost_crate_potions")));
+		registerBlock(registry, "skeleton_crate", new BlockRemains(Material.WOOD).setLootTable(new ResourceLocation(TracesOfTheFallen.MODID, "blocks/grave")));
+		registerBlock(registry, "bush_crate", new BlockTOFT(Material.WOOD).setSpawnGoblins(true).setLootTable(new ResourceLocation(TracesOfTheFallen.MODID, "blocks/bush_crate")));
 		//registerBlock(registry, "loot_scene_dummy", new BlockLootSceneDummy(Material.IRON));
 		registerBlock(registry, "stone_circle", new BlockStoneCircle(Material.ROCK).setBoundingBox(new AxisAlignedBB(0, 0, 0, 1, 0.1, 1)));
-		registerBlock(registry, "grave_marker", new BlockGraveMarker(Material.ROCK).setBoundingBox(new AxisAlignedBB(0, 0, 0, 1, 0.4, 1)).setLootTable(new ResourceLocation(TracesOfTheFallen.MODID, "chests/lost_cargo")));
-		registerBlock(registry, "rose", new BlockRose().setCreativeTab(ModCreativeTab.TOTF_TAB));
-		registerBlock(registry, "grave_rose", new BlockRose().setCreativeTab(ModCreativeTab.TOTF_TAB));
-		registerBlock(registry, "tent", new BlockTent(true).setCreativeTab(ModCreativeTab.TOTF_TAB));
-		registerBlock(registry, "tent_abandoned", new BlockTent(false).setCreativeTab(ModCreativeTab.TOTF_TAB));
-		registerBlock(registry, "tent_abandoned_idol", new BlockTent(false).setCreativeTab(ModCreativeTab.TOTF_TAB));
+		registerBlock(registry, "grave_marker", new BlockGraveMarker(Material.ROCK).setBoundingBox(new AxisAlignedBB(0, 0, 0, 1, 0.4, 1)).setLootTable(new ResourceLocation(TracesOfTheFallen.MODID, "blocks/grave")));
+		registerBlock(registry, "rose", new BlockRose());
+		registerBlock(registry, "grave_rose", new BlockRose());
+		registerBlock(registry, "tent", new BlockTent(true).setLootTable(new ResourceLocation(TracesOfTheFallen.MODID, "blocks/tent")));
+		registerBlock(registry, "tent_abandoned", new BlockTent(false).setLootTable(new ResourceLocation(TracesOfTheFallen.MODID, "blocks/tent_abandoned")));
+		registerBlock(registry, "tent_abandoned_idol", new BlockTent(false).setLootTable(new ResourceLocation(TracesOfTheFallen.MODID, "blocks/tent_with_idol")));
 		registerBlock(registry, "armillary", new BlockArmillary());
 
 	}
@@ -73,6 +73,7 @@ public class ModBlocks {
 	public static void registerBlock(IForgeRegistry<Block> registry, String name, Block block) {
 		block.setRegistryName(TracesOfTheFallen.MODID, name);
 		block.setTranslationKey(block.getRegistryName().toString());
+		block.setCreativeTab(ModCreativeTab.TOTF_TAB);
 		registry.register(block);
 	}
 

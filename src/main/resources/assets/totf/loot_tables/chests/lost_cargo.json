@@ -68,6 +68,42 @@
                     "weight": 1
                 }
             ]
+        },
+        {
+            "name": "unique_paintings",
+            "rolls": 1,
+            "conditions": [
+                {
+                    "condition": "minecraft:random_chance",
+                    "chance": 0.05
+                }
+            ],
+            "entries": [
+                {
+                    "type": "item",
+                    "name": "totf:painting_in_the_woods",
+                    "entryName": "painting_in_the_woods",
+                    "weight": 1
+                },
+                {
+                    "type": "item",
+                    "name": "totf:painting_portrait",
+                    "entryName": "painting_portrait",
+                    "weight": 1
+                },
+                {
+                    "type": "item",
+                    "name": "totf:painting_the_bloodcurling",
+                    "entryName": "painting_the_bloodcurling",
+                    "weight": 1
+                },
+                {
+                    "type": "item",
+                    "name": "totf:painting_wheel",
+                    "entryName": "painting_wheel",
+                    "weight": 1
+                }
+            ]
         }
     ]
 }

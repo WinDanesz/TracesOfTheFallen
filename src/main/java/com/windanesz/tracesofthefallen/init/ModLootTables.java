@@ -16,6 +16,13 @@ public class ModLootTables {
 	 */
 	public static void register() {
 		LootTableList.register(new ResourceLocation(TracesOfTheFallen.MODID, "chests/lost_cargo"));
-		//LootTableList.register(new ResourceLocation(LostLoot.MOD_ID, "chests/skeleton_crate"));
+		
+		// Block loot tables
+		LootTableList.register(new ResourceLocation(TracesOfTheFallen.MODID, "blocks/tent"));
+		LootTableList.register(new ResourceLocation(TracesOfTheFallen.MODID, "blocks/tent_abandoned"));
+		LootTableList.register(new ResourceLocation(TracesOfTheFallen.MODID, "blocks/tent_with_idol"));
+		LootTableList.register(new ResourceLocation(TracesOfTheFallen.MODID, "blocks/lost_crate_potions"));
+		LootTableList.register(new ResourceLocation(TracesOfTheFallen.MODID, "blocks/bush_crate"));
+		LootTableList.register(new ResourceLocation(TracesOfTheFallen.MODID, "blocks/grave"));
 	}
 }
