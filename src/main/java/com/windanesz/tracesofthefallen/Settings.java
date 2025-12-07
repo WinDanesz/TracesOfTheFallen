@@ -10,6 +10,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 @Config(modid = TracesOfTheFallen.MODID, name = "TracesOfTheFallen")
 public class Settings {
@@ -17,11 +18,22 @@ public class Settings {
     // These are set after config load, not part of config fields
     public List<ResourceLocation> lostCargoBiomeWhitelist = Arrays.asList(toResourceLocations(worldgenSettings.lostCargoBiomeWhitelist));
     public List<ResourceLocation> lostCargoBiomeBlacklist = Arrays.asList(toResourceLocations(worldgenSettings.lostCargoBiomeBlacklist));
+    public List<ResourceLocation> stoneCircleBiomeWhitelist = Arrays.asList(toResourceLocations(worldgenSettings.stoneCircleBiomeWhitelist));
+    public List<ResourceLocation> stoneCircleBiomeBlacklist = Arrays.asList(toResourceLocations(worldgenSettings.stoneCircleBiomeBlacklist));
+    public List<ResourceLocation> remainsBiomeWhitelist = Arrays.asList(toResourceLocations(worldgenSettings.remainsBiomeWhitelist));
+    public List<ResourceLocation> remainsBiomeBlacklist = Arrays.asList(toResourceLocations(worldgenSettings.remainsBiomeBlacklist));
+    public List<ResourceLocation> potionCrateBiomeWhitelist = Arrays.asList(toResourceLocations(worldgenSettings.potionCrateBiomeWhitelist));
+    public List<ResourceLocation> potionCrateBiomeBlacklist = Arrays.asList(toResourceLocations(worldgenSettings.potionCrateBiomeBlacklist));
+    public List<ResourceLocation> tentBiomeWhitelist = Arrays.asList(toResourceLocations(worldgenSettings.tentBiomeWhitelist));
+    public List<ResourceLocation> tentBiomeBlacklist = Arrays.asList(toResourceLocations(worldgenSettings.tentBiomeBlacklist));
+    public List<ResourceLocation> abandonedTentBiomeWhitelist = Arrays.asList(toResourceLocations(worldgenSettings.abandonedTentBiomeWhitelist));
+    public List<ResourceLocation> abandonedTentBiomeBlacklist = Arrays.asList(toResourceLocations(worldgenSettings.abandonedTentBiomeBlacklist));
+    public List<ResourceLocation> abandonedTentWithTotemBiomeWhitelist = Arrays.asList(toResourceLocations(worldgenSettings.abandonedTentWithTotemBiomeWhitelist));
+    public List<ResourceLocation> abandonedTentWithTotemBiomeBlacklist = Arrays.asList(toResourceLocations(worldgenSettings.abandonedTentWithTotemBiomeBlacklist));
 
-    public static ResourceLocation[] toResourceLocations(String... strings) {
+	public static ResourceLocation[] toResourceLocations(String... strings) {
         return Arrays.stream(strings).filter(s -> s != null && !s.trim().isEmpty()).map(s -> new ResourceLocation(s.toLowerCase(Locale.ROOT).trim())).toArray(ResourceLocation[]::new);
     }
-
 
     @Config.Name("Worldgen Settings")
     @Config.LangKey("settings.totf:general_settings")
@@ -44,7 +56,7 @@ public class Settings {
 
         @Config.Name("Lost Cargo Frequency")
         @Config.Comment("How many Lost Cargo blocks to generate per chunk (default: 1)")
-        public int lostCargoFrequency = 1;
+        public int lostCargoFrequency = 1000;
 
         @Config.Name("Lost Cargo Biome Whitelist")
         @Config.Comment("Biomes where Lost Cargo can generate (empty = all biomes allowed)")
@@ -56,11 +68,90 @@ public class Settings {
 
         @Config.Name("Stone Circle Chance")
         @Config.Comment("Chance for a Stone Circle to generate in a chunk. 1 in X chance. Set to 0 to disable. Default: 1000")
-        public int stoneCircleChance = 50;
+		@Config.RangeInt(min = 100)
+		public int stoneCircleChance = 1000;
+
+        @Config.Name("Stone Circle Biome Whitelist")
+        @Config.Comment("Biomes where Stone Circle can generate (empty = all biomes allowed)")
+        public String[] stoneCircleBiomeWhitelist = new String[0];
+
+        @Config.Name("Stone Circle Biome Blacklist")
+        @Config.Comment("Biomes where Stone Circle cannot generate")
+        public String[] stoneCircleBiomeBlacklist = new String[0];
 
         @Config.Name("Remains Chance")
         @Config.Comment("Chance for (skeletal) Remains to generate in a chunk. 1 in X chance. Set to 0 to disable. Default: 50")
-        public int remainsChance = 50;
+        public int remainsChance = 1000;
+
+        @Config.Name("Remains Biome Whitelist")
+        @Config.Comment("Biomes where Remains can generate (empty = all biomes allowed)")
+        public String[] remainsBiomeWhitelist = new String[0];
+
+        @Config.Name("Remains Biome Blacklist")
+        @Config.Comment("Biomes where Remains cannot generate")
+        public String[] remainsBiomeBlacklist = new String[0];
+
+        @Config.Name("Potion Crate Frequency")
+        @Config.Comment("How many Potion Crate blocks to generate per chunk (default: 1000)")
+        public int potionCrateFrequency = 1000;
+
+        @Config.Name("Potion Crate Biome Whitelist")
+        @Config.Comment("Biomes where Potion Crate can generate (empty = all biomes allowed)")
+        public String[] potionCrateBiomeWhitelist = new String[0];
+
+        @Config.Name("Potion Crate Biome Blacklist")
+        @Config.Comment("Biomes where Potion Crate cannot generate")
+        public String[] potionCrateBiomeBlacklist = new String[0];
+
+        @Config.Name("Tent Frequency")
+        @Config.Comment("How many Tent blocks to generate per chunk (default: 1000)")
+        public int tentFrequency = 1000;
+
+        @Config.Name("Tent Biome Whitelist")
+        @Config.Comment("Biomes where Tent can generate (empty = all biomes allowed)")
+        public String[] tentBiomeWhitelist = new String[0];
+
+        @Config.Name("Tent Biome Blacklist")
+        @Config.Comment("Biomes where Tent cannot generate")
+        public String[] tentBiomeBlacklist = new String[0];
+
+        @Config.Name("Abandoned Tent Frequency")
+        @Config.Comment("How many Abandoned Tent blocks to generate per chunk (default: 1000)")
+        public int abandonedTentFrequency = 1000;
+
+        @Config.Name("Abandoned Tent Biome Whitelist")
+        @Config.Comment("Biomes where Abandoned Tent can generate (empty = all biomes allowed)")
+        public String[] abandonedTentBiomeWhitelist = new String[0];
+
+        @Config.Name("Abandoned Tent Biome Blacklist")
+        @Config.Comment("Biomes where Abandoned Tent cannot generate")
+        public String[] abandonedTentBiomeBlacklist = new String[0];
+
+        @Config.Name("Abandoned Tent With Totem Frequency")
+        @Config.Comment("How many Abandoned Tent With Totem blocks to generate per chunk (default: 1000)")
+        public int abandonedTentWithTotemFrequency = 1000;
+
+        @Config.Name("Abandoned Tent With Totem Biome Whitelist")
+        @Config.Comment("Biomes where Abandoned Tent With Totem can generate (empty = all biomes allowed)")
+        public String[] abandonedTentWithTotemBiomeWhitelist = new String[0];
+
+        @Config.Name("Abandoned Tent With Totem Biome Blacklist")
+        @Config.Comment("Biomes where Abandoned Tent With Totem cannot generate")
+        public String[] abandonedTentWithTotemBiomeBlacklist = new String[0];
+
+        @Config.Name("Flat Surface Tolerance")
+        @Config.Comment("Maximum Y-level difference allowed in the 3x3 area where structures spawn. Lower values = flatter surfaces required. Default: 1")
+        @Config.RangeInt(min = 0, max = 5)
+        public int flatSurfaceTolerance = 0;
+
+        @Config.Name("Surface Search Range")
+        @Config.Comment("How many blocks to search vertically when finding a suitable surface for structures. Default: 32")
+        @Config.RangeInt(min = 8, max = 128)
+        public int surfaceSearchRange = 32;
+
+        @Config.Name("Reject Liquid in 3x3 Area")
+        @Config.Comment("If true, structures won't spawn if any liquid blocks are present in the 3x3 placement area. Default: true")
+        public boolean rejectLiquidIn3x3 = true;
     }
 
     public static class MiscSettings {

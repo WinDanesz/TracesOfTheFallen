@@ -1,15 +1,14 @@
 package com.windanesz.tracesofthefallen;
 
+import com.windanesz.tracesofthefallen.capability.HauntingCapability;
 import com.windanesz.tracesofthefallen.command.CommandGetHauntingProgress;
 import com.windanesz.tracesofthefallen.command.CommandSetHauntingProgress;
-import com.windanesz.tracesofthefallen.totf.Tags;
-import com.windanesz.tracesofthefallen.capability.HauntingCapability;
 import com.windanesz.tracesofthefallen.init.ModBlocks;
 import com.windanesz.tracesofthefallen.init.ModLootTables;
+import com.windanesz.tracesofthefallen.init.ModWorldGen;
 import com.windanesz.tracesofthefallen.network.PacketHandler;
-import com.windanesz.tracesofthefallen.world.WorldGenLostCargo;
-import com.windanesz.tracesofthefallen.world.WorldGenStoneCircle;
-import com.windanesz.tracesofthefallen.world.WorldGenRemains;
+import com.windanesz.tracesofthefallen.totf.Tags;
+import com.windanesz.tracesofthefallen.world.*;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.fml.common.Mod;
@@ -52,9 +51,16 @@ public class TracesOfTheFallen implements ForgeChunkManager.LoadingCallback {
 
 	@Mod.EventHandler
 	public void init(FMLInitializationEvent event) {
-		GameRegistry.registerWorldGenerator(new WorldGenLostCargo(), 0);
-		GameRegistry.registerWorldGenerator(new WorldGenStoneCircle(), 1);
-		GameRegistry.registerWorldGenerator(new WorldGenRemains(), 2);
+		ModWorldGen.registerWorldGenerators();
+
+		GameRegistry.registerWorldGenerator(new WorldGenStoneCircle(), 0);
+		GameRegistry.registerWorldGenerator(new WorldGenLostCargo(), 1);
+		GameRegistry.registerWorldGenerator(new WorldGenRemains(), 1);
+		GameRegistry.registerWorldGenerator(new WorldGenPotionCrate(), 1);
+		GameRegistry.registerWorldGenerator(new WorldGenTent(), 1);
+		GameRegistry.registerWorldGenerator(new WorldGenAbandonedTent(), 1);
+		GameRegistry.registerWorldGenerator(new WorldGenAbandonedTentWithTotem(), 1);
+
 		proxy.registerColorHandlers();
 		PacketHandler.initPackets();
 	}
