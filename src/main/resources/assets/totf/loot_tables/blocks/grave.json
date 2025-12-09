@@ -348,6 +348,11 @@
       "entries": [
         {
           "type": "item",
+          "name": "totf:rune_of_skimming",
+          "weight": 15
+        },
+        {
+          "type": "item",
           "name": "minecraft:diamond_sword",
           "weight": 15,
           "functions": [
