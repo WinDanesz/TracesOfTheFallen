@@ -10,7 +10,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-import java.util.stream.Collectors;
 
 @Config(modid = TracesOfTheFallen.MODID, name = "TracesOfTheFallen")
 public class Settings {
@@ -139,9 +138,6 @@ public class Settings {
         @Config.Comment("Biomes where Abandoned Tent With Totem cannot generate")
         public String[] abandonedTentWithTotemBiomeBlacklist = new String[0];
 
-        @Config.Name("Flat Surface Tolerance")
-        @Config.Comment("Maximum Y-level difference allowed in the 3x3 area where structures spawn. Lower values = flatter surfaces required. Default: 1")
-        @Config.RangeInt(min = 0, max = 5)
         public int flatSurfaceTolerance = 0;
 
         @Config.Name("Surface Search Range")
