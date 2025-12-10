@@ -18,6 +18,7 @@ item.totf:goblin_idol.name=Goblin Idol
 tile.totf:grave_rose.desc=
 item.totf:pemmican.name=Pemmican
 tile.totf:armillary.name=Armillary
+tile.totf:bush_crate.name=Crate with Bush
 item.totf:armillary.name=Armillary
 item.totf:armillary.desc=Tells the current moon phase and day
 
