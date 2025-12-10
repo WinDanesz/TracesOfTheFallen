@@ -1,5 +1,6 @@
 package com.windanesz.tracesofthefallen.item;
 
+import com.windanesz.tracesofthefallen.init.ModSounds;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -11,6 +12,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -90,6 +92,10 @@ public class ItemGoblinIdol extends Item {
 				stack.setTagCompound(new NBTTagCompound());
 			}
 			stack.getTagCompound().setBoolean("active", true);
+			// Play activation sound
+			if (!user.world.isRemote) {
+				user.world.playSound(null, user.posX, user.posY, user.posZ, ModSounds.IDOL_ACTIVATE, SoundCategory.PLAYERS, 1.0F, 1.0F);
+			}
 			user.stopActiveHand();
 		}
 		super.onUsingTick(stack, user, count);
@@ -123,6 +129,10 @@ public class ItemGoblinIdol extends Item {
 		} else {
 			// First time finishing use, set active to true
 			stack.getTagCompound().setBoolean("active", true);
+			// Play activation sound
+			if (!worldIn.isRemote) {
+				worldIn.playSound(null, entityLiving.posX, entityLiving.posY, entityLiving.posZ, ModSounds.IDOL_ACTIVATE, SoundCategory.PLAYERS, 1.0F, 1.0F);
+			}
 			if (entityLiving instanceof EntityPlayer) {
 				((EntityPlayer) entityLiving).getCooldownTracker().setCooldown(this, 10);
 			}
