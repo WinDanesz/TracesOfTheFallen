@@ -68,11 +68,11 @@ public class ItemModPainting extends Item {
 
 		if (facing != EnumFacing.DOWN && facing != EnumFacing.UP && player.canPlayerEdit(blockpos, facing, itemstack)) {
 			EntityModPainting painting = new EntityModPainting(worldIn, blockpos, facing);
+			painting.setProperties(facing.getHorizontalAngle(), this.painting.sizeX, this.painting.sizeY, this.painting.name);
 
 			if (painting.onValidSurface()) {
 				if (!worldIn.isRemote) {
 					painting.playPlaceSound();
-					painting.setProperties(facing.getHorizontalAngle(), this.painting.sizeX, this.painting.sizeY, this.painting.name);
 					NBTTagCompound ownerTag = itemstack.getSubCompound("Owner");
 					if (ownerTag != null && ownerTag.hasKey("UUID", 8)) {
 						painting.setOwnerId(java.util.UUID.fromString(ownerTag.getString("UUID")));

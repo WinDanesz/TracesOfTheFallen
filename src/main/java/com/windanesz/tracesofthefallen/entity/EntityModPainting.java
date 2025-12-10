@@ -56,8 +56,8 @@ public class EntityModPainting extends EntityHanging implements IEntityAdditiona
 	protected void entityInit() {
 		this.dataManager.register(ROTATION, 0f);
 		this.dataManager.register(PAINTING, "forest");
-		this.dataManager.register(SIZE_X, 32);
-		this.dataManager.register(SIZE_Y, 32);
+		this.dataManager.register(SIZE_X, 16);
+		this.dataManager.register(SIZE_Y, 16);
 		this.dataManager.register(HAUNTING_PROGRESS, 0);
 		this.dataManager.register(OWNER_UUID, Optional.absent());
 		this.dataManager.register(OWNER_NAME, "");
@@ -72,7 +72,7 @@ public class EntityModPainting extends EntityHanging implements IEntityAdditiona
 		this.prevPosY = this.posY;
 		this.prevPosZ = this.posZ;
 
-		if (this.ticksExisted % 20 == 0 && !this.world.isRemote) {
+		if (this.ticksExisted % 40 == 0 && !this.world.isRemote) {
 			if (getOwnerId().isPresent()) {
 				EntityPlayer player = this.world.getPlayerEntityByUUID(getOwnerId().get());
 				if (player != null) {
@@ -140,20 +140,13 @@ public class EntityModPainting extends EntityHanging implements IEntityAdditiona
 		if (this.world.getGameRules().getBoolean("doEntityDrops")) {
 			this.playSound(SoundEvents.ENTITY_PAINTING_BREAK, 1.0F, 1.0F);
 
-			if (brokenEntity instanceof EntityPlayer) {
-				EntityPlayer entityplayer = (EntityPlayer) brokenEntity;
-
-				if (entityplayer.capabilities.isCreativeMode) {
-					return;
-				}
-				Item item = this.getPainting().equals("painting_the_haunting") ? ModItems.painting_in_the_woods : ModItems.painting_portrait;
-				ItemStack stack = new ItemStack(item);
-				if (getOwnerId().isPresent()) {
-					stack.getOrCreateSubCompound("Owner").setString("UUID", getOwnerId().get().toString());
-					stack.getOrCreateSubCompound("Owner").setString("PlayerName", getOwnerName());
-				}
-				this.entityDropItem(stack, 0.0F);
+			Item item = this.getPainting().equals("painting_the_haunting") ? ModItems.painting_in_the_woods : ModItems.painting_portrait;
+			ItemStack stack = new ItemStack(item);
+			if (getOwnerId().isPresent()) {
+				stack.getOrCreateSubCompound("Owner").setString("UUID", getOwnerId().get().toString());
+				stack.getOrCreateSubCompound("Owner").setString("PlayerName", getOwnerName());
 			}
+			this.entityDropItem(stack, 0.0F);
 		}
 	}
 
