@@ -1,13 +1,9 @@
 package com.windanesz.tracesofthefallen.entity;
 
 import com.google.common.base.Optional;
-import com.windanesz.tracesofthefallen.TracesOfTheFallen;
 import com.windanesz.tracesofthefallen.Settings;
-import com.windanesz.tracesofthefallen.entity.ai.GoblinAIOwnerHurtByTarget;
-import com.windanesz.tracesofthefallen.entity.ai.GoblinAIOwnerHurtTarget;
-import com.windanesz.tracesofthefallen.entity.ai.GoblinAIFollowOwner;
-import com.windanesz.tracesofthefallen.entity.ai.GoblinAIRunBehindTarget;
-import com.windanesz.tracesofthefallen.entity.ai.GoblinAIPickupIdol;
+import com.windanesz.tracesofthefallen.TracesOfTheFallen;
+import com.windanesz.tracesofthefallen.entity.ai.*;
 import com.windanesz.tracesofthefallen.init.ModItems;
 import com.windanesz.tracesofthefallen.init.ModSounds;
 import net.minecraft.entity.Entity;
@@ -334,8 +330,9 @@ public class EntityGoblin extends EntityMob implements IEntityOwnable {
 	}
 
 	@Override
+	@Nullable
 	protected SoundEvent getAmbientSound() {
-		return ModSounds.GOBLIN_IDLE;
+		return this.rand.nextInt(3) == 0 ? ModSounds.GOBLIN_IDLE : null;
 	}
 
 	@Override
