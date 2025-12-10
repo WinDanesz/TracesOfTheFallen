@@ -5,6 +5,10 @@ on:
     branches:
       - 1.12.2
 
+permissions:
+  contents: write
+  packages: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
