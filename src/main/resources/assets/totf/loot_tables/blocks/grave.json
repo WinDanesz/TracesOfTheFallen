@@ -121,20 +121,6 @@
         },
         {
           "type": "item",
-          "name": "minecraft:cooked_beef",
-          "weight": 20,
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": {
-                "min": 1,
-                "max": 2
-              }
-            }
-          ]
-        },
-        {
-          "type": "item",
           "name": "minecraft:chainmail_chestplate",
           "weight": 10,
           "functions": [
@@ -143,6 +129,14 @@
               "damage": {
                 "min": 0.2,
                 "max": 0.8
+              }
+            },
+            {
+              "function": "minecraft:enchant_with_levels",
+              "treasure": false,
+              "levels": {
+                "min": 5,
+                "max": 15
               }
             }
           ]
@@ -157,6 +151,14 @@
               "damage": {
                 "min": 0.2,
                 "max": 0.8
+              }
+            },
+            {
+              "function": "minecraft:enchant_with_levels",
+              "treasure": false,
+              "levels": {
+                "min": 5,
+                "max": 15
               }
             }
           ]
@@ -349,7 +351,7 @@
         {
           "type": "item",
           "name": "totf:rune_of_skimming",
-          "weight": 15
+          "weight": 20
         },
         {
           "type": "item",
@@ -357,11 +359,18 @@
           "weight": 15,
           "functions": [
             {
+              "function": "minecraft:set_damage",
+              "damage": {
+                "min": 0.3,
+                "max": 0.8
+              }
+            },
+            {
               "function": "minecraft:enchant_with_levels",
-              "treasure": true,
+              "treasure": false,
               "levels": {
-                "min": 20,
-                "max": 35
+                "min": 10,
+                "max": 25
               }
             }
           ]
@@ -372,11 +381,10 @@
           "weight": 10,
           "functions": [
             {
-              "function": "minecraft:enchant_with_levels",
-              "treasure": true,
-              "levels": {
-                "min": 20,
-                "max": 35
+              "function": "minecraft:set_damage",
+              "damage": {
+                "min": 0.3,
+                "max": 0.8
               }
             }
           ]
@@ -387,11 +395,10 @@
           "weight": 12,
           "functions": [
             {
-              "function": "minecraft:enchant_with_levels",
-              "treasure": true,
-              "levels": {
-                "min": 20,
-                "max": 35
+              "function": "minecraft:set_damage",
+              "damage": {
+                "min": 0.3,
+                "max": 0.8
               }
             }
           ]
@@ -410,28 +417,14 @@
         {
           "type": "item",
           "name": "minecraft:enchanted_book",
-          "weight": 25,
+          "weight": 15,
           "functions": [
             {
               "function": "minecraft:enchant_with_levels",
               "treasure": true,
               "levels": {
-                "min": 25,
-                "max": 40
-              }
-            }
-          ]
-        },
-        {
-          "type": "item",
-          "name": "minecraft:elytra",
-          "weight": 5,
-          "functions": [
-            {
-              "function": "minecraft:set_damage",
-              "damage": {
-                "min": 0.3,
-                "max": 0.7
+                "min": 15,
+                "max": 25
               }
             }
           ]
