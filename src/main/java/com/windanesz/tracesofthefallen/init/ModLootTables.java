@@ -24,5 +24,8 @@ public class ModLootTables {
 		LootTableList.register(new ResourceLocation(TracesOfTheFallen.MODID, "blocks/lost_crate_potions"));
 		LootTableList.register(new ResourceLocation(TracesOfTheFallen.MODID, "blocks/bush_crate"));
 		LootTableList.register(new ResourceLocation(TracesOfTheFallen.MODID, "blocks/grave"));
+		
+		// Entity loot tables
+		LootTableList.register(new ResourceLocation(TracesOfTheFallen.MODID, "entities/goblin"));
 	}
 }
