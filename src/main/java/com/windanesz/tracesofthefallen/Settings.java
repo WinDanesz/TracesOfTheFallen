@@ -54,8 +54,8 @@ public class Settings {
         public int[] dimensionList = {0};
 
         @Config.Name("Lost Cargo Frequency")
-        @Config.Comment("How many Lost Cargo blocks to generate per chunk (default: 1)")
-        public int lostCargoFrequency = 1000;
+        @Config.Comment("How many Lost Cargo blocks to generate per chunk (default: 650)")
+        public int lostCargoFrequency = 650;
 
         @Config.Name("Lost Cargo Biome Whitelist")
         @Config.Comment("Biomes where Lost Cargo can generate (empty = all biomes allowed)")
@@ -79,8 +79,8 @@ public class Settings {
         public String[] stoneCircleBiomeBlacklist = new String[0];
 
         @Config.Name("Remains Chance")
-        @Config.Comment("Chance for (skeletal) Remains to generate in a chunk. 1 in X chance. Set to 0 to disable. Default: 50")
-        public int remainsChance = 1000;
+        @Config.Comment("Chance for (skeletal) Remains to generate in a chunk. 1 in X chance. Set to 0 to disable. Default: 800")
+        public int remainsChance = 800;
 
         @Config.Name("Remains Biome Whitelist")
         @Config.Comment("Biomes where Remains can generate (empty = all biomes allowed)")
@@ -91,8 +91,8 @@ public class Settings {
         public String[] remainsBiomeBlacklist = new String[0];
 
         @Config.Name("Potion Crate Frequency")
-        @Config.Comment("How many Potion Crate blocks to generate per chunk (default: 1000)")
-        public int potionCrateFrequency = 1000;
+        @Config.Comment("How many Potion Crate blocks to generate per chunk (default: 700)")
+        public int potionCrateFrequency = 700;
 
         @Config.Name("Potion Crate Biome Whitelist")
         @Config.Comment("Biomes where Potion Crate can generate (empty = all biomes allowed)")
@@ -103,8 +103,8 @@ public class Settings {
         public String[] potionCrateBiomeBlacklist = new String[0];
 
         @Config.Name("Tent Frequency")
-        @Config.Comment("How many Tent blocks to generate per chunk (default: 1000)")
-        public int tentFrequency = 1000;
+        @Config.Comment("How many Tent blocks to generate per chunk (default: 950)")
+        public int tentFrequency = 950;
 
         @Config.Name("Tent Biome Whitelist")
         @Config.Comment("Biomes where Tent can generate (empty = all biomes allowed)")
@@ -115,8 +115,8 @@ public class Settings {
         public String[] tentBiomeBlacklist = new String[0];
 
         @Config.Name("Abandoned Tent Frequency")
-        @Config.Comment("How many Abandoned Tent blocks to generate per chunk (default: 1000)")
-        public int abandonedTentFrequency = 1000;
+        @Config.Comment("How many Abandoned Tent blocks to generate per chunk (default: 850)")
+        public int abandonedTentFrequency = 850;
 
         @Config.Name("Abandoned Tent Biome Whitelist")
         @Config.Comment("Biomes where Abandoned Tent can generate (empty = all biomes allowed)")
@@ -127,8 +127,8 @@ public class Settings {
         public String[] abandonedTentBiomeBlacklist = new String[0];
 
         @Config.Name("Abandoned Tent With Totem Frequency")
-        @Config.Comment("How many Abandoned Tent With Totem blocks to generate per chunk (default: 1000)")
-        public int abandonedTentWithTotemFrequency = 1000;
+        @Config.Comment("How many Abandoned Tent With Totem blocks to generate per chunk (default: 850)")
+        public int abandonedTentWithTotemFrequency = 850;
 
         @Config.Name("Abandoned Tent With Totem Biome Whitelist")
         @Config.Comment("Biomes where Abandoned Tent With Totem can generate (empty = all biomes allowed)")
