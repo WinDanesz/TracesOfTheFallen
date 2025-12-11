@@ -241,6 +241,19 @@ public class Settings {
 		@Config.Name("Bush Crate Goblin Spawn Chance")
 		@Config.Comment("Chance (0.0 - 1.0) for bush crates to spawn goblins when a player is nearby. 0.0 = never, 1.0 = always. Default: 0.5 (50%)")
 		public double bushCrateGoblinSpawnChance = 0.5D;
+
+		@Config.Name("Veiled Mask Durability")
+		@Config.Comment("The total durability of the Veiled Mask. Default: 500")
+		@Config.RequiresMcRestart
+		public int veiledMaskDurability = 500;
+
+		@Config.Name("Veiled Mask Haunting Amount")
+		@Config.Comment("The amount of haunting gained each time while wearing the Veiled Mask. Default: 1")
+		public int veiledMaskHauntingAmount = 1;
+
+		@Config.Name("Veiled Mask Haunting Tick Rate")
+		@Config.Comment("How often (in ticks) the Veiled Mask gains haunting and consumes durability. Default: 60 (3 seconds)")
+		public int veiledMaskHauntingTickRate = 60;
     }
 
     public static class ClientSettings {

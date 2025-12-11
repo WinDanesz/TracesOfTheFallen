@@ -26,6 +26,7 @@ public class ModItems {
 	public static final Item goblin_idol = placeholder();
 	public static final Item pemmican = placeholder();
 	public static final Item mysterious_fur = placeholder();
+	public static final Item veiled_mask = placeholder();
 
 	public static final Item painting_in_the_woods = placeholder();
 	public static final Item painting_portrait = placeholder();
@@ -57,7 +58,7 @@ public class ModItems {
 		registerItem(registry, "silk_rope", new Item().setCreativeTab(ModCreativeTab.TOTF_TAB));
 		registerItem(registry, "silk_spindle", new ItemSilkSpindle().setCreativeTab(ModCreativeTab.TOTF_TAB));
 		registerItem(registry, "bundle_of_lost_letters", new ItemBundleOfLostLetters().setCreativeTab(ModCreativeTab.TOTF_TAB));
-		registerItem(registry, "veiled_mask", new Item().setCreativeTab(ModCreativeTab.TOTF_TAB));
+		registerItem(registry, "veiled_mask", new ItemVeiledMask().setCreativeTab(ModCreativeTab.TOTF_TAB));
 		registerItem(registry, "wheel", new Item().setCreativeTab(ModCreativeTab.TOTF_TAB));
 		registerItem(registry, "wonder_fertilizer", new ItemWonderFertilizer().setCreativeTab(ModCreativeTab.TOTF_TAB));
 		registerItem(registry, "old_world_tinkers_kit", new ItemOldWorldTinkersKit().setCreativeTab(ModCreativeTab.TOTF_TAB));
