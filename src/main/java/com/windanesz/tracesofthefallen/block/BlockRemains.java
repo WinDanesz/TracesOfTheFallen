@@ -1,10 +1,10 @@
 package com.windanesz.tracesofthefallen.block;
 
-import com.windanesz.tracesofthefallen.TracesOfTheFallen;
 import com.windanesz.tracesofthefallen.Settings;
+import com.windanesz.tracesofthefallen.TracesOfTheFallen;
+import com.windanesz.tracesofthefallen.capability.HauntingCapability;
 import com.windanesz.tracesofthefallen.init.ModBlocks;
 import com.windanesz.tracesofthefallen.init.ModPotions;
-import com.windanesz.tracesofthefallen.capability.HauntingCapability;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -37,14 +37,6 @@ public class BlockRemains extends BlockTOFT {
 			if (advancement != null) {
 				if (!playerMP.getAdvancements().getProgress(advancement).isDone()) {
 					playerMP.getAdvancements().grantCriterion(advancement, "loot_skeleton_crate");
-				}
-			}
-			// Add haunting for breaking remains
-			if (!worldIn.isRemote) {
-				HauntingCapability haunting = HauntingCapability.get(playerMP);
-				if (haunting != null) {
-					double toAdd = Settings.miscSettings.hauntingGainedByBreakingRemains;
-					haunting.addHauntingProgress((int) toAdd);
 				}
 			}
 		}

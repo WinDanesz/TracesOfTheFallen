@@ -1,7 +1,7 @@
 package com.windanesz.tracesofthefallen.block;
 
-import com.windanesz.tracesofthefallen.TracesOfTheFallen;
 import com.windanesz.tracesofthefallen.Settings;
+import com.windanesz.tracesofthefallen.TracesOfTheFallen;
 import com.windanesz.tracesofthefallen.capability.HauntingCapability;
 import com.windanesz.tracesofthefallen.init.ModBlocks;
 import com.windanesz.tracesofthefallen.init.ModPotions;
@@ -134,14 +134,6 @@ public class BlockGraveMarker extends BlockTOFT {
 
 				if (blockDown == Blocks.DIRT || blockDown == Blocks.GRASS) {
 					worldIn.destroyBlock(posDown, true);
-				}
-			}
-			// Add haunting for breaking grave
-			if (player instanceof EntityPlayerMP) {
-				HauntingCapability haunting = HauntingCapability.get(player);
-				if (haunting != null) {
-					int toAdd = Settings.miscSettings.hauntingGainedByBreakingGrave;
-					haunting.addHauntingProgress(toAdd);
 				}
 			} else {
 				super.harvestBlock(worldIn, player, pos, state, te, stack);

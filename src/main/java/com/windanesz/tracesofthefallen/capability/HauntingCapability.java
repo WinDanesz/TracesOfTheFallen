@@ -1,11 +1,13 @@
 package com.windanesz.tracesofthefallen.capability;
 
+import com.windanesz.tracesofthefallen.Settings;
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
 import com.windanesz.tracesofthefallen.Utils;
 import com.windanesz.tracesofthefallen.entity.EntitySpecter;
 import com.windanesz.tracesofthefallen.network.PacketHandler;
 import com.windanesz.tracesofthefallen.packet.PacketPlayerSync;
 import net.minecraft.advancements.Advancement;
+import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -25,11 +27,15 @@ import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Mod.EventBusSubscriber
 public class HauntingCapability implements INBTSerializable<NBTTagCompound> {
@@ -37,6 +43,46 @@ public class HauntingCapability implements INBTSerializable<NBTTagCompound> {
 	// This annotation does some crazy Forge magic behind the scenes and assigns this field a value.
 	@CapabilityInject(HauntingCapability.class)
 	private static final Capability<HauntingCapability> PLAYER_CAPABILITY = null;
+
+	// Cache for haunting block values
+	private static Map<String, Integer> hauntingBlockCache = null;
+
+	private static Map<String, Integer> getHauntingBlocks() {
+		if (hauntingBlockCache != null) {
+			return hauntingBlockCache;
+		}
+
+		hauntingBlockCache = new HashMap<>();
+
+		for (String entry : Settings.miscSettings.hauntingBlocks) {
+			if (entry == null || entry.trim().isEmpty()) continue;
+
+			String[] parts = entry.split(":");
+			if (parts.length < 3) continue;
+
+			try {
+				// parts: [modid, blockname, (meta?), amount]
+				boolean hasMeta = parts.length == 4;
+
+				String key = hasMeta
+						? parts[0] + ":" + parts[1] + ":" + parts[2]
+						: parts[0] + ":" + parts[1];
+
+				int amount = Integer.parseInt(hasMeta ? parts[3] : parts[2]);
+
+				hauntingBlockCache.put(key, amount);
+
+			} catch (NumberFormatException e) {
+				TracesOfTheFallen.LOGGER.warn("Invalid haunting block entry: " + entry);
+			}
+		}
+
+		return hauntingBlockCache;
+	}
+
+	public static void clearHauntingBlockCache() {
+		hauntingBlockCache = null;
+	}
 
 	private final EntityPlayer player;
 
@@ -198,6 +244,37 @@ public class HauntingCapability implements INBTSerializable<NBTTagCompound> {
 								specter.setAttackTarget(player);
 							}
 						}
+					}
+				}
+			}
+		}
+	}
+
+	@SubscribeEvent
+	public static void onBlockBreak(BlockEvent.BreakEvent event) {
+		if (!event.getWorld().isRemote && event.getPlayer() != null && !event.getPlayer().capabilities.isCreativeMode) {
+			Block block = event.getState().getBlock();
+			int meta = block.getMetaFromState(event.getState());
+			Map<String, Integer> hauntingBlocks = getHauntingBlocks();
+			
+			// Check for specific meta first
+			String blockId = block.getRegistryName().toString();
+			String keyWithMeta = blockId + ":" + meta;
+			Integer amount = hauntingBlocks.get(keyWithMeta);
+			
+			// Fall back to any meta if specific meta not found
+			if (amount == null) {
+				amount = hauntingBlocks.get(blockId);
+			}
+			
+			if (amount != null) {
+				EntityPlayer player = event.getPlayer();
+				HauntingCapability haunting = HauntingCapability.get(player);
+				if (haunting != null) {
+					if (amount > 0) {
+						haunting.addHauntingProgress(amount);
+					} else if (amount < 0) {
+						haunting.reduceHauntingProgress(-amount);
 					}
 				}
 			}

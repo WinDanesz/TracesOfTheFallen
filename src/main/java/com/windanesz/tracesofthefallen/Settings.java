@@ -1,5 +1,6 @@
 package com.windanesz.tracesofthefallen;
 
+import com.windanesz.tracesofthefallen.capability.HauntingCapability;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;
@@ -189,14 +190,6 @@ public class Settings {
 		@Config.Comment("The duration of the bliss effect in ticks.")
 		public double blissDurationForBurying = 1600;
 
-		@Config.Name("Haunting Gained by Breaking Remains")
-		@Config.Comment("The amount of haunting gained by breaking remains. Default: 3")
-		public int hauntingGainedByBreakingRemains = 3;
-
-		@Config.Name("Haunting Gained by Breaking Grave")
-		@Config.Comment("The amount of haunting gained by breaking a grave. Default: 2")
-		public int hauntingGainedByBreakingGrave = 2;
-
 		@Config.Name("Haunting Reduced by Burying Remains")
 		@Config.Comment("The amount of haunting reduced by burying remains. Default: 3")
 		public int hauntingReducedByBuryingRemains = 3;
@@ -266,6 +259,13 @@ public class Settings {
 		@Config.Name("Veiled Mask Haunting Tick Rate")
 		@Config.Comment("How often (in ticks) the Veiled Mask gains haunting and consumes durability. Default: 60 (3 seconds)")
 		public int veiledMaskHauntingTickRate = 60;
+
+		@Config.Name("Haunting Blocks")
+		@Config.Comment("List of blocks that affect haunting when mined. Format: 'modid:blockname:amount' or 'modid:blockname:meta:amount'. Negative values reduce haunting. Examples: 'totf:skeleton_crate:3', 'minecraft:wool:0:5', 'totf:grave_marker:-2'")
+		public String[] hauntingBlocks = {
+				"totf:skeleton_crate:3",
+				"totf:grave_marker:2"
+		};
     }
 
     public static class ClientSettings {
@@ -278,6 +278,7 @@ public class Settings {
         public static void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent event) {
             if (event.getModID().equals(TracesOfTheFallen.MODID)) {
                 ConfigManager.sync(TracesOfTheFallen.MODID, Config.Type.INSTANCE);
+                HauntingCapability.clearHauntingBlockCache();
             }
         }
     }
