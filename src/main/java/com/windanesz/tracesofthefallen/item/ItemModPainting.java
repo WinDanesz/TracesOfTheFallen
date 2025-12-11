@@ -1,6 +1,7 @@
 package com.windanesz.tracesofthefallen.item;
 
 import com.windanesz.tracesofthefallen.entity.EntityModPainting;
+import com.windanesz.tracesofthefallen.init.ModItems;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -50,6 +51,26 @@ public class ItemModPainting extends Item {
 		@Nullable
 		public static EnumPainting getByName(String name) {
 			return BY_NAME.get(name);
+		}
+
+		/**
+		 * Returns the Item from ModItems corresponding to this painting type
+		 */
+		public Item getItem() {
+			switch (this) {
+				case PAINTING_IN_THE_WOODS:
+					return ModItems.painting_in_the_woods;
+				case PAINTING_PORTRAIT:
+					return ModItems.painting_portrait;
+				case PAINTING_THE_BLOODCURLING:
+					return ModItems.painting_the_bloodcurling;
+				case PAINTING_WHEEL:
+					return ModItems.painting_wheel;
+				case PAINTING_WIZARDRY:
+					return ModItems.painting_wizardry;
+				default:
+					return null;
+			}
 		}
 	}
 

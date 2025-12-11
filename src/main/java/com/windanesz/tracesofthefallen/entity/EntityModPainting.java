@@ -3,7 +3,7 @@ package com.windanesz.tracesofthefallen.entity;
 import com.google.common.base.Optional;
 import com.mojang.authlib.GameProfile;
 import com.windanesz.tracesofthefallen.capability.HauntingCapability;
-import com.windanesz.tracesofthefallen.init.ModItems;
+import com.windanesz.tracesofthefallen.item.ItemModPainting;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityHanging;
@@ -140,7 +140,8 @@ public class EntityModPainting extends EntityHanging implements IEntityAdditiona
 		if (this.world.getGameRules().getBoolean("doEntityDrops")) {
 			this.playSound(SoundEvents.ENTITY_PAINTING_BREAK, 1.0F, 1.0F);
 
-			Item item = this.getPainting().equals("painting_the_haunting") ? ModItems.painting_in_the_woods : ModItems.painting_portrait;
+			Item item = ItemModPainting.EnumPainting.getByName(this.getPainting()).getItem();
+
 			ItemStack stack = new ItemStack(item);
 			if (getOwnerId().isPresent()) {
 				stack.getOrCreateSubCompound("Owner").setString("UUID", getOwnerId().get().toString());
