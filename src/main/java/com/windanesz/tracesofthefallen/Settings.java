@@ -21,6 +21,8 @@ public class Settings {
     public List<ResourceLocation> stoneCircleBiomeBlacklist = Arrays.asList(toResourceLocations(worldgenSettings.stoneCircleBiomeBlacklist));
     public List<ResourceLocation> remainsBiomeWhitelist = Arrays.asList(toResourceLocations(worldgenSettings.remainsBiomeWhitelist));
     public List<ResourceLocation> remainsBiomeBlacklist = Arrays.asList(toResourceLocations(worldgenSettings.remainsBiomeBlacklist));
+    public List<ResourceLocation> bushWithCrateBiomeWhitelist = Arrays.asList(toResourceLocations(worldgenSettings.bushWithCrateBiomeWhitelist));
+    public List<ResourceLocation> bushWithCrateBiomeBlacklist = Arrays.asList(toResourceLocations(worldgenSettings.bushWithCrateBiomeBlacklist));
     public List<ResourceLocation> potionCrateBiomeWhitelist = Arrays.asList(toResourceLocations(worldgenSettings.potionCrateBiomeWhitelist));
     public List<ResourceLocation> potionCrateBiomeBlacklist = Arrays.asList(toResourceLocations(worldgenSettings.potionCrateBiomeBlacklist));
     public List<ResourceLocation> tentBiomeWhitelist = Arrays.asList(toResourceLocations(worldgenSettings.tentBiomeWhitelist));
@@ -54,8 +56,8 @@ public class Settings {
         public int[] dimensionList = {0};
 
         @Config.Name("Lost Cargo Frequency")
-        @Config.Comment("How many Lost Cargo blocks to generate per chunk (default: 650)")
-        public int lostCargoFrequency = 650;
+        @Config.Comment("How many Lost Cargo blocks to generate per chunk (default: 100)")
+        public int lostCargoFrequency = 100;
 
         @Config.Name("Lost Cargo Biome Whitelist")
         @Config.Comment("Biomes where Lost Cargo can generate (empty = all biomes allowed)")
@@ -66,9 +68,9 @@ public class Settings {
         public String[] lostCargoBiomeBlacklist = new String[0];
 
         @Config.Name("Stone Circle Chance")
-        @Config.Comment("Chance for a Stone Circle to generate in a chunk. 1 in X chance. Set to 0 to disable. Default: 1000")
+        @Config.Comment("Chance for a Stone Circle to generate in a chunk. 1 in X chance. Set to 0 to disable. Default: 600")
 		@Config.RangeInt(min = 100)
-		public int stoneCircleChance = 1000;
+		public int stoneCircleChance = 600;
 
         @Config.Name("Stone Circle Biome Whitelist")
         @Config.Comment("Biomes where Stone Circle can generate (empty = all biomes allowed)")
@@ -79,8 +81,8 @@ public class Settings {
         public String[] stoneCircleBiomeBlacklist = new String[0];
 
         @Config.Name("Remains Chance")
-        @Config.Comment("Chance for (skeletal) Remains to generate in a chunk. 1 in X chance. Set to 0 to disable. Default: 800")
-        public int remainsChance = 800;
+        @Config.Comment("Chance for (skeletal) Remains to generate in a chunk. 1 in X chance. Set to 0 to disable. Default: 300")
+        public int remainsChance = 300;
 
         @Config.Name("Remains Biome Whitelist")
         @Config.Comment("Biomes where Remains can generate (empty = all biomes allowed)")
@@ -91,8 +93,8 @@ public class Settings {
         public String[] remainsBiomeBlacklist = new String[0];
 
         @Config.Name("Potion Crate Frequency")
-        @Config.Comment("How many Potion Crate blocks to generate per chunk (default: 700)")
-        public int potionCrateFrequency = 700;
+        @Config.Comment("How many Potion Crate blocks to generate per chunk (default: 300)")
+        public int potionCrateFrequency = 300;
 
         @Config.Name("Potion Crate Biome Whitelist")
         @Config.Comment("Biomes where Potion Crate can generate (empty = all biomes allowed)")
@@ -114,9 +116,21 @@ public class Settings {
         @Config.Comment("Biomes where Tent cannot generate")
         public String[] tentBiomeBlacklist = new String[0];
 
+        @Config.Name("Bush With Crate Frequency")
+        @Config.Comment("How many Bush With Crate blocks to generate per chunk (default: 850)")
+        public int bushWithCrateFrequency = 850;
+
+        @Config.Name("Bush With Crate Biome Whitelist")
+        @Config.Comment("Biomes where Bush With Crate can generate (empty = all biomes allowed)")
+        public String[] bushWithCrateBiomeWhitelist = new String[0];
+
+        @Config.Name("Bush With Crate Biome Blacklist")
+        @Config.Comment("Biomes where Bush With Crate cannot generate")
+        public String[] bushWithCrateBiomeBlacklist = new String[0];
+
         @Config.Name("Abandoned Tent Frequency")
-        @Config.Comment("How many Abandoned Tent blocks to generate per chunk (default: 850)")
-        public int abandonedTentFrequency = 850;
+        @Config.Comment("How many Abandoned Tent blocks to generate per chunk (default: 250)")
+        public int abandonedTentFrequency = 250;
 
         @Config.Name("Abandoned Tent Biome Whitelist")
         @Config.Comment("Biomes where Abandoned Tent can generate (empty = all biomes allowed)")
@@ -127,8 +141,8 @@ public class Settings {
         public String[] abandonedTentBiomeBlacklist = new String[0];
 
         @Config.Name("Abandoned Tent With Totem Frequency")
-        @Config.Comment("How many Abandoned Tent With Totem blocks to generate per chunk (default: 850)")
-        public int abandonedTentWithTotemFrequency = 850;
+        @Config.Comment("How many Abandoned Tent With Totem blocks to generate per chunk (default: 300)")
+        public int abandonedTentWithTotemFrequency = 300;
 
         @Config.Name("Abandoned Tent With Totem Biome Whitelist")
         @Config.Comment("Biomes where Abandoned Tent With Totem can generate (empty = all biomes allowed)")

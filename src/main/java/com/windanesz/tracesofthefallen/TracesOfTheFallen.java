@@ -60,6 +60,7 @@ public class TracesOfTheFallen implements ForgeChunkManager.LoadingCallback {
 		GameRegistry.registerWorldGenerator(new WorldGenTent(), 1);
 		GameRegistry.registerWorldGenerator(new WorldGenAbandonedTent(), 1);
 		GameRegistry.registerWorldGenerator(new WorldGenAbandonedTentWithTotem(), 1);
+		GameRegistry.registerWorldGenerator(new WorldGenBushCrate(), 1);
 
 		proxy.registerColorHandlers();
 		PacketHandler.initPackets();
