@@ -15,7 +15,7 @@ import net.minecraft.world.World;
 public class ItemWonderFertilizer extends Item {
 
 	public ItemWonderFertilizer() {
-		this.setMaxStackSize(1);
+		this.setMaxStackSize(64);
 		this.setMaxDamage(Settings.miscSettings.wonderFertilizerDurability);
 	}
 
