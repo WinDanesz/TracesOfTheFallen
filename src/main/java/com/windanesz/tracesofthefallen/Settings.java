@@ -192,16 +192,16 @@ public class Settings {
 		public double blissDurationForBurying = 1600;
 
 		@Config.Name("Haunting Gained by Breaking Remains")
-		@Config.Comment("The amount of haunting gained by breaking remains.")
-		public int hauntingGainedByBreakingRemains = 5;
+		@Config.Comment("The amount of haunting gained by breaking remains. Default: 3")
+		public int hauntingGainedByBreakingRemains = 3;
 
 		@Config.Name("Haunting Gained by Breaking Grave")
-		@Config.Comment("The amount of haunting gained by breaking a grave.")
+		@Config.Comment("The amount of haunting gained by breaking a grave. Default: 2")
 		public int hauntingGainedByBreakingGrave = 2;
 
 		@Config.Name("Haunting Reduced by Burying Remains")
-		@Config.Comment("The amount of haunting reduced by burying remains.")
-		public int hauntingReducedByBuryingRemains = 5;
+		@Config.Comment("The amount of haunting reduced by burying remains. Default: 3")
+		public int hauntingReducedByBuryingRemains = 3;
 
 		@Config.Name("Haunting Reduced by Placing a Flower on a Grave")
 		@Config.Comment("The amount of haunting reduced by placing a flower on a grave.")
