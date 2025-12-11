@@ -1,11 +1,13 @@
 package com.windanesz.tracesofthefallen.block;
 
+import com.windanesz.tracesofthefallen.capability.HauntingCapability;
 import com.windanesz.tracesofthefallen.init.ModCreativeTab;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.BlockRenderLayer;
@@ -15,6 +17,7 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -48,6 +51,16 @@ public class BlockArmillary extends Block {
 			
 			// Send message to player
 			playerIn.sendMessage(new TextComponentString("Day " + days + " - Moon Phase: " + moonPhaseName));
+			
+			// Check haunting progress and display cryptic message if high (50%+)
+			HauntingCapability hauntingCap = HauntingCapability.get(playerIn);
+			if (hauntingCap != null) {
+				int hauntingProgress = hauntingCap.getHauntingProgress();
+				
+				if (hauntingProgress >= 50) {
+					playerIn.sendMessage(new TextComponentString(TextFormatting.DARK_PURPLE + I18n.format("totf.armillary.haunted")));
+				}
+			}
 		}
 		return true;
 	}
