@@ -1,6 +1,9 @@
 commands.totf.gethauntingprogress.usage=/gethauntingprogress <player>
 commands.totf.gethauntingprogress.success=%s's haunting progress is %s
 commands.totf.gethauntingprogress.error=Could not get haunting capability for player %s
+commands.totf.sethauntingprogress.usage=/sethauntingprogress <player> <progress>
+commands.totf.sethauntingprogress.success=Set %s's haunting progress to %s
+commands.totf.sethauntingprogress.error=Could not set haunting capability for player %s
 tile.totf:skeleton_crate.name=Skeleton with crate
 tile.totf:tent.name=Tent
 tile.totf:tent_abandoned.name=Abandoned Tent
