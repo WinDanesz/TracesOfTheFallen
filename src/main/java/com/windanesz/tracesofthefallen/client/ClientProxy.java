@@ -10,11 +10,13 @@ import com.windanesz.tracesofthefallen.entity.EntityGoblin;
 import com.windanesz.tracesofthefallen.entity.EntityModPainting;
 import com.windanesz.tracesofthefallen.entity.EntitySpecter;
 import com.windanesz.tracesofthefallen.init.ModBlocks;
+import com.windanesz.tracesofthefallen.init.ModItems;
 import com.windanesz.tracesofthefallen.packet.PacketPlayerSync;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.world.biome.BiomeColorHelper;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
@@ -86,5 +88,10 @@ public class ClientProxy extends CommonProxy {
 		if (data != null) {
 			data.hauntingProgress = message.hauntedProgress;
 		}
+	}
+
+	@Override
+	public void renderFur() {
+		Minecraft.getMinecraft().entityRenderer.displayItemActivation(new ItemStack(ModItems.mysterious_fur));
 	}
 }

@@ -13,4 +13,7 @@ public class CommonProxy {
 
 	public void handlePlayerSyncPacket(PacketPlayerSync.Message message) {
 	}
+
+	public void renderFur() {
+	}
 }

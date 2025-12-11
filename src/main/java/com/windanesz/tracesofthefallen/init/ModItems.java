@@ -25,6 +25,7 @@ public class ModItems {
 	public static final Item rune_of_skimming = placeholder();
 	public static final Item goblin_idol = placeholder();
 	public static final Item pemmican = placeholder();
+	public static final Item mysterious_fur = placeholder();
 
 	public static final Item painting_in_the_woods = placeholder();
 	public static final Item painting_portrait = placeholder();
@@ -52,7 +53,7 @@ public class ModItems {
 		registerItem(registry, "painting_wheel", new ItemModPainting(ItemModPainting.EnumPainting.PAINTING_WHEEL).setCreativeTab(ModCreativeTab.TOTF_TAB));
 		registerItem(registry, "painting_wizardry", new ItemModPainting(ItemModPainting.EnumPainting.PAINTING_WIZARDRY).setCreativeTab(ModCreativeTab.TOTF_TAB));
 
-		registerItem(registry, "mysterious_fur", new Item().setCreativeTab(ModCreativeTab.TOTF_TAB));
+		registerItem(registry, "mysterious_fur", new ItemMysteriousFur().setCreativeTab(ModCreativeTab.TOTF_TAB));
 		registerItem(registry, "silk_rope", new Item().setCreativeTab(ModCreativeTab.TOTF_TAB));
 		registerItem(registry, "silk_spindle", new ItemSilkSpindle().setCreativeTab(ModCreativeTab.TOTF_TAB));
 		registerItem(registry, "bundle_of_lost_letters", new ItemBundleOfLostLetters().setCreativeTab(ModCreativeTab.TOTF_TAB));
