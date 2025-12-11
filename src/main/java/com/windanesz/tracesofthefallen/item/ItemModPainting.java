@@ -76,7 +76,7 @@ public class ItemModPainting extends Item {
 					NBTTagCompound ownerTag = itemstack.getSubCompound("Owner");
 					if (ownerTag != null && ownerTag.hasKey("UUID", 8)) {
 						painting.setOwnerId(java.util.UUID.fromString(ownerTag.getString("UUID")));
-						painting.setOwnerName(player.getName());
+						painting.setOwnerName(ownerTag.getString("PlayerName"));
 					} else {
 						painting.setOwnerId(player.getUniqueID());
 						painting.setOwnerName(player.getName());
