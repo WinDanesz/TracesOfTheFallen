@@ -5,6 +5,7 @@ import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.properties.PropertyDirection;
+import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
@@ -38,8 +39,8 @@ public class BlockStoneCircle extends BlockContainer {
 	public BlockStoneCircle(Material materialmaterialn) {
 		super(materialmaterialn);
 		this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH).withProperty(SNOWY, false));
-		setHardness(1.5F);
-		setResistance(5.0F);
+		setBlockUnbreakable();
+		setResistance(6000000.0F);
 		this.boundingBox = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.5D, 1.0D); // Default AABB
 	}
 
@@ -197,5 +198,16 @@ public class BlockStoneCircle extends BlockContainer {
 
 			player.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "You have been teleported!"));
 		}
+	}
+
+	@Override
+	public boolean isTopSolid(IBlockState state) {
+		return false;
+	}
+
+	@Override
+	public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face) {
+		// Return UNDEFINED to prevent fences from connecting
+		return BlockFaceShape.UNDEFINED;
 	}
 }
