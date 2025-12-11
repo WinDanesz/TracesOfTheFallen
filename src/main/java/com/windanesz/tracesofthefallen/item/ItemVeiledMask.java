@@ -2,14 +2,23 @@ package com.windanesz.tracesofthefallen.item;
 
 import com.windanesz.tracesofthefallen.Settings;
 import com.windanesz.tracesofthefallen.capability.HauntingCapability;
+import com.windanesz.tracesofthefallen.client.ClientProxy;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.EnumHelper;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+
+import javax.annotation.Nullable;
+import java.util.List;
 
 public class ItemVeiledMask extends ItemArmor {
 
@@ -48,7 +57,15 @@ public class ItemVeiledMask extends ItemArmor {
             // Consume durability (unless in creative mode)
             if (!player.capabilities.isCreativeMode) {
                 itemStack.damageItem(1, player);
-            }
-        }
-    }
+			}
+		}
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
+		super.addInformation(stack, worldIn, tooltip, flagIn);
+		ClientProxy.addMultiLineDescription(tooltip, TextFormatting.BOLD + "" + TextFormatting.GRAY + I18n.format("item.totf:veiled_mask.desc"));
+		ClientProxy.addMultiLineDescription(tooltip, TextFormatting.DARK_GRAY + I18n.format("item.totf:veiled_mask.desc2"));
+	}
 }

@@ -2,6 +2,8 @@ package com.windanesz.tracesofthefallen.item;
 
 import com.windanesz.tracesofthefallen.init.ModSounds;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -13,10 +15,13 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundCategory;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nullable;
+import java.util.List;
 import java.util.Random;
 
 public class ItemGoblinIdol extends Item {
@@ -80,6 +85,14 @@ public class ItemGoblinIdol extends Item {
 	@Override
 	public EnumAction getItemUseAction(ItemStack stack) {
 		return EnumAction.BOW;
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
+		super.addInformation(stack, worldIn, tooltip, flagIn);
+		tooltip.add(TextFormatting.BOLD + "" + TextFormatting.GRAY + I18n.format("item.totf:goblin_idol.desc"));
+		tooltip.add(TextFormatting.DARK_GRAY + I18n.format("item.totf:goblin_idol.desc2"));
 	}
 
 	@Override

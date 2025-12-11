@@ -27,8 +27,13 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 
+import java.util.List;
+
 @Mod.EventBusSubscriber(Side.CLIENT)
 public class ClientProxy extends CommonProxy {
+
+	/** The wrap width for standard multi-line descriptions. */
+	private static final int TOOLTIP_WRAP_WIDTH = 140;
 
 	@Override
 	public void preInit(FMLPreInitializationEvent event) {
@@ -93,5 +98,12 @@ public class ClientProxy extends CommonProxy {
 	@Override
 	public void renderFur() {
 		Minecraft.getMinecraft().entityRenderer.displayItemActivation(new ItemStack(ModItems.mysterious_fur));
+	}
+
+	/**
+	 * Helper method to add multi-line wrapped tooltip descriptions.
+	 */
+	public static void addMultiLineDescription(List<String> tooltip, String text) {
+		tooltip.addAll(Minecraft.getMinecraft().fontRenderer.listFormattedStringToWidth(text, TOOLTIP_WRAP_WIDTH));
 	}
 }

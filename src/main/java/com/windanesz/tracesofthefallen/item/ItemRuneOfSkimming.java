@@ -1,6 +1,7 @@
 package com.windanesz.tracesofthefallen.item;
 
 import com.windanesz.tracesofthefallen.Settings;
+import com.windanesz.tracesofthefallen.client.ClientProxy;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.EntityLivingBase;
@@ -10,11 +11,7 @@ import net.minecraft.init.SoundEvents;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.util.SoundCategory;
+import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
@@ -132,7 +129,8 @@ public class ItemRuneOfSkimming extends ItemRune {
 	@SideOnly(Side.CLIENT)
 	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
 		super.addInformation(stack, worldIn, tooltip, flagIn);
-		tooltip.add(I18n.format("item.totf:rune_of_skimming.desc"));
+		ClientProxy.addMultiLineDescription(tooltip, TextFormatting.BOLD + "" + TextFormatting.GRAY + I18n.format("item.totf:rune_of_skimming.desc"));
+		ClientProxy.addMultiLineDescription(tooltip, TextFormatting.DARK_GRAY + I18n.format("item.totf:rune_of_skimming.desc2"));
 
 		if (stack.hasTagCompound() && stack.getTagCompound().hasKey(TAG_DIM)) {
 			NBTTagCompound nbt = stack.getTagCompound();
