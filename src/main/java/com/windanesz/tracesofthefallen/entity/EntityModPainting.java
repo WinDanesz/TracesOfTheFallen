@@ -186,7 +186,7 @@ public class EntityModPainting extends EntityHanging implements IEntityAdditiona
 
 	@Nullable
 	public GameProfile getPlayerProfile() {
-		this.skull.setPlayerProfile(new GameProfile(this.dataManager.get(OWNER_UUID).get(), "WinDanesz"));
+		this.skull.setPlayerProfile(new GameProfile(this.dataManager.get(OWNER_UUID).get(), this.dataManager.get(OWNER_NAME)));
 		return this.skull.getPlayerProfile();
 	}
 
