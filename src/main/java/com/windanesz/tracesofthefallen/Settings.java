@@ -152,8 +152,6 @@ public class Settings {
         @Config.Comment("Biomes where Abandoned Tent With Totem cannot generate")
         public String[] abandonedTentWithTotemBiomeBlacklist = new String[0];
 
-        public int flatSurfaceTolerance = 0;
-
         @Config.Name("Surface Search Range")
         @Config.Comment("How many blocks to search vertically when finding a suitable surface for structures. Default: 32")
         @Config.RangeInt(min = 8, max = 128)

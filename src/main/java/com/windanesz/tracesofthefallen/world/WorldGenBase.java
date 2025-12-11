@@ -1,7 +1,6 @@
 package com.windanesz.tracesofthefallen.world;
 
 import com.windanesz.tracesofthefallen.Settings;
-import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -129,7 +128,7 @@ public abstract class WorldGenBase implements IWorldGenerator {
 	 * @return True if the 3x3 area is suitable for structure placement
 	 */
 	protected boolean isFlat3x3Surface(World world, BlockPos centerPos, Random random) {
-		int tolerance = Settings.worldgenSettings.flatSurfaceTolerance;
+		int tolerance = 0;
 		int searchRange = Settings.worldgenSettings.surfaceSearchRange;
 		boolean rejectLiquid = Settings.worldgenSettings.rejectLiquidIn3x3;
 		
