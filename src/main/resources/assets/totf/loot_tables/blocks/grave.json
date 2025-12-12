@@ -405,17 +405,6 @@
         },
         {
           "type": "item",
-          "name": "minecraft:golden_apple",
-          "weight": 20,
-          "functions": [
-            {
-              "function": "minecraft:set_data",
-              "data": 1
-            }
-          ]
-        },
-        {
-          "type": "item",
           "name": "minecraft:enchanted_book",
           "weight": 15,
           "functions": [
