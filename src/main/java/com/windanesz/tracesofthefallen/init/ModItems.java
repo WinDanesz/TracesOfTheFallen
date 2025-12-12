@@ -24,6 +24,7 @@ public class ModItems {
 	public static final Item grave_rose = placeholder();
 	public static final Item rune_of_skimming = placeholder();
 	public static final Item goblin_idol = placeholder();
+	public static final Item idol_of_blades = placeholder();
 	public static final Item pemmican = placeholder();
 	public static final Item mysterious_fur = placeholder();
 	public static final Item veiled_mask = placeholder();
@@ -46,6 +47,7 @@ public class ModItems {
 		registerItem(registry, "grave_rose", new ItemGraveRose(ModBlocks.grave_rose).setCreativeTab(ModCreativeTab.TOTF_TAB));
 		registerItem(registry, "rune_of_skimming", new ItemRuneOfSkimming().setCreativeTab(ModCreativeTab.TOTF_TAB));
 		registerItem(registry, "goblin_idol", new ItemGoblinIdol().setCreativeTab(ModCreativeTab.TOTF_TAB));
+		registerItem(registry, "ward_of_blades", new ItemWardOfBlades().setCreativeTab(ModCreativeTab.TOTF_TAB));
 		registerItem(registry, "pemmican", new ItemFood(10, 0.8f, true).setCreativeTab(ModCreativeTab.TOTF_TAB));
 
 		registerItem(registry, "painting_in_the_woods", new ItemModPainting(ItemModPainting.EnumPainting.PAINTING_IN_THE_WOODS).setCreativeTab(ModCreativeTab.TOTF_TAB));

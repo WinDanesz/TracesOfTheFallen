@@ -260,6 +260,23 @@ public class Settings {
 		@Config.Comment("How often (in ticks) the Veiled Mask gains haunting and consumes durability. Default: 60 (3 seconds)")
 		public int veiledMaskHauntingTickRate = 60;
 
+		@Config.Name("Idol of Blades Slowness Duration")
+		@Config.Comment("Duration (in ticks) of the slowness effect applied by the Idol of Blades. Default: 100 (5 seconds)")
+		public int idolOfBladesSlownessDuration = 100;
+
+		@Config.Name("Idol of Blades Damage")
+		@Config.Comment("Damage dealt by the Idol of Blades to entities in range. Default: 1.0 (half a heart)")
+		public double idolOfBladesDamage = 1.0D;
+
+		@Config.Name("Idol of Blades Cooldown")
+		@Config.Comment("Cooldown (in ticks) after using the Idol of Blades. Default: 2400 (2 minutes)")
+		public int idolOfBladesCooldown = 2400;
+
+		@Config.Name("Idol of Blades Durability")
+		@Config.Comment("Maximum durability of the Idol of Blades. Default: 500")
+		@Config.RequiresMcRestart
+		public int idolOfBladesDurability = 500;
+
 		@Config.Name("Haunting Blocks")
 		@Config.Comment("List of blocks that affect haunting when mined. Format: 'modid:blockname:amount' or 'modid:blockname:meta:amount'. Negative values reduce haunting. Examples: 'totf:skeleton_crate:3', 'minecraft:wool:0:5', 'totf:grave_marker:-2'")
 		public String[] hauntingBlocks = {
