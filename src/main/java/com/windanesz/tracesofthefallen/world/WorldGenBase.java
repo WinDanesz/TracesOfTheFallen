@@ -69,7 +69,12 @@ public abstract class WorldGenBase implements IWorldGenerator {
 				continue;
 			}
 
-			// Place the block
+			// Ensure the ground block is solid before placing
+			if (!world.getBlockState(groundPos).isTopSolid()) {
+				continue;
+			}
+
+			// Place the block on top of the solid surface
 			BlockPos placePos = groundPos.up();
 			world.setBlockState(placePos, getBlockState(random, world, placePos), 2);
 			break; // Only place one per chunk
