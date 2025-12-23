@@ -17,7 +17,7 @@
                 },
                 {
                     "type": "loot_table",
-                    "name": "totf:blocks/lost_cargo/unique_paintings",
+                    "name": "totf:blocks/paintings/unique_paintings",
                     "weight": 5,
                     "quality": 1
                 }
