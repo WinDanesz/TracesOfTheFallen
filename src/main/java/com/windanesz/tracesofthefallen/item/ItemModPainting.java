@@ -10,6 +10,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -88,6 +89,42 @@ public class ItemModPainting extends Item {
 		BlockPos blockpos = pos.offset(facing);
 
 		if (facing != EnumFacing.DOWN && facing != EnumFacing.UP && player.canPlayerEdit(blockpos, facing, itemstack)) {
+
+			int width = this.painting.sizeX / 16;
+			int height = this.painting.sizeY / 16;
+
+			for (int i = 0; i < width; ++i) {
+				for (int j = 0; j < height; ++j) {
+					BlockPos checkPos = blockpos;
+					int xOffset = 0;
+					int zOffset = 0;
+
+					switch (facing.getHorizontalIndex()) {
+						case 0: // SOUTH
+							xOffset = i - (width - 1) / 2;
+							break;
+						case 1: // WEST
+							zOffset = i - (width - 1) / 2;
+							break;
+						case 2: // NORTH
+							xOffset = -(i - (width - 1) / 2);
+							break;
+						case 3: // EAST
+							zOffset = -(i - (width - 1) / 2);
+							break;
+					}
+
+					checkPos = checkPos.add(xOffset, j - (height - 1) / 2, zOffset);
+					if (!worldIn.getBlockState(checkPos).getMaterial().isReplaceable()) {
+						return EnumActionResult.FAIL;
+					}
+					if (!worldIn.getEntitiesWithinAABB(EntityModPainting.class, new AxisAlignedBB(checkPos)).isEmpty()) {
+						return EnumActionResult.FAIL;
+					}
+				}
+			}
+
+
 			EntityModPainting painting = new EntityModPainting(worldIn, blockpos, facing);
 			painting.setProperties(facing.getHorizontalAngle(), this.painting.sizeX, this.painting.sizeY, this.painting.name);
 
