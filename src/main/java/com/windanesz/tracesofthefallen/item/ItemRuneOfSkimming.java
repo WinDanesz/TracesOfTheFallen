@@ -32,6 +32,7 @@ public class ItemRuneOfSkimming extends ItemRune {
 
 	public ItemRuneOfSkimming() {
 		super();
+		maxStackSize = 1;
 	}
 
 	@Override
