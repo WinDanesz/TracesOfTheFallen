@@ -15,7 +15,7 @@ public class ModLootTables {
 	 * Called from the preInit method in the main mod class to register the custom dungeon loot.
 	 */
 	public static void register() {
-		LootTableList.register(new ResourceLocation(TracesOfTheFallen.MODID, "chests/lost_cargo"));
+		LootTableList.register(new ResourceLocation(TracesOfTheFallen.MODID, "blocks/lost_cargo"));
 		
 		// Block loot tables
 		LootTableList.register(new ResourceLocation(TracesOfTheFallen.MODID, "blocks/tent"));

@@ -1,6 +1,7 @@
 {
     "pools": [
         {
+            "name": "bountiful_cargo",
             "rolls": {
                 "min": 1,
                 "max": 4

@@ -1,6 +1,7 @@
 {
     "pools": [
         {
+            "name": "grave",
             "rolls": 1,
             "entries": [
                 {

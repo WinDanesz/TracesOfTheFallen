@@ -1,7 +1,7 @@
 {
     "pools": [
         {
-            "name": "contents",
+            "name": "lost_crate_potions",
             "rolls": 2,
             "entries": [
                 {
@@ -18,7 +18,7 @@
                 }
             ]
         },
-		{
+        {
             "name": "planks",
             "rolls": 1,
             "entries": [

@@ -1,6 +1,7 @@
 {
     "pools": [
         {
+            "name": "lost_cargo",
             "rolls": 1,
             "entries": [
                 {
