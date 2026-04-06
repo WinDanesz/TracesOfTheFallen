@@ -137,11 +137,6 @@ public class BlockStoneCircle extends BlockContainer {
 	}
 
 	@Override
-	public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
-		return state.withProperty(SNOWY, worldIn.getBiome(pos).isSnowyBiome());
-	}
-
-	@Override
 	protected BlockStateContainer createBlockState() {
 		return new BlockStateContainer(this, FACING, SNOWY);
 	}

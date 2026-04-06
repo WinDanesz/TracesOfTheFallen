@@ -33,7 +33,8 @@ public class WorldGenLostCargo extends WorldGenBase {
 	@Override
 	public IBlockState getBlockState(Random random, World world, BlockPos pos) {
 		EnumFacing facing = EnumFacing.Plane.HORIZONTAL.random(random);
-		return ModBlocks.lost_cargo.getDefaultState().withProperty(BlockTOFT.FACING, facing);
+		boolean isSnowy = world.getBiome(pos).isSnowyBiome();
+		return ModBlocks.lost_cargo.getDefaultState().withProperty(BlockTOFT.FACING, facing).withProperty(BlockTOFT.SNOWY, isSnowy);
 	}
 
 

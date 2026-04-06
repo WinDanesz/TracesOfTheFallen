@@ -33,7 +33,8 @@ public class WorldGenBushCrate extends WorldGenBase {
 	@Override
 	public IBlockState getBlockState(Random random, World world, BlockPos pos) {
 		EnumFacing facing = EnumFacing.Plane.HORIZONTAL.random(random);
-		return ModBlocks.bush_crate.getDefaultState().withProperty(BlockTOFT.FACING, facing);
+		boolean isSnowy = world.getBiome(pos).isSnowyBiome();
+		return ModBlocks.bush_crate.getDefaultState().withProperty(BlockTOFT.FACING, facing).withProperty(BlockTOFT.SNOWY, isSnowy);
 	}
 
 

@@ -33,7 +33,8 @@ public class WorldGenPotionCrate extends WorldGenBase {
 	@Override
 	public IBlockState getBlockState(Random random, World world, BlockPos pos) {
 		EnumFacing facing = EnumFacing.Plane.HORIZONTAL.random(random);
-		return ModBlocks.lost_crate_potions.getDefaultState().withProperty(BlockTOFT.FACING, facing);
+		boolean isSnowy = world.getBiome(pos).isSnowyBiome();
+		return ModBlocks.lost_crate_potions.getDefaultState().withProperty(BlockTOFT.FACING, facing).withProperty(BlockTOFT.SNOWY, isSnowy);
 	}
 
 
