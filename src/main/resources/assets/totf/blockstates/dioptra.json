@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "totf:dioptra_stand" },
+    "facing=east":  { "model": "totf:dioptra_stand", "y": 90 },
+    "facing=south": { "model": "totf:dioptra_stand", "y": 180 },
+    "facing=west":  { "model": "totf:dioptra_stand", "y": 270 }
+  }
+}

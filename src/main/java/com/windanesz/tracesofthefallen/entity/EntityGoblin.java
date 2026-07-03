@@ -4,6 +4,7 @@ import com.google.common.base.Optional;
 import com.windanesz.tracesofthefallen.Settings;
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
 import com.windanesz.tracesofthefallen.entity.ai.*;
+import com.windanesz.tracesofthefallen.init.ModBlocks;
 import com.windanesz.tracesofthefallen.init.ModItems;
 import com.windanesz.tracesofthefallen.init.ModSounds;
 import net.minecraft.entity.Entity;
@@ -17,8 +18,8 @@ import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.passive.AbstractHorse;
 import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
 import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.DataParameter;
@@ -26,6 +27,7 @@ import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.server.management.PreYggdrasilConverter;
 import net.minecraft.util.*;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
@@ -43,20 +45,26 @@ public class EntityGoblin extends EntityMob implements IEntityOwnable {
 
 	private int ownershipLossTimer = 0;
 	private int hostilityTimer = 0;
+	private BlockPos bombDeliveryTarget = null;
 
 	public EntityGoblin(World worldIn) {
 		super(worldIn);
 		this.setSize(0.6F, 1F);
+		this.stepHeight = 1.05F;
 		this.setCanPickUpLoot(true);
 	}
 
 	@Override
 	protected void initEntityAI() {
 		this.tasks.addTask(0, new GoblinAIPickupIdol(this));
-		this.tasks.addTask(1, new GoblinAIRunBehindTarget(this, 2.0D));
-		this.tasks.addTask(2, new EntityAIAttackMelee(this, 1.3D, false));
-		this.tasks.addTask(2, new EntityAIAttackMelee(this, 1.3D, false));
+		this.tasks.addTask(1, new GoblinAIFleeTickingBomb(this));
+		this.tasks.addTask(1, new GoblinAIBroodDeliverBomb(this));
+		this.tasks.addTask(1, new GoblinAIPickupBomb(this));
+		this.tasks.addTask(1, new GoblinAIWaitForEngineer(this));
+		this.tasks.addTask(2, new GoblinAIRunBehindTarget(this, 2.0D));
+		this.tasks.addTask(3, new EntityAIAttackMelee(this, 1.3D, false));
 		this.tasks.addTask(3, new GoblinAIFollowOwner(this, 1.3D, 5.0F, 3.0F));
+		this.tasks.addTask(3, new GoblinAIMountMinecrawler(this, 1.2D));
 		this.tasks.addTask(6, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
 		this.tasks.addTask(7, new EntityAILookIdle(this));
 
@@ -91,10 +99,14 @@ public class EntityGoblin extends EntityMob implements IEntityOwnable {
 	@Override
 	protected void applyEntityAttributes() {
 		super.applyEntityAttributes();
-		this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(20.0D);
+		this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(12.0D);
 		this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(32.0D);
 		this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.2D);
-		this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(3.0D);
+		this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(2.0D);
+	}
+
+	public boolean isImmuneToIdol() {
+		return false;
 	}
 
 	@Override
@@ -190,6 +202,36 @@ public class EntityGoblin extends EntityMob implements IEntityOwnable {
 	public void onLivingUpdate() {
 		super.onLivingUpdate();
 
+		if (!this.world.isRemote && (this.isOnLadder() || this.collidedHorizontally)) {
+			net.minecraft.entity.EntityLivingBase target = this.getAttackTarget();
+			double targetY = -999;
+			if (target != null) {
+				targetY = target.posY;
+			} else if (this.getNavigator().getPath() != null && !this.getNavigator().getPath().isFinished()) {
+				targetY = this.getNavigator().getPath().getFinalPathPoint().y;
+			}
+
+			if (targetY > this.posY + 0.5D) {
+				if (this.isOnLadder()) {
+					this.motionY = 0.22D;
+					BlockPos ladderPos = new BlockPos(this);
+					double centerX = ladderPos.getX() + 0.5D;
+					double centerZ = ladderPos.getZ() + 0.5D;
+					this.motionX = (centerX - this.posX) * 0.25D;
+					this.motionZ = (centerZ - this.posZ) * 0.25D;
+				} else {
+					BlockPos pos = new BlockPos(this);
+					for (EnumFacing side : EnumFacing.HORIZONTALS) {
+						if (this.world.getBlockState(pos.offset(side)).getBlock() == net.minecraft.init.Blocks.LADDER) {
+							this.motionX += side.getXOffset() * 0.15D;
+							this.motionZ += side.getZOffset() * 0.15D;
+							break;
+						}
+					}
+				}
+			}
+		}
+
 		// Check if there are enough goblins nearby for group hostility behavior
 		int threshold = Settings.miscSettings.goblinGroupHostilityThreshold;
 		boolean inLargeGroup = false;
@@ -227,7 +269,12 @@ public class EntityGoblin extends EntityMob implements IEntityOwnable {
 			return;
 		}
 
-		if (hasOwner()) {
+		if (this.isImmuneToIdol()) {
+			if (this.hasOwner()) {
+				this.setOwnerId(null);
+				this.setNeutral(false);
+			}
+		} else if (hasOwner()) {
 			EntityLivingBase owner = getOwner();
 			boolean ownerMissingOrNotHoldingActiveIdol = true;
 			if (owner instanceof EntityPlayer) {
@@ -303,6 +350,34 @@ public class EntityGoblin extends EntityMob implements IEntityOwnable {
 	public boolean isHoldingIdol() {
 		ItemStack offhand = this.getItemStackFromSlot(EntityEquipmentSlot.OFFHAND);
 		return !offhand.isEmpty() && offhand.getItem() == ModItems.goblin_idol;
+	}
+
+	public boolean isCarryingBomb() {
+		for (Entity passenger : this.getPassengers()) {
+			if (passenger instanceof EntityWroughtBomb) {
+				return true;
+			}
+		}
+		ItemStack offhand = this.getItemStackFromSlot(EntityEquipmentSlot.OFFHAND);
+		ItemStack mainhand = this.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND);
+		return (!offhand.isEmpty() && offhand.getItem() == Item.getItemFromBlock(ModBlocks.wrought_bomb)) ||
+		       (!mainhand.isEmpty() && mainhand.getItem() == Item.getItemFromBlock(ModBlocks.wrought_bomb));
+	}
+
+	@Override
+	public double getMountedYOffset() {
+		if (!this.getPassengers().isEmpty() && this.getPassengers().get(0) instanceof EntityWroughtBomb) {
+			return (double)this.height + 0.1D;
+		}
+		return super.getMountedYOffset();
+	}
+
+	@Override
+	public void applyEntityCollision(net.minecraft.entity.Entity entityIn) {
+		if (entityIn instanceof EntityGoblin && (this.isOnLadder() || ((EntityGoblin) entityIn).isOnLadder())) {
+			return;
+		}
+		super.applyEntityCollision(entityIn);
 	}
 
 	public boolean hasOwner() {
@@ -388,10 +463,6 @@ public class EntityGoblin extends EntityMob implements IEntityOwnable {
 	@Override
 	protected void setEquipmentBasedOnDifficulty(net.minecraft.world.DifficultyInstance difficulty) {
 		super.setEquipmentBasedOnDifficulty(difficulty);
-		
-		if (this.rand.nextFloat() < 0.95F) {
-			this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(Items.WOODEN_SWORD));
-		}
 	}
 
 	@Override
@@ -403,6 +474,10 @@ public class EntityGoblin extends EntityMob implements IEntityOwnable {
 	protected void updateEquipmentIfNeeded(net.minecraft.entity.item.EntityItem itemEntity) {
 		ItemStack itemstack = itemEntity.getItem();
 		
+		if (itemstack.getItem() == Item.getItemFromBlock(ModBlocks.wrought_bomb)) {
+			return;
+		}
+
 		// Prioritize picking up goblin idols
 		if (itemstack.getItem() == ModItems.goblin_idol) {
 			// Drop current offhand item if present
@@ -419,5 +494,13 @@ public class EntityGoblin extends EntityMob implements IEntityOwnable {
 		}
 		
 		super.updateEquipmentIfNeeded(itemEntity);
+	}
+
+	public BlockPos getBombDeliveryTarget() {
+		return this.bombDeliveryTarget;
+	}
+
+	public void setBombDeliveryTarget(BlockPos target) {
+		this.bombDeliveryTarget = target;
 	}
 }

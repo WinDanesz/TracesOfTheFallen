@@ -1,0 +1,9 @@
+{
+  "variants": {
+    "facing=north": { "model": "totf:balance_base" },
+    "facing=east":  { "model": "totf:balance_base", "y": 90 },
+    "facing=south": { "model": "totf:balance_base", "y": 180 },
+    "facing=west":  { "model": "totf:balance_base", "y": 270 }
+  }
+}
+

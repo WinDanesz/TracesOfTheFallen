@@ -1,5 +1,6 @@
 package com.windanesz.tracesofthefallen;
 
+import com.windanesz.tracesofthefallen.block.TileEntityPorcelainVessel;
 import com.windanesz.tracesofthefallen.capability.HauntingCapability;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.config.Config;
@@ -178,6 +179,11 @@ public class Settings {
 		@Config.Comment("Cooldown (in ticks) after using the Rune of Skimming. Default: 100 (5 seconds)")
 		public int runeOfSkimmingCooldown = 100;
 
+		@Config.Name("Dioptra Max Distance")
+		@Config.Comment("Maximum distance in blocks that the Dioptra can measure along the player's look direction. Default: 512")
+		@Config.RangeInt(min = 1, max = 4096)
+		public int dioptraMaxDistance = 512;
+
 		@Config.Name("Bliss Healing Amount")
 		@Config.Comment("The amount of health restored per bliss-tick (0.0 - 1.0, where 1.0 = is one heart).")
 		public double blissHealingAmount = 0.33D;
@@ -214,6 +220,83 @@ public class Settings {
 		@Config.Comment("Cooldown (in ticks) after using a Bundle of Lost Letters. Default: 6000 (5 minutes)")
 		public int bundleOfLostLettersCooldown = 6000;
 
+		@Config.Name("Incense Serenity Radius")
+		@Config.Comment("Horizontal radius in blocks for burning incense to apply Serenity. Default: 2 (creates a 5x5 area)")
+		@Config.RangeInt(min = 0, max = 16)
+		public int incenseSerenityRadius = 2;
+
+		@Config.Name("Incense Burn Duration Min")
+		@Config.Comment("Minimum burn duration in ticks for incense. Default: 6000 (5 minutes)")
+		@Config.RangeInt(min = 20, max = 72000)
+		public int incenseBurnDurationMin = 6000;
+
+		@Config.Name("Incense Burn Duration Max")
+		@Config.Comment("Maximum burn duration in ticks for incense. Default: 12000 (10 minutes)")
+		@Config.RangeInt(min = 20, max = 72000)
+		public int incenseBurnDurationMax = 12000;
+
+		@Config.Name("Loose Incense Burn Duration")
+		@Config.Comment("Burn time in ticks added to censers and incense burners by one loose incense item. Default: 6000 (5 minutes)")
+		@Config.RangeInt(min = 20, max = 72000)
+		public int incenseItemBurnDuration = 6000;
+
+		@Config.Name("Incense Stick Burn Duration")
+		@Config.Comment("Burn time in ticks added to censers and incense burners by one incense stick. Default: 12000 (10 minutes)")
+		@Config.RangeInt(min = 20, max = 72000)
+		public int incenseStickBurnDuration = 12000;
+
+		@Config.Name("Incense Potion Effect Whitelist")
+		@Config.Comment("Potion registry names that can be infused into burning censers and incense burners.")
+		public String[] incensePotionEffectWhitelist = {
+				"totf:bliss",
+				"totf:serenity",
+				"minecraft:speed",
+				"minecraft:night_vision",
+				"minecraft:regeneration",
+				"minecraft:strength",
+				"minecraft:poison",
+				"minecraft:water_breathing",
+				"minecraft:slowness",
+				"minecraft:invisibility",
+				"minecraft:jump_boost"
+		};
+
+		@Config.Name("Porcelain Pot Tea Leaves Required")
+		@Config.Comment("How many Spirited Away Tea Leaves are required to brew a pot of tea. Default: 1")
+		@Config.RangeInt(min = 1, max = 64)
+		public int porcelainPotTeaLeavesRequired = 1;
+
+		@Config.Name("Porcelain Pot Tea Servings")
+		@Config.Comment("How many cups of tea a brewed porcelain pot can pour before emptying. Default: 3")
+		@Config.RangeInt(min = 1, max = 16)
+		public int porcelainPotTeaServings = 3;
+
+		@Config.Name("Porcelain Liquid Definitions")
+		@Config.Comment({
+				"List of custom porcelain liquids.",
+				"Format per entry:",
+				"<liquid_type>|<accepted_item>|<forge_fluid>|<color_hex>|<potion_effect>|<amplifier>|<duration_ticks>",
+				"Examples:",
+				"tea|totf:spirited_away_tea_leaves|water|#891516|minecraft:regeneration|0|300",
+				"hot_chocolate|minecraft:dye@3|milk|#5A341A|minecraft:speed|0|900",
+				"Note: hot_chocolate additionally requires milk bucket in the pot."
+		})
+		public String[] porcelainLiquidDefinitions = {
+				"tea|totf:spirited_away_tea_leaves|water|#891516|minecraft:regeneration|0|300",
+				"hot_chocolate|minecraft:dye@3|milk|#5A341A|minecraft:speed|0|900"
+		};
+
+		@Config.Name("Porcelain Heat Sources Map")
+		@Config.Comment("Map entries of block registry names (or domain/path substrings) to their active boolean property state (or '*' for any). Format: 'modid:regname,state'. Examples: 'exsartagine:hearth,lit', 'exsartagine:stove,lit', 'pyrotech:campfire,burning'")
+		public String[] porcelainHeatSources = {
+				"exsartagine:hearth,lit",
+				"exsartagine:stove,lit",
+				"exsartagine:sartagine,lit",
+				"exsartagine:hearth,lit",
+				"exsartagine:stove,lit",
+				"exsartagine:campfire,lit"
+		};
+
 		@Config.Name("Wonder Fertilizer Radius")
 		@Config.Comment("The radius in blocks for the Wonder Fertilizer's bonemeal effect. Default: 3 (creates a 7x7 area)")
 		public int wonderFertilizerRadius = 3;
@@ -243,6 +326,11 @@ public class Settings {
 		@Config.Comment("Maximum number of goblins spawned by tents. Default: 3")
 		public int tentGoblinMaxCount = 3;
 
+		@Config.Name("Glass Float Max Rope Length")
+		@Config.Comment("Maximum number of rope segments that can be added to a glass float. Default: 6")
+		@Config.RangeInt(min = 1, max = 64)
+		public int glassFloatMaxRopeLength = 6;
+
 		@Config.Name("Bush Crate Goblin Spawn Chance")
 		@Config.Comment("Chance (0.0 - 1.0) for bush crates to spawn goblins when a player is nearby. 0.0 = never, 1.0 = always. Default: 0.5 (50%)")
 		public double bushCrateGoblinSpawnChance = 0.5D;
@@ -259,6 +347,46 @@ public class Settings {
 		@Config.Name("Veiled Mask Haunting Tick Rate")
 		@Config.Comment("How often (in ticks) the Veiled Mask gains haunting and consumes durability. Default: 60 (3 seconds)")
 		public int veiledMaskHauntingTickRate = 60;
+
+		@Config.Name("Chitin Armor Durability")
+		@Config.Comment("Durability multiplier for the Chitin armor material. Iron is 15, Diamond is 33. Default: 24")
+		@Config.RequiresMcRestart
+		public int chitinArmorDurability = 24;
+
+		@Config.Name("Chitin Armor Helmet Protection")
+		@Config.Comment("Armor points for the Chitin Helmet. Iron is 2, Diamond is 3. Default: 2")
+		@Config.RequiresMcRestart
+		public int chitinArmorProtectionHelmet = 2;
+
+		@Config.Name("Chitin Armor Chestplate Protection")
+		@Config.Comment("Armor points for the Chitin Chestplate. Iron is 6, Diamond is 8. Default: 7")
+		@Config.RequiresMcRestart
+		public int chitinArmorProtectionChestplate = 7;
+
+		@Config.Name("Chitin Armor Leggings Protection")
+		@Config.Comment("Armor points for the Chitin Leggings. Iron is 5, Diamond is 6. Default: 6")
+		@Config.RequiresMcRestart
+		public int chitinArmorProtectionLeggings = 6;
+
+		@Config.Name("Chitin Armor Boots Protection")
+		@Config.Comment("Armor points for the Chitin Boots. Iron is 2, Diamond is 3. Default: 2")
+		@Config.RequiresMcRestart
+		public int chitinArmorProtectionBoots = 2;
+
+		@Config.Name("Chitin Armor Enchantability")
+		@Config.Comment("Enchantability for the Chitin armor material. Iron is 9, Diamond is 10. Default: 10")
+		@Config.RequiresMcRestart
+		public int chitinArmorEnchantability = 10;
+
+		@Config.Name("Chitin Armor Toughness")
+		@Config.Comment("Armor toughness for the Chitin armor material. Iron is 0.0, Diamond is 2.0. Default: 1.0")
+		@Config.RequiresMcRestart
+		public double chitinArmorToughness = 1.0D;
+
+		@Config.Name("Chitin Armor Minecrawler Stealth Radius")
+		@Config.Comment("Distance in blocks where full Chitin armor starts hiding players from minecrawler detection. 0 disables this behavior. Default: 8")
+		@Config.RangeInt(min = 0)
+		public int chitinArmorMinecrawlerStealthRadius = 8;
 
 		@Config.Name("Idol of Blades Slowness Duration")
 		@Config.Comment("Duration (in ticks) of the slowness effect applied by the Idol of Blades. Default: 100 (5 seconds)")
@@ -277,17 +405,95 @@ public class Settings {
 		@Config.RequiresMcRestart
 		public int idolOfBladesDurability = 500;
 
+		@Config.Name("Sifter Inventory Slots")
+		@Config.Comment("How many inventory slots each ancestral sifter has. Default: 8")
+		@Config.RangeInt(min = 1, max = 54)
+		public int sifterInventorySlots = 8;
+
+		@Config.Name("Sifter Durability")
+		@Config.Comment("How many successful sifted loot stacks an ancestral sifter can produce before it becomes broken. Default: 8")
+		@Config.RangeInt(min = 1)
+		public int sifterDurability = 8;
+
+		@Config.Name("Sifter Health")
+		@Config.Comment("How many hits an ancestral sifter can take before it drops itself. Default: 3")
+		@Config.RangeInt(min = 1)
+		public int sifterHealth = 3;
+
+		@Config.Name("Sifter Loot Interval")
+		@Config.Comment("How often an ancestral sifter rolls its environment-based loot table, in ticks. Default: 600")
+		@Config.RangeInt(min = 20)
+		public int sifterLootInterval = 20;
+
+		@Config.Name("Sifters Per Chunk")
+		@Config.Comment("Maximum number of ancestral sifters that can be placed in a single chunk. Default: 1")
+		@Config.RangeInt(min = 1)
+		public int siftersPerChunk = 1;
+
 		@Config.Name("Haunting Blocks")
 		@Config.Comment("List of blocks that affect haunting when mined. Format: 'modid:blockname:amount' or 'modid:blockname:meta:amount'. Negative values reduce haunting. Examples: 'totf:skeleton_crate:3', 'minecraft:wool:0:5', 'totf:grave_marker:-2'")
 		public String[] hauntingBlocks = {
 				"totf:skeleton_crate:3",
 				"totf:grave_marker:2"
 		};
+
+		@Config.Name("Wrought Bomb Fuse Time")
+		@Config.Comment("The fuse duration (in ticks) for the Wrought Bomb when primed or lit. Default: 200 (10 seconds)")
+		@Config.RangeInt(min = 1, max = 6000)
+		public int wroughtBombFuseTime = 200;
+
+		@Config.Name("Tunneler Dig Speed Multiplier")
+		@Config.Comment("Multiplier for how fast goblin tunnelers dig blocks. Higher is faster. Default: 1.0")
+		@Config.RangeDouble(min = 0.05D, max = 50.0D)
+		public double tunnelerDigSpeedMultiplier = 1.0D;
+
+		@Config.Name("Fetid Dagger Melee Damage")
+		@Config.Comment("Base melee attack damage dealt by the Fetid Dagger. Default: 4.0")
+		@Config.RangeDouble(min = 0.0D, max = 1000.0D)
+		public double fetidDaggerMeleeDamage = 4.0D;
+
+		@Config.Name("Fetid Dagger Thrown Damage")
+		@Config.Comment("Base projectile damage dealt by the Fetid Dagger when thrown. Default: 4.0")
+		@Config.RangeDouble(min = 0.0D, max = 1000.0D)
+		public double fetidDaggerThrownDamage = 4.0D;
+
+		@Config.Name("Crooked Bone Melee Damage")
+		@Config.Comment("Base melee attack damage dealt by the Crooked Bone. Default: 2.0")
+		@Config.RangeDouble(min = 0.0D, max = 1000.0D)
+		public double crookedBoneDamage = 2.0D;
+
+		@Config.Name("Primitive Mace Durability")
+		@Config.Comment("Max durability (uses) for the Primitive Mace. Default: 50")
+		@Config.RangeInt(min = 1, max = 10000)
+		public int primitiveMaceDurability = 50;
+
+		@Config.Name("Primitive Mace Melee Damage")
+		@Config.Comment("Base melee attack damage dealt by the Primitive Mace. Default: 4.0")
+		@Config.RangeDouble(min = 0.0D, max = 1000.0D)
+		public double primitiveMaceDamage = 4.0D;
+
+		@Config.Name("Brass Club Durability")
+		@Config.Comment("Max durability (uses) for the Brass Club. Default: 180")
+		@Config.RangeInt(min = 1, max = 10000)
+		public int brassClubDurability = 180;
+
+		@Config.Name("Brass Club Melee Damage")
+		@Config.Comment("Base melee attack damage dealt by the Brass Club. Default: 4.5")
+		@Config.RangeDouble(min = 0.0D, max = 1000.0D)
+		public double brassClubDamage = 4.5D;
     }
 
     public static class ClientSettings {
-    }
+		@Config.Name("Dioptra Camera Height")
+		@Config.Comment("First-person camera height above the dioptra block center while mounted. Default: 1.75")
+		@Config.RangeDouble(min = -4.0D, max = 4.0D)
+		public double dioptraCameraHeight = 1.5465D;
 
+		@Config.Name("Dioptra Camera Back Offset")
+		@Config.Comment("How far back from the dioptra center the first-person camera sits while mounted. Default: 0.24")
+		@Config.RangeDouble(min = -1.0D, max = 1.0D)
+		public double dioptraCameraBackOffset = -0.765432D;
+    }
     @SuppressWarnings("unused")
     @Mod.EventBusSubscriber(modid = TracesOfTheFallen.MODID)
     private static class EventHandler {
@@ -296,6 +502,7 @@ public class Settings {
             if (event.getModID().equals(TracesOfTheFallen.MODID)) {
                 ConfigManager.sync(TracesOfTheFallen.MODID, Config.Type.INSTANCE);
                 HauntingCapability.clearHauntingBlockCache();
+                TileEntityPorcelainVessel.clearHeatSourcesCache();
             }
         }
     }

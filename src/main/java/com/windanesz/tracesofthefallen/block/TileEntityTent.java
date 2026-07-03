@@ -2,6 +2,8 @@ package com.windanesz.tracesofthefallen.block;
 
 import com.windanesz.tracesofthefallen.Settings;
 import com.windanesz.tracesofthefallen.entity.EntityGoblin;
+import com.windanesz.tracesofthefallen.entity.EntityGoblinStarved;
+import com.windanesz.tracesofthefallen.entity.EntityGoblinWayfarer;
 import com.windanesz.tracesofthefallen.init.ModBlocks;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
@@ -50,9 +52,18 @@ public class TileEntityTent extends TileEntityLostLoot implements ITickable {
 		int goblinCount = Settings.miscSettings.tentGoblinMinCount + 
 				world.rand.nextInt(Settings.miscSettings.tentGoblinMaxCount - Settings.miscSettings.tentGoblinMinCount + 1);
 
+		boolean isAbandoned = (block == ModBlocks.tent_abandoned || block == ModBlocks.tent_abandoned_idol);
+
 		// Spawn goblins at tent position with 0.3y offset
 		for (int i = 0; i < goblinCount; i++) {
-			EntityGoblin goblin = new EntityGoblin(world);
+			EntityGoblin goblin;
+			if (isAbandoned) {
+				goblin = new EntityGoblinStarved(world);
+			} else if (i == 0 && goblinCount > 1 && world.rand.nextFloat() < 0.35F) {
+				goblin = new EntityGoblinWayfarer(world);
+			} else {
+				goblin = new EntityGoblin(world);
+			}
 			goblin.setPosition(pos.getX() + 0.5, pos.getY() + 0.3, pos.getZ() + 0.5);
 			world.spawnEntity(goblin);
 		}

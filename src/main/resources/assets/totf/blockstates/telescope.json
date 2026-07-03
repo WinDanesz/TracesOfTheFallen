@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "totf:telescope_stand" },
+    "facing=east":  { "model": "totf:telescope_stand", "y": 90 },
+    "facing=south": { "model": "totf:telescope_stand", "y": 180 },
+    "facing=west":  { "model": "totf:telescope_stand", "y": 270 }
+  }
+}

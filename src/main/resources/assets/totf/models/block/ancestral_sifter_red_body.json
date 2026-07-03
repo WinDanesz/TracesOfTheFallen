@@ -1,0 +1,7 @@
+{
+  "parent": "totf:block/ancestral_sifter_body",
+  "textures": {
+    "0": "totf:blocks/ancestral_sifter_red",
+    "particle": "totf:blocks/ancestral_sifter_red"
+  }
+}

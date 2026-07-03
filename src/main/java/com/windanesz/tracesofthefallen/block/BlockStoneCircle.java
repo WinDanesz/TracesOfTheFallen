@@ -1,6 +1,7 @@
 package com.windanesz.tracesofthefallen.block;
 
 import com.windanesz.tracesofthefallen.init.ModItems;
+import com.windanesz.tracesofthefallen.world.FlatMultiblockPattern;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
@@ -18,6 +19,7 @@ import net.minecraft.util.*;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -33,12 +35,19 @@ import java.util.List;
 public class BlockStoneCircle extends BlockContainer {
 	public static final PropertyDirection FACING = PropertyDirection.create("facing", EnumFacing.Plane.HORIZONTAL);
 	public static final PropertyBool SNOWY = PropertyBool.create("snowy");
+	public static final PropertyBool CORE = PropertyBool.create("core");
+	private static final FlatMultiblockPattern REQUIRED_FLAT_MULTIBLOCK = FlatMultiblockPattern.builder()
+			.addSquare(0, -2, 1)
+			.addSquare(0, 2, 1)
+			.addSquare(-2, 0, 1)
+			.addSquare(2, 0, 1)
+			.build();
 	public ResourceLocation lootTable;
 	public AxisAlignedBB boundingBox;
 
 	public BlockStoneCircle(Material materialmaterialn) {
 		super(materialmaterialn);
-		this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH).withProperty(SNOWY, false));
+		this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH).withProperty(SNOWY, false).withProperty(CORE, true));
 		setBlockUnbreakable();
 		setResistance(6000000.0F);
 		this.boundingBox = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.5D, 1.0D); // Default AABB
@@ -46,13 +55,21 @@ public class BlockStoneCircle extends BlockContainer {
 
 	@Override
 	public TileEntity createNewTileEntity(World world, int meta) {
-		return new TileEntityStoneCircle();
+		return (meta & 8) == 0 ? new TileEntityStoneCircle() : null;
+	}
+
+	@Override
+	public boolean hasTileEntity(IBlockState state) {
+		return state.getValue(CORE);
 	}
 
 	@Override
 	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 		if (worldIn.isRemote) {
 			return true;
+		}
+		if (!state.getValue(CORE)) {
+			return false;
 		}
 
 		TileEntity te = worldIn.getTileEntity(pos);
@@ -64,12 +81,16 @@ public class BlockStoneCircle extends BlockContainer {
 		ItemStack heldItem = playerIn.getHeldItem(hand);
 
 		if (heldItem.getItem() == ModItems.rune_of_skimming) {
+			if (!hasRequiredFlatMultiblock(worldIn, pos)) {
+				playerIn.sendMessage(new TextComponentTranslation("totf.stone_circle.incomplete"));
+				return true;
+			}
 			if (stoneCircle.getPair() != null) {
 				// Already paired, teleport
 				teleportPlayerToTwin(playerIn, stoneCircle.getPair(), worldIn.provider.getDimension());
 			} else {
 				// Not paired.
-				playerIn.sendMessage(new TextComponentString(TextFormatting.ITALIC + "This stone circle feels dormant... It has not yet found its twin."));
+				playerIn.sendMessage(new TextComponentTranslation("totf.stone_circle.dormant"));
 			}
 			return true;
 		}
@@ -91,7 +112,15 @@ public class BlockStoneCircle extends BlockContainer {
 	@Override
 	public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
 		boolean isSnowy = worldIn.getBiome(pos).isSnowyBiome();
-		return this.getDefaultState().withProperty(FACING, placer.getHorizontalFacing().getOpposite()).withProperty(SNOWY, isSnowy);
+		return this.getDefaultState().withProperty(FACING, placer.getHorizontalFacing().getOpposite()).withProperty(SNOWY, isSnowy).withProperty(CORE, true);
+	}
+
+	@Override
+	public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
+		super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
+		if (!worldIn.isRemote && state.getValue(CORE) && canGenerateStructureAt(worldIn, pos.down())) {
+			placeStructure(worldIn, pos, state, 2);
+		}
 	}
 
 	@Override
@@ -127,18 +156,21 @@ public class BlockStoneCircle extends BlockContainer {
 		if (state.getValue(SNOWY)) {
 			i |= 4;
 		}
+		if (!state.getValue(CORE)) {
+			i |= 8;
+		}
 
 		return i;
 	}
 
 	@Override
 	public IBlockState getStateFromMeta(int meta) {
-		return getDefaultState().withProperty(FACING, EnumFacing.byHorizontalIndex(meta & 3)).withProperty(SNOWY, (meta & 4) != 0);
+		return getDefaultState().withProperty(FACING, EnumFacing.byHorizontalIndex(meta & 3)).withProperty(SNOWY, (meta & 4) != 0).withProperty(CORE, (meta & 8) == 0);
 	}
 
 	@Override
 	protected BlockStateContainer createBlockState() {
-		return new BlockStateContainer(this, FACING, SNOWY);
+		return new BlockStateContainer(this, FACING, SNOWY, CORE);
 	}
 
 	@Override
@@ -204,5 +236,56 @@ public class BlockStoneCircle extends BlockContainer {
 	public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face) {
 		// Return UNDEFINED to prevent fences from connecting
 		return BlockFaceShape.UNDEFINED;
+	}
+
+	public static boolean hasRequiredFlatMultiblock(World world, BlockPos centerPos) {
+		return REQUIRED_FLAT_MULTIBLOCK.matches(centerPos, partPos -> isStoneCirclePart(world, partPos));
+	}
+
+	public static boolean canGenerateStructureAt(World world, BlockPos groundCenterPos) {
+		BlockPos centerPos = groundCenterPos.up();
+		return canPlaceStoneCirclePart(world, centerPos) && REQUIRED_FLAT_MULTIBLOCK.matches(centerPos, partPos -> canPlaceStoneCirclePart(world, partPos));
+	}
+
+	public static void placeStructure(World world, BlockPos centerPos, IBlockState centerState, int flags) {
+		IBlockState coreState = centerState.withProperty(CORE, true);
+		IBlockState partState = coreState.withProperty(CORE, false);
+		world.setBlockState(centerPos, coreState, flags);
+		REQUIRED_FLAT_MULTIBLOCK.forEachPosition(centerPos, partPos -> world.setBlockState(partPos, partState, flags));
+	}
+
+	private static boolean isStoneCirclePart(World world, BlockPos pos) {
+		IBlockState state = world.getBlockState(pos);
+		return state.getBlock() instanceof BlockStoneCircle && !state.getValue(CORE);
+	}
+
+	public static void forEachStructurePos(BlockPos centerPos, java.util.function.Consumer<BlockPos> consumer) {
+		consumer.accept(centerPos);
+		REQUIRED_FLAT_MULTIBLOCK.forEachPosition(centerPos, consumer);
+	}
+
+	private static boolean canPlaceStoneCirclePart(World world, BlockPos pos) {
+		IBlockState supportState = world.getBlockState(pos.down());
+		if (!supportState.isTopSolid() || supportState.getMaterial().isLiquid()) {
+			return false;
+		}
+		if (world.getBlockState(pos).getBlock() instanceof BlockStoneCircle) {
+			return true;
+		}
+		return isClearAbove(world, pos);
+	}
+
+	private static boolean isClearAbove(World world, BlockPos pos) {
+		IBlockState state = world.getBlockState(pos);
+		return world.isAirBlock(pos) || state.getMaterial().isReplaceable() || isGrassOrFlower(world, pos);
+	}
+
+	private static boolean isGrassOrFlower(World world, BlockPos pos) {
+		ResourceLocation registryName = world.getBlockState(pos).getBlock().getRegistryName();
+		if (registryName == null) {
+			return false;
+		}
+		String name = registryName.toString();
+		return name.contains("grass") || name.contains("flower");
 	}
 }

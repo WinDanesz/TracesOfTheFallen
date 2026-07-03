@@ -19,6 +19,7 @@ public class ModSounds {
 	public static final SoundEvent GOBLIN_AGGRO = createSound("entity.goblin_aggro");
 	public static final SoundEvent GOBLIN_DIE = createSound("entity.goblin_die");
 	public static final SoundEvent IDOL_ACTIVATE = createSound("idol_activate");
+	public static final SoundEvent DIOPTRA = createSound("dioptra");
 
 	public static SoundEvent createSound(String name) {
 		return createSound(TracesOfTheFallen.MODID, name);
@@ -34,5 +35,11 @@ public class ModSounds {
 	@SubscribeEvent
 	public static void register(RegistryEvent.Register<SoundEvent> event) {
 		event.getRegistry().register(SPECTER_HURT);
+		event.getRegistry().register(GOBLIN_HURT);
+		event.getRegistry().register(GOBLIN_IDLE);
+		event.getRegistry().register(GOBLIN_AGGRO);
+		event.getRegistry().register(GOBLIN_DIE);
+		event.getRegistry().register(IDOL_ACTIVATE);
+		event.getRegistry().register(DIOPTRA);
 	}
 }

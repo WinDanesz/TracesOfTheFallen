@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "totf:rope_mossy" },
+    "facing=east":  { "model": "totf:rope_mossy" },
+    "facing=south": { "model": "totf:rope_mossy" },
+    "facing=west":  { "model": "totf:rope_mossy" }
+  }
+}

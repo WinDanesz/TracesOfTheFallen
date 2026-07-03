@@ -1,10 +1,7 @@
 package com.windanesz.tracesofthefallen.init;
 
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
-import com.windanesz.tracesofthefallen.entity.EntityFamiliarSpecter;
-import com.windanesz.tracesofthefallen.entity.EntityGoblin;
-import com.windanesz.tracesofthefallen.entity.EntityModPainting;
-import com.windanesz.tracesofthefallen.entity.EntitySpecter;
+import com.windanesz.tracesofthefallen.entity.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.RegistryEvent;
@@ -52,10 +49,25 @@ public class ModEntities {
 		IForgeRegistry<EntityEntry> registry = event.getRegistry();
 
 		// projectile entities
+		registry.register(createEntry(EntityAncestralSifter.class, "ancestral_sifter", TrackingType.CONSTRUCT).build());
+		registry.register(createEntry(EntityDioptraSeat.class, "dioptra_seat", TrackingType.CONSTRUCT).build());
+		registry.register(createEntry(EntityTelescopeSeat.class, "telescope_seat", TrackingType.CONSTRUCT).build());
+		registry.register(createEntry(EntityGlassFloat.class, "glass_float", TrackingType.CONSTRUCT).build());
 		registry.register(createEntry(EntitySpecter.class, "specter", TrackingType.LIVING).egg(0xebf2ff,0x6aeba6).build());
 		registry.register(createEntry(EntityFamiliarSpecter.class, "specter_familiar", TrackingType.LIVING).egg(0xebf2ff,0x6aeba6).build());
 		registry.register(createEntry(EntityModPainting.class, "forest_painting", TrackingType.LIVING).build());
 		registry.register(createEntry(EntityGoblin.class, "goblin", TrackingType.LIVING).egg(0x0d2e11,0x3eb049).build());
+		registry.register(createEntry(EntityGoblinStarved.class, "goblin_starved", TrackingType.LIVING).egg(0x1a2e0d, 0x5ab03e).build());
+		registry.register(createEntry(EntityGoblinWayfarer.class, "goblin_wayfarer", TrackingType.LIVING).egg(0x2e1d0d, 0xb0653e).build());
+		registry.register(createEntry(EntityGoblinEngineer.class, "goblin_engineer", TrackingType.LIVING).egg(0x2e270d, 0xb08f3e).build());
+		registry.register(createEntry(EntityGoblinSapper.class, "goblin_sapper", TrackingType.LIVING).egg(0x2e2b0d, 0xb09f3e).build());
+		registry.register(createEntry(EntityGoblinTunneler.class, "goblin_tunneler", TrackingType.LIVING).egg(0x2e2c0d, 0xb0af3e).build());
+		registry.register(createEntry(EntityGoblinShaman.class, "goblin_shaman", TrackingType.LIVING).egg(0x0d1a2e, 0x3e68b0).build());
+		registry.register(createEntry(EntityGoblinBrute.class, "goblin_brute", TrackingType.LIVING).egg(0x2e0d0d, 0xb03e3e).build());
+		registry.register(createEntry(EntityGoblinWarrior.class, "goblin_warrior", TrackingType.LIVING).egg(0x1e2e3e, 0x7aa0b0).build());
+		registry.register(createEntry(EntityMinecrawler.class, "minecrawler", TrackingType.LIVING).egg(0x2d241a, 0x8b5a2b).build());
+		registry.register(createEntry(EntityWroughtBomb.class, "wrought_bomb", TrackingType.PROJECTILE).build());
+		registry.register(createEntry(EntityFetidDagger.class, "fetid_dagger", TrackingType.PROJECTILE).build());
 	}
 
 	/**

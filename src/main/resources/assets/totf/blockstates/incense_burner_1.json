@@ -1,0 +1,12 @@
+{
+  "variants": {
+    "facing=north,variant=gold": { "model": "totf:incense_burner_1" },
+    "facing=east,variant=gold": { "model": "totf:incense_burner_1", "y": 90 },
+    "facing=south,variant=gold": { "model": "totf:incense_burner_1", "y": 180 },
+    "facing=west,variant=gold": { "model": "totf:incense_burner_1", "y": 270 },
+    "facing=north,variant=green": { "model": "totf:incense_burner_2" },
+    "facing=east,variant=green": { "model": "totf:incense_burner_2", "y": 90 },
+    "facing=south,variant=green": { "model": "totf:incense_burner_2", "y": 180 },
+    "facing=west,variant=green": { "model": "totf:incense_burner_2", "y": 270 }
+  }
+}

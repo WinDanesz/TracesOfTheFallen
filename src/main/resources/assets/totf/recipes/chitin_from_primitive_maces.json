@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "group": "chitin",
+  "ingredients": [
+    {
+      "item": "totf:primitive_mace",
+      "data": 32767
+    },
+    {
+      "item": "totf:primitive_mace",
+      "data": 32767
+    }
+  ],
+  "result": {
+    "item": "totf:chitin"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "totf:glass_float_longing_blue_landed" },
+    "facing=east": { "model": "totf:glass_float_longing_blue_landed", "y": 90 },
+    "facing=south": { "model": "totf:glass_float_longing_blue_landed", "y": 180 },
+    "facing=west": { "model": "totf:glass_float_longing_blue_landed", "y": 270 }
+  }
+}

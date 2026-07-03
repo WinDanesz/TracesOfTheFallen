@@ -1,0 +1,42 @@
+{
+  "variants": {
+    "arrangement=cups,facing=north,filled_cups=0": { "model": "totf:porcelain_cups" },
+    "arrangement=cups,facing=east,filled_cups=0":  { "model": "totf:porcelain_cups", "y": 90 },
+    "arrangement=cups,facing=south,filled_cups=0": { "model": "totf:porcelain_cups", "y": 180 },
+    "arrangement=cups,facing=west,filled_cups=0":  { "model": "totf:porcelain_cups", "y": 270 },
+    "arrangement=cups,facing=north,filled_cups=1": { "model": "totf:porcelain_cups_one_filled" },
+    "arrangement=cups,facing=east,filled_cups=1":  { "model": "totf:porcelain_cups_one_filled", "y": 90 },
+    "arrangement=cups,facing=south,filled_cups=1": { "model": "totf:porcelain_cups_one_filled", "y": 180 },
+    "arrangement=cups,facing=west,filled_cups=1":  { "model": "totf:porcelain_cups_one_filled", "y": 270 },
+    "arrangement=cups,facing=north,filled_cups=2": { "model": "totf:porcelain_cups_two_filled" },
+    "arrangement=cups,facing=east,filled_cups=2":  { "model": "totf:porcelain_cups_two_filled", "y": 90 },
+    "arrangement=cups,facing=south,filled_cups=2": { "model": "totf:porcelain_cups_two_filled", "y": 180 },
+    "arrangement=cups,facing=west,filled_cups=2":  { "model": "totf:porcelain_cups_two_filled", "y": 270 },
+
+    "arrangement=pot_and_cup,facing=north,filled_cups=0": { "model": "totf:porcelain_pot_cup" },
+    "arrangement=pot_and_cup,facing=east,filled_cups=0":  { "model": "totf:porcelain_pot_cup", "y": 90 },
+    "arrangement=pot_and_cup,facing=south,filled_cups=0": { "model": "totf:porcelain_pot_cup", "y": 180 },
+    "arrangement=pot_and_cup,facing=west,filled_cups=0":  { "model": "totf:porcelain_pot_cup", "y": 270 },
+    "arrangement=pot_and_cup,facing=north,filled_cups=1": { "model": "totf:porcelain_pot_cup_filled" },
+    "arrangement=pot_and_cup,facing=east,filled_cups=1":  { "model": "totf:porcelain_pot_cup_filled", "y": 90 },
+    "arrangement=pot_and_cup,facing=south,filled_cups=1": { "model": "totf:porcelain_pot_cup_filled", "y": 180 },
+    "arrangement=pot_and_cup,facing=west,filled_cups=1":  { "model": "totf:porcelain_pot_cup_filled", "y": 270 },
+    "arrangement=pot_and_cup,facing=north,filled_cups=2": { "model": "totf:porcelain_pot_cup_filled" },
+    "arrangement=pot_and_cup,facing=east,filled_cups=2":  { "model": "totf:porcelain_pot_cup_filled", "y": 90 },
+    "arrangement=pot_and_cup,facing=south,filled_cups=2": { "model": "totf:porcelain_pot_cup_filled", "y": 180 },
+    "arrangement=pot_and_cup,facing=west,filled_cups=2":  { "model": "totf:porcelain_pot_cup_filled", "y": 270 },
+
+    "arrangement=full,facing=north,filled_cups=0": { "model": "totf:porcelain_set" },
+    "arrangement=full,facing=east,filled_cups=0":  { "model": "totf:porcelain_set", "y": 90 },
+    "arrangement=full,facing=south,filled_cups=0": { "model": "totf:porcelain_set", "y": 180 },
+    "arrangement=full,facing=west,filled_cups=0":  { "model": "totf:porcelain_set", "y": 270 },
+    "arrangement=full,facing=north,filled_cups=1": { "model": "totf:porcelain_set_one_filled" },
+    "arrangement=full,facing=east,filled_cups=1":  { "model": "totf:porcelain_set_one_filled", "y": 90 },
+    "arrangement=full,facing=south,filled_cups=1": { "model": "totf:porcelain_set_one_filled", "y": 180 },
+    "arrangement=full,facing=west,filled_cups=1":  { "model": "totf:porcelain_set_one_filled", "y": 270 },
+    "arrangement=full,facing=north,filled_cups=2": { "model": "totf:porcelain_set_two_filled" },
+    "arrangement=full,facing=east,filled_cups=2":  { "model": "totf:porcelain_set_two_filled", "y": 90 },
+    "arrangement=full,facing=south,filled_cups=2": { "model": "totf:porcelain_set_two_filled", "y": 180 },
+    "arrangement=full,facing=west,filled_cups=2":  { "model": "totf:porcelain_set_two_filled", "y": 270 }
+  }
+}

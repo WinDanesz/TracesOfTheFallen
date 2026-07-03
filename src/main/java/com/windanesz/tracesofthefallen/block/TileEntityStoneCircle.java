@@ -15,8 +15,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
-import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraft.world.gen.ChunkProviderServer;
+import net.minecraftforge.common.ForgeChunkManager;
 
 import javax.annotation.Nullable;
 import java.util.Random;
@@ -33,7 +33,7 @@ public class TileEntityStoneCircle extends TileEntity implements ITickable {
 
 	@Override
 	public void update() {
-		if (world.isRemote || this.pairingComplete || getPair() != null) {
+		if (world.isRemote || this.pairingComplete || getPair() != null || !BlockStoneCircle.hasRequiredFlatMultiblock(world, pos)) {
 			return;
 		}
 
@@ -192,17 +192,11 @@ public class TileEntityStoneCircle extends TileEntity implements ITickable {
 	}
 
 	private void clearAndPlaceSimpleAltar(World world, BlockPos center) {
-		for (int x = -1; x <= 1; x++) {
+		BlockStoneCircle.forEachStructurePos(center, structurePos -> {
 			for (int y = 0; y <= 2; y++) {
-				for (int z = -1; z <= 1; z++) {
-					BlockPos pos = center.add(x, y, z);
-					if (x == 0 && y == 0 && z == 0) {
-						continue;
-					}
-					world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2);
-				}
+				world.setBlockState(structurePos.up(y), Blocks.AIR.getDefaultState(), 2);
 			}
-		}
+		});
 		placeAltarBlock(world, center);
 	}
 
@@ -211,7 +205,7 @@ public class TileEntityStoneCircle extends TileEntity implements ITickable {
 		if (block instanceof BlockStoneCircle) {
 			IBlockState state = block.getDefaultState()
 					.withProperty(BlockStoneCircle.SNOWY, world.getBiome(pos).isSnowyBiome());
-			world.setBlockState(pos, state, 2);
+			BlockStoneCircle.placeStructure(world, pos, state, 2);
 		}
 	}
 
@@ -235,22 +229,7 @@ public class TileEntityStoneCircle extends TileEntity implements ITickable {
 	}
 
 	private boolean canGenerateAltarAt(World world, BlockPos pos) {
-		for (int x = -1; x <= 1; x++) {
-			for (int z = -1; z <= 1; z++) {
-				BlockPos groundCheckPos = pos.add(x, 0, z);
-				IBlockState groundState = world.getBlockState(groundCheckPos);
-				if (!groundState.getMaterial().isSolid() || groundState.getMaterial().isLiquid()) {
-					return false;
-				}
-				for (int y = 1; y <= 2; y++) {
-					BlockPos spaceCheckPos = groundCheckPos.add(0, y, 0);
-					if (!isBlockSoft(world.getBlockState(spaceCheckPos), world, spaceCheckPos)) {
-						return false;
-					}
-				}
-			}
-		}
-		return true;
+		return BlockStoneCircle.canGenerateStructureAt(world, pos);
 	}
 
 	public BlockPos getPair() {

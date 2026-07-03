@@ -1,0 +1,36 @@
+{
+	"format_version": "1.9.0",
+	"credit": "Made by Foreck with Blockbench",
+	"textures": {
+		"0": "totf:blocks/incense",
+		"particle": "totf:blocks/incense"
+	},
+	"elements": [
+		{
+			"from": [6, 0, 4],
+			"to": [8, 1, 12],
+			"rotation": {"angle": -22.5, "axis": "z", "origin": [8, 0, 4]},
+			"faces": {
+				"north": {"uv": [1, 1, 3, 2], "texture": "#0"},
+				"east": {"uv": [0, 1, 8, 2], "texture": "#0"},
+				"south": {"uv": [3, 1, 1, 2], "texture": "#0"},
+				"west": {"uv": [2, 1, 3, 9], "rotation": 90, "texture": "#0"},
+				"up": {"uv": [4, 1, 2, 9], "texture": "#0"},
+				"down": {"uv": [3, 1, 1, 9], "texture": "#0"}
+			}
+		},
+		{
+			"from": [8, 0, 4],
+			"to": [10, 1, 12],
+			"rotation": {"angle": 22.5, "axis": "z", "origin": [8, 0, 4]},
+			"faces": {
+				"north": {"uv": [3, 1, 1, 2], "texture": "#0"},
+				"east": {"uv": [2, 1, 3, 9], "rotation": 90, "texture": "#0"},
+				"south": {"uv": [1, 1, 3, 2], "texture": "#0"},
+				"west": {"uv": [0, 1, 8, 2], "texture": "#0"},
+				"up": {"uv": [2, 1, 4, 9], "texture": "#0"},
+				"down": {"uv": [1, 1, 3, 9], "texture": "#0"}
+			}
+		}
+	]
+}

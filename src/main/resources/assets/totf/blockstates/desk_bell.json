@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "totf:desk_bell" },
+    "facing=east":  { "model": "totf:desk_bell" },
+    "facing=south": { "model": "totf:desk_bell" },
+    "facing=west":  { "model": "totf:desk_bell" }
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "parent": "totf:block/left_feather_1",
+  "textures": {
+    "0": "totf:blocks/ancestral_sifter_golden",
+    "particle": "totf:blocks/ancestral_sifter_golden"
+  }
+}

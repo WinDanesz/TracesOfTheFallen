@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "totf:idol_vessel" },
+    "facing=east":  { "model": "totf:idol_vessel", "y": 90 },
+    "facing=south": { "model": "totf:idol_vessel", "y": 180 },
+    "facing=west":  { "model": "totf:idol_vessel", "y": 270 }
+  }
+}

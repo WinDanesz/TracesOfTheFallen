@@ -1,0 +1,6 @@
+{
+  "parent": "totf:block/porcelain_cup_empty",
+  "overrides": [
+    { "predicate": { "filled": 1.0 }, "model": "totf:item/porcelain_cup_filled" }
+  ]
+}

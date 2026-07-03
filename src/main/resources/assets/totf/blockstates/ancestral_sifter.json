@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "totf:ancestral_sifter_golden" },
+    "facing=east":  { "model": "totf:ancestral_sifter_golden", "y": 90 },
+    "facing=south": { "model": "totf:ancestral_sifter_golden", "y": 180 },
+    "facing=west":  { "model": "totf:ancestral_sifter_golden", "y": 270 }
+  }
+}

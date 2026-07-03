@@ -2,9 +2,6 @@ package com.windanesz.tracesofthefallen.init;
 
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
 import com.windanesz.tracesofthefallen.block.*;
-import com.windanesz.tracesofthefallen.block.TileEntityGraveMarker;
-import com.windanesz.tracesofthefallen.block.TileEntityLostLoot;
-import com.windanesz.tracesofthefallen.block.TileEntityTent;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDoublePlant;
 import net.minecraft.block.material.Material;
@@ -45,6 +42,36 @@ public class ModBlocks {
 	public static final Block tent_abandoned_idol = placeholder();
 
 	public static final Block armillary = placeholder();
+
+	// New decorative blocks
+	public static final Block ancestral_sifter_golden = placeholder();
+	public static final Block ancestral_sifter_red = placeholder();
+	public static final Block balance = placeholder();
+	public static final Block censer = placeholder();
+	public static final Block dioptra = placeholder();
+	public static final Block telescope = placeholder();
+	public static final Block glass_float_clear_blue = placeholder();
+	public static final Block glass_float_wine_green = placeholder();
+	public static final Block glass_float_longing_blue = placeholder();
+	public static final Block glass_float_blood_red = placeholder();
+	public static final Block glass_float_clear_blue_landed = placeholder();
+	public static final Block glass_float_wine_green_landed = placeholder();
+	public static final Block glass_float_longing_blue_landed = placeholder();
+	public static final Block glass_float_blood_red_landed = placeholder();
+	public static final Block incense_stick = placeholder();
+	public static final Block incense_burner_gold = placeholder();
+	public static final Block incense_burner_green = placeholder();
+	public static final Block incense_burner_white = placeholder();
+	public static final Block porcelain_set = placeholder();
+	public static final Block porcelain_cup = placeholder();
+	public static final Block porcelain_pot = placeholder();
+	public static final Block rope_mossy = placeholder();
+	public static final Block rope_mossy_hook = placeholder();
+	public static final Block desk_bell = placeholder();
+	public static final Block idol_vessel = placeholder();
+	public static final Block technical_block = placeholder();
+	public static final Block wrought_bomb = placeholder();
+
 	@Nonnull
 	@SuppressWarnings("ConstantConditions")
 	private static <T> T placeholder() {
@@ -54,7 +81,7 @@ public class ModBlocks {
 	@SubscribeEvent
 	public static void registerBlocks(RegistryEvent.Register<Block> event) {
 		IForgeRegistry<Block> registry = event.getRegistry();
-		registerBlock(registry, "lost_cargo", new BlockTOFT(Material.WOOD).setLootTable(new ResourceLocation(TracesOfTheFallen.MODID, "chests/lost_cargo")));
+		registerBlock(registry, "lost_cargo", new BlockTOFT(Material.WOOD).setLootTable(new ResourceLocation(TracesOfTheFallen.MODID, "blocks/lost_cargo")));
 		registerBlock(registry, "lost_crate_potions", new BlockTOFT(Material.WOOD).setLootTable(new ResourceLocation(TracesOfTheFallen.MODID, "blocks/lost_crate_potions")));
 		registerBlock(registry, "skeleton_crate", new BlockRemains(Material.WOOD).setLootTable(new ResourceLocation(TracesOfTheFallen.MODID, "blocks/grave")));
 		registerBlock(registry, "bush_crate", new BlockTOFT(Material.WOOD).setSpawnGoblins(true).setLootTable(new ResourceLocation(TracesOfTheFallen.MODID, "blocks/bush_crate")));
@@ -68,12 +95,46 @@ public class ModBlocks {
 		registerBlock(registry, "tent_abandoned_idol", new BlockTent(false).setLootTable(new ResourceLocation(TracesOfTheFallen.MODID, "blocks/tent_with_idol")));
 		registerBlock(registry, "armillary", new BlockArmillary());
 
+		// New decorative blocks
+		registerBlock(registry, "ancestral_sifter_golden", new BlockAncestralSifter(Material.WOOD, BlockAncestralSifter.SifterVariant.GOLDEN).setBoundingBox(new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 1.5D, 1.0D)));
+		registerBlock(registry, "ancestral_sifter_red", new BlockAncestralSifter(Material.WOOD, BlockAncestralSifter.SifterVariant.RED).setBoundingBox(new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 1.5D, 1.0D)));
+		registerBlock(registry, "balance", new BlockBalance(Material.IRON).setBoundingBox(new AxisAlignedBB(0.1D, 0.0D, 0.1D, 0.9D, 1.1D, 0.9D)));
+		registerBlock(registry, "censer", new BlockCenser(Material.IRON).setBoundingBox(new AxisAlignedBB(0.2D, 0.0D, 0.2D, 0.8D, 1.0D, 0.8D)));
+		registerBlock(registry, "dioptra", new BlockDioptra(Material.WOOD).setBoundingBox(new AxisAlignedBB(0.1D, 0.0D, 0.1D, 0.9D, 0.9D, 0.9D)));
+		registerBlock(registry, "telescope", new BlockTelescope(Material.WOOD).setBoundingBox(new AxisAlignedBB(0.225D, 0.0D, 0.225D, 0.775D, 1.9D, 0.775D)));
+		registerBlock(registry, "glass_float_clear_blue", new BlockGlassFloat(Material.GLASS, BlockGlassFloat.FloatVariant.CLEAR_BLUE).setBoundingBox(new AxisAlignedBB(0.1D, 0.0D, 0.1D, 0.9D, 0.75D, 0.9D)));
+		registerBlock(registry, "glass_float_wine_green", new BlockGlassFloat(Material.GLASS, BlockGlassFloat.FloatVariant.WINE_GREEN).setBoundingBox(new AxisAlignedBB(0.1D, 0.0D, 0.1D, 0.9D, 0.75D, 0.9D)));
+		registerBlock(registry, "glass_float_longing_blue", new BlockGlassFloat(Material.GLASS, BlockGlassFloat.FloatVariant.LONGING_BLUE).setBoundingBox(new AxisAlignedBB(0.1D, 0.0D, 0.1D, 0.9D, 0.75D, 0.9D)));
+		registerBlock(registry, "glass_float_blood_red", new BlockGlassFloat(Material.GLASS, BlockGlassFloat.FloatVariant.BLOOD_RED).setBoundingBox(new AxisAlignedBB(0.1D, 0.0D, 0.1D, 0.9D, 0.75D, 0.9D)));
+		registerBlock(registry, "glass_float_clear_blue_landed", new BlockGlassFloatLanded(Material.GLASS, BlockGlassFloat.FloatVariant.CLEAR_BLUE).setBoundingBox(new AxisAlignedBB(0.1D, 0.0D, 0.1D, 0.9D, 0.125D, 0.9D)));
+		registerBlock(registry, "glass_float_wine_green_landed", new BlockGlassFloatLanded(Material.GLASS, BlockGlassFloat.FloatVariant.WINE_GREEN).setBoundingBox(new AxisAlignedBB(0.1D, 0.0D, 0.1D, 0.9D, 0.125D, 0.9D)));
+		registerBlock(registry, "glass_float_longing_blue_landed", new BlockGlassFloatLanded(Material.GLASS, BlockGlassFloat.FloatVariant.LONGING_BLUE).setBoundingBox(new AxisAlignedBB(0.1D, 0.0D, 0.1D, 0.9D, 0.125D, 0.9D)));
+		registerBlock(registry, "glass_float_blood_red_landed", new BlockGlassFloatLanded(Material.GLASS, BlockGlassFloat.FloatVariant.BLOOD_RED).setBoundingBox(new AxisAlignedBB(0.1D, 0.0D, 0.1D, 0.9D, 0.125D, 0.9D)));
+		registerBlock(registry, "incense_stick", new BlockIncense(Material.WOOD).setBoundingBox(new AxisAlignedBB(0.375D, 0.0D, 0.25D, 0.625D, 0.1D, 0.75D)));
+		registerBlock(registry, "incense_burner_gold", new BlockIncenseBurner(Material.IRON, new AxisAlignedBB(0.1D, 0.0D, 0.1D, 0.9D, 1.25D, 0.9D)));
+		registerBlock(registry, "incense_burner_green", new BlockIncenseBurner(Material.IRON, new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 1.5D, 1.0D)));
+		registerBlock(registry, "incense_burner_white", new BlockIncenseBurner(Material.IRON, new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 1.5D, 1.0D)));
+		registerBlock(registry, "porcelain_set", new BlockPorcelainSet(Material.ROCK));
+		registerBlock(registry, "porcelain_cup", new BlockPorcelainPiece(Material.ROCK, BlockPorcelainPiece.PieceType.CUP, new AxisAlignedBB(0.375D, 0.0D, 0.375D, 0.6875D, 0.25D, 0.6875D)));
+		registerBlock(registry, "porcelain_pot", new BlockPorcelainPiece(Material.ROCK, BlockPorcelainPiece.PieceType.POT, new AxisAlignedBB(0.375D, 0.0D, 0.1875D, 0.75D, 0.4375D, 0.8125D)));
+		registerBlock(registry, "rope_mossy", new BlockDecoration(Material.WOOD).setBoundingBox(new AxisAlignedBB(0.4375D, 0.0D, 0.4375D, 0.5625D, 1.0D, 0.5625D)));
+		registerBlock(registry, "rope_mossy_hook", new BlockDecoration(Material.WOOD).setBoundingBox(new AxisAlignedBB(0.4375D, 0.0D, 0.4375D, 0.5625D, 1.0D, 0.5625D)));
+		registerBlock(registry, "desk_bell", new BlockDeskBell(Material.IRON).setBoundingBox(new AxisAlignedBB(0.3125D, 0.0D, 0.3125D, 0.6875D, 0.35625D, 0.6875D)));
+		registerBlock(registry, "idol_vessel", new BlockIdolVessel(Material.ROCK).setBoundingBox(new AxisAlignedBB(0.0625D, 0.0D, 0.0625D, 0.9375D, 1.0D, 0.9375D)));
+		registerBlockNoTab(registry, "technical_block", new BlockTechnicalBlock());
+		registerBlock(registry, "wrought_bomb", new BlockWroughtBomb());
 	}
 
 	public static void registerBlock(IForgeRegistry<Block> registry, String name, Block block) {
 		block.setRegistryName(TracesOfTheFallen.MODID, name);
 		block.setTranslationKey(block.getRegistryName().toString());
 		block.setCreativeTab(ModCreativeTab.TOTF_TAB);
+		registry.register(block);
+	}
+
+	public static void registerBlockNoTab(IForgeRegistry<Block> registry, String name, Block block) {
+		block.setRegistryName(TracesOfTheFallen.MODID, name);
+		block.setTranslationKey(block.getRegistryName().toString());
 		registry.register(block);
 	}
 
@@ -98,14 +159,24 @@ public class ModBlocks {
 				event.setCanceled(true);
 			}
 		}
+
 	}
 
 	public static void registerTileEntities() {
 		// Nope, these still don't have their own registry...
 		GameRegistry.registerTileEntity(TileEntityLostLoot.class, new ResourceLocation(TracesOfTheFallen.MODID, "lost_loot"));
 		GameRegistry.registerTileEntity(TileEntityGraveMarker.class, new ResourceLocation(TracesOfTheFallen.MODID, "grave_marker"));
+		GameRegistry.registerTileEntity(TileEntityDioptra.class, new ResourceLocation(TracesOfTheFallen.MODID, "dioptra"));
+		GameRegistry.registerTileEntity(TileEntityTelescope.class, new ResourceLocation(TracesOfTheFallen.MODID, "telescope"));
+		GameRegistry.registerTileEntity(TileEntityBalance.class, new ResourceLocation(TracesOfTheFallen.MODID, "balance"));
 		GameRegistry.registerTileEntity(TileEntityRemains.class, new ResourceLocation(TracesOfTheFallen.MODID, "remains"));
 		GameRegistry.registerTileEntity(TileEntityStoneCircle.class, new ResourceLocation(TracesOfTheFallen.MODID, "stone_circle"));
 		GameRegistry.registerTileEntity(TileEntityTent.class, new ResourceLocation(TracesOfTheFallen.MODID, "tent"));
+		GameRegistry.registerTileEntity(TileEntityIncense.class, new ResourceLocation(TracesOfTheFallen.MODID, "incense"));
+		GameRegistry.registerTileEntity(TileEntityCenser.class, new ResourceLocation(TracesOfTheFallen.MODID, "censer"));
+		GameRegistry.registerTileEntity(TileEntityIncenseBurner.class, new ResourceLocation(TracesOfTheFallen.MODID, "incense_burner"));
+		GameRegistry.registerTileEntity(TileEntityPorcelainVessel.class, new ResourceLocation(TracesOfTheFallen.MODID, "porcelain_vessel"));
+		GameRegistry.registerTileEntity(TileEntityPorcelainSet.class, new ResourceLocation(TracesOfTheFallen.MODID, "porcelain_set"));
+		GameRegistry.registerTileEntity(TileEntityIdolVessel.class, new ResourceLocation(TracesOfTheFallen.MODID, "idol_vessel"));
 	}
 }

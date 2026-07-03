@@ -1,0 +1,37 @@
+{
+  "format_version": "1.9.0",
+  "credit": "Made by Foreck with Blockbench",
+  "textures": {
+    "0": "totf:blocks/float_clear_blue",
+    "1": "totf:blocks/net",
+    "particle": "totf:blocks/float_clear_blue"
+  },
+  "elements": [
+    {
+      "from": [2.7, 4.2, 2.7],
+      "to": [13.3, 14.8, 13.3],
+      "rotation": {"angle": 0, "axis": "y", "origin": [8.5, 5.5, 7.5]},
+      "faces": {
+        "north": {"uv": [1, 1, 12, 12], "texture": "#0"},
+        "east": {"uv": [1, 1, 12, 12], "texture": "#0"},
+        "south": {"uv": [1, 1, 12, 12], "texture": "#0"},
+        "west": {"uv": [1, 1, 12, 12], "texture": "#0"},
+        "up": {"uv": [1, 1, 12, 12], "texture": "#0"},
+        "down": {"uv": [1, 1, 12, 12], "texture": "#0"}
+      }
+    },
+    {
+      "from": [2.5, 4, 2.5],
+      "to": [13.5, 15, 13.5],
+      "rotation": {"angle": 0, "axis": "y", "origin": [8.5, 5.5, 7.5]},
+      "faces": {
+        "north": {"uv": [1, 1, 12, 12], "texture": "#1"},
+        "east": {"uv": [1, 1, 12, 12], "texture": "#1"},
+        "south": {"uv": [1, 1, 12, 12], "texture": "#1"},
+        "west": {"uv": [1, 1, 12, 12], "texture": "#1"},
+        "up": {"uv": [1, 1, 12, 12], "texture": "#1"},
+        "down": {"uv": [1, 1, 12, 12], "texture": "#1"}
+      }
+    }
+  ]
+}

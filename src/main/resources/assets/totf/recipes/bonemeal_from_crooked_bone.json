@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "group": "bonemeal",
+  "ingredients": [
+    {
+      "item": "totf:crooked_bone",
+      "data": 32767
+    }
+  ],
+  "result": {
+    "item": "minecraft:dye",
+    "data": 15
+  }
+}

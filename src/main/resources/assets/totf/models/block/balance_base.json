@@ -1,0 +1,42 @@
+{
+  "textures": {
+    "0": "totf:blocks/balance",
+    "particle": "totf:blocks/balance"
+  },
+  "elements": [
+    {
+      "from": [5.5, 12, 7.98],
+      "to": [10.5, 17, 8.03],
+      "rotation": {"angle": 0, "axis": "z", "origin": [7.5, 15, 8]},
+      "faces": {
+        "north": {"uv": [7, 11, 2, 16], "texture": "#0"},
+        "south": {"uv": [7, 11, 2, 16], "texture": "#0"}
+      }
+    },
+    {
+      "from": [5, 0, 5],
+      "to": [11, 2, 11],
+      "rotation": {"angle": 0, "axis": "y", "origin": [7, 0, 8]},
+      "faces": {
+        "north": {"uv": [2, 0, 0, 6], "rotation": 90, "texture": "#0"},
+        "east": {"uv": [2, 0, 0, 6], "rotation": 90, "texture": "#0"},
+        "south": {"uv": [2, 0, 0, 6], "rotation": 90, "texture": "#0"},
+        "west": {"uv": [2, 0, 0, 6], "rotation": 90, "texture": "#0"},
+        "up": {"uv": [2, 6, 8, 0], "rotation": 180, "texture": "#0"},
+        "down": {"uv": [2, 11, 7, 6], "rotation": 180, "texture": "#0"}
+      }
+    },
+    {
+      "from": [7, 2, 7],
+      "to": [9, 12, 9],
+      "rotation": {"angle": 0, "axis": "y", "origin": [0, -7, 0]},
+      "faces": {
+        "north": {"uv": [10, 1, 12, 11], "texture": "#0"},
+        "east": {"uv": [12, 1, 10, 11], "texture": "#0"},
+        "south": {"uv": [10, 1, 12, 11], "texture": "#0"},
+        "west": {"uv": [12, 1, 10, 11], "texture": "#0"},
+        "up": {"uv": [0, 0, 2, 2], "rotation": 90, "texture": "#0"}
+      }
+    }
+  ]
+}

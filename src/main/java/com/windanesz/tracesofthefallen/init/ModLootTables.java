@@ -27,5 +27,6 @@ public class ModLootTables {
 		
 		// Entity loot tables
 		LootTableList.register(new ResourceLocation(TracesOfTheFallen.MODID, "entities/goblin"));
+		LootTableList.register(new ResourceLocation(TracesOfTheFallen.MODID, "entities/minecrawler"));
 	}
 }

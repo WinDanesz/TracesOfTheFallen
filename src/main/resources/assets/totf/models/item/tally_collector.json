@@ -1,0 +1,14 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "totf:items/tally_collector_one"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "multiple": 1.0
+      },
+      "model": "totf:item/tally_collector_multiple"
+    }
+  ]
+}

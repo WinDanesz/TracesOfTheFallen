@@ -46,10 +46,12 @@ dependencies {
     // Example - CurseMaven dependencies:
     // 'curse.maven:had-enough-items-557549:4543375' << had-enough-items = project slug, 557549 = project id, 4543375 = file id
     // Full documentation: https://cursemaven.com/
+    implementation rfg.deobf('curse.maven:had-enough-items-557549:4543375')
 
     // Example - Modrinth dependencies:
     // 'maven.modrinth:jei:4.16.1.1000' << jei = project name, 4.16.1.1000 = file version
     // Full documentation: https://docs.modrinth.com/docs/tutorials/maven/
+    implementation rfg.deobf('maven.modrinth:ex-sartagine-requiem:0.4.2')
 
     // Common dependency types (configuration):
     // implementation = dependency available at both compile time and runtime

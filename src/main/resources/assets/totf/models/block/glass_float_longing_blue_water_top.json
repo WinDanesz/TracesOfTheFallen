@@ -1,0 +1,8 @@
+{
+  "parent": "totf:block/glass_float_water_top",
+  "textures": {
+    "0": "totf:blocks/float_longing_blue",
+    "1": "totf:blocks/net",
+    "particle": "totf:blocks/float_longing_blue"
+  }
+}

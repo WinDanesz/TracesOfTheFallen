@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "totf:rope_mossy_hook", "y": 180 },
+    "facing=east":  { "model": "totf:rope_mossy_hook", "y": 270 },
+    "facing=south": { "model": "totf:rope_mossy_hook" },
+    "facing=west":  { "model": "totf:rope_mossy_hook", "y": 90 }
+  }
+}

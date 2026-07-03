@@ -1,0 +1,12 @@
+{
+  "variants": {
+    "facing=north,filled=false": { "model": "totf:porcelain_pot" },
+    "facing=east,filled=false":  { "model": "totf:porcelain_pot", "y": 90 },
+    "facing=south,filled=false": { "model": "totf:porcelain_pot", "y": 180 },
+    "facing=west,filled=false":  { "model": "totf:porcelain_pot", "y": 270 },
+    "facing=north,filled=true": { "model": "totf:porcelain_pot" },
+    "facing=east,filled=true":  { "model": "totf:porcelain_pot", "y": 90 },
+    "facing=south,filled=true": { "model": "totf:porcelain_pot", "y": 180 },
+    "facing=west,filled=true":  { "model": "totf:porcelain_pot", "y": 270 }
+  }
+}

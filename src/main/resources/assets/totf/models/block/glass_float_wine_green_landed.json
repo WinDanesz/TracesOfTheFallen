@@ -1,0 +1,7 @@
+{
+  "parent": "totf:block/glass_float_landed",
+  "textures": {
+    "0": "totf:blocks/float_wine_green",
+    "particle": "totf:blocks/float_wine_green"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "ambientocclusion": false,
+  "textures": {
+    "0": "totf:blocks/ancestral_sifter_golden",
+    "particle": "totf:blocks/ancestral_sifter_golden"
+  },
+  "elements": [
+    {
+      "from": [19, 19, 7.9],
+      "to": [22, 23, 8],
+      "rotation": { "angle": 0, "axis": "y", "origin": [19, 19, 7.95] },
+      "faces": {
+        "north": { "uv": [5, 0, 6.5, 2], "texture": "#0" },
+        "south": { "uv": [6.5, 0, 5, 2], "texture": "#0" }
+      }
+    }
+  ]
+}

@@ -3,6 +3,7 @@ package com.windanesz.tracesofthefallen.init;
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
 import com.windanesz.tracesofthefallen.item.*;
 import net.minecraft.block.Block;
+import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemFood;
@@ -21,6 +22,7 @@ public class ModItems {
 	private ModItems() {
 	}
 
+	public static final Item cleaner = placeholder();
 	public static final Item grave_rose = placeholder();
 	public static final Item rune_of_skimming = placeholder();
 	public static final Item goblin_idol = placeholder();
@@ -28,12 +30,29 @@ public class ModItems {
 	public static final Item pemmican = placeholder();
 	public static final Item mysterious_fur = placeholder();
 	public static final Item veiled_mask = placeholder();
+	public static final Item chitin_helmet = placeholder();
+	public static final Item chitin_chestplate = placeholder();
+	public static final Item chitin_leggings = placeholder();
+	public static final Item chitin_boots = placeholder();
+	public static final Item silk_rope = placeholder();
+	public static final Item incense = placeholder();
+	public static final Item spirited_away_tea_leaves = placeholder();
+	public static final Item forbidden_ivory = placeholder();
+	public static final Item arcane_skull_maw = placeholder();
+	public static final Item arcane_skull_shield = placeholder();
+	public static final Item arcane_skull_swift = placeholder();
+	public static final Item tally_collector = placeholder();
+	public static final Item fetid_dagger = placeholder();
+	public static final Item crooked_bone = placeholder();
+	public static final Item primitive_mace = placeholder();
+	public static final Item brass_club = placeholder();
 
 	public static final Item painting_in_the_woods = placeholder();
 	public static final Item painting_portrait = placeholder();
 	public static final Item painting_the_bloodcurling = placeholder();
 	public static final Item painting_wheel = placeholder();
 	public static final Item painting_wizardry = placeholder();
+	public static final Item painting_subterfuge = placeholder();
 	@Nonnull
 	@SuppressWarnings("ConstantConditions")
 	private static <T> T placeholder() {
@@ -55,15 +74,33 @@ public class ModItems {
 		registerItem(registry, "painting_the_bloodcurling", new ItemModPainting(ItemModPainting.EnumPainting.PAINTING_THE_BLOODCURLING).setCreativeTab(ModCreativeTab.TOTF_TAB));
 		registerItem(registry, "painting_wheel", new ItemModPainting(ItemModPainting.EnumPainting.PAINTING_WHEEL).setCreativeTab(ModCreativeTab.TOTF_TAB));
 		registerItem(registry, "painting_wizardry", new ItemModPainting(ItemModPainting.EnumPainting.PAINTING_WIZARDRY).setCreativeTab(ModCreativeTab.TOTF_TAB));
+		registerItem(registry, "painting_subterfuge", new ItemModPainting(ItemModPainting.EnumPainting.PAINTING_SUBTERFUGE).setCreativeTab(ModCreativeTab.TOTF_TAB));
 
 		registerItem(registry, "mysterious_fur", new ItemMysteriousFur().setCreativeTab(ModCreativeTab.TOTF_TAB));
 		registerItem(registry, "silk_rope", new Item().setCreativeTab(ModCreativeTab.TOTF_TAB));
+		registerItem(registry, "incense", new Item().setCreativeTab(ModCreativeTab.TOTF_TAB));
+		registerItem(registry, "spirited_away_tea_leaves", new Item().setCreativeTab(ModCreativeTab.TOTF_TAB));
+		registerItem(registry, "forbidden_ivory", new ItemArcaneRelic(ItemArcaneRelic.RelicEffect.FORBIDDEN_IVORY).setCreativeTab(ModCreativeTab.TOTF_TAB));
+		registerItem(registry, "arcane_skull_maw", new ItemArcaneRelic(ItemArcaneRelic.RelicEffect.MAW).setCreativeTab(ModCreativeTab.TOTF_TAB));
+		registerItem(registry, "arcane_skull_shield", new ItemArcaneRelic(ItemArcaneRelic.RelicEffect.SHIELD).setCreativeTab(ModCreativeTab.TOTF_TAB));
+		registerItem(registry, "arcane_skull_swift", new ItemArcaneRelic(ItemArcaneRelic.RelicEffect.SWIFT).setCreativeTab(ModCreativeTab.TOTF_TAB));
 		registerItem(registry, "silk_spindle", new ItemSilkSpindle().setCreativeTab(ModCreativeTab.TOTF_TAB));
 		registerItem(registry, "bundle_of_lost_letters", new ItemBundleOfLostLetters().setCreativeTab(ModCreativeTab.TOTF_TAB));
 		registerItem(registry, "veiled_mask", new ItemVeiledMask().setCreativeTab(ModCreativeTab.TOTF_TAB));
+		registerItem(registry, "chitin", new Item().setCreativeTab(ModCreativeTab.TOTF_TAB));
+		registerItem(registry, "chitin_helmet", new ChitinArmor(EntityEquipmentSlot.HEAD).setCreativeTab(ModCreativeTab.TOTF_TAB));
+		registerItem(registry, "chitin_chestplate", new ChitinArmor(EntityEquipmentSlot.CHEST).setCreativeTab(ModCreativeTab.TOTF_TAB));
+		registerItem(registry, "chitin_leggings", new ChitinArmor(EntityEquipmentSlot.LEGS).setCreativeTab(ModCreativeTab.TOTF_TAB));
+		registerItem(registry, "chitin_boots", new ChitinArmor(EntityEquipmentSlot.FEET).setCreativeTab(ModCreativeTab.TOTF_TAB));
 		registerItem(registry, "wheel", new Item().setCreativeTab(ModCreativeTab.TOTF_TAB));
 		registerItem(registry, "wonder_fertilizer", new ItemWonderFertilizer().setCreativeTab(ModCreativeTab.TOTF_TAB));
 		registerItem(registry, "old_world_tinkers_kit", new ItemOldWorldTinkersKit().setCreativeTab(ModCreativeTab.TOTF_TAB));
+		registerItem(registry, "tally_collector", new ItemTallieCollector().setCreativeTab(ModCreativeTab.TOTF_TAB));
+		registerItem(registry, "cleaner", new Item().setCreativeTab(ModCreativeTab.TOTF_TAB));
+		registerItem(registry, "fetid_dagger", new ItemFetidDagger().setCreativeTab(ModCreativeTab.TOTF_TAB));
+		registerItem(registry, "crooked_bone", new ItemCrookedBone().setCreativeTab(ModCreativeTab.TOTF_TAB));
+		registerItem(registry, "primitive_mace", new ItemPrimitiveMace().setCreativeTab(ModCreativeTab.TOTF_TAB));
+		registerItem(registry, "brass_club", new ItemBrassClub().setCreativeTab(ModCreativeTab.TOTF_TAB));
 
 		// Register ItemBlocks
 		registerItemBlock(registry, ModBlocks.lost_cargo);
@@ -82,11 +119,71 @@ public class ModItems {
 		armillaryItem.setRegistryName(ModBlocks.armillary.getRegistryName());
 		ModBlocks.armillary.setCreativeTab(ModCreativeTab.TOTF_TAB);
 		registry.register(armillaryItem);
+
+		// Register new decorative block ItemBlocks
+		registerAncestralSifterItemBlock(registry, ModBlocks.ancestral_sifter_golden);
+		registerAncestralSifterItemBlock(registry, ModBlocks.ancestral_sifter_red);
+		ItemBlock balanceItem = new ItemBlockBalance(ModBlocks.balance);
+		balanceItem.setRegistryName(ModBlocks.balance.getRegistryName());
+		registry.register(balanceItem);
+		ItemBlock censerItem = new ItemBlockCenser(ModBlocks.censer);
+		censerItem.setRegistryName(ModBlocks.censer.getRegistryName());
+		registry.register(censerItem);
+		registerItemBlock(registry, ModBlocks.dioptra);
+		registerItemBlock(registry, ModBlocks.telescope);
+		registerGlassFloatItemBlock(registry, ModBlocks.glass_float_clear_blue);
+		registerGlassFloatItemBlock(registry, ModBlocks.glass_float_wine_green);
+		registerGlassFloatItemBlock(registry, ModBlocks.glass_float_longing_blue);
+		registerGlassFloatItemBlock(registry, ModBlocks.glass_float_blood_red);
+		registerItemBlock(registry, ModBlocks.glass_float_clear_blue_landed);
+		registerItemBlock(registry, ModBlocks.glass_float_wine_green_landed);
+		registerItemBlock(registry, ModBlocks.glass_float_longing_blue_landed);
+		registerItemBlock(registry, ModBlocks.glass_float_blood_red_landed);
+		registerItemBlock(registry, ModBlocks.incense_stick);
+		registerItemBlock(registry, ModBlocks.incense_burner_gold);
+		registerItemBlock(registry, ModBlocks.incense_burner_green);
+		registerItemBlock(registry, ModBlocks.incense_burner_white);
+		ItemBlock porcelainCupItem = new ItemBlockPorcelainPiece(ModBlocks.porcelain_cup);
+		porcelainCupItem.setRegistryName(ModBlocks.porcelain_cup.getRegistryName());
+		registry.register(porcelainCupItem);
+		ItemBlock porcelainPotItem = new ItemBlockPorcelainPiece(ModBlocks.porcelain_pot);
+		porcelainPotItem.setRegistryName(ModBlocks.porcelain_pot.getRegistryName());
+		registry.register(porcelainPotItem);
+		registerItemBlock(registry, ModBlocks.rope_mossy);
+		registerItemBlock(registry, ModBlocks.rope_mossy_hook);
+		registerItemBlock(registry, ModBlocks.desk_bell);
+
+		ItemBlock idolVesselItem = new ItemBlockIdolVessel(ModBlocks.idol_vessel);
+		idolVesselItem.setRegistryName(ModBlocks.idol_vessel.getRegistryName());
+		registry.register(idolVesselItem);
+		ItemBlock wroughtBombItem = new ItemBlockWroughtBomb(ModBlocks.wrought_bomb);
+		wroughtBombItem.setRegistryName(ModBlocks.wrought_bomb.getRegistryName());
+		ModBlocks.wrought_bomb.setCreativeTab(ModCreativeTab.TOTF_TAB);
+		registry.register(wroughtBombItem);
+	}
+
+	public static void registerOreDictionary() {
+		net.minecraftforge.oredict.OreDictionary.registerOre("cleaner", cleaner);
+		net.minecraftforge.oredict.OreDictionary.registerOre("soap", cleaner);
 	}
 
 	// Helper for registering ItemBlocks
 	private static void registerItemBlock(IForgeRegistry<Item> registry, Block block) {
 		ItemBlock itemBlock = new ItemBlock(block);
+		itemBlock.setRegistryName(block.getRegistryName());
+		block.setCreativeTab(ModCreativeTab.TOTF_TAB);
+		registry.register(itemBlock);
+	}
+
+	private static void registerAncestralSifterItemBlock(IForgeRegistry<Item> registry, Block block) {
+		ItemBlock itemBlock = new ItemBlockAncestralSifter(block);
+		itemBlock.setRegistryName(block.getRegistryName());
+		block.setCreativeTab(ModCreativeTab.TOTF_TAB);
+		registry.register(itemBlock);
+	}
+
+	private static void registerGlassFloatItemBlock(IForgeRegistry<Item> registry, Block block) {
+		ItemBlock itemBlock = new ItemBlockGlassFloat(block);
 		itemBlock.setRegistryName(block.getRegistryName());
 		block.setCreativeTab(ModCreativeTab.TOTF_TAB);
 		registry.register(itemBlock);

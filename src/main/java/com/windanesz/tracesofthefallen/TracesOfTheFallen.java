@@ -4,6 +4,7 @@ import com.windanesz.tracesofthefallen.capability.HauntingCapability;
 import com.windanesz.tracesofthefallen.command.CommandGetHauntingProgress;
 import com.windanesz.tracesofthefallen.command.CommandSetHauntingProgress;
 import com.windanesz.tracesofthefallen.init.ModBlocks;
+import com.windanesz.tracesofthefallen.init.ModItems;
 import com.windanesz.tracesofthefallen.init.ModLootTables;
 import com.windanesz.tracesofthefallen.init.ModWorldGen;
 import com.windanesz.tracesofthefallen.network.PacketHandler;
@@ -64,6 +65,7 @@ public class TracesOfTheFallen implements ForgeChunkManager.LoadingCallback {
 
 		proxy.registerColorHandlers();
 		PacketHandler.initPackets();
+		ModItems.registerOreDictionary();
 	}
 
 	@Mod.EventHandler

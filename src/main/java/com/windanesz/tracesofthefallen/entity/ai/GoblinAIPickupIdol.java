@@ -62,6 +62,9 @@ public class GoblinAIPickupIdol extends EntityAIBase {
 
 	@Override
 	public void startExecuting() {
+		if (this.goblin.isRiding()) {
+			this.goblin.dismountRidingEntity();
+		}
 		if (this.targetIdol != null) {
 			this.navigator.tryMoveToEntityLiving(this.targetIdol, 1.2D);
 		}

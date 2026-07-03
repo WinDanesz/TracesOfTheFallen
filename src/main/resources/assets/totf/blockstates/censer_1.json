@@ -1,0 +1,9 @@
+{
+  "variants": {
+    "facing=north": { "model": "totf:censer_1" },
+    "facing=east":  { "model": "totf:censer_1" },
+    "facing=south": { "model": "totf:censer_1" },
+    "facing=west":  { "model": "totf:censer_1" }
+  }
+}
+

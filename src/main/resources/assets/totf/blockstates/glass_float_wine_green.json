@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "facing=north,mount=floor": { "model": "totf:glass_float_wine_green" },
+    "facing=east,mount=floor": { "model": "totf:glass_float_wine_green" },
+    "facing=south,mount=floor": { "model": "totf:glass_float_wine_green" },
+    "facing=west,mount=floor": { "model": "totf:glass_float_wine_green" },
+    "facing=north,mount=wall": { "model": "totf:glass_float_wine_green_wall" },
+    "facing=east,mount=wall": { "model": "totf:glass_float_wine_green_wall", "y": 90 },
+    "facing=south,mount=wall": { "model": "totf:glass_float_wine_green_wall", "y": 180 },
+    "facing=west,mount=wall": { "model": "totf:glass_float_wine_green_wall", "y": 270 },
+    "facing=north,mount=ceiling": { "model": "totf:glass_float_wine_green_ceiling" },
+    "facing=east,mount=ceiling": { "model": "totf:glass_float_wine_green_ceiling", "y": 90 },
+    "facing=south,mount=ceiling": { "model": "totf:glass_float_wine_green_ceiling", "y": 180 },
+    "facing=west,mount=ceiling": { "model": "totf:glass_float_wine_green_ceiling", "y": 270 }
+  }
+}

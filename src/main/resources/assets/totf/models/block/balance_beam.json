@@ -1,0 +1,17 @@
+{
+  "textures": {
+    "0": "totf:blocks/balance",
+    "particle": "totf:blocks/balance"
+  },
+  "elements": [
+    {
+      "from": [0, 11, 7.98],
+      "to": [16, 14, 8.03],
+      "rotation": {"angle": 0, "axis": "z", "origin": [8, 13, 8]},
+      "faces": {
+        "north": {"uv": [13, 0, 16, 16], "rotation": 90, "texture": "#0"},
+        "south": {"uv": [13, 16, 16, 0], "rotation": 90, "texture": "#0"}
+      }
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "totf:incense_burner_3" },
+    "facing=east":  { "model": "totf:incense_burner_3" },
+    "facing=south": { "model": "totf:incense_burner_3" },
+    "facing=west":  { "model": "totf:incense_burner_3" }
+  }
+}

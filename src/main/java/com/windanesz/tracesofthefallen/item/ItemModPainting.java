@@ -28,7 +28,8 @@ public class ItemModPainting extends Item {
 		PAINTING_PORTRAIT("painting_portrait", 32, 48, 32, 32, true),
 		PAINTING_THE_BLOODCURLING("painting_the_bloodcurling", 16, 32, 32, 0, true),
 		PAINTING_WHEEL("painting_wheel", 16, 32, 48, 0, true),
-		PAINTING_WIZARDRY("painting_wizardry", 32, 48, 32, 80, true);
+		PAINTING_WIZARDRY("painting_wizardry", 32, 48, 32, 80, true),
+		PAINTING_SUBTERFUGE("painting_subterfuge", 16, 32, 64, 64, true);
 
 		public final String name;
 		public final int sizeX;
@@ -69,6 +70,8 @@ public class ItemModPainting extends Item {
 					return ModItems.painting_wheel;
 				case PAINTING_WIZARDRY:
 					return ModItems.painting_wizardry;
+				case PAINTING_SUBTERFUGE:
+					return ModItems.painting_subterfuge;
 				default:
 					return null;
 			}

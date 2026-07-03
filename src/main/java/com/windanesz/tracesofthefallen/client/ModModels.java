@@ -1,6 +1,7 @@
 package com.windanesz.tracesofthefallen.client;
 
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
+import com.windanesz.tracesofthefallen.item.ItemBlockGlassFloat;
 import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
@@ -43,13 +44,28 @@ public final class ModModels {
      * Author: Electroblob
      */
     private static void registerItemModel(Item item) {
+        ModelResourceLocation inventoryModel = new ModelResourceLocation(item.getRegistryName(), "inventory");
+
+        if (item instanceof ItemBlockGlassFloat) {
+            ModelBakery.registerItemVariants(item, inventoryModel, getGlassFloatWaterTopModel(item),
+                    new ModelResourceLocation(TracesOfTheFallen.MODID + ":glass_float_water_bottom", "inventory"));
+            ModelLoader.setCustomMeshDefinition(item, s -> inventoryModel);
+            registeredItems.add(item);
+            return;
+        }
+
         // Changing the last parameter from null to "inventory" fixed the item/block model weirdness. No idea why!
-        ModelBakery.registerItemVariants(item, new ModelResourceLocation(item.getRegistryName(), "inventory"));
+        ModelBakery.registerItemVariants(item, inventoryModel);
         // Assigns the model for all metadata values
-        ModelLoader.setCustomMeshDefinition(item, s -> new ModelResourceLocation(item.getRegistryName(), "inventory"));
+        ModelLoader.setCustomMeshDefinition(item, s -> inventoryModel);
         registeredItems.add(item);
+    }
+
+    private static ModelResourceLocation getGlassFloatWaterTopModel(Item item) {
+        String path = item.getRegistryName().getPath();
+        String waterModel = "glass_float_clear_blue".equals(path) ? "glass_float_water_top" : path + "_water_top";
+        return new ModelResourceLocation(TracesOfTheFallen.MODID + ":" + waterModel, "inventory");
     }
 
 
 }
-

@@ -1,0 +1,12 @@
+{
+  "variants": {
+    "broken=false,facing=north": { "model": "totf:ancestral_sifter_red" },
+    "broken=false,facing=east":  { "model": "totf:ancestral_sifter_red", "y": 90 },
+    "broken=false,facing=south": { "model": "totf:ancestral_sifter_red", "y": 180 },
+    "broken=false,facing=west":  { "model": "totf:ancestral_sifter_red", "y": 270 },
+    "broken=true,facing=north":  { "model": "totf:ancestral_sifter_red_broken" },
+    "broken=true,facing=east":   { "model": "totf:ancestral_sifter_red_broken", "y": 90 },
+    "broken=true,facing=south":  { "model": "totf:ancestral_sifter_red_broken", "y": 180 },
+    "broken=true,facing=west":   { "model": "totf:ancestral_sifter_red_broken", "y": 270 }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "minecraft:stick"
+    },
+    {
+      "item": "totf:incense"
+    }
+  ],
+  "result": {
+    "item": "totf:incense_stick"
+  }
+}
