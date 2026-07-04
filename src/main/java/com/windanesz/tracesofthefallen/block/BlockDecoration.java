@@ -64,6 +64,13 @@ public class BlockDecoration extends Block {
                 return false;
             }
         }
+        if (bb.minY < 0.0D) {
+            BlockPos down = pos.down();
+            IBlockState downState = worldIn.getBlockState(down);
+            if (!downState.getBlock().isReplaceable(worldIn, down)) {
+                return false;
+            }
+        }
         return true;
     }
 
@@ -77,6 +84,12 @@ public class BlockDecoration extends Block {
                 worldIn.setBlockState(up, ModBlocks.technical_block.getDefaultState(), 3);
             }
         }
+        if (bb.minY < 0.0D && !worldIn.isRemote) {
+            BlockPos down = pos.down();
+            if (worldIn.getBlockState(down).getBlock().isReplaceable(worldIn, down) || worldIn.isAirBlock(down)) {
+                worldIn.setBlockState(down, ModBlocks.technical_block.getDefaultState(), 3);
+            }
+        }
     }
 
     @Override
@@ -86,6 +99,12 @@ public class BlockDecoration extends Block {
             BlockPos up = pos.up();
             if (worldIn.getBlockState(up).getBlock() == ModBlocks.technical_block) {
                 worldIn.setBlockToAir(up);
+            }
+        }
+        if (bb.minY < 0.0D) {
+            BlockPos down = pos.down();
+            if (worldIn.getBlockState(down).getBlock() == ModBlocks.technical_block) {
+                worldIn.setBlockToAir(down);
             }
         }
         super.breakBlock(worldIn, pos, state);
@@ -100,6 +119,14 @@ public class BlockDecoration extends Block {
             if (worldIn.getBlockState(up).getBlock() != ModBlocks.technical_block) {
                 if (worldIn.getBlockState(up).getBlock().isReplaceable(worldIn, up) || worldIn.isAirBlock(up)) {
                     worldIn.setBlockState(up, ModBlocks.technical_block.getDefaultState(), 3);
+                }
+            }
+        }
+        if (bb.minY < 0.0D && !worldIn.isRemote) {
+            BlockPos down = pos.down();
+            if (worldIn.getBlockState(down).getBlock() != ModBlocks.technical_block) {
+                if (worldIn.getBlockState(down).getBlock().isReplaceable(worldIn, down) || worldIn.isAirBlock(down)) {
+                    worldIn.setBlockState(down, ModBlocks.technical_block.getDefaultState(), 3);
                 }
             }
         }

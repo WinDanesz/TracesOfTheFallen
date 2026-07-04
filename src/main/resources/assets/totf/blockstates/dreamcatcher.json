@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "totf:dreamcatcher" },
+    "facing=east":  { "model": "totf:dreamcatcher", "y": 90 },
+    "facing=south": { "model": "totf:dreamcatcher", "y": 180 },
+    "facing=west":  { "model": "totf:dreamcatcher", "y": 270 }
+  }
+}

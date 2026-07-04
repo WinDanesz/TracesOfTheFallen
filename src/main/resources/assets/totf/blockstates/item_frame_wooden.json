@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "facing=north": { "model": "totf:item_frame_wooden" },
+    "facing=east":  { "model": "totf:item_frame_wooden", "y": 90 },
+    "facing=south": { "model": "totf:item_frame_wooden", "y": 180 },
+    "facing=west":  { "model": "totf:item_frame_wooden", "y": 270 },
+    "facing=up":    { "model": "totf:item_frame_wooden", "x": 90 },
+    "facing=down":  { "model": "totf:item_frame_wooden", "x": 270 }
+  }
+}

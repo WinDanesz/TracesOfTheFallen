@@ -62,12 +62,14 @@ public class ModEntities {
 		registry.register(createEntry(EntityGoblinEngineer.class, "goblin_engineer", TrackingType.LIVING).egg(0x2e270d, 0xb08f3e).build());
 		registry.register(createEntry(EntityGoblinSapper.class, "goblin_sapper", TrackingType.LIVING).egg(0x2e2b0d, 0xb09f3e).build());
 		registry.register(createEntry(EntityGoblinTunneler.class, "goblin_tunneler", TrackingType.LIVING).egg(0x2e2c0d, 0xb0af3e).build());
+		registry.register(createEntry(EntityGoblinTrapper.class, "goblin_trapper", TrackingType.LIVING).egg(0x2e2d0d, 0xb0bf3e).build());
 		registry.register(createEntry(EntityGoblinShaman.class, "goblin_shaman", TrackingType.LIVING).egg(0x0d1a2e, 0x3e68b0).build());
 		registry.register(createEntry(EntityGoblinBrute.class, "goblin_brute", TrackingType.LIVING).egg(0x2e0d0d, 0xb03e3e).build());
 		registry.register(createEntry(EntityGoblinWarrior.class, "goblin_warrior", TrackingType.LIVING).egg(0x1e2e3e, 0x7aa0b0).build());
 		registry.register(createEntry(EntityMinecrawler.class, "minecrawler", TrackingType.LIVING).egg(0x2d241a, 0x8b5a2b).build());
 		registry.register(createEntry(EntityWroughtBomb.class, "wrought_bomb", TrackingType.PROJECTILE).build());
 		registry.register(createEntry(EntityFetidDagger.class, "fetid_dagger", TrackingType.PROJECTILE).build());
+		registry.register(createEntry(EntityJawTrap.class, "jaw_trap", TrackingType.LIVING).build());
 	}
 
 	/**

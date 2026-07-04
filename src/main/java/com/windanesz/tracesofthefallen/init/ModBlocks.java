@@ -71,6 +71,14 @@ public class ModBlocks {
 	public static final Block idol_vessel = placeholder();
 	public static final Block technical_block = placeholder();
 	public static final Block wrought_bomb = placeholder();
+	public static final Block bricks_stone = placeholder();
+	public static final Block bricks_stone_carved = placeholder();
+	public static final Block bricks_stone_carved_dirty = placeholder();
+	public static final Block bricks_stone_dirty = placeholder();
+	public static final Block dreamcatcher = placeholder();
+	public static final Block stone_chest = placeholder();
+	public static final Block stone_chest_open = placeholder();
+	public static final Block item_frame_wooden = placeholder();
 
 	@Nonnull
 	@SuppressWarnings("ConstantConditions")
@@ -123,6 +131,14 @@ public class ModBlocks {
 		registerBlock(registry, "idol_vessel", new BlockIdolVessel(Material.ROCK).setBoundingBox(new AxisAlignedBB(0.0625D, 0.0D, 0.0625D, 0.9375D, 1.0D, 0.9375D)));
 		registerBlockNoTab(registry, "technical_block", new BlockTechnicalBlock());
 		registerBlock(registry, "wrought_bomb", new BlockWroughtBomb());
+		registerBlock(registry, "bricks_stone", new BlockTOTFStone());
+		registerBlock(registry, "bricks_stone_carved", new BlockTOTFStone());
+		registerBlock(registry, "bricks_stone_carved_dirty", new BlockTOTFStone());
+		registerBlock(registry, "bricks_stone_dirty", new BlockTOTFStone());
+		registerBlock(registry, "dreamcatcher", new BlockDreamcatcher(Material.WOOD));
+		registerBlock(registry, "stone_chest", new BlockStoneChest());
+		registerBlock(registry, "stone_chest_open", new BlockStoneChest());
+		registerBlock(registry, "item_frame_wooden", new BlockWoodenItemFrame());
 	}
 
 	public static void registerBlock(IForgeRegistry<Block> registry, String name, Block block) {
@@ -178,5 +194,8 @@ public class ModBlocks {
 		GameRegistry.registerTileEntity(TileEntityPorcelainVessel.class, new ResourceLocation(TracesOfTheFallen.MODID, "porcelain_vessel"));
 		GameRegistry.registerTileEntity(TileEntityPorcelainSet.class, new ResourceLocation(TracesOfTheFallen.MODID, "porcelain_set"));
 		GameRegistry.registerTileEntity(TileEntityIdolVessel.class, new ResourceLocation(TracesOfTheFallen.MODID, "idol_vessel"));
+		GameRegistry.registerTileEntity(TileEntityStoneChest.class, new ResourceLocation(TracesOfTheFallen.MODID, "stone_chest"));
+		GameRegistry.registerTileEntity(TileEntityDreamcatcher.class, new ResourceLocation(TracesOfTheFallen.MODID, "dreamcatcher"));
+		GameRegistry.registerTileEntity(TileEntityWoodenItemFrame.class, new ResourceLocation(TracesOfTheFallen.MODID, "item_frame_wooden"));
 	}
 }

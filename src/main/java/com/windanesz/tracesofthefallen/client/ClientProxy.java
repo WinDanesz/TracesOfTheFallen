@@ -117,12 +117,14 @@ public class ClientProxy extends CommonProxy {
 		RenderingRegistry.registerEntityRenderingHandler(EntityGoblinEngineer.class, m -> new RenderGoblinVariant(m, new ModelGoblinEngineer(), "goblin_engineer"));
 		RenderingRegistry.registerEntityRenderingHandler(EntityGoblinSapper.class, m -> new RenderGoblinVariant(m, new ModelGoblinEngineerSapper(), "goblin_sapper"));
 		RenderingRegistry.registerEntityRenderingHandler(EntityGoblinTunneler.class, m -> new RenderGoblinVariant(m, new ModelGoblinEngineerSapper(), "goblin_sapper"));
+		RenderingRegistry.registerEntityRenderingHandler(EntityGoblinTrapper.class, m -> new RenderGoblinVariant(m, new ModelGoblinTrapper(), "goblin_trapper"));
 		RenderingRegistry.registerEntityRenderingHandler(EntityGoblinShaman.class, m -> new RenderGoblinVariant(m, new ModelGoblinShaman(), "goblin_shaman"));
 		RenderingRegistry.registerEntityRenderingHandler(EntityGoblinBrute.class, m -> new RenderGoblinVariant(m, new ModelGoblinBrute(), "goblin_brute"));
 		RenderingRegistry.registerEntityRenderingHandler(EntityGoblinWarrior.class, m -> new RenderGoblinVariant(m, new ModelGoblinWarrior(), "goblin_warrior"));
 		RenderingRegistry.registerEntityRenderingHandler(EntityMinecrawler.class, RenderMinecrawler::new);
 		RenderingRegistry.registerEntityRenderingHandler(EntityWroughtBomb.class, RenderWroughtBomb::new);
 		RenderingRegistry.registerEntityRenderingHandler(EntityFetidDagger.class, RenderFetidDagger::new);
+		RenderingRegistry.registerEntityRenderingHandler(EntityJawTrap.class, RenderJawTrap::new);
 	}
 
 	private void registerTileEntityRenderers() {
@@ -132,6 +134,7 @@ public class ClientProxy extends CommonProxy {
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityGraveMarker.class, new TileEntityGraveMarkerRenderer());
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityPorcelainVessel.class, new TileEntityPorcelainVesselRenderer());
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityPorcelainSet.class, new TileEntityPorcelainSetRenderer());
+		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityWoodenItemFrame.class, new TileEntityWoodenItemFrameRenderer());
 	}
 
 	/**

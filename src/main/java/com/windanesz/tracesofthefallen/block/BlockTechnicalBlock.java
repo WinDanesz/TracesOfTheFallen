@@ -28,9 +28,23 @@ public class BlockTechnicalBlock extends Block {
 		setResistance(6000000.0F);
 	}
 
+	private BlockPos getMainPos(IBlockAccess world, BlockPos pos) {
+		BlockPos downPos = pos.down();
+		IBlockState downState = world.getBlockState(downPos);
+		if (downState.getBlock() instanceof BlockDecoration) {
+			return downPos;
+		}
+		BlockPos upPos = pos.up();
+		IBlockState upState = world.getBlockState(upPos);
+		if (upState.getBlock() instanceof BlockDecoration) {
+			return upPos;
+		}
+		return downPos;
+	}
+
 	@Override
 	public float getBlockHardness(IBlockState blockState, World worldIn, BlockPos pos) {
-		BlockPos mainPos = pos.down();
+		BlockPos mainPos = getMainPos(worldIn, pos);
 		IBlockState mainState = worldIn.getBlockState(mainPos);
 		if (mainState.getBlock() instanceof BlockDecoration) {
 			return mainState.getBlock().getBlockHardness(mainState, worldIn, mainPos);
@@ -40,7 +54,7 @@ public class BlockTechnicalBlock extends Block {
 
 	@Override
 	public boolean removedByPlayer(IBlockState state, World world, BlockPos pos, EntityPlayer player, boolean willHarvest) {
-		BlockPos mainPos = pos.down();
+		BlockPos mainPos = getMainPos(world, pos);
 		IBlockState mainState = world.getBlockState(mainPos);
 		if (mainState.getBlock() instanceof BlockDecoration) {
 			if (!player.capabilities.isCreativeMode && !world.isRemote) {
@@ -58,7 +72,7 @@ public class BlockTechnicalBlock extends Block {
 
 	@Override
 	public void onBlockExploded(World worldIn, BlockPos pos, Explosion explosionIn) {
-		BlockPos mainPos = pos.down();
+		BlockPos mainPos = getMainPos(worldIn, pos);
 		IBlockState mainState = worldIn.getBlockState(mainPos);
 		if (mainState.getBlock() instanceof BlockDecoration) {
 			mainState.getBlock().onBlockExploded(worldIn, mainPos, explosionIn);
@@ -68,7 +82,7 @@ public class BlockTechnicalBlock extends Block {
 
 	@Override
 	public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
-		BlockPos mainPos = pos.down();
+		BlockPos mainPos = getMainPos(worldIn, pos);
 		IBlockState mainState = worldIn.getBlockState(mainPos);
 		if (!(mainState.getBlock() instanceof BlockDecoration)) {
 			worldIn.setBlockToAir(pos);
@@ -77,17 +91,18 @@ public class BlockTechnicalBlock extends Block {
 
 	@Override
 	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-		BlockPos mainPos = pos.down();
+		BlockPos mainPos = getMainPos(worldIn, pos);
 		IBlockState mainState = worldIn.getBlockState(mainPos);
 		if (mainState.getBlock() instanceof BlockDecoration) {
-			return mainState.getBlock().onBlockActivated(worldIn, mainPos, mainState, playerIn, hand, facing, hitX, hitY + 1.0f, hitZ);
+			float offsetY = mainPos.getY() - pos.getY();
+			return mainState.getBlock().onBlockActivated(worldIn, mainPos, mainState, playerIn, hand, facing, hitX, hitY + offsetY, hitZ);
 		}
 		return false;
 	}
 
 	@Override
 	public ItemStack getPickBlock(IBlockState state, RayTraceResult target, World world, BlockPos pos, EntityPlayer player) {
-		BlockPos mainPos = pos.down();
+		BlockPos mainPos = getMainPos(world, pos);
 		IBlockState mainState = world.getBlockState(mainPos);
 		if (mainState.getBlock() instanceof BlockDecoration) {
 			return mainState.getBlock().getPickBlock(mainState, target, world, mainPos, player);
@@ -97,18 +112,18 @@ public class BlockTechnicalBlock extends Block {
 
 	@Override
 	public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-		BlockPos mainPos = pos.down();
+		BlockPos mainPos = getMainPos(source, pos);
 		IBlockState mainState = source.getBlockState(mainPos);
 		if (mainState.getBlock() instanceof BlockDecoration) {
 			AxisAlignedBB bb = mainState.getBlock().getBoundingBox(mainState, source, mainPos);
-			return bb.offset(0, -1, 0);
+			return bb.offset(0, mainPos.getY() - pos.getY(), 0);
 		}
 		return FULL_BLOCK_AABB;
 	}
 
 	@Override
 	public AxisAlignedBB getSelectedBoundingBox(IBlockState state, World worldIn, BlockPos pos) {
-		BlockPos mainPos = pos.down();
+		BlockPos mainPos = getMainPos(worldIn, pos);
 		IBlockState mainState = worldIn.getBlockState(mainPos);
 		if (mainState.getBlock() instanceof BlockDecoration) {
 			return mainState.getBlock().getSelectedBoundingBox(mainState, worldIn, mainPos);
@@ -125,7 +140,7 @@ public class BlockTechnicalBlock extends Block {
 	@Nullable
 	@Override
 	public RayTraceResult collisionRayTrace(IBlockState blockState, World worldIn, BlockPos pos, Vec3d start, Vec3d end) {
-		BlockPos mainPos = pos.down();
+		BlockPos mainPos = getMainPos(worldIn, pos);
 		IBlockState mainState = worldIn.getBlockState(mainPos);
 		if (mainState.getBlock() instanceof BlockDecoration) {
 			RayTraceResult result = mainState.getBlock().collisionRayTrace(mainState, worldIn, mainPos, start, end);
@@ -139,7 +154,7 @@ public class BlockTechnicalBlock extends Block {
 
 	@Override
 	public int getLightValue(IBlockState state, IBlockAccess world, BlockPos pos) {
-		BlockPos mainPos = pos.down();
+		BlockPos mainPos = getMainPos(world, pos);
 		IBlockState mainState = world.getBlockState(mainPos);
 		if (mainState.getBlock() instanceof BlockDecoration) {
 			return mainState.getBlock().getLightValue(mainState, world, mainPos);

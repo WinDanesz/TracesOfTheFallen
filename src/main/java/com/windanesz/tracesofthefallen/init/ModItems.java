@@ -53,6 +53,9 @@ public class ModItems {
 	public static final Item painting_wheel = placeholder();
 	public static final Item painting_wizardry = placeholder();
 	public static final Item painting_subterfuge = placeholder();
+	public static final Item stone_chest = placeholder();
+	public static final Item stone_chest_open = placeholder();
+	public static final Item item_frame_wooden = placeholder();
 	@Nonnull
 	@SuppressWarnings("ConstantConditions")
 	private static <T> T placeholder() {
@@ -160,6 +163,14 @@ public class ModItems {
 		wroughtBombItem.setRegistryName(ModBlocks.wrought_bomb.getRegistryName());
 		ModBlocks.wrought_bomb.setCreativeTab(ModCreativeTab.TOTF_TAB);
 		registry.register(wroughtBombItem);
+		registerItemBlock(registry, ModBlocks.bricks_stone);
+		registerItemBlock(registry, ModBlocks.bricks_stone_carved);
+		registerItemBlock(registry, ModBlocks.bricks_stone_carved_dirty);
+		registerItemBlock(registry, ModBlocks.bricks_stone_dirty);
+		registerItemBlock(registry, ModBlocks.dreamcatcher);
+		registerItemBlock(registry, ModBlocks.stone_chest);
+		registerItemBlock(registry, ModBlocks.stone_chest_open);
+		registerItemBlock(registry, ModBlocks.item_frame_wooden);
 	}
 
 	public static void registerOreDictionary() {
