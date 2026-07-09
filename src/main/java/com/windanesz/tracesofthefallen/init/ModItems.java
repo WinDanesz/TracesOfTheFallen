@@ -46,6 +46,7 @@ public class ModItems {
 	public static final Item crooked_bone = placeholder();
 	public static final Item primitive_mace = placeholder();
 	public static final Item brass_club = placeholder();
+	public static final Item bone_rattle = placeholder();
 
 	public static final Item painting_in_the_woods = placeholder();
 	public static final Item painting_portrait = placeholder();
@@ -56,6 +57,9 @@ public class ModItems {
 	public static final Item stone_chest = placeholder();
 	public static final Item stone_chest_open = placeholder();
 	public static final Item item_frame_wooden = placeholder();
+	public static final Item bonepile = placeholder();
+	public static final Item hay_bed = placeholder();
+	public static final Item goblin_nest = placeholder();
 	@Nonnull
 	@SuppressWarnings("ConstantConditions")
 	private static <T> T placeholder() {
@@ -99,11 +103,13 @@ public class ModItems {
 		registerItem(registry, "wonder_fertilizer", new ItemWonderFertilizer().setCreativeTab(ModCreativeTab.TOTF_TAB));
 		registerItem(registry, "old_world_tinkers_kit", new ItemOldWorldTinkersKit().setCreativeTab(ModCreativeTab.TOTF_TAB));
 		registerItem(registry, "tally_collector", new ItemTallieCollector().setCreativeTab(ModCreativeTab.TOTF_TAB));
-		registerItem(registry, "cleaner", new Item().setCreativeTab(ModCreativeTab.TOTF_TAB));
+		registerItem(registry, "cleaner", new ItemCleaner().setCreativeTab(ModCreativeTab.TOTF_TAB));
 		registerItem(registry, "fetid_dagger", new ItemFetidDagger().setCreativeTab(ModCreativeTab.TOTF_TAB));
 		registerItem(registry, "crooked_bone", new ItemCrookedBone().setCreativeTab(ModCreativeTab.TOTF_TAB));
 		registerItem(registry, "primitive_mace", new ItemPrimitiveMace().setCreativeTab(ModCreativeTab.TOTF_TAB));
 		registerItem(registry, "brass_club", new ItemBrassClub().setCreativeTab(ModCreativeTab.TOTF_TAB));
+		registerItem(registry, "bone_rattle", new ItemBoneRattle().setCreativeTab(ModCreativeTab.TOTF_TAB));
+		registerItem(registry, "goblin_nest", new ItemGoblinNest().setCreativeTab(ModCreativeTab.TOTF_TAB));
 
 		// Register ItemBlocks
 		registerItemBlock(registry, ModBlocks.lost_cargo);
@@ -167,10 +173,17 @@ public class ModItems {
 		registerItemBlock(registry, ModBlocks.bricks_stone_carved);
 		registerItemBlock(registry, ModBlocks.bricks_stone_carved_dirty);
 		registerItemBlock(registry, ModBlocks.bricks_stone_dirty);
+		registerItemBlock(registry, ModBlocks.bricks_stone_mossy);
+		registerItemBlock(registry, ModBlocks.bricks_stone_carved_mossy);
 		registerItemBlock(registry, ModBlocks.dreamcatcher);
 		registerItemBlock(registry, ModBlocks.stone_chest);
 		registerItemBlock(registry, ModBlocks.stone_chest_open);
 		registerItemBlock(registry, ModBlocks.item_frame_wooden);
+		ItemBlock bonepileItem = new ItemBlockBonepile(ModBlocks.bonepile);
+		bonepileItem.setRegistryName(ModBlocks.bonepile.getRegistryName());
+		ModBlocks.bonepile.setCreativeTab(ModCreativeTab.TOTF_TAB);
+		registry.register(bonepileItem);
+		registerItemBlock(registry, ModBlocks.hay_bed);
 	}
 
 	public static void registerOreDictionary() {

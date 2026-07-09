@@ -46,6 +46,7 @@ public class EntityGoblin extends EntityMob implements IEntityOwnable {
 	private int ownershipLossTimer = 0;
 	private int hostilityTimer = 0;
 	private BlockPos bombDeliveryTarget = null;
+	private boolean equipmentInitialized = false;
 
 	public EntityGoblin(World worldIn) {
 		super(worldIn);
@@ -99,10 +100,10 @@ public class EntityGoblin extends EntityMob implements IEntityOwnable {
 	@Override
 	protected void applyEntityAttributes() {
 		super.applyEntityAttributes();
-		this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(12.0D);
+		this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(Settings.goblinSettings.goblinBroodMaxHealth);
 		this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(32.0D);
 		this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.2D);
-		this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(2.0D);
+		this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(Settings.goblinSettings.goblinBroodAttackDamage);
 	}
 
 	public boolean isImmuneToIdol() {
@@ -157,9 +158,15 @@ public class EntityGoblin extends EntityMob implements IEntityOwnable {
 
 	@Override
 	public boolean attackEntityAsMob(Entity entityIn) {
-		boolean flag = entityIn.attackEntityFrom(DamageSource.causeMobDamage(this), (float) this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).getBaseValue());
+		boolean flag = super.attackEntityAsMob(entityIn);
 
 		if (flag) {
+			if (entityIn instanceof EntityLivingBase) {
+				ItemStack itemstack = this.getHeldItemMainhand();
+				if (!itemstack.isEmpty()) {
+					itemstack.getItem().hitEntity(itemstack, (EntityLivingBase) entityIn, this);
+				}
+			}
 			this.swingArm(EnumHand.MAIN_HAND);
 		}
 		return flag;
@@ -175,6 +182,7 @@ public class EntityGoblin extends EntityMob implements IEntityOwnable {
 
 	public void writeEntityToNBT(NBTTagCompound compound) {
 		super.writeEntityToNBT(compound);
+		compound.setBoolean("EquipmentInitialized", this.equipmentInitialized);
 
 		if (this.getOwnerId() == null) {
 			compound.setString("OwnerUUID", "");
@@ -185,6 +193,7 @@ public class EntityGoblin extends EntityMob implements IEntityOwnable {
 
 	public void readEntityFromNBT(NBTTagCompound compound) {
 		super.readEntityFromNBT(compound);
+		this.equipmentInitialized = compound.getBoolean("EquipmentInitialized");
 		String s;
 
 		if (compound.hasKey("OwnerUUID", 8)) {
@@ -201,6 +210,10 @@ public class EntityGoblin extends EntityMob implements IEntityOwnable {
 	@Override
 	public void onLivingUpdate() {
 		super.onLivingUpdate();
+
+		if (!this.world.isRemote && !this.equipmentInitialized && this.ticksExisted < 20) {
+			this.initBroodEquipment();
+		}
 
 		if (!this.world.isRemote && (this.isOnLadder() || this.collidedHorizontally)) {
 			net.minecraft.entity.EntityLivingBase target = this.getAttackTarget();
@@ -463,11 +476,23 @@ public class EntityGoblin extends EntityMob implements IEntityOwnable {
 	@Override
 	protected void setEquipmentBasedOnDifficulty(net.minecraft.world.DifficultyInstance difficulty) {
 		super.setEquipmentBasedOnDifficulty(difficulty);
+		this.initBroodEquipment();
+	}
+
+	private void initBroodEquipment() {
+		if (!this.equipmentInitialized) {
+			this.equipmentInitialized = true;
+			if (this.getClass() == EntityGoblin.class) {
+				if (this.rand.nextFloat() < 0.7F) {
+					this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(ModItems.crooked_bone));
+				}
+			}
+		}
 	}
 
 	@Override
 	public boolean canPickUpLoot() {
-		return true;
+		return this.getClass() == EntityGoblin.class;
 	}
 
 	@Override

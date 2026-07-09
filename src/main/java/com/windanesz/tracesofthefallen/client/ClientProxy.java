@@ -6,9 +6,7 @@ import com.windanesz.tracesofthefallen.TracesOfTheFallen;
 import com.windanesz.tracesofthefallen.block.*;
 import com.windanesz.tracesofthefallen.capability.HauntingCapability;
 import com.windanesz.tracesofthefallen.client.model.*;
-import com.windanesz.tracesofthefallen.client.particle.ParticleFloorMist;
-import com.windanesz.tracesofthefallen.client.particle.ParticleIncenseSmoke;
-import com.windanesz.tracesofthefallen.client.particle.ParticleSifterCloud;
+import com.windanesz.tracesofthefallen.client.particle.*;
 import com.windanesz.tracesofthefallen.client.renderer.*;
 import com.windanesz.tracesofthefallen.entity.*;
 import com.windanesz.tracesofthefallen.init.ModBlocks;
@@ -42,7 +40,13 @@ public class ClientProxy extends CommonProxy {
 	/** The wrap width for standard multi-line descriptions. */
 	private static final int TOOLTIP_WRAP_WIDTH = 140;
 	private static final ResourceLocation INCENSE_LINE_SPRITE = new ResourceLocation(TracesOfTheFallen.MODID, "particle/incense_line");
+	private static final ResourceLocation PUDDLE_BLOOD_SPRITE = new ResourceLocation(TracesOfTheFallen.MODID, "particle/puddle_blood");
+	private static final ResourceLocation FROST_SPRITE = new ResourceLocation(TracesOfTheFallen.MODID, "particle/frost");
+	private static final ResourceLocation WIND_SPRITE = new ResourceLocation(TracesOfTheFallen.MODID, "particle/wind");
 	private static TextureAtlasSprite incenseLineSprite;
+	private static TextureAtlasSprite puddleBloodSprite;
+	private static TextureAtlasSprite frostSprite;
+	private static TextureAtlasSprite windSprite;
 
 	@Override
 	public void preInit(FMLPreInitializationEvent event) {
@@ -97,10 +101,21 @@ public class ClientProxy extends CommonProxy {
 	@SubscribeEvent
 	public static void registerSprites(TextureStitchEvent.Pre event) {
 		incenseLineSprite = event.getMap().registerSprite(INCENSE_LINE_SPRITE);
+		puddleBloodSprite = event.getMap().registerSprite(PUDDLE_BLOOD_SPRITE);
+		frostSprite = event.getMap().registerSprite(FROST_SPRITE);
+		windSprite = event.getMap().registerSprite(WIND_SPRITE);
 	}
 
 	public static TextureAtlasSprite getIncenseLineSprite() {
 		return incenseLineSprite;
+	}
+
+	public static TextureAtlasSprite getPuddleBloodSprite() {
+		return puddleBloodSprite;
+	}
+
+	public static TextureAtlasSprite getFrostSprite() {
+		return frostSprite != null ? frostSprite : windSprite;
 	}
 
 	private void registerEntityRenderers() {
@@ -124,7 +139,12 @@ public class ClientProxy extends CommonProxy {
 		RenderingRegistry.registerEntityRenderingHandler(EntityMinecrawler.class, RenderMinecrawler::new);
 		RenderingRegistry.registerEntityRenderingHandler(EntityWroughtBomb.class, RenderWroughtBomb::new);
 		RenderingRegistry.registerEntityRenderingHandler(EntityFetidDagger.class, RenderFetidDagger::new);
+		RenderingRegistry.registerEntityRenderingHandler(EntityFireOrb.class, RenderFireOrb::new);
+		RenderingRegistry.registerEntityRenderingHandler(EntityWillOWisp.class, RenderWillOWisp::new);
+		RenderingRegistry.registerEntityRenderingHandler(EntitySeekingOrb.class, RenderSeekingOrb::new);
 		RenderingRegistry.registerEntityRenderingHandler(EntityJawTrap.class, RenderJawTrap::new);
+		RenderingRegistry.registerEntityRenderingHandler(EntityBloodTotem.class, RenderBloodTotem::new);
+		RenderingRegistry.registerEntityRenderingHandler(EntityGoblinNest.class, RenderGoblinNest::new);
 	}
 
 	private void registerTileEntityRenderers() {
@@ -237,6 +257,31 @@ public class ClientProxy extends CommonProxy {
 			double motionZ, int color) {
 		Minecraft.getMinecraft().effectRenderer
 				.addEffect(new ParticleFloorMist(Minecraft.getMinecraft().getTextureManager(), world, x, y, z, motionX, motionY, motionZ, color));
+	}
+
+	@Override
+	public void spawnBloodDropParticle(World world, double x, double y, double z, double motionX, double motionY, double motionZ) {
+		Minecraft.getMinecraft().effectRenderer.addEffect(new ParticleBloodDrop(world, x, y, z, motionX, motionY, motionZ));
+	}
+
+	@Override
+	public void spawnBloodPuddleParticle(World world, double x, double y, double z) {
+		Minecraft.getMinecraft().effectRenderer.addEffect(new ParticleBloodPuddle(world, x, y, z));
+	}
+
+	@Override
+	public void spawnChillParticle(World world, double x, double y, double z, double motionX, double motionY, double motionZ) {
+		Minecraft.getMinecraft().effectRenderer.addEffect(new ParticleChill(world, x, y, z, motionX, motionY, motionZ));
+	}
+
+	@Override
+	public void spawnCyanCinderParticle(World world, double x, double y, double z, double motionX, double motionY, double motionZ) {
+		Minecraft.getMinecraft().effectRenderer.addEffect(new ParticleCyanCinder(world, x, y, z, motionX, motionY, motionZ));
+	}
+
+	@Override
+	public void spawnLifestealParticle(World world, double x, double y, double z, int targetEntityId) {
+		Minecraft.getMinecraft().effectRenderer.addEffect(new ParticleLifestealStream(world, x, y, z, targetEntityId));
 	}
 
 	/**

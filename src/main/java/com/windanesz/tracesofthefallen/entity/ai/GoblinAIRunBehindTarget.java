@@ -1,5 +1,6 @@
 package com.windanesz.tracesofthefallen.entity.ai;
 
+import com.windanesz.tracesofthefallen.entity.EntityGoblin;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
@@ -31,6 +32,10 @@ public class GoblinAIRunBehindTarget extends EntityAIBase {
 	 * Returns whether the EntityAIBase should begin execution.
 	 */
 	public boolean shouldExecute() {
+		if (this.creature.getClass() != EntityGoblin.class) {
+			return false;
+		}
+
 		// Check cooldown first - if still cooling down, can't panic
 		if (this.cooldownTimer > 0) {
 			this.cooldownTimer--;

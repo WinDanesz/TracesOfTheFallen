@@ -21,7 +21,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  * A simple decorative block with a horizontal facing property.
  * No loot table, no tile entity - just a visual decoration that faces a direction.
  */
-public class BlockDecoration extends Block {
+public class BlockDecoration extends Block implements IProxyMainBlock {
 
     public static final PropertyDirection FACING = PropertyDirection.create("facing", EnumFacing.Plane.HORIZONTAL);
 
@@ -176,6 +176,11 @@ public class BlockDecoration extends Block {
     @Override
     public EnumBlockRenderType getRenderType(IBlockState state) {
         return EnumBlockRenderType.MODEL;
+    }
+
+    @Override
+    public boolean isMainBlockForProxy(net.minecraft.world.IBlockAccess world, BlockPos mainPos, BlockPos proxyPos) {
+        return proxyPos.equals(mainPos.up()) || proxyPos.equals(mainPos.down());
     }
 }
 

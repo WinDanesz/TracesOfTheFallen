@@ -62,7 +62,7 @@ public class TileEntityWoodenItemFrameRenderer extends TileEntitySpecialRenderer
 		boolean is3D = model != null && model.isGui3d();
 
 		double zOffset = is3D ? 0.30D : 0.415D;
-		float scale = is3D ? 0.35F : 0.45F;
+		float scale = is3D ? 0.45F : 0.60F;
 
 		GlStateManager.translate(0.0D, 0.0D, zOffset);
 		GlStateManager.rotate(-45.0F * te.getItemRotation(), 0.0F, 0.0F, 1.0F);

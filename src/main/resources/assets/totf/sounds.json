@@ -1,9 +1,10 @@
-﻿{ 
+{ 
   "entity.specter_hurt":              {"category": "hostiles", "sounds": ["totf:specter_hurt_1", "totf:specter_hurt_2"]},
   "entity.goblin_hurt":               {"category": "hostiles", "sounds": ["totf:goblin_hurt1", "totf:goblin_hurt2"]},
   "entity.goblin_idle":               {"category": "hostiles", "sounds": ["totf:goblin_idle1", "totf:goblin_idle2"]},
   "entity.goblin_die":                {"category": "hostiles", "sounds": ["totf:goblin_die1"]},
   "entity.goblin_aggro":              {"category": "hostiles", "sounds": ["totf:goblin_aggro"]},
   "idol_activate":                    {"category": "blocks",    "sounds": ["totf:dhvara_tone"]},
-  "dioptra":                          {"category": "blocks",    "sounds": ["totf:dioptra"]}
+  "dioptra":                          {"category": "blocks",    "sounds": ["totf:dioptra"]},
+  "bone_pile":                        {"category": "blocks",    "sounds": ["totf:bone_pile1", "totf:bone_pile2", "totf:bone_pile3"]}
 }

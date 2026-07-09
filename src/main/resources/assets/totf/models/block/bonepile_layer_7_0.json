@@ -1,0 +1,7 @@
+{
+  "parent": "totf:block/bonepile_layer_7",
+  "textures": {
+    "all": "totf:blocks/bonepile_0",
+    "particle": "totf:blocks/bonepile_0"
+  }
+}

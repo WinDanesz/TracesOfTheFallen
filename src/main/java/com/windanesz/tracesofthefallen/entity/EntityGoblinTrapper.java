@@ -1,5 +1,6 @@
 package com.windanesz.tracesofthefallen.entity;
 
+import com.windanesz.tracesofthefallen.Settings;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.EntityEquipmentSlot;
@@ -19,8 +20,8 @@ public class EntityGoblinTrapper extends EntityGoblin {
 	@Override
 	protected void applyEntityAttributes() {
 		super.applyEntityAttributes();
-		this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(20.0D);
-		this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(3.0D);
+		this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(Settings.goblinSettings.goblinTrapperMaxHealth);
+		this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(Settings.goblinSettings.goblinTrapperAttackDamage);
 		this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(64.0D);
 	}
 
@@ -36,6 +37,10 @@ public class EntityGoblinTrapper extends EntityGoblin {
 	public void onLivingUpdate() {
 		super.onLivingUpdate();
 
+		if (!this.world.isRemote && this.getHeldItemMainhand().isEmpty() && this.ticksExisted < 20) {
+			this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(Items.WOODEN_SHOVEL));
+		}
+
 		if (!this.world.isRemote) {
 			if (this.trapCooldown > 0) {
 				this.trapCooldown--;
@@ -49,6 +54,8 @@ public class EntityGoblinTrapper extends EntityGoblin {
 					List<EntityJawTrap> traps = this.world.getEntitiesWithinAABB(EntityJawTrap.class, chunkBounds);
 					if (traps.size() < 3) {
 						EntityJawTrap trap = new EntityJawTrap(this.world, this.posX, this.posY, this.posZ);
+						trap.rotationYaw = this.rotationYaw;
+						trap.prevRotationYaw = this.rotationYaw;
 						this.world.spawnEntity(trap);
 						this.trapCooldown = 160 + this.rand.nextInt(80);
 					} else {

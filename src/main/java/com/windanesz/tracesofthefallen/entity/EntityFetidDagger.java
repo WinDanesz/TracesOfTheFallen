@@ -101,7 +101,14 @@ public class EntityFetidDagger extends EntityArrow {
 				this.setDamage(Settings.miscSettings.fetidDaggerThrownDamage / (double)f);
 			}
 		}
+		int oldArrowCount = 0;
+		if (raytraceResultIn.entityHit instanceof EntityLivingBase) {
+			oldArrowCount = ((EntityLivingBase) raytraceResultIn.entityHit).getArrowCountInEntity();
+		}
 		super.onHit(raytraceResultIn);
+		if (raytraceResultIn.entityHit instanceof EntityLivingBase) {
+			((EntityLivingBase) raytraceResultIn.entityHit).setArrowCountInEntity(oldArrowCount);
+		}
 		this.setDamage(Settings.miscSettings.fetidDaggerThrownDamage);
 		if (!this.world.isRemote && raytraceResultIn.entityHit != null && this.isDead && this.canBePickedUp() && this.pickupStatus == PickupStatus.ALLOWED) {
 			this.entityDropItem(this.getDaggerStack(), 0.1F);

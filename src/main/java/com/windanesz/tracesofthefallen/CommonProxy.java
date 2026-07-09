@@ -31,4 +31,20 @@ public class CommonProxy {
 	public void spawnIncenseFloorMistParticle(World world, double x, double y, double z, double motionX, double motionY,
 			double motionZ, int color) {
 	}
+
+	public void spawnBloodDropParticle(World world, double x, double y, double z, double motionX, double motionY, double motionZ) {
+	}
+
+	public void spawnBloodPuddleParticle(World world, double x, double y, double z) {
+	}
+
+	public void spawnChillParticle(World world, double x, double y, double z, double motionX, double motionY, double motionZ) {
+	}
+
+	public void spawnCyanCinderParticle(World world, double x, double y, double z, double motionX, double motionY, double motionZ) {
+	}
+
+	public void spawnLifestealParticle(World world, double x, double y, double z, int targetEntityId) {
+	}
 }
+

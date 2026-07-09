@@ -1,0 +1,6 @@
+{
+  "parent": "totf:block/goblin_nest",
+  "textures": {
+    "layer0": "totf:blocks/nest_cobblestone"
+  }
+}

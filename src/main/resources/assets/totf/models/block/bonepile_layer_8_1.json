@@ -1,0 +1,6 @@
+{
+  "parent": "totf:block/bonepile_layer_8",
+  "textures": {
+    "all": "totf:blocks/bonepile_1"
+  }
+}

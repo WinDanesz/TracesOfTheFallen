@@ -1,0 +1,44 @@
+{
+  "variants": {
+    "layers=1": [
+      { "model": "totf:bonepile_layer_1_0" },
+      { "model": "totf:bonepile_layer_1_1" },
+      { "model": "totf:bonepile_layer_1_2" }
+    ],
+    "layers=2": [
+      { "model": "totf:bonepile_layer_2_0" },
+      { "model": "totf:bonepile_layer_2_1" },
+      { "model": "totf:bonepile_layer_2_2" }
+    ],
+    "layers=3": [
+      { "model": "totf:bonepile_layer_3_0" },
+      { "model": "totf:bonepile_layer_3_1" },
+      { "model": "totf:bonepile_layer_3_2" }
+    ],
+    "layers=4": [
+      { "model": "totf:bonepile_layer_4_0" },
+      { "model": "totf:bonepile_layer_4_1" },
+      { "model": "totf:bonepile_layer_4_2" }
+    ],
+    "layers=5": [
+      { "model": "totf:bonepile_layer_5_0" },
+      { "model": "totf:bonepile_layer_5_1" },
+      { "model": "totf:bonepile_layer_5_2" }
+    ],
+    "layers=6": [
+      { "model": "totf:bonepile_layer_6_0" },
+      { "model": "totf:bonepile_layer_6_1" },
+      { "model": "totf:bonepile_layer_6_2" }
+    ],
+    "layers=7": [
+      { "model": "totf:bonepile_layer_7_0" },
+      { "model": "totf:bonepile_layer_7_1" },
+      { "model": "totf:bonepile_layer_7_2" }
+    ],
+    "layers=8": [
+      { "model": "totf:bonepile_layer_8_0" },
+      { "model": "totf:bonepile_layer_8_1" },
+      { "model": "totf:bonepile_layer_8_2" }
+    ]
+  }
+}

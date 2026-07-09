@@ -75,10 +75,14 @@ public class ModBlocks {
 	public static final Block bricks_stone_carved = placeholder();
 	public static final Block bricks_stone_carved_dirty = placeholder();
 	public static final Block bricks_stone_dirty = placeholder();
+	public static final Block bricks_stone_mossy = placeholder();
+	public static final Block bricks_stone_carved_mossy = placeholder();
 	public static final Block dreamcatcher = placeholder();
 	public static final Block stone_chest = placeholder();
 	public static final Block stone_chest_open = placeholder();
 	public static final Block item_frame_wooden = placeholder();
+	public static final Block bonepile = placeholder();
+	public static final Block hay_bed = placeholder();
 
 	@Nonnull
 	@SuppressWarnings("ConstantConditions")
@@ -135,10 +139,14 @@ public class ModBlocks {
 		registerBlock(registry, "bricks_stone_carved", new BlockTOTFStone());
 		registerBlock(registry, "bricks_stone_carved_dirty", new BlockTOTFStone());
 		registerBlock(registry, "bricks_stone_dirty", new BlockTOTFStone());
+		registerBlock(registry, "bricks_stone_mossy", new BlockTOTFStone());
+		registerBlock(registry, "bricks_stone_carved_mossy", new BlockTOTFStone());
 		registerBlock(registry, "dreamcatcher", new BlockDreamcatcher(Material.WOOD));
 		registerBlock(registry, "stone_chest", new BlockStoneChest());
 		registerBlock(registry, "stone_chest_open", new BlockStoneChest());
 		registerBlock(registry, "item_frame_wooden", new BlockWoodenItemFrame());
+		registerBlock(registry, "bonepile", new BlockBonepile());
+		registerBlock(registry, "hay_bed", new BlockHayBed(Material.WOOD).setLootTable(new ResourceLocation(TracesOfTheFallen.MODID, "blocks/hay_bed")));
 	}
 
 	public static void registerBlock(IForgeRegistry<Block> registry, String name, Block block) {

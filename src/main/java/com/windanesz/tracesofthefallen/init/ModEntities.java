@@ -69,7 +69,12 @@ public class ModEntities {
 		registry.register(createEntry(EntityMinecrawler.class, "minecrawler", TrackingType.LIVING).egg(0x2d241a, 0x8b5a2b).build());
 		registry.register(createEntry(EntityWroughtBomb.class, "wrought_bomb", TrackingType.PROJECTILE).build());
 		registry.register(createEntry(EntityFetidDagger.class, "fetid_dagger", TrackingType.PROJECTILE).build());
+		registry.register(createEntry(EntityFireOrb.class, "fire_orb", TrackingType.PROJECTILE).build());
+		registry.register(createEntry(EntityWillOWisp.class, "will_o_wisp", TrackingType.PROJECTILE).build());
+		registry.register(createEntry(EntitySeekingOrb.class, "seeking_orb", TrackingType.PROJECTILE).build());
 		registry.register(createEntry(EntityJawTrap.class, "jaw_trap", TrackingType.LIVING).build());
+		registry.register(createEntry(EntityBloodTotem.class, "blood_totem", TrackingType.LIVING).build());
+		registry.register(createEntry(EntityGoblinNest.class, "goblin_nest", TrackingType.LIVING).build());
 	}
 
 	/**

@@ -24,7 +24,7 @@ import javax.annotation.Nullable;
 public class BlockStoneChest extends BlockContainer {
 
 	public static final PropertyDirection FACING = PropertyDirection.create("facing", EnumFacing.Plane.HORIZONTAL);
-	protected AxisAlignedBB boundingBox = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.75D, 1.0D);
+	protected AxisAlignedBB boundingBox = new AxisAlignedBB(0.0D, 0.0D, 0.25D, 1.0D, 0.75D, 0.75D);
 
 	public BlockStoneChest() {
 		super(Material.ROCK);
@@ -41,7 +41,21 @@ public class BlockStoneChest extends BlockContainer {
 
 	@Override
 	public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-		return this.boundingBox;
+		return rotateBoundingBox(this.boundingBox, state.getValue(FACING));
+	}
+
+	private AxisAlignedBB rotateBoundingBox(AxisAlignedBB box, EnumFacing facing) {
+		switch (facing) {
+			case EAST:
+				return new AxisAlignedBB(1.0D - box.maxZ, box.minY, box.minX, 1.0D - box.minZ, box.maxY, box.maxX);
+			case SOUTH:
+				return new AxisAlignedBB(1.0D - box.maxX, box.minY, 1.0D - box.maxZ, 1.0D - box.minX, box.maxY, 1.0D - box.minZ);
+			case WEST:
+				return new AxisAlignedBB(box.minZ, box.minY, 1.0D - box.maxX, box.maxZ, box.maxY, 1.0D - box.minX);
+			case NORTH:
+			default:
+				return box;
+		}
 	}
 
 	@Override

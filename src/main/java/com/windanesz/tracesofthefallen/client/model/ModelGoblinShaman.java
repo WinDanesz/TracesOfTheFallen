@@ -121,7 +121,88 @@ public class ModelGoblinShaman extends ModelGoblinBase {
 			this.bone.rotateAngleZ = 0.0F;
 		}
 
-		if (entityIn instanceof EntityGoblinShaman && ((EntityGoblinShaman) entityIn).isDancing()) {
+		if (entityIn instanceof EntityGoblinShaman && ((EntityGoblinShaman) entityIn).getSpellCastingTimer() > 0) {
+			int castTimer = ((EntityGoblinShaman) entityIn).getSpellCastingTimer();
+			int castType = ((EntityGoblinShaman) entityIn).getSpellCastType();
+			if (castType == 3) {
+				float raiseProgress = Math.min(1.0F, (40.0F - (float)castTimer) / 6.0F);
+				float armPitch = -2.0F * raiseProgress;
+				float wave = MathHelper.sin(ageInTicks * 0.5F) * 0.15F;
+				if (this.arm_right != null) {
+					this.arm_right.rotateAngleX = armPitch + wave;
+					this.arm_right.rotateAngleZ = -0.8F - wave;
+					this.arm_right.rotateAngleY = -0.3F;
+				}
+				if (this.arm_left != null) {
+					this.arm_left.rotateAngleX = armPitch + wave;
+					this.arm_left.rotateAngleZ = 0.8F + wave;
+					this.arm_left.rotateAngleY = 0.3F;
+				}
+				if (this.head != null) {
+					this.head.rotateAngleX = -0.3F;
+				}
+			} else if (castType == 2 || (castType == 1 && castTimer > 10)) {
+				float maxTimer = (castType == 2) ? 70.0F : 30.0F;
+				float raiseProgress = Math.min(1.0F, (maxTimer - (float)castTimer) / 6.0F);
+				float armPitch = -2.8F * raiseProgress;
+				float wave = MathHelper.sin(ageInTicks * 0.4F) * 0.1F;
+				if (this.arm_right != null) {
+					this.arm_right.rotateAngleX = armPitch + wave;
+					this.arm_right.rotateAngleZ = -0.3F - wave;
+					this.arm_right.rotateAngleY = 0.0F;
+				}
+				if (this.arm_left != null) {
+					this.arm_left.rotateAngleX = armPitch + wave;
+					this.arm_left.rotateAngleZ = 0.3F + wave;
+					this.arm_left.rotateAngleY = 0.0F;
+				}
+				if (this.head != null) {
+					this.head.rotateAngleX = -0.4F;
+				}
+			} else if (castType == 1) {
+				float pointPitch = -1.5F;
+				if (this.arm_right != null) {
+					this.arm_right.rotateAngleX = pointPitch;
+					this.arm_right.rotateAngleZ = -0.15F;
+					this.arm_right.rotateAngleY = -0.2F;
+				}
+				if (this.arm_left != null) {
+					this.arm_left.rotateAngleX = pointPitch;
+					this.arm_left.rotateAngleZ = 0.15F;
+					this.arm_left.rotateAngleY = 0.2F;
+				}
+			} else if (castType == 4) {
+				float rattleX = -1.2F + MathHelper.cos(ageInTicks * 0.8F) * 0.25F;
+				float rattleZ = MathHelper.sin(ageInTicks * 1.0F) * 0.35F;
+				if (this.arm_right != null) {
+					this.arm_right.rotateAngleX = rattleX;
+					this.arm_right.rotateAngleZ = rattleZ;
+					this.arm_right.rotateAngleY = 0.0F;
+				}
+				if (this.arm_left != null) {
+					this.arm_left.rotateAngleX = -0.5F;
+					this.arm_left.rotateAngleZ = 0.2F;
+				}
+				if (this.head != null) {
+					this.head.rotateAngleX = -0.2F + MathHelper.sin(ageInTicks * 0.8F) * 0.1F;
+				}
+			} else if (castType == 5) {
+				float floatX = -1.3F + MathHelper.sin(ageInTicks * 0.2F) * 0.15F;
+				if (this.arm_right != null) {
+					this.arm_right.rotateAngleX = floatX;
+					this.arm_right.rotateAngleZ = -0.2F;
+					this.arm_right.rotateAngleY = -0.1F;
+				}
+				if (this.arm_left != null) {
+					this.arm_left.rotateAngleX = floatX;
+					this.arm_left.rotateAngleZ = 0.2F;
+					this.arm_left.rotateAngleY = 0.1F;
+				}
+				if (this.head != null) {
+					this.head.rotateAngleX = -0.3F;
+				}
+			}
+		} else if (entityIn instanceof EntityGoblinShaman && ((EntityGoblinShaman) entityIn).isDancing()) {
 			int danceType = ((EntityGoblinShaman) entityIn).getDanceType();
 			if (danceType == 2) {
 				float phaseTime = ageInTicks % 360.0F; // 18 second cycle (3s per phase)

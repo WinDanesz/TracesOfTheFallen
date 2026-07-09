@@ -20,15 +20,15 @@ public class ModelJawTrap extends ModelBase {
 		
 
 		a = new ModelRenderer(this);
-		a.setRotationPoint(0.0F, 0.0F, 0.0F);
+		a.setRotationPoint(0.0F, 0.0F, -4.0F);
 		jaw_trap.addChild(a);
-		a.cubeList.add(new ModelBox(a, 5, 4, -2.0F, -0.9F, -4.0F, 4, 1, 4, 0.0F, false));
+		a.cubeList.add(new ModelBox(a, 5, 4, -2.0F, -0.9F, 0.0F, 4, 1, 4, 0.0F, false));
 
 		b = new ModelRenderer(this);
-		b.setRotationPoint(0.0F, 0.0F, 0.0F);
+		b.setRotationPoint(0.0F, 0.0F, 4.0F);
 		jaw_trap.addChild(b);
 		setRotationAngle(b, 3.1416F, 0.0F, 3.1416F);
-		b.cubeList.add(new ModelBox(b, 5, 4, -2.0F, -0.9F, -4.0F, 4, 1, 4, 0.01F, false));
+		b.cubeList.add(new ModelBox(b, 5, 4, -2.0F, -0.9F, 0.0F, 4, 1, 4, 0.01F, false));
 	}
 
 	@Override

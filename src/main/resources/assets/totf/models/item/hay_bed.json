@@ -1,0 +1,6 @@
+{
+  "parent": "totf:block/hay_bed",
+  "textures": {
+    "layer0": "totf:blocks/tent"
+  }
+}

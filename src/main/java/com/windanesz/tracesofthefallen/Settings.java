@@ -50,6 +50,10 @@ public class Settings {
     @Config.LangKey("settings.totf:client_settings")
     public static ClientSettings clientSettings = new ClientSettings();
 
+	@Config.Name("Goblin Settings")
+	@Config.LangKey("settings.totf:general_settings")
+	public static GoblinSettings goblinSettings = new GoblinSettings();
+
     public static class WorldgenSettings {
 
         @Config.Name("Lost Loot Dimensions")
@@ -166,6 +170,30 @@ public class Settings {
 
     public static class MiscSettings {
 
+		@Config.Name("Bonepile Base Item Chance")
+		@Config.Comment("The base chance (0.0 - 1.0) per layer of dropping a bone or bonemeal when breaking a bonepile. Default: 0.10 (10% per layer)")
+		@Config.RangeDouble(min = 0.0, max = 1.0)
+		public double bonepileBaseItemChance = 0.10D;
+
+		@Config.Name("Bonepile Item Fortune Multiplier")
+		@Config.Comment("The relative chance increase per Fortune level for dropping a bone or bonemeal from a bonepile. Default: 0.1333")
+		public double bonepileItemFortuneMultiplier = 0.1333D;
+
+		@Config.Name("Bonepile Bonemeal Chance")
+		@Config.Comment("When a bonepile drops an item, the chance (0.0 - 1.0) that it is bonemeal instead of a bone. Default: 0.95 (95% bonemeal, 5% bone)")
+		@Config.RangeDouble(min = 0.0, max = 1.0)
+		public double bonepileBonemealChance = 0.95D;
+
+		@Config.Name("Bonepile Skull Chance Per Layer")
+		@Config.Comment("The chance (0.0 - 1.0) per layer of dropping a skeleton skull when breaking a bonepile. Default: 0.00125 (0.125% per layer)")
+		@Config.RangeDouble(min = 0.0, max = 1.0)
+		public double bonepileSkullChancePerLayer = 0.00125D;
+
+		@Config.Name("Bonepile Skull Fortune Bonus")
+		@Config.Comment("The additive chance (0.0 - 1.0) per Fortune level for dropping a skeleton skull from a bonepile. Default: 0.01 (1% per level)")
+		@Config.RangeDouble(min = 0.0, max = 1.0)
+		public double bonepileSkullFortuneBonus = 0.01D;
+
 		@Config.Name("Grave Rose Chance")
 		@Config.Comment("The chance of a rose turning into a grave rose when it is placed in a grave marker.")
 		@Config.RequiresMcRestart
@@ -207,6 +235,10 @@ public class Settings {
 		@Config.Name("Goblin Group Hostility Threshold")
 		@Config.Comment("When this many or more goblins are nearby, they will ignore active goblin idols and become hostile. Set to 0 to disable group behavior. Default: 6")
 		public int goblinGroupHostilityThreshold = 6;
+
+		@Config.Name("Goblin Nest Health")
+		@Config.Comment("The amount of health the goblin nest has before it is destroyed. Default: 50")
+		public int nestHealth = 50;
 
 		@Config.Name("Bundle of Lost Letters XP Amount")
 		@Config.Comment("The amount of XP granted when using a Bundle of Lost Letters. Default: 300")
@@ -325,6 +357,18 @@ public class Settings {
 		@Config.Name("Tent Goblin Max Count")
 		@Config.Comment("Maximum number of goblins spawned by tents. Default: 3")
 		public int tentGoblinMaxCount = 3;
+
+		@Config.Name("Nest Goblin Detection Range")
+		@Config.Comment("The range in blocks for goblin nests to detect nearby players and spawn goblins. Default: 5")
+		public double nestGoblinDetectionRange = 5.0D;
+
+		@Config.Name("Nest Goblin Min Count")
+		@Config.Comment("Minimum number of goblins spawned by goblin nests. Default: 2")
+		public int nestGoblinMinCount = 2;
+
+		@Config.Name("Nest Goblin Max Count")
+		@Config.Comment("Maximum number of goblins spawned by goblin nests. Default: 4")
+		public int nestGoblinMaxCount = 4;
 
 		@Config.Name("Glass Float Max Rope Length")
 		@Config.Comment("Maximum number of rope segments that can be added to a glass float. Default: 6")
@@ -457,6 +501,31 @@ public class Settings {
 		@Config.RangeDouble(min = 0.0D, max = 1000.0D)
 		public double fetidDaggerThrownDamage = 4.0D;
 
+		@Config.Name("Shaman Fire Orb Damage")
+		@Config.Comment("Base damage dealt by the Goblin Shaman's Fire Orb spell. Default: 4.0")
+		@Config.RangeDouble(min = 0.0D, max = 1000.0D)
+		public double shamanFireOrbDamage = 4.0D;
+
+		@Config.Name("Shaman Fire Orb Ignition Duration")
+		@Config.Comment("The duration (in seconds) that targets are set on fire by the Goblin Shaman's Fire Orb spell. Default: 4")
+		@Config.RangeInt(min = 0, max = 1000)
+		public int shamanFireOrbIgnitionDuration = 4;
+
+		@Config.Name("Shaman Will O' Wisp Damage")
+		@Config.Comment("Base damage dealt by the Goblin Shaman's Will O' Wisp spell. Default: 6.0")
+		@Config.RangeDouble(min = 0.0D, max = 1000.0D)
+		public double shamanWillOWispDamage = 6.0D;
+
+		@Config.Name("Shaman Seeking Orb Damage")
+		@Config.Comment("Base damage dealt when the Goblin Shaman's Seeking Orb shocks nearby targets. Default: 8.0")
+		@Config.RangeDouble(min = 0.0D, max = 1000.0D)
+		public double shamanSeekingOrbDamage = 8.0D;
+
+		@Config.Name("Bone Rattle Max Uses")
+		@Config.Comment("Maximum durability (uses) for the Bone Rattle charm. Default: 16")
+		@Config.RangeInt(min = 1, max = 10000)
+		public int boneRattleMaxUses = 16;
+
 		@Config.Name("Crooked Bone Melee Damage")
 		@Config.Comment("Base melee attack damage dealt by the Crooked Bone. Default: 2.0")
 		@Config.RangeDouble(min = 0.0D, max = 1000.0D)
@@ -481,6 +550,28 @@ public class Settings {
 		@Config.Comment("Base melee attack damage dealt by the Brass Club. Default: 4.5")
 		@Config.RangeDouble(min = 0.0D, max = 1000.0D)
 		public double brassClubDamage = 4.5D;
+
+		@Config.Name("Cleaner Durability")
+		@Config.Comment("The maximum durability (uses) for the Cleaner. Default: 16")
+		@Config.RangeInt(min = 1, max = 10000)
+		@Config.RequiresMcRestart
+		public int cleanerDurability = 16;
+
+		@Config.Name("Cleaner Block Mappings")
+		@Config.Comment({
+				"List of block and meta pairs that the Cleaner can clean up.",
+				"Format per entry: 'modid:source_block:source_meta|modid:target_block:target_meta' (meta is optional, defaults to 0 if omitted, or -1 for any meta if using *).",
+				"Examples: 'minecraft:mossy_cobblestone:0|minecraft:cobblestone:0', 'totf:bricks_stone_dirty|totf:bricks_stone'"
+		})
+		public String[] cleanerBlockMappings = {
+				"minecraft:mossy_cobblestone:0|minecraft:cobblestone:0",
+				"minecraft:stonebrick:1|minecraft:stonebrick:0",
+				"minecraft:cobblestone_wall:1|minecraft:cobblestone_wall:0",
+				"totf:bricks_stone_dirty:0|totf:bricks_stone:0",
+				"totf:bricks_stone_mossy:0|totf:bricks_stone:0",
+				"totf:bricks_stone_carved_dirty:0|totf:bricks_stone_carved:0",
+				"totf:bricks_stone_carved_mossy:0|totf:bricks_stone_carved:0"
+		};
     }
 
     public static class ClientSettings {
@@ -494,6 +585,108 @@ public class Settings {
 		@Config.RangeDouble(min = -1.0D, max = 1.0D)
 		public double dioptraCameraBackOffset = -0.765432D;
     }
+
+	public static class GoblinSettings {
+		@Config.Name("Goblin Brood Max Health")
+		@Config.Comment("Max health for the Goblin Brood (and base goblins). Default: 12.0")
+		@Config.RangeDouble(min = 1.0D, max = 10000.0D)
+		public double goblinBroodMaxHealth = 12.0D;
+
+		@Config.Name("Goblin Brood Attack Damage")
+		@Config.Comment("Base attack damage for the Goblin Brood (and base goblins). Default: 1.0")
+		@Config.RangeDouble(min = 0.0D, max = 10000.0D)
+		public double goblinBroodAttackDamage = 1.0D;
+
+		@Config.Name("Goblin Brute Max Health")
+		@Config.Comment("Max health for the Goblin Brute. Default: 12.0")
+		@Config.RangeDouble(min = 1.0D, max = 10000.0D)
+		public double goblinBruteMaxHealth = 12.0D;
+
+		@Config.Name("Goblin Brute Attack Damage")
+		@Config.Comment("Base attack damage for the Goblin Brute. Default: 6.0")
+		@Config.RangeDouble(min = 0.0D, max = 10000.0D)
+		public double goblinBruteAttackDamage = 6.0D;
+
+		@Config.Name("Goblin Engineer Max Health")
+		@Config.Comment("Max health for the Goblin Engineer. Default: 20.0")
+		@Config.RangeDouble(min = 1.0D, max = 10000.0D)
+		public double goblinEngineerMaxHealth = 20.0D;
+
+		@Config.Name("Goblin Engineer Attack Damage")
+		@Config.Comment("Base attack damage for the Goblin Engineer. Default: 3.0")
+		@Config.RangeDouble(min = 0.0D, max = 10000.0D)
+		public double goblinEngineerAttackDamage = 3.0D;
+
+		@Config.Name("Goblin Sapper Max Health")
+		@Config.Comment("Max health for the Goblin Sapper. Default: 20.0")
+		@Config.RangeDouble(min = 1.0D, max = 10000.0D)
+		public double goblinSapperMaxHealth = 20.0D;
+
+		@Config.Name("Goblin Sapper Attack Damage")
+		@Config.Comment("Base attack damage for the Goblin Sapper. Default: 3.0")
+		@Config.RangeDouble(min = 0.0D, max = 10000.0D)
+		public double goblinSapperAttackDamage = 3.0D;
+
+		@Config.Name("Goblin Shaman Max Health")
+		@Config.Comment("Max health for the Goblin Shaman. Default: 14.0")
+		@Config.RangeDouble(min = 1.0D, max = 10000.0D)
+		public double goblinShamanMaxHealth = 14.0D;
+
+		@Config.Name("Goblin Shaman Attack Damage")
+		@Config.Comment("Base attack damage for the Goblin Shaman. Default: 2.0")
+		@Config.RangeDouble(min = 0.0D, max = 10000.0D)
+		public double goblinShamanAttackDamage = 2.0D;
+
+		@Config.Name("Goblin Starved Max Health")
+		@Config.Comment("Max health for the Starved Goblin. Default: 8.0")
+		@Config.RangeDouble(min = 1.0D, max = 10000.0D)
+		public double goblinStarvedMaxHealth = 8.0D;
+
+		@Config.Name("Goblin Starved Attack Damage")
+		@Config.Comment("Base attack damage for the Starved Goblin. Default: 2.0")
+		@Config.RangeDouble(min = 0.0D, max = 10000.0D)
+		public double goblinStarvedAttackDamage = 2.0D;
+
+		@Config.Name("Goblin Trapper Max Health")
+		@Config.Comment("Max health for the Goblin Trapper. Default: 20.0")
+		@Config.RangeDouble(min = 1.0D, max = 10000.0D)
+		public double goblinTrapperMaxHealth = 20.0D;
+
+		@Config.Name("Goblin Trapper Attack Damage")
+		@Config.Comment("Base attack damage for the Goblin Trapper. Default: 3.0")
+		@Config.RangeDouble(min = 0.0D, max = 10000.0D)
+		public double goblinTrapperAttackDamage = 3.0D;
+
+		@Config.Name("Goblin Tunneler Max Health")
+		@Config.Comment("Max health for the Goblin Tunneler. Default: 20.0")
+		@Config.RangeDouble(min = 1.0D, max = 10000.0D)
+		public double goblinTunnelerMaxHealth = 20.0D;
+
+		@Config.Name("Goblin Tunneler Attack Damage")
+		@Config.Comment("Base attack damage for the Goblin Tunneler. Default: 3.0")
+		@Config.RangeDouble(min = 0.0D, max = 10000.0D)
+		public double goblinTunnelerAttackDamage = 3.0D;
+
+		@Config.Name("Goblin Warrior Max Health")
+		@Config.Comment("Max health for the Goblin Warrior. Default: 30.0")
+		@Config.RangeDouble(min = 1.0D, max = 10000.0D)
+		public double goblinWarriorMaxHealth = 30.0D;
+
+		@Config.Name("Goblin Warrior Attack Damage")
+		@Config.Comment("Base attack damage for the Goblin Warrior. Default: 5.0")
+		@Config.RangeDouble(min = 0.0D, max = 10000.0D)
+		public double goblinWarriorAttackDamage = 5.0D;
+
+		@Config.Name("Goblin Wayfarer Max Health")
+		@Config.Comment("Max health for the Goblin Wayfarer. Default: 20.0")
+		@Config.RangeDouble(min = 1.0D, max = 10000.0D)
+		public double goblinWayfarerMaxHealth = 20.0D;
+
+		@Config.Name("Goblin Wayfarer Attack Damage")
+		@Config.Comment("Base attack damage for the Goblin Wayfarer. Default: 3.0")
+		@Config.RangeDouble(min = 0.0D, max = 10000.0D)
+		public double goblinWayfarerAttackDamage = 3.0D;
+	}
     @SuppressWarnings("unused")
     @Mod.EventBusSubscriber(modid = TracesOfTheFallen.MODID)
     private static class EventHandler {

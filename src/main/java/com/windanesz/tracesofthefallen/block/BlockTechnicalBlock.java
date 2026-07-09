@@ -31,22 +31,51 @@ public class BlockTechnicalBlock extends Block {
 	private BlockPos getMainPos(IBlockAccess world, BlockPos pos) {
 		BlockPos downPos = pos.down();
 		IBlockState downState = world.getBlockState(downPos);
-		if (downState.getBlock() instanceof BlockDecoration) {
+		if (isMainBlock(world, downState, downPos, pos)) {
 			return downPos;
 		}
 		BlockPos upPos = pos.up();
 		IBlockState upState = world.getBlockState(upPos);
-		if (upState.getBlock() instanceof BlockDecoration) {
+		if (isMainBlock(world, upState, upPos, pos)) {
 			return upPos;
 		}
+
+		// Search surrounding 3x3x3 cube for horizontal and 3D multiblocks
+		for (int dx = -2; dx <= 2; dx++) {
+			for (int dy = -2; dy <= 2; dy++) {
+				for (int dz = -2; dz <= 2; dz++) {
+					if (dx == 0 && dy == 0 && dz == 0) continue;
+					BlockPos candidatePos = pos.add(dx, dy, dz);
+					IBlockState candidateState = world.getBlockState(candidatePos);
+					if (isMainBlock(world, candidateState, candidatePos, pos)) {
+						return candidatePos;
+					}
+				}
+			}
+		}
+
 		return downPos;
+	}
+
+	private boolean isMainBlock(IBlockAccess world, IBlockState state, BlockPos candidatePos, BlockPos proxyPos) {
+		if (state.getBlock() instanceof IProxyMainBlock) {
+			return ((IProxyMainBlock) state.getBlock()).isMainBlockForProxy(world, candidatePos, proxyPos);
+		}
+		if (state.getBlock() instanceof BlockDecoration) {
+			return candidatePos.equals(proxyPos.down()) || candidatePos.equals(proxyPos.up());
+		}
+		return false;
+	}
+
+	private boolean isProxyTarget(IBlockState mainState) {
+		return mainState.getBlock() instanceof IProxyMainBlock || mainState.getBlock() instanceof BlockDecoration;
 	}
 
 	@Override
 	public float getBlockHardness(IBlockState blockState, World worldIn, BlockPos pos) {
 		BlockPos mainPos = getMainPos(worldIn, pos);
 		IBlockState mainState = worldIn.getBlockState(mainPos);
-		if (mainState.getBlock() instanceof BlockDecoration) {
+		if (isProxyTarget(mainState)) {
 			return mainState.getBlock().getBlockHardness(mainState, worldIn, mainPos);
 		}
 		return 1.0F;
@@ -56,11 +85,12 @@ public class BlockTechnicalBlock extends Block {
 	public boolean removedByPlayer(IBlockState state, World world, BlockPos pos, EntityPlayer player, boolean willHarvest) {
 		BlockPos mainPos = getMainPos(world, pos);
 		IBlockState mainState = world.getBlockState(mainPos);
-		if (mainState.getBlock() instanceof BlockDecoration) {
+		if (isProxyTarget(mainState)) {
 			if (!player.capabilities.isCreativeMode && !world.isRemote) {
 				mainState.getBlock().dropBlockAsItem(world, mainPos, mainState, 0);
 			}
 			world.setBlockToAir(mainPos);
+			return true;
 		}
 		return super.removedByPlayer(state, world, pos, player, willHarvest);
 	}
@@ -74,7 +104,7 @@ public class BlockTechnicalBlock extends Block {
 	public void onBlockExploded(World worldIn, BlockPos pos, Explosion explosionIn) {
 		BlockPos mainPos = getMainPos(worldIn, pos);
 		IBlockState mainState = worldIn.getBlockState(mainPos);
-		if (mainState.getBlock() instanceof BlockDecoration) {
+		if (isProxyTarget(mainState)) {
 			mainState.getBlock().onBlockExploded(worldIn, mainPos, explosionIn);
 		}
 		super.onBlockExploded(worldIn, pos, explosionIn);
@@ -84,7 +114,7 @@ public class BlockTechnicalBlock extends Block {
 	public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
 		BlockPos mainPos = getMainPos(worldIn, pos);
 		IBlockState mainState = worldIn.getBlockState(mainPos);
-		if (!(mainState.getBlock() instanceof BlockDecoration)) {
+		if (!isProxyTarget(mainState)) {
 			worldIn.setBlockToAir(pos);
 		}
 	}
@@ -93,9 +123,11 @@ public class BlockTechnicalBlock extends Block {
 	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 		BlockPos mainPos = getMainPos(worldIn, pos);
 		IBlockState mainState = worldIn.getBlockState(mainPos);
-		if (mainState.getBlock() instanceof BlockDecoration) {
+		if (isProxyTarget(mainState)) {
 			float offsetY = mainPos.getY() - pos.getY();
-			return mainState.getBlock().onBlockActivated(worldIn, mainPos, mainState, playerIn, hand, facing, hitX, hitY + offsetY, hitZ);
+			float offsetX = mainPos.getX() - pos.getX();
+			float offsetZ = mainPos.getZ() - pos.getZ();
+			return mainState.getBlock().onBlockActivated(worldIn, mainPos, mainState, playerIn, hand, facing, hitX + offsetX, hitY + offsetY, hitZ + offsetZ);
 		}
 		return false;
 	}
@@ -104,7 +136,7 @@ public class BlockTechnicalBlock extends Block {
 	public ItemStack getPickBlock(IBlockState state, RayTraceResult target, World world, BlockPos pos, EntityPlayer player) {
 		BlockPos mainPos = getMainPos(world, pos);
 		IBlockState mainState = world.getBlockState(mainPos);
-		if (mainState.getBlock() instanceof BlockDecoration) {
+		if (isProxyTarget(mainState)) {
 			return mainState.getBlock().getPickBlock(mainState, target, world, mainPos, player);
 		}
 		return ItemStack.EMPTY;
@@ -114,9 +146,9 @@ public class BlockTechnicalBlock extends Block {
 	public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
 		BlockPos mainPos = getMainPos(source, pos);
 		IBlockState mainState = source.getBlockState(mainPos);
-		if (mainState.getBlock() instanceof BlockDecoration) {
+		if (isProxyTarget(mainState)) {
 			AxisAlignedBB bb = mainState.getBlock().getBoundingBox(mainState, source, mainPos);
-			return bb.offset(0, mainPos.getY() - pos.getY(), 0);
+			return bb.offset(mainPos.getX() - pos.getX(), mainPos.getY() - pos.getY(), mainPos.getZ() - pos.getZ());
 		}
 		return FULL_BLOCK_AABB;
 	}
@@ -125,7 +157,7 @@ public class BlockTechnicalBlock extends Block {
 	public AxisAlignedBB getSelectedBoundingBox(IBlockState state, World worldIn, BlockPos pos) {
 		BlockPos mainPos = getMainPos(worldIn, pos);
 		IBlockState mainState = worldIn.getBlockState(mainPos);
-		if (mainState.getBlock() instanceof BlockDecoration) {
+		if (isProxyTarget(mainState)) {
 			return mainState.getBlock().getSelectedBoundingBox(mainState, worldIn, mainPos);
 		}
 		return super.getSelectedBoundingBox(state, worldIn, pos);
@@ -134,6 +166,14 @@ public class BlockTechnicalBlock extends Block {
 	@Nullable
 	@Override
 	public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, IBlockAccess worldIn, BlockPos pos) {
+		BlockPos mainPos = getMainPos(worldIn, pos);
+		IBlockState mainState = worldIn.getBlockState(mainPos);
+		if (isProxyTarget(mainState)) {
+			AxisAlignedBB bb = mainState.getBlock().getCollisionBoundingBox(mainState, worldIn, mainPos);
+			if (bb != null && bb != NULL_AABB) {
+				return bb.offset(mainPos.getX() - pos.getX(), mainPos.getY() - pos.getY(), mainPos.getZ() - pos.getZ());
+			}
+		}
 		return NULL_AABB;
 	}
 
@@ -142,7 +182,7 @@ public class BlockTechnicalBlock extends Block {
 	public RayTraceResult collisionRayTrace(IBlockState blockState, World worldIn, BlockPos pos, Vec3d start, Vec3d end) {
 		BlockPos mainPos = getMainPos(worldIn, pos);
 		IBlockState mainState = worldIn.getBlockState(mainPos);
-		if (mainState.getBlock() instanceof BlockDecoration) {
+		if (isProxyTarget(mainState)) {
 			RayTraceResult result = mainState.getBlock().collisionRayTrace(mainState, worldIn, mainPos, start, end);
 			if (result != null) {
 				return new RayTraceResult(result.hitVec, result.sideHit, pos);
@@ -156,7 +196,7 @@ public class BlockTechnicalBlock extends Block {
 	public int getLightValue(IBlockState state, IBlockAccess world, BlockPos pos) {
 		BlockPos mainPos = getMainPos(world, pos);
 		IBlockState mainState = world.getBlockState(mainPos);
-		if (mainState.getBlock() instanceof BlockDecoration) {
+		if (isProxyTarget(mainState)) {
 			return mainState.getBlock().getLightValue(mainState, world, mainPos);
 		}
 		return 0;

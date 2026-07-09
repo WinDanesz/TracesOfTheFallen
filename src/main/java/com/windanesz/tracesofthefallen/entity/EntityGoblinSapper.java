@@ -1,5 +1,6 @@
 package com.windanesz.tracesofthefallen.entity;
 
+import com.windanesz.tracesofthefallen.Settings;
 import com.windanesz.tracesofthefallen.entity.ai.GoblinAISapperBuildPath;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.init.Blocks;
@@ -87,9 +88,9 @@ public class EntityGoblinSapper extends EntityGoblin {
 	@Override
 	protected void applyEntityAttributes() {
 		super.applyEntityAttributes();
-		this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(20.0D);
+		this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(Settings.goblinSettings.goblinSapperMaxHealth);
 		this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(64.0D);
-		this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(3.0D);
+		this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(Settings.goblinSettings.goblinSapperAttackDamage);
 	}
 
 	@Override
