@@ -143,7 +143,7 @@ public class ModBlocks {
 		registerBlock(registry, "bricks_stone_carved_mossy", new BlockTOTFStone());
 		registerBlock(registry, "dreamcatcher", new BlockDreamcatcher(Material.WOOD));
 		registerBlock(registry, "stone_chest", new BlockStoneChest());
-		registerBlock(registry, "stone_chest_open", new BlockStoneChest());
+		registerBlock(registry, "stone_chest_open", new BlockStoneChest().setBoundingBox(new AxisAlignedBB(0.0D, 0.0D, 0.25D, 1.0D, 0.5625D, 0.75D)));
 		registerBlock(registry, "item_frame_wooden", new BlockWoodenItemFrame());
 		registerBlock(registry, "bonepile", new BlockBonepile());
 		registerBlock(registry, "hay_bed", new BlockHayBed(Material.WOOD).setLootTable(new ResourceLocation(TracesOfTheFallen.MODID, "blocks/hay_bed")));
