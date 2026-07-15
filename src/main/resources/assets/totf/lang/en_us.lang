@@ -15,6 +15,7 @@ tile.totf:grave_marker.name=Grave Marker
 tile.totf:lost_cargo.name=Lost Cargo
 tile.totf:lost_crate_potions.name=Lost Cargo Potions
 entity.totf:specter.name=Specter
+entity.totf:goblin_skeleton.name=Goblin Skeleton
 entity.totf:specter_familiar.name=Familiar Specter
 entity.specter_familiar.name=Familiar Specter
 entity.totf.specter_familiar.name=Familiar Specter

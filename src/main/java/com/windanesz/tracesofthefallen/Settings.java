@@ -511,15 +511,50 @@ public class Settings {
 		@Config.RangeInt(min = 0, max = 1000)
 		public int shamanFireOrbIgnitionDuration = 4;
 
+		@Config.Name("Shaman Heat Wave Damage")
+		@Config.Comment("Base fire damage dealt by the Goblin Shaman's Heat Wave spell. Default: 3.0")
+		@Config.RangeDouble(min = 0.0D, max = 1000.0D)
+		public double shamanHeatWaveDamage = 3.0D;
+
+		@Config.Name("Shaman Heat Wave Ignition Duration")
+		@Config.Comment("The duration (in seconds) that targets are set on fire by the Goblin Shaman's Heat Wave spell. Default: 4")
+		@Config.RangeInt(min = 0, max = 1000)
+		public int shamanHeatWaveIgnitionDuration = 4;
+
+		@Config.Name("Shaman Chill Pulse Damage")
+		@Config.Comment("Base frost/magic damage dealt by the Goblin Shaman's Chill Pulse spell. Default: 5.0")
+		@Config.RangeDouble(min = 0.0D, max = 1000.0D)
+		public double shamanChillPulseDamage = 5.0D;
+
 		@Config.Name("Shaman Will O' Wisp Damage")
 		@Config.Comment("Base damage dealt by the Goblin Shaman's Will O' Wisp spell. Default: 6.0")
 		@Config.RangeDouble(min = 0.0D, max = 1000.0D)
-		public double shamanWillOWispDamage = 6.0D;
+		public double shamanWillOWispDamage = 7.0D;
 
 		@Config.Name("Shaman Seeking Orb Damage")
 		@Config.Comment("Base damage dealt when the Goblin Shaman's Seeking Orb shocks nearby targets. Default: 8.0")
 		@Config.RangeDouble(min = 0.0D, max = 1000.0D)
 		public double shamanSeekingOrbDamage = 8.0D;
+
+		@Config.Name("Shaman Void Slash Damage")
+		@Config.Comment("Base damage dealt when the Goblin Shaman's Void Slash projectile hits targets. Default: 12.0")
+		@Config.RangeDouble(min = 0.0D, max = 1000.0D)
+		public double shamanVoidSlashDamage = 12.0D;
+
+		@Config.Name("Shaman Magma Blast Damage")
+		@Config.Comment("Base explosion damage dealt by the Goblin Shaman's Magma Blast spell. Default: 8.0")
+		@Config.RangeDouble(min = 0.0D, max = 1000.0D)
+		public double shamanMagmaBlastDamage = 8.0D;
+
+		@Config.Name("Shaman Magma Blast Contact Damage")
+		@Config.Comment("Continuous contact damage dealt while standing in the Magma Blast pool. Default: 3.0")
+		@Config.RangeDouble(min = 0.0D, max = 1000.0D)
+		public double shamanMagmaBlastContactDamage = 3.0D;
+
+		@Config.Name("Shaman Magma Blast Ignition Duration")
+		@Config.Comment("The duration (in seconds) that targets are set on fire by the Goblin Shaman's Magma Blast explosion and pool. Default: 5")
+		@Config.RangeInt(min = 0, max = 1000)
+		public int shamanMagmaBlastIgnitionDuration = 5;
 
 		@Config.Name("Bone Rattle Max Uses")
 		@Config.Comment("Maximum durability (uses) for the Bone Rattle charm. Default: 16")
@@ -686,6 +721,36 @@ public class Settings {
 		@Config.Comment("Base attack damage for the Goblin Wayfarer. Default: 3.0")
 		@Config.RangeDouble(min = 0.0D, max = 10000.0D)
 		public double goblinWayfarerAttackDamage = 3.0D;
+
+		@Config.Name("Goblin Skeleton Max Health")
+		@Config.Comment("Max health for the Reanimated Goblin Skeleton. Default: 10.0")
+		@Config.RangeDouble(min = 1.0D, max = 10000.0D)
+		public double goblinSkeletonMaxHealth = 10.0D;
+
+		@Config.Name("Goblin Skeleton Attack Damage")
+		@Config.Comment("Base attack damage for the Reanimated Goblin Skeleton. Default: 2.0")
+		@Config.RangeDouble(min = 0.0D, max = 10000.0D)
+		public double goblinSkeletonAttackDamage = 2.0D;
+
+		@Config.Name("Tinybones Max Health")
+		@Config.Comment("Max health for the Tinybones skeleton variant. Default: 10.0")
+		@Config.RangeDouble(min = 1.0D, max = 10000.0D)
+		public double tinybonesMaxHealth = 10.0D;
+
+		@Config.Name("Tinybones Life Leech Attack Damage")
+		@Config.Comment("Base attack damage per tick tick interval (every 10 ticks) for Tinybones Life Leech. Default: 0.6 (0.3 hearts)")
+		@Config.RangeDouble(min = 0.0D, max = 10000.0D)
+		public double tinybonesAttackDamage = 0.6D;
+
+		@Config.Name("Specter Max Health")
+		@Config.Comment("Max health for Specters (and Familiar Specters). Default: 20.0")
+		@Config.RangeDouble(min = 1.0D, max = 10000.0D)
+		public double specterMaxHealth = 20.0D;
+
+		@Config.Name("Specter Attack Damage")
+		@Config.Comment("Base attack damage for Specters (and Familiar Specters). Default: 4.0")
+		@Config.RangeDouble(min = 0.0D, max = 10000.0D)
+		public double specterAttackDamage = 4.0D;
 	}
     @SuppressWarnings("unused")
     @Mod.EventBusSubscriber(modid = TracesOfTheFallen.MODID)
@@ -700,3 +765,4 @@ public class Settings {
         }
     }
 }
+

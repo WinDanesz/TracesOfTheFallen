@@ -1,6 +1,8 @@
 package com.windanesz.tracesofthefallen.entity.ai;
 
 import com.windanesz.tracesofthefallen.entity.EntityGoblinShaman;
+import com.windanesz.tracesofthefallen.entity.shaman.ShamanSpell;
+import com.windanesz.tracesofthefallen.entity.shaman.ShamanSpells;
 import net.minecraft.entity.ai.EntityAIBase;
 
 public class GoblinAIShamanStandStill extends EntityAIBase {
@@ -8,12 +10,16 @@ public class GoblinAIShamanStandStill extends EntityAIBase {
 
 	public GoblinAIShamanStandStill(EntityGoblinShaman shaman) {
 		this.shaman = shaman;
-		this.setMutexBits(3); // Block movement and looking
+		this.setMutexBits(1); // Block movement while casting spells that stop movement (Bit 1 only, leaving Bit 2 for looking/casting)
 	}
 
 	@Override
 	public boolean shouldExecute() {
-		return this.shaman.getSpellCastingTimer() > 0 && (this.shaman.getSpellCastType() == 2 || this.shaman.getSpellCastType() == 4);
+		if (this.shaman.getSpellCastingTimer() <= 0 || this.shaman.getSpellCastType() <= 0) {
+			return false;
+		}
+		ShamanSpell spell = ShamanSpells.getSpellById(this.shaman.getSpellCastType());
+		return spell != null && spell.stopsMovement();
 	}
 
 	@Override

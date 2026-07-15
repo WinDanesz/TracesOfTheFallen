@@ -102,11 +102,11 @@ public class EntitySeekingOrb extends EntityThrowable {
 
 			// Shock nearby enemies periodically
 			if (this.ticksExisted % 25 == 0) {
-				List<EntityLivingBase> nearbyEnemies = this.world.getEntitiesWithinAABB(EntityLivingBase.class, this.getEntityBoundingBox().grow(4.5D, 4.5D, 4.5D));
+				List<EntityLivingBase> nearbyEnemies = this.world.getEntitiesWithinAABB(EntityLivingBase.class, this.getEntityBoundingBox().grow(2.5D, 2.5D, 2.5D));
 				boolean shocked = false;
 				for (EntityLivingBase e : nearbyEnemies) {
 					if (e != this.getThrower() && e.isEntityAlive() && !this.isOwner(e) && !(e instanceof EntityGoblin)) {
-						if (this.getDistanceSq(e) <= 20.25D) {
+						if (this.getDistanceSq(e) <= 6.25D) {
 							e.attackEntityFrom(DamageSource.causeIndirectMagicDamage(this, this.getThrower()), (float) Settings.miscSettings.shamanSeekingOrbDamage);
 							this.world.playSound(null, e.posX, e.posY, e.posZ, SoundEvents.ENTITY_ELDER_GUARDIAN_CURSE, SoundCategory.HOSTILE, 0.8F, 1.4F + this.rand.nextFloat() * 0.4F);
 							if (this.world instanceof WorldServer) {
@@ -131,6 +131,42 @@ public class EntitySeekingOrb extends EntityThrowable {
 						this.posX + (this.rand.nextDouble() - 0.5D) * 0.4D,
 						this.posY + (this.rand.nextDouble() - 0.5D) * 0.4D,
 						this.posZ + (this.rand.nextDouble() - 0.5D) * 0.4D,
+						0.0D, 0.0D, 0.0D);
+			}
+
+			// Render faint particle sphere (radius 2.5) to indicate attack distance
+			for (int i = 0; i < 4; i++) {
+				double u = this.rand.nextDouble();
+				double v = this.rand.nextDouble();
+				double theta = u * 2.0D * Math.PI;
+				double phi = Math.acos(2.0D * v - 1.0D);
+				double rx = Math.sin(phi) * Math.cos(theta) * 2.5D;
+				double ry = Math.sin(phi) * Math.sin(theta) * 2.5D;
+				double rz = Math.cos(phi) * 2.5D;
+				this.world.spawnParticle(EnumParticleTypes.TOWN_AURA,
+						this.posX + rx,
+						this.posY + ry,
+						this.posZ + rz,
+						0.0D, 0.0D, 0.0D);
+			}
+
+			// Render rotating faint magic particles along the 2.5 block perimeter rings at a gentle speed
+			double ringAngle = this.ticksExisted * 0.065D;
+			for (int i = 0; i < 6; i++) {
+				double angle = ringAngle + i * (Math.PI / 3.0D);
+				this.world.spawnParticle(EnumParticleTypes.CRIT_MAGIC,
+						this.posX + Math.cos(angle) * 2.5D,
+						this.posY + Math.sin(this.ticksExisted * 0.04D + i) * 0.6D,
+						this.posZ + Math.sin(angle) * 2.5D,
+						0.0D, 0.0D, 0.0D);
+			}
+			double tiltAngle = -this.ticksExisted * 0.055D;
+			for (int i = 0; i < 6; i++) {
+				double angle = tiltAngle + i * (Math.PI / 3.0D);
+				this.world.spawnParticle(EnumParticleTypes.CRIT_MAGIC,
+						this.posX + Math.cos(angle) * 2.5D,
+						this.posY + Math.sin(angle) * 2.5D,
+						this.posZ + Math.cos(this.ticksExisted * 0.03D + i) * 0.6D,
 						0.0D, 0.0D, 0.0D);
 			}
 		}
@@ -183,6 +219,9 @@ public class EntitySeekingOrb extends EntityThrowable {
 		if (entityIn == null) return false;
 		if (entityIn == this.getThrower()) return true;
 		if (this.dataManager.get(THROWER_ID) == entityIn.getEntityId()) return true;
+		if (this.getThrower() instanceof com.windanesz.tracesofthefallen.entity.EntityGoblinShaman) {
+			return com.windanesz.tracesofthefallen.entity.shaman.ShamanSpells.isAlly((com.windanesz.tracesofthefallen.entity.EntityGoblinShaman) this.getThrower(), entityIn);
+		}
 		if (this.getThrower() instanceof EntityGoblin && entityIn instanceof EntityGoblin) {
 			return ((EntityGoblin) this.getThrower()).isOwner(entityIn);
 		}

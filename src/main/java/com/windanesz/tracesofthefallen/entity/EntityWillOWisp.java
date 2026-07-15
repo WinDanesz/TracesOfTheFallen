@@ -147,6 +147,9 @@ public class EntityWillOWisp extends EntityThrowable {
 			if (result.entityHit == this.getThrower() || result.entityHit instanceof EntityGoblin) {
 				return;
 			}
+			if (this.getThrower() instanceof com.windanesz.tracesofthefallen.entity.EntityGoblinShaman && com.windanesz.tracesofthefallen.entity.shaman.ShamanSpells.isAlly((com.windanesz.tracesofthefallen.entity.EntityGoblinShaman) this.getThrower(), result.entityHit)) {
+				return;
+			}
 			if (result.entityHit instanceof EntityLivingBase) {
 				this.hitTarget((EntityLivingBase) result.entityHit);
 				return;

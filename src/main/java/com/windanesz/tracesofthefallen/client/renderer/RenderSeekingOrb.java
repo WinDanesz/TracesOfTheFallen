@@ -40,9 +40,11 @@ public class RenderSeekingOrb extends Render<EntitySeekingOrb> {
 		GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 		GlStateManager.disableLighting();
 		OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 240.0F);
+		GlStateManager.disableCull();
 
 		this.model.render(entity, 0.0F, 0.0F, (float) entity.ticksExisted + partialTicks, 0.0F, 0.0F, 0.0625F);
 
+		GlStateManager.enableCull();
 		int packedLight = entity.getBrightnessForRender();
 		int blockLight = packedLight % 65536;
 		int skyLight = packedLight / 65536;

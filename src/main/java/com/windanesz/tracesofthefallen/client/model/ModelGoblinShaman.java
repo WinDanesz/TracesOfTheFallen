@@ -7,15 +7,13 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 
 public class ModelGoblinShaman extends ModelGoblinBase {
-	private final ModelRenderer bone;
-	private final ModelRenderer cube_r1;
-	private final ModelRenderer cube_r2;
-	private final ModelRenderer cube_r3;
-	private final ModelRenderer cube_r4;
-	private final ModelRenderer ear_left;
-	private final ModelRenderer ear_left_r1;
-	private final ModelRenderer ear_right;
-	private final ModelRenderer ear_right_r1;
+	private final ModelRenderer featherBase;
+	public ModelRenderer featherLeft;
+	public ModelRenderer featherRight;
+	public ModelRenderer featherCenter;
+	public ModelRenderer featherFarLeft;
+	public ModelRenderer featherFarRight;
+	public ModelRenderer featherFarFarLeft;
 
 	public ModelGoblinShaman() {
 		textureWidth = 48;
@@ -31,56 +29,74 @@ public class ModelGoblinShaman extends ModelGoblinBase {
 		head.cubeList.add(new ModelBox(head, 0, 0, -2.9503F, -6.0F, -2.9929F, 6, 6, 6, 0.0F, false));
 		head.cubeList.add(new ModelBox(head, 22, 26, -0.9503F, -3.0F, -5.9929F, 2, 3, 3, 0.0F, false));
 
-		bone = new ModelRenderer(this);
-		bone.setRotationPoint(-0.2503F, -3.3F, 3.7071F);
-		head.addChild(bone);
-		bone.cubeList.add(new ModelBox(bone, 30, 23, -2.6912F, -2.8224F, 1.491F, 6, 9, 0, 0.0F, false));
+		featherBase = new ModelRenderer(this);
+		featherBase.setRotationPoint(-0.2503F, -3.3F, 3.7071F);
+		head.addChild(featherBase);
+		featherBase.cubeList.add(new ModelBox(featherBase, 30, 23, -2.6912F, -2.8224F, 1.491F, 6, 9, 0, 0.0F, false));
 
-		cube_r1 = new ModelRenderer(this);
-		cube_r1.setRotationPoint(-0.1912F, -2.8224F, 1.491F);
-		bone.addChild(cube_r1);
-		setRotationAngle(cube_r1, 0.0436F, 0.0F, -0.3054F);
-		cube_r1.cubeList.add(new ModelBox(cube_r1, 40, 0, -2.0F, -11.0F, 0.0F, 4, 11, 0, 0.0F, false));
+		featherLeft = new ModelRenderer(this);
+		featherLeft.setRotationPoint(-0.1912F, -2.8224F, 1.491F);
+		featherBase.addChild(featherLeft);
+		setRotationAngle(featherLeft, 0.0436F, 0.0F, -0.3054F);
+		featherLeft.cubeList.add(new ModelBox(featherLeft, 40, 0, -2.0F, -11.0F, 0.0F, 4, 11, 0, 0.0F, false));
 
-		cube_r2 = new ModelRenderer(this);
-		cube_r2.setRotationPoint(-0.1912F, -2.8224F, 1.491F);
-		bone.addChild(cube_r2);
-		setRotationAngle(cube_r2, -0.0436F, 0.0F, 0.48F);
-		cube_r2.cubeList.add(new ModelBox(cube_r2, 32, 0, -2.0F, -11.0F, 0.0F, 4, 11, 0, 0.0F, false));
+		featherRight = new ModelRenderer(this);
+		featherRight.setRotationPoint(-0.1912F, -2.8224F, 1.491F);
+		featherBase.addChild(featherRight);
+		setRotationAngle(featherRight, -0.0436F, 0.0F, 0.48F);
+		featherRight.cubeList.add(new ModelBox(featherRight, 32, 0, -2.0F, -11.0F, 0.0F, 4, 11, 0, 0.0F, false));
 
-		cube_r3 = new ModelRenderer(this);
-		cube_r3.setRotationPoint(-0.1912F, -2.8224F, 1.491F);
-		bone.addChild(cube_r3);
-		setRotationAngle(cube_r3, 0.0F, 0.0F, 0.0873F);
-		cube_r3.cubeList.add(new ModelBox(cube_r3, 12, 12, -2.0F, -11.0F, 0.0F, 4, 11, 0, 0.0F, false));
+		featherCenter = new ModelRenderer(this);
+		featherCenter.setRotationPoint(-0.1912F, -2.8224F, 1.491F);
+		featherBase.addChild(featherCenter);
+		setRotationAngle(featherCenter, 0.0F, 0.0F, 0.0873F);
+		featherCenter.cubeList.add(new ModelBox(featherCenter, 12, 12, -2.0F, -11.0F, 0.0F, 4, 11, 0, 0.0F, false));
 
-		cube_r4 = new ModelRenderer(this);
-		cube_r4.setRotationPoint(0.7F, -0.1F, 0.0F);
-		bone.addChild(cube_r4);
-		setRotationAngle(cube_r4, -0.48F, 0.0F, 0.0F);
-		cube_r4.cubeList.add(new ModelBox(cube_r4, 16, 32, -4.3912F, -3.1037F, -7.9336F, 8, 8, 8, 0.0F, false));
+		featherFarLeft = new ModelRenderer(this);
+		featherFarLeft.setRotationPoint(-0.1912F, -2.8224F, 1.491F);
+		featherBase.addChild(featherFarLeft);
+		setRotationAngle(featherFarLeft, 0.08F, 0.0F, -0.65F);
+		featherFarLeft.cubeList.add(new ModelBox(featherFarLeft, 40, 0, -2.0F, -11.0F, 0.0F, 4, 11, 0, 0.0F, false));
 
-		ear_left = new ModelRenderer(this);
-		ear_left.setRotationPoint(3.0497F, -3.0F, -1.9929F);
-		head.addChild(ear_left);
-		setRotationAngle(ear_left, -0.3927F, 0.0F, 0.0F);
+		featherFarRight = new ModelRenderer(this);
+		featherFarRight.setRotationPoint(-0.1912F, -2.8224F, 1.491F);
+		featherBase.addChild(featherFarRight);
+		setRotationAngle(featherFarRight, -0.08F, 0.0F, 0.85F);
+		featherFarRight.cubeList.add(new ModelBox(featherFarRight, 32, 0, -2.0F, -11.0F, 0.0F, 4, 11, 0, 0.0F, false));
 
-		ear_left_r1 = new ModelRenderer(this);
-		ear_left_r1.setRotationPoint(0.0F, -1.0F, 0.0F);
-		ear_left.addChild(ear_left_r1);
-		setRotationAngle(ear_left_r1, 0.0F, 0.48F, 0.0F);
-		ear_left_r1.cubeList.add(new ModelBox(ear_left_r1, 18, -6, 0.0F, -1.0F, 0.0F, 0, 4, 6, 0.0F, false));
+		featherFarFarLeft = new ModelRenderer(this);
+		featherFarFarLeft.setRotationPoint(-0.1912F, -2.8224F, 1.491F);
+		featherBase.addChild(featherFarFarLeft);
+		setRotationAngle(featherFarFarLeft, 0.12F, 0.0F, -0.95F);
+		featherFarFarLeft.cubeList.add(new ModelBox(featherFarFarLeft, 12, 12, -2.0F, -11.0F, 0.0F, 4, 11, 0, 0.0F, false));
 
-		ear_right = new ModelRenderer(this);
-		ear_right.setRotationPoint(-2.9503F, -3.0F, -1.9929F);
-		head.addChild(ear_right);
-		setRotationAngle(ear_right, -0.3927F, 0.0F, 0.0F);
+		ModelRenderer headpiece = new ModelRenderer(this);
+		headpiece.setRotationPoint(0.7F, -0.1F, 0.0F);
+		featherBase.addChild(headpiece);
+		setRotationAngle(headpiece, -0.48F, 0.0F, 0.0F);
+		headpiece.cubeList.add(new ModelBox(headpiece, 16, 32, -4.3912F, -3.1037F, -7.9336F, 8, 8, 8, 0.0F, false));
 
-		ear_right_r1 = new ModelRenderer(this);
-		ear_right_r1.setRotationPoint(0.0F, -1.0F, 0.0F);
-		ear_right.addChild(ear_right_r1);
-		setRotationAngle(ear_right_r1, 0.0F, -0.48F, 0.0F);
-		ear_right_r1.cubeList.add(new ModelBox(ear_right_r1, 18, -6, 0.0F, -1.0F, 0.0F, 0, 4, 6, 0.0F, true));
+		ModelRenderer leftEar = new ModelRenderer(this);
+		leftEar.setRotationPoint(3.0497F, -3.0F, -1.9929F);
+		head.addChild(leftEar);
+		setRotationAngle(leftEar, -0.3927F, 0.0F, 0.0F);
+
+		ModelRenderer leftEarFlap = new ModelRenderer(this);
+		leftEarFlap.setRotationPoint(0.0F, -1.0F, 0.0F);
+		leftEar.addChild(leftEarFlap);
+		setRotationAngle(leftEarFlap, 0.0F, 0.48F, 0.0F);
+		leftEarFlap.cubeList.add(new ModelBox(leftEarFlap, 18, -6, 0.0F, -1.0F, 0.0F, 0, 4, 6, 0.0F, false));
+
+		ModelRenderer rightEar = new ModelRenderer(this);
+		rightEar.setRotationPoint(-2.9503F, -3.0F, -1.9929F);
+		head.addChild(rightEar);
+		setRotationAngle(rightEar, -0.3927F, 0.0F, 0.0F);
+
+		ModelRenderer rightEarFlap = new ModelRenderer(this);
+		rightEarFlap.setRotationPoint(0.0F, -1.0F, 0.0F);
+		rightEar.addChild(rightEarFlap);
+		setRotationAngle(rightEarFlap, 0.0F, -0.48F, 0.0F);
+		rightEarFlap.cubeList.add(new ModelBox(rightEarFlap, 18, -6, 0.0F, -1.0F, 0.0F, 0, 4, 6, 0.0F, true));
 
 		leg_left = new ModelRenderer(this);
 		leg_left.setRotationPoint(1.5F, -7.0F, -0.5F);
@@ -115,10 +131,20 @@ public class ModelGoblinShaman extends ModelGoblinBase {
 			this.body.rotateAngleX = 0.0F;
 			this.body.rotateAngleZ = 0.0F;
 		}
-		if (this.bone != null) {
-			this.bone.rotateAngleX = 0.0F;
-			this.bone.rotateAngleY = 0.0F;
-			this.bone.rotateAngleZ = 0.0F;
+		if (this.featherBase != null) {
+			this.featherBase.rotateAngleX = 0.0F;
+			this.featherBase.rotateAngleY = 0.0F;
+			this.featherBase.rotateAngleZ = 0.0F;
+		}
+
+		if (entityIn instanceof EntityGoblinShaman) {
+			int count = ((EntityGoblinShaman) entityIn).getFeatherCount();
+			if (this.featherCenter != null) this.featherCenter.showModel = (count == 1 || count == 3 || count >= 5);
+			if (this.featherLeft != null) this.featherLeft.showModel = (count >= 2);
+			if (this.featherRight != null) this.featherRight.showModel = (count >= 2);
+			if (this.featherFarLeft != null) this.featherFarLeft.showModel = (count >= 4);
+			if (this.featherFarRight != null) this.featherFarRight.showModel = (count >= 4);
+			if (this.featherFarFarLeft != null) this.featherFarFarLeft.showModel = (count >= 6);
 		}
 
 		if (entityIn instanceof EntityGoblinShaman && ((EntityGoblinShaman) entityIn).getSpellCastingTimer() > 0) {
@@ -173,7 +199,7 @@ public class ModelGoblinShaman extends ModelGoblinBase {
 				}
 			} else if (castType == 4) {
 				float rattleX = -1.2F + MathHelper.cos(ageInTicks * 0.8F) * 0.25F;
-				float rattleZ = MathHelper.sin(ageInTicks * 1.0F) * 0.35F;
+										float rattleZ = MathHelper.sin(ageInTicks) * 0.35F;
 				if (this.arm_right != null) {
 					this.arm_right.rotateAngleX = rattleX;
 					this.arm_right.rotateAngleZ = rattleZ;
@@ -186,7 +212,7 @@ public class ModelGoblinShaman extends ModelGoblinBase {
 				if (this.head != null) {
 					this.head.rotateAngleX = -0.2F + MathHelper.sin(ageInTicks * 0.8F) * 0.1F;
 				}
-			} else if (castType == 5) {
+			} else if (castType == 5 && castTimer > 10) {
 				float floatX = -1.3F + MathHelper.sin(ageInTicks * 0.2F) * 0.15F;
 				if (this.arm_right != null) {
 					this.arm_right.rotateAngleX = floatX;
@@ -200,6 +226,158 @@ public class ModelGoblinShaman extends ModelGoblinBase {
 				}
 				if (this.head != null) {
 					this.head.rotateAngleX = -0.3F;
+				}
+			} else if (castType == 5) {
+				float pointPitch = -1.5F;
+				if (this.arm_right != null) {
+					this.arm_right.rotateAngleX = pointPitch;
+					this.arm_right.rotateAngleZ = -0.15F;
+					this.arm_right.rotateAngleY = -0.2F;
+				}
+				if (this.arm_left != null) {
+					this.arm_left.rotateAngleX = pointPitch;
+					this.arm_left.rotateAngleZ = 0.15F;
+					this.arm_left.rotateAngleY = 0.2F;
+				}
+			} else if (castType == 7) {
+				if (castTimer > 15) {
+					float raiseProgress = Math.min(1.0F, (45.0F - (float)castTimer) / 10.0F);
+					float armPitch = -2.8F * raiseProgress;
+					float wave = MathHelper.sin(ageInTicks * 0.6F) * 0.1F;
+					if (this.arm_right != null) {
+						this.arm_right.rotateAngleX = armPitch + wave;
+						this.arm_right.rotateAngleZ = -0.3F - wave;
+						this.arm_right.rotateAngleY = 0.0F;
+					}
+					if (this.arm_left != null) {
+						this.arm_left.rotateAngleX = armPitch + wave;
+						this.arm_left.rotateAngleZ = 0.3F + wave;
+						this.arm_left.rotateAngleY = 0.0F;
+					}
+					if (this.head != null) {
+						this.head.rotateAngleX = -0.35F + wave * 0.5F;
+					}
+				} else {
+					float slamProgress = Math.min(1.0F, (15.0F - (float)castTimer) / 3.0F);
+					if (this.body != null) {
+						this.body.rotateAngleX = 0.85F * slamProgress;
+					}
+					if (this.head != null) {
+						this.head.rotateAngleX = -0.5F * slamProgress;
+					}
+					float rumble = MathHelper.sin(ageInTicks * 1.5F) * 0.04F;
+					if (this.arm_right != null) {
+						this.arm_right.rotateAngleX = (-0.5F + rumble) * slamProgress;
+						this.arm_right.rotateAngleZ = -0.35F * slamProgress;
+						this.arm_right.rotateAngleY = 0.0F;
+					}
+					if (this.arm_left != null) {
+						this.arm_left.rotateAngleX = (-0.5F + rumble) * slamProgress;
+						this.arm_left.rotateAngleZ = 0.35F * slamProgress;
+						this.arm_left.rotateAngleY = 0.0F;
+					}
+				}
+			} else if (castType == 8) {
+				if (castTimer > 8) {
+					// Channeling: raise both hands up overhead while the growing magma blob forms above
+					float raiseProgress = Math.min(1.0F, (50.0F - (float)castTimer) / 10.0F);
+					float armPitch = -2.85F * raiseProgress;
+					float wave = MathHelper.sin(ageInTicks * 0.45F) * 0.12F;
+					if (this.arm_right != null) {
+						this.arm_right.rotateAngleX = armPitch + wave;
+						this.arm_right.rotateAngleZ = -0.35F - wave;
+						this.arm_right.rotateAngleY = 0.0F;
+					}
+					if (this.arm_left != null) {
+						this.arm_left.rotateAngleX = armPitch + wave;
+						this.arm_left.rotateAngleZ = 0.35F + wave;
+						this.arm_left.rotateAngleY = 0.0F;
+					}
+					if (this.head != null) {
+						this.head.rotateAngleX = -0.5F * raiseProgress + wave * 0.5F;
+					}
+				} else {
+					// Throwing: hurl both hands forward as the magma blast is launched
+					float throwProgress = Math.min(1.0F, (8.0F - (float)castTimer) / 4.0F);
+					float armPitch = -2.85F + 2.0F * throwProgress;
+					if (this.body != null) {
+						this.body.rotateAngleX = 0.2F * throwProgress;
+					}
+					if (this.head != null) {
+						this.head.rotateAngleX = -0.15F + 0.25F * throwProgress;
+					}
+					if (this.arm_right != null) {
+						this.arm_right.rotateAngleX = armPitch;
+						this.arm_right.rotateAngleZ = -0.15F;
+						this.arm_right.rotateAngleY = 0.0F;
+					}
+					if (this.arm_left != null) {
+						this.arm_left.rotateAngleX = armPitch;
+						this.arm_left.rotateAngleZ = 0.15F;
+						this.arm_left.rotateAngleY = 0.0F;
+					}
+				}
+			} else if (castType == 9) {
+				if (castTimer > 10) {
+					// Phase 1: First, raise hands to the side while charging
+					float raiseProgress = Math.min(1.0F, (35.0F - (float)castTimer) / 10.0F);
+					float armPitch = -0.3F * raiseProgress;
+					float sideAngle = 1.35F * raiseProgress;
+					float wave = MathHelper.sin(ageInTicks * 0.4F) * 0.12F;
+					if (this.arm_right != null) {
+						this.arm_right.rotateAngleX = armPitch + wave;
+						this.arm_right.rotateAngleZ = -sideAngle - wave;
+						this.arm_right.rotateAngleY = 0.0F;
+					}
+					if (this.arm_left != null) {
+						this.arm_left.rotateAngleX = armPitch + wave;
+						this.arm_left.rotateAngleZ = sideAngle + wave;
+						this.arm_left.rotateAngleY = 0.0F;
+					}
+					if (this.head != null) {
+						this.head.rotateAngleX = -0.4F * raiseProgress + wave * 0.5F;
+					}
+				} else {
+					// Phase 2: When charged, one hand does a clean top-to-down vertical chop without side leaning
+					float slamProgress = Math.min(1.0F, (10.0F - (float)castTimer) / 4.0F);
+					if (this.body != null) {
+						this.body.rotateAngleX = 0.15F * slamProgress;
+						this.body.rotateAngleY = 0.0F;
+						this.body.rotateAngleZ = 0.0F;
+					}
+					if (this.head != null) {
+						this.head.rotateAngleX = -0.2F + 0.3F * slamProgress;
+						this.head.rotateAngleY = 0.0F;
+					}
+					if (this.arm_right != null) {
+						this.arm_right.rotateAngleX = -2.5F + 1.9F * slamProgress; // Top-to-down chop from overhead (-2.5F) down to straight forward (-0.6F)
+						this.arm_right.rotateAngleY = 0.0F;
+						this.arm_right.rotateAngleZ = -1.35F + 1.25F * slamProgress; // Brings arm in from side raise (-1.35F) to straight forward (-0.1F)
+					}
+					if (this.arm_left != null) {
+						this.arm_left.rotateAngleX = -0.3F * (1.0F - slamProgress);
+						this.arm_left.rotateAngleZ = 1.35F * (1.0F - slamProgress) + 0.2F * slamProgress;
+						this.arm_left.rotateAngleY = 0.0F;
+					}
+				}
+			} else if (castType == 10 || castType == 11) {
+				float maxTimer = (castType == 10) ? 40.0F : 70.0F;
+				float raiseProgress = Math.min(1.0F, (maxTimer - (float)castTimer) / maxTimer);
+				float wave = MathHelper.sin(ageInTicks * 0.3F) * 0.08F;
+				float armPitch = -2.75F * raiseProgress;
+				float sideSpread = MathHelper.sin(raiseProgress * (float)Math.PI) * 1.1F + raiseProgress * 0.45F;
+				if (this.arm_right != null) {
+					this.arm_right.rotateAngleX = armPitch + wave;
+					this.arm_right.rotateAngleZ = -sideSpread - wave;
+					this.arm_right.rotateAngleY = 0.0F;
+				}
+				if (this.arm_left != null) {
+					this.arm_left.rotateAngleX = armPitch + wave;
+					this.arm_left.rotateAngleZ = sideSpread + wave;
+					this.arm_left.rotateAngleY = 0.0F;
+				}
+				if (this.head != null) {
+					this.head.rotateAngleX = -0.35F * raiseProgress + wave * 0.5F;
 				}
 			}
 		} else if (entityIn instanceof EntityGoblinShaman && ((EntityGoblinShaman) entityIn).isDancing()) {
@@ -290,7 +468,7 @@ public class ModelGoblinShaman extends ModelGoblinBase {
 				}
 			} else if (danceType == 3) {
 				float throwPhase = ageInTicks % 40.0F;
-				float armPitch = -1.2F;
+							float armPitch;
 				if (throwPhase < 20.0F) {
 					armPitch = -1.2F - (throwPhase / 20.0F) * 1.8F; // Raises up to -3.0F over head
 				} else if (throwPhase < 26.0F) {
@@ -311,7 +489,7 @@ public class ModelGoblinShaman extends ModelGoblinBase {
 					this.body.rotateAngleY = MathHelper.sin(ageInTicks * 0.2F) * 0.2F;
 				}
 				if (this.head != null) {
-					this.head.rotateAngleX += -0.2F;
+								this.head.rotateAngleX -= 0.2F;
 				}
 			} else {
 				float danceSpeed = 0.4F;
@@ -373,6 +551,19 @@ public class ModelGoblinShaman extends ModelGoblinBase {
 						this.head.rotateAngleX += MathHelper.sin(ageInTicks * chantSpeed * 2.0F) * 0.05F * chantWeight;
 					}
 				}
+			}
+		} else if (this.swingProgress > 0.0F && entityIn instanceof EntityGoblinShaman) {
+			// Top-to-down arm swing follow-through upon releasing Void Slash
+			float progress = 1.0F - this.swingProgress;
+			if (this.arm_right != null) {
+				this.arm_right.rotateAngleX = -0.6F * (1.0F - progress * 0.5F);
+				this.arm_right.rotateAngleY = 0.0F;
+				this.arm_right.rotateAngleZ = -0.1F * (1.0F - progress);
+			}
+			if (this.body != null) {
+				this.body.rotateAngleX = 0.15F * (1.0F - progress);
+				this.body.rotateAngleY = 0.0F;
+				this.body.rotateAngleZ = 0.0F;
 			}
 		}
 	}

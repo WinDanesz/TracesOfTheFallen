@@ -64,6 +64,8 @@ public class ModEntities {
 		registry.register(createEntry(EntityGoblinTunneler.class, "goblin_tunneler", TrackingType.LIVING).egg(0x2e2c0d, 0xb0af3e).build());
 		registry.register(createEntry(EntityGoblinTrapper.class, "goblin_trapper", TrackingType.LIVING).egg(0x2e2d0d, 0xb0bf3e).build());
 		registry.register(createEntry(EntityGoblinShaman.class, "goblin_shaman", TrackingType.LIVING).egg(0x0d1a2e, 0x3e68b0).build());
+		registry.register(createEntry(EntityGoblinSkeleton.class, "goblin_skeleton", TrackingType.LIVING).egg(0xdedede, 0x5a5a5a).build());
+		registry.register(createEntry(EntityTinybones.class, "tinybones", TrackingType.LIVING).egg(0xeaeaea, 0x990000).build());
 		registry.register(createEntry(EntityGoblinBrute.class, "goblin_brute", TrackingType.LIVING).egg(0x2e0d0d, 0xb03e3e).build());
 		registry.register(createEntry(EntityGoblinWarrior.class, "goblin_warrior", TrackingType.LIVING).egg(0x1e2e3e, 0x7aa0b0).build());
 		registry.register(createEntry(EntityMinecrawler.class, "minecrawler", TrackingType.LIVING).egg(0x2d241a, 0x8b5a2b).build());
@@ -72,6 +74,9 @@ public class ModEntities {
 		registry.register(createEntry(EntityFireOrb.class, "fire_orb", TrackingType.PROJECTILE).build());
 		registry.register(createEntry(EntityWillOWisp.class, "will_o_wisp", TrackingType.PROJECTILE).build());
 		registry.register(createEntry(EntitySeekingOrb.class, "seeking_orb", TrackingType.PROJECTILE).build());
+		registry.register(createEntry(EntityVoidSlash.class, "void_slash", TrackingType.PROJECTILE).build());
+		registry.register(createEntry(EntityMagmaBlast.class, "magma_blast", TrackingType.PROJECTILE).build());
+		registry.register(createEntry(EntityMagmaPool.class, "magma_pool", TrackingType.LIVING).build());
 		registry.register(createEntry(EntityJawTrap.class, "jaw_trap", TrackingType.LIVING).build());
 		registry.register(createEntry(EntityBloodTotem.class, "blood_totem", TrackingType.LIVING).build());
 		registry.register(createEntry(EntityGoblinNest.class, "goblin_nest", TrackingType.LIVING).build());

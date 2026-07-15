@@ -133,7 +133,9 @@ public class ClientProxy extends CommonProxy {
 		RenderingRegistry.registerEntityRenderingHandler(EntityGoblinSapper.class, m -> new RenderGoblinVariant(m, new ModelGoblinEngineerSapper(), "goblin_sapper"));
 		RenderingRegistry.registerEntityRenderingHandler(EntityGoblinTunneler.class, m -> new RenderGoblinVariant(m, new ModelGoblinEngineerSapper(), "goblin_sapper"));
 		RenderingRegistry.registerEntityRenderingHandler(EntityGoblinTrapper.class, m -> new RenderGoblinVariant(m, new ModelGoblinTrapper(), "goblin_trapper"));
-		RenderingRegistry.registerEntityRenderingHandler(EntityGoblinShaman.class, m -> new RenderGoblinVariant(m, new ModelGoblinShaman(), "goblin_shaman"));
+		RenderingRegistry.registerEntityRenderingHandler(EntityGoblinShaman.class, RenderGoblinShaman::new);
+		RenderingRegistry.registerEntityRenderingHandler(EntityGoblinSkeleton.class, RenderGoblinSkeleton::new);
+		RenderingRegistry.registerEntityRenderingHandler(EntityTinybones.class, RenderTinybones::new);
 		RenderingRegistry.registerEntityRenderingHandler(EntityGoblinBrute.class, m -> new RenderGoblinVariant(m, new ModelGoblinBrute(), "goblin_brute"));
 		RenderingRegistry.registerEntityRenderingHandler(EntityGoblinWarrior.class, m -> new RenderGoblinVariant(m, new ModelGoblinWarrior(), "goblin_warrior"));
 		RenderingRegistry.registerEntityRenderingHandler(EntityMinecrawler.class, RenderMinecrawler::new);
@@ -142,6 +144,9 @@ public class ClientProxy extends CommonProxy {
 		RenderingRegistry.registerEntityRenderingHandler(EntityFireOrb.class, RenderFireOrb::new);
 		RenderingRegistry.registerEntityRenderingHandler(EntityWillOWisp.class, RenderWillOWisp::new);
 		RenderingRegistry.registerEntityRenderingHandler(EntitySeekingOrb.class, RenderSeekingOrb::new);
+		RenderingRegistry.registerEntityRenderingHandler(EntityVoidSlash.class, RenderVoidSlash::new);
+		RenderingRegistry.registerEntityRenderingHandler(EntityMagmaBlast.class, RenderMagmaBlast::new);
+		RenderingRegistry.registerEntityRenderingHandler(EntityMagmaPool.class, RenderMagmaPool::new);
 		RenderingRegistry.registerEntityRenderingHandler(EntityJawTrap.class, RenderJawTrap::new);
 		RenderingRegistry.registerEntityRenderingHandler(EntityBloodTotem.class, RenderBloodTotem::new);
 		RenderingRegistry.registerEntityRenderingHandler(EntityGoblinNest.class, RenderGoblinNest::new);

@@ -1,5 +1,6 @@
 package com.windanesz.tracesofthefallen.entity;
 
+import com.windanesz.tracesofthefallen.Settings;
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
 import com.windanesz.tracesofthefallen.item.ItemGraveRose;
 import net.minecraft.block.state.IBlockState;
@@ -53,11 +54,10 @@ public class EntityFamiliarSpecter extends EntityCreature implements IEntityOwna
 	@Override
 	protected void applyEntityAttributes() {
 		super.applyEntityAttributes();
-		this.getAttributeMap().registerAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(3D);
-		this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(20.0D);
+		this.getAttributeMap().registerAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(Settings.goblinSettings.specterAttackDamage);
+		this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(Settings.goblinSettings.specterMaxHealth);
 		this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(32.0D);
 		this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.2D);
-		this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(3.0D);
 	}
 
 	@Override
@@ -137,7 +137,8 @@ public class EntityFamiliarSpecter extends EntityCreature implements IEntityOwna
 
 	@Override
 	public boolean attackEntityAsMob(Entity entityIn) {
-		return entityIn.attackEntityFrom(DamageSource.causeMobDamage(this), (float) this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).getBaseValue());
+		EntityLivingBase owner = this.getOwner();
+		return entityIn.attackEntityFrom(DamageSource.causeIndirectMagicDamage(this, owner != null ? owner : this), (float) this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).getAttributeValue());
 	}
 
 	@Override
@@ -541,3 +542,4 @@ public class EntityFamiliarSpecter extends EntityCreature implements IEntityOwna
 		}
 	}
 }
+

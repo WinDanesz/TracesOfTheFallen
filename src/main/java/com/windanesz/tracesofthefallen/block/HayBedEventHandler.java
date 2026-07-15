@@ -134,7 +134,7 @@ public final class HayBedEventHandler {
 		}
 
 		if (block instanceof BlockHayBed) {
-			if (event.updateWorld()) {
+			if (event.shouldSetSpawn() || player.getSleepTimer() >= 100) {
 				player.addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, 600, 0));
 				world.destroyBlock(mainPos, false);
 			}

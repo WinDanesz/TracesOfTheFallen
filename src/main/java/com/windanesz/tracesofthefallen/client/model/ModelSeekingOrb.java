@@ -41,7 +41,7 @@ public class ModelSeekingOrb extends ModelBase {
         ModelRenderer trail2_mesh = new ModelRenderer(this);
         trail2_mesh.setRotationPoint(0.0F, 0.0F, 0.0F);
         trail2.addChild(trail2_mesh);
-        setRotationAngle(trail2_mesh, 0.7854F, 0.0F, 1.5708F);
+        setRotationAngle(trail2_mesh, 0.0F, 0.0F, 1.5708F);
         trail2_mesh.cubeList.add(new ModelBox(trail2_mesh, -16, 0, -8.0F, 0.0F, -8.0F, 16, 0, 16, 0.0F, false));
     }
 
@@ -56,13 +56,16 @@ public class ModelSeekingOrb extends ModelBase {
 
     @Override
     public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn) {
-        float angle = ageInTicks * 0.03927F; // ~2.25 degrees per tick (rotates 22.5 degrees every 10 ticks)
-        nucleus.rotateAngleZ = angle;
-        layer1.rotateAngleZ = 0.6155F + angle;
-        trail1.rotateAngleX = -angle; // rotating on X axis in opposite direction
-        trail1.rotateAngleY = 0.0F;
+        float coreAngle = ageInTicks * 0.1178F; // ~6.75 degrees per tick (3x original speed)
+        float trailAngle = ageInTicks * 0.4712F; // ~27 degrees per tick (12x original speed)
+        nucleus.rotateAngleZ = coreAngle;
+        layer1.rotateAngleZ = 0.6155F + coreAngle;
+        trail1.rotateAngleX = 0.0F;
+        trail1.rotateAngleY = -trailAngle; // rotating on Y axis
         trail1.rotateAngleZ = 0.0F;
-        trail2.rotateAngleY = angle;
+        trail2.rotateAngleX = -trailAngle;
+        trail2.rotateAngleY = 0.0F;
+        trail2.rotateAngleZ = 0.0F;
     }
 
     public void setRotationAngle(ModelRenderer modelRenderer, float x, float y, float z) {

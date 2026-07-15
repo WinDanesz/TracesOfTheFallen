@@ -1,34 +1,39 @@
 package com.windanesz.tracesofthefallen.entity;
 
+import com.windanesz.tracesofthefallen.Settings;
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
 import com.windanesz.tracesofthefallen.init.ModSounds;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityCreature;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.*;
 import net.minecraft.entity.ai.*;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 
 import javax.annotation.Nullable;
 import java.util.Random;
+import java.util.UUID;
 
-public class EntitySpecter extends EntityMob {
+public class EntitySpecter extends EntityMob implements IEntityOwnable {
 
     protected static final DataParameter<Boolean> ATTACKING = EntityDataManager.createKey(EntitySpecter.class, DataSerializers.BOOLEAN);
+    protected static final DataParameter<String> OWNER_UNIQUE_ID = EntityDataManager.createKey(EntitySpecter.class, DataSerializers.STRING);
     public static final ResourceLocation LOOT_TABLE = new ResourceLocation(TracesOfTheFallen.MODID, "entities/specter");
+    private EntityLivingBase cachedOwner;
+    private int lifespan = 3600;
 
     public EntitySpecter(World worldIn) {
         super(worldIn);
@@ -41,25 +46,79 @@ public class EntitySpecter extends EntityMob {
     @Override
     protected void initEntityAI() {
         this.tasks.addTask(4, new AIAttack(this));
-        this.tasks.addTask(5, new AIRandomFly(this));
+        this.tasks.addTask(5, new AISpecterFollowOwner(this, 1.0D, 5.0F, 3.0F));
+        this.tasks.addTask(6, new AIRandomFly(this));
         this.tasks.addTask(7, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
-        this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, true, new Class[0]));
-        this.targetTasks.addTask(2, new AIFindPlayerToAttack(this));
+        this.targetTasks.addTask(1, new AISpecterOwnerHurtByTarget(this));
+        this.targetTasks.addTask(2, new AISpecterOwnerHurtTarget(this));
+        this.targetTasks.addTask(3, new EntityAIHurtByTarget(this, true, new Class[0]));
+        this.targetTasks.addTask(4, new AIFindPlayerToAttack(this));
     }
 
     @Override
     protected void applyEntityAttributes() {
         super.applyEntityAttributes();
-        this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(20.0D);
+        this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(Settings.goblinSettings.specterMaxHealth);
         this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(32.0D);
         this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.2D);
-        this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(3.0D);
+        this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(Settings.goblinSettings.specterAttackDamage);
     }
 
     @Override
     protected void entityInit() {
         super.entityInit();
         this.dataManager.register(ATTACKING, false);
+        this.dataManager.register(OWNER_UNIQUE_ID, "");
+    }
+
+    @Override
+    @Nullable
+    public UUID getOwnerId() {
+        try {
+            String s = this.dataManager.get(OWNER_UNIQUE_ID);
+            return s.isEmpty() ? null : UUID.fromString(s);
+        } catch (IllegalArgumentException illegalargumentexception) {
+            return null;
+        }
+    }
+
+    public void setOwnerId(@Nullable UUID ownerId) {
+        this.dataManager.set(OWNER_UNIQUE_ID, ownerId == null ? "" : ownerId.toString());
+    }
+
+    @Override
+    @Nullable
+    public EntityLivingBase getOwner() {
+        try {
+            UUID uuid = this.getOwnerId();
+            if (uuid == null) return null;
+            if (this.cachedOwner != null && !this.cachedOwner.isDead && uuid.equals(this.cachedOwner.getUniqueID())) {
+                return this.cachedOwner;
+            }
+            EntityPlayer player = this.world.getPlayerEntityByUUID(uuid);
+            if (player != null) {
+                this.cachedOwner = player;
+                return player;
+            }
+            for (Entity entity : this.world.loadedEntityList) {
+                if (entity instanceof EntityLivingBase && uuid.equals(entity.getUniqueID())) {
+                    this.cachedOwner = (EntityLivingBase) entity;
+                    return this.cachedOwner;
+                }
+            }
+            return null;
+        } catch (IllegalArgumentException illegalargumentexception) {
+            return null;
+        }
+    }
+
+    public void setOwner(@Nullable EntityLivingBase owner) {
+        this.cachedOwner = owner;
+        this.setOwnerId(owner == null ? null : owner.getUniqueID());
+    }
+
+    public boolean isOwner(Entity entityIn) {
+        return entityIn != null && entityIn == this.getOwner();
     }
 
     public void setAttacking(boolean attacking) {
@@ -71,7 +130,31 @@ public class EntitySpecter extends EntityMob {
     }
 
     @Override
+    public void setAttackTarget(@Nullable EntityLivingBase entitylivingbaseIn) {
+        if (this.isOwner(entitylivingbaseIn)) {
+            super.setAttackTarget(null);
+            return;
+        }
+        if (this.getOwner() instanceof com.windanesz.tracesofthefallen.entity.EntityGoblinShaman && com.windanesz.tracesofthefallen.entity.shaman.ShamanSpells.isAlly((com.windanesz.tracesofthefallen.entity.EntityGoblinShaman) this.getOwner(), entitylivingbaseIn)) {
+            super.setAttackTarget(null);
+            return;
+        }
+        super.setAttackTarget(entitylivingbaseIn);
+    }
+
+    @Override
     public boolean attackEntityFrom(DamageSource source, float amount) {
+        if (this.isEntityInvulnerable(source)) {
+            return false;
+        }
+        if (source.getTrueSource() != null) {
+            if (this.isOwner(source.getTrueSource())) {
+                return false;
+            }
+            if (this.getOwner() instanceof com.windanesz.tracesofthefallen.entity.EntityGoblinShaman && com.windanesz.tracesofthefallen.entity.shaman.ShamanSpells.isAlly((com.windanesz.tracesofthefallen.entity.EntityGoblinShaman) this.getOwner(), source.getTrueSource())) {
+                return false;
+            }
+        }
         if (source.getTrueSource() instanceof EntityPlayer) {
             return super.attackEntityFrom(source, amount);
         }
@@ -86,13 +169,48 @@ public class EntitySpecter extends EntityMob {
 
     @Override
     public boolean attackEntityAsMob(Entity entityIn) {
-        return entityIn.attackEntityFrom(DamageSource.causeMobDamage(this), (float) this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).getBaseValue());
+        EntityLivingBase owner = this.getOwner();
+        return entityIn.attackEntityFrom(DamageSource.causeIndirectMagicDamage(this, owner != null ? owner : this), (float) this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).getAttributeValue());
     }
 
     @Override
     public void onLivingUpdate() {
         super.onLivingUpdate();
         this.noClip = true;
+        if (!this.world.isRemote && this.getOwnerId() != null) {
+            if (--this.lifespan <= 0 || (this.getOwner() == null && this.ticksExisted > 600)) {
+                if (this.world instanceof WorldServer) {
+                    ((WorldServer) this.world).spawnParticle(EnumParticleTypes.SMOKE_LARGE, this.posX, this.posY + 1.0D, this.posZ, 20, 0.3D, 0.5D, 0.3D, 0.05D);
+                }
+                this.world.playSound(null, this.posX, this.posY, this.posZ, SoundEvents.ENTITY_VEX_DEATH, this.getSoundCategory(), 1.0F, 1.0F);
+                this.setDead();
+            }
+        }
+    }
+
+    @Override
+    public void writeEntityToNBT(NBTTagCompound compound) {
+        super.writeEntityToNBT(compound);
+        compound.setInteger("Lifespan", this.lifespan);
+        if (this.getOwnerId() == null) {
+            compound.setString("OwnerUUID", "");
+        } else {
+            compound.setString("OwnerUUID", this.getOwnerId().toString());
+        }
+    }
+
+    @Override
+    public void readEntityFromNBT(NBTTagCompound compound) {
+        super.readEntityFromNBT(compound);
+        if (compound.hasKey("Lifespan")) {
+            this.lifespan = compound.getInteger("Lifespan");
+        }
+        if (compound.hasKey("OwnerUUID", 8)) {
+            String s = compound.getString("OwnerUUID");
+            if (!s.isEmpty()) {
+                this.setOwnerId(UUID.fromString(s));
+            }
+        }
     }
 
     @Nullable
@@ -256,6 +374,9 @@ public class EntitySpecter extends EntityMob {
 
         @Override
         public boolean shouldExecute() {
+            if (((EntitySpecter)this.taskOwner).getOwnerId() != null) {
+                return false;
+            }
             return super.shouldExecute() && this.target != null;
         }
     }
@@ -270,6 +391,12 @@ public class EntitySpecter extends EntityMob {
 
         @Override
         public boolean shouldExecute() {
+            if (this.parentEntity.getOwnerId() != null && this.parentEntity.getRNG().nextInt(30) != 0) {
+                return false;
+            }
+            if (this.parentEntity.getOwnerId() != null && this.parentEntity.getAttackTarget() == null && this.parentEntity.getOwner() != null && this.parentEntity.getDistanceSq(this.parentEntity.getOwner()) > 64.0D) {
+                return false;
+            }
             EntityMoveHelper entitymovehelper = this.parentEntity.getMoveHelper();
             if (!entitymovehelper.isUpdating()) {
                 return true;
@@ -294,6 +421,131 @@ public class EntitySpecter extends EntityMob {
             double d1 = this.parentEntity.posY + (double) ((random.nextFloat() * 2.0F - 1.0F) * 4.0F);
             double d2 = this.parentEntity.posZ + (double) ((random.nextFloat() * 2.0F - 1.0F) * 4.0F);
             this.parentEntity.getMoveHelper().setMoveTo(d0, d1, d2, 1.0D);
+        }
+    }
+
+    static class AISpecterFollowOwner extends EntityAIBase {
+        private final EntitySpecter specter;
+        private EntityLivingBase owner;
+        private final World world;
+        private final double followSpeed;
+        private final float minDist;
+        private final float maxDist;
+        private int timeToRecalcPath;
+
+        public AISpecterFollowOwner(EntitySpecter specter, double speed, float min, float max) {
+            this.specter = specter;
+            this.world = specter.world;
+            this.followSpeed = speed;
+            this.minDist = min;
+            this.maxDist = max;
+            this.setMutexBits(3);
+        }
+
+        @Override
+        public boolean shouldExecute() {
+            EntityLivingBase owner = this.specter.getOwner();
+            if (owner == null) {
+                return false;
+            } else if (this.specter.getDistanceSq(owner) < (double) (this.minDist * this.minDist)) {
+                return false;
+            } else {
+                this.owner = owner;
+                return true;
+            }
+        }
+
+        @Override
+        public boolean shouldContinueExecuting() {
+            return this.specter.getDistanceSq(this.owner) > (double) (this.maxDist * this.maxDist);
+        }
+
+        @Override
+        public void startExecuting() {
+            this.timeToRecalcPath = 0;
+        }
+
+        @Override
+        public void resetTask() {
+            this.owner = null;
+            this.specter.getMoveHelper().action = EntityMoveHelper.Action.WAIT;
+        }
+
+        @Override
+        public void updateTask() {
+            this.specter.getLookHelper().setLookPositionWithEntity(this.owner, 10.0F, (float) this.specter.getVerticalFaceSpeed());
+            if (--this.timeToRecalcPath <= 0) {
+                this.timeToRecalcPath = 10;
+                this.specter.getMoveHelper().setMoveTo(this.owner.posX, this.owner.posY + 1.5D, this.owner.posZ, this.followSpeed);
+            }
+        }
+    }
+
+    static class AISpecterOwnerHurtByTarget extends EntityAITarget {
+        EntitySpecter specter;
+        EntityLivingBase attacker;
+        private int timestamp;
+
+        public AISpecterOwnerHurtByTarget(EntitySpecter specter) {
+            super(specter, false);
+            this.specter = specter;
+            this.setMutexBits(1);
+        }
+
+        @Override
+        public boolean shouldExecute() {
+            EntityLivingBase owner = this.specter.getOwner();
+            if (owner == null) {
+                return false;
+            } else {
+                this.attacker = owner.getRevengeTarget();
+                int i = owner.getRevengeTimer();
+                return i != this.timestamp && this.isSuitableTarget(this.attacker, false);
+            }
+        }
+
+        @Override
+        public void startExecuting() {
+            this.taskOwner.setAttackTarget(this.attacker);
+            EntityLivingBase owner = this.specter.getOwner();
+            if (owner != null) {
+                this.timestamp = owner.getRevengeTimer();
+            }
+            super.startExecuting();
+        }
+    }
+
+    static class AISpecterOwnerHurtTarget extends EntityAITarget {
+        EntitySpecter specter;
+        EntityLivingBase target;
+        private int timestamp;
+
+        public AISpecterOwnerHurtTarget(EntitySpecter specter) {
+            super(specter, false);
+            this.specter = specter;
+            this.setMutexBits(1);
+        }
+
+        @Override
+        public boolean shouldExecute() {
+            EntityLivingBase owner = this.specter.getOwner();
+            if (owner == null) {
+                return false;
+            } else {
+                this.target = owner.getLastAttackedEntity();
+                int i = owner.getLastAttackedEntityTime();
+                return i != this.timestamp && this.isSuitableTarget(this.target, false);
+            }
+        }
+
+        @Override
+        public void startExecuting() {
+            this.taskOwner.setAttackTarget(this.target);
+            EntityLivingBase owner = this.specter.getOwner();
+            if (owner != null) {
+                this.timestamp = owner.getLastAttackedEntityTime();
+            }
+            super.startExecuting();
         }
     }
 
@@ -355,3 +607,4 @@ public class EntitySpecter extends EntityMob {
         }
     }
 }
+
