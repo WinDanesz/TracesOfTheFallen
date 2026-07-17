@@ -2,6 +2,9 @@ package com.windanesz.tracesofthefallen.entity;
 
 import com.windanesz.tracesofthefallen.Settings;
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
+import com.windanesz.tracesofthefallen.network.PacketHandler;
+import com.windanesz.tracesofthefallen.packet.PacketSpawnCrumbs;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.*;
@@ -184,17 +187,18 @@ public class EntityGoblinSkeleton extends EntityMob implements IEntityOwnable {
 			if (this.ticksExisted <= 60) {
 				this.motionX = 0.0D;
 				this.motionZ = 0.0D;
-				if (this.world instanceof WorldServer) {
-					WorldServer ws = (WorldServer) this.world;
+				if (this.world.isRemote) {
 					if (this.ticksExisted % 2 == 0) {
-						ws.spawnParticle(EnumParticleTypes.BLOCK_CRACK, this.posX + (this.rand.nextDouble() - 0.5D) * 0.4D, this.posY + 0.1D, this.posZ + (this.rand.nextDouble() - 0.5D) * 0.4D, 3, 0.2D, 0.1D, 0.2D, 0.05D, Block.getIdFromBlock(Blocks.DIRT));
-						ws.spawnParticle(EnumParticleTypes.BLOCK_CRACK, this.posX + (this.rand.nextDouble() - 0.5D) * 0.4D, this.posY + 0.15D, this.posZ + (this.rand.nextDouble() - 0.5D) * 0.4D, 2, 0.2D, 0.1D, 0.2D, 0.05D, Block.getIdFromBlock(Blocks.GRASS));
-						ws.spawnParticle(EnumParticleTypes.BLOCK_CRACK, this.posX, this.posY + 0.15D, this.posZ, 5, 0.08D, 0.1D, 0.08D, 0.06D, Block.getIdFromBlock(Blocks.DIRT));
-						ws.spawnParticle(EnumParticleTypes.BLOCK_CRACK, this.posX, this.posY + 0.18D, this.posZ, 3, 0.06D, 0.08D, 0.06D, 0.05D, Block.getIdFromBlock(Blocks.GRASS));
+						for (int i = 0; i < 3; i++) {
+							TracesOfTheFallen.proxy.spawnCrumbsParticle(this.world, this.posX + (this.rand.nextDouble() - 0.5D) * 0.4D, this.posY + 0.1D, this.posZ + (this.rand.nextDouble() - 0.5D) * 0.4D, (this.rand.nextDouble() - 0.5D) * 0.1D, 0.05D + this.rand.nextDouble() * 0.05D, (this.rand.nextDouble() - 0.5D) * 0.1D);
+						}
 					}
 					if (this.ticksExisted > 12 && this.ticksExisted <= 45 && this.ticksExisted % 2 == 0) {
-						ws.spawnParticle(EnumParticleTypes.BLOCK_CRACK, this.posX, this.posY + 0.25D, this.posZ, 4, 0.1D, 0.15D, 0.1D, 0.07D, Block.getIdFromBlock(Blocks.DIRT));
+						for (int i = 0; i < 2; i++) {
+							TracesOfTheFallen.proxy.spawnCrumbsParticle(this.world, this.posX + (this.rand.nextDouble() - 0.5D) * 0.3D, this.posY + 0.25D, this.posZ + (this.rand.nextDouble() - 0.5D) * 0.3D, (this.rand.nextDouble() - 0.5D) * 0.1D, 0.07D + this.rand.nextDouble() * 0.04D, (this.rand.nextDouble() - 0.5D) * 0.1D);
+						}
 					}
+				} else {
 					if (this.ticksExisted % 4 == 0) {
 						this.world.playSound(null, this.posX, this.posY, this.posZ, SoundEvents.BLOCK_GRAVEL_BREAK, this.getSoundCategory(), 0.8F, 0.8F + this.rand.nextFloat() * 0.4F);
 					}
@@ -203,7 +207,10 @@ public class EntityGoblinSkeleton extends EntityMob implements IEntityOwnable {
 
 			if (--this.lifespan <= 0 || (this.getOwner() == null && this.ticksExisted > 600)) {
 				if (this.world instanceof WorldServer) {
-					((WorldServer) this.world).spawnParticle(EnumParticleTypes.BLOCK_CRACK, this.posX, this.posY + 0.6D, this.posZ, 25, 0.3D, 0.5D, 0.3D, 0.05D, Block.getIdFromBlock(Blocks.BONE_BLOCK));
+					PacketHandler.net.sendToAllAround(
+							new PacketSpawnCrumbs(this.posX, this.posY + 0.6D, this.posZ, 25, 0.3D, 0.5D, 0.3D),
+							new NetworkRegistry.TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64.0D)
+					);
 				}
 				this.world.playSound(null, this.posX, this.posY, this.posZ, SoundEvents.ENTITY_SKELETON_DEATH, this.getSoundCategory(), 1.0F, 1.0F);
 				this.setDead();

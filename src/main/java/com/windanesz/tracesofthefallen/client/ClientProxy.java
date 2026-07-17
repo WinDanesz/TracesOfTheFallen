@@ -43,10 +43,12 @@ public class ClientProxy extends CommonProxy {
 	private static final ResourceLocation PUDDLE_BLOOD_SPRITE = new ResourceLocation(TracesOfTheFallen.MODID, "particle/puddle_blood");
 	private static final ResourceLocation FROST_SPRITE = new ResourceLocation(TracesOfTheFallen.MODID, "particle/frost");
 	private static final ResourceLocation WIND_SPRITE = new ResourceLocation(TracesOfTheFallen.MODID, "particle/wind");
+	private static final ResourceLocation CRUMBS_SPRITE = new ResourceLocation(TracesOfTheFallen.MODID, "particle/crumbs");
 	private static TextureAtlasSprite incenseLineSprite;
 	private static TextureAtlasSprite puddleBloodSprite;
 	private static TextureAtlasSprite frostSprite;
 	private static TextureAtlasSprite windSprite;
+	private static TextureAtlasSprite crumbsSprite;
 
 	@Override
 	public void preInit(FMLPreInitializationEvent event) {
@@ -104,6 +106,7 @@ public class ClientProxy extends CommonProxy {
 		puddleBloodSprite = event.getMap().registerSprite(PUDDLE_BLOOD_SPRITE);
 		frostSprite = event.getMap().registerSprite(FROST_SPRITE);
 		windSprite = event.getMap().registerSprite(WIND_SPRITE);
+		crumbsSprite = event.getMap().registerSprite(CRUMBS_SPRITE);
 	}
 
 	public static TextureAtlasSprite getIncenseLineSprite() {
@@ -116,6 +119,10 @@ public class ClientProxy extends CommonProxy {
 
 	public static TextureAtlasSprite getFrostSprite() {
 		return frostSprite != null ? frostSprite : windSprite;
+	}
+
+	public static TextureAtlasSprite getCrumbsSprite() {
+		return crumbsSprite;
 	}
 
 	private void registerEntityRenderers() {
@@ -287,6 +294,11 @@ public class ClientProxy extends CommonProxy {
 	@Override
 	public void spawnLifestealParticle(World world, double x, double y, double z, int targetEntityId) {
 		Minecraft.getMinecraft().effectRenderer.addEffect(new ParticleLifestealStream(world, x, y, z, targetEntityId));
+	}
+
+	@Override
+	public void spawnCrumbsParticle(World world, double x, double y, double z, double motionX, double motionY, double motionZ) {
+		Minecraft.getMinecraft().effectRenderer.addEffect(new ParticleCrumbs(world, x, y, z, motionX, motionY, motionZ));
 	}
 
 	/**

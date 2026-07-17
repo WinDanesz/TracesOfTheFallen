@@ -149,14 +149,14 @@ public class EntityGoblinTunneler extends EntityGoblin {
 	@Override
 	protected void setEquipmentBasedOnDifficulty(DifficultyInstance difficulty) {
 		super.setEquipmentBasedOnDifficulty(difficulty);
-		this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(Items.WOODEN_PICKAXE));
+		this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(Items.STONE_PICKAXE));
 	}
 
 	@Override
 	public void onLivingUpdate() {
 		super.onLivingUpdate();
 		if (!this.world.isRemote && this.getBlocksDug() < 50 && this.getHeldItemMainhand().isEmpty()) {
-			this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(Items.WOODEN_PICKAXE));
+			this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(Items.STONE_PICKAXE));
 		}
 	}
 }

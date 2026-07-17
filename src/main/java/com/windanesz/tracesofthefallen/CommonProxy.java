@@ -46,5 +46,8 @@ public class CommonProxy {
 
 	public void spawnLifestealParticle(World world, double x, double y, double z, int targetEntityId) {
 	}
+
+	public void spawnCrumbsParticle(World world, double x, double y, double z, double motionX, double motionY, double motionZ) {
+	}
 }
 

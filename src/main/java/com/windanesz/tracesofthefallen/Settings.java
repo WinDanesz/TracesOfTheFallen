@@ -486,10 +486,18 @@ public class Settings {
 		@Config.RangeInt(min = 1, max = 6000)
 		public int wroughtBombFuseTime = 200;
 
-		@Config.Name("Tunneler Dig Speed Multiplier")
-		@Config.Comment("Multiplier for how fast goblin tunnelers dig blocks. Higher is faster. Default: 1.0")
-		@Config.RangeDouble(min = 0.05D, max = 50.0D)
-		public double tunnelerDigSpeedMultiplier = 1.0D;
+		@Config.Name("Tunneler Global Block Break Time")
+		@Config.Comment("Base block break time (in ticks) per unit of block hardness when mined by a goblin tunneler. Default: 30")
+		@Config.RangeInt(min = 1, max = 10000)
+		public int tunnelerGlobalBlockBreakTime = 30;
+
+		@Config.Name("Tunneler Block Break Time Overrides")
+		@Config.Comment("List of per-block break time overrides (in ticks) for goblin tunnelers. Format: 'modid:blockname:ticks' or 'modid:blockname:meta:ticks'. Examples: 'minecraft:obsidian:200', 'minecraft:stone:0:15'. If set, overrides the base hardness time.")
+		public String[] tunnelerBlockBreakTimeOverrides = new String[0];
+
+		@Config.Name("Tunneler Tool Progression Max Mining Level")
+		@Config.Comment("If set (e.g. '3'), goblin tunnelers will only be allowed to break blocks with a mining/harvest level less than or equal to this value (e.g. <= 3). When Tool Progression mod is installed, this checks the block mining levels configured by Tool Progression. Leave empty ('') to disable this restriction and allow breaking any mineable block.")
+		public String tunnelerToolProgressionMaxMiningLevel = "";
 
 		@Config.Name("Fetid Dagger Melee Damage")
 		@Config.Comment("Base melee attack damage dealt by the Fetid Dagger. Default: 4.0")
@@ -663,9 +671,9 @@ public class Settings {
 		public double goblinSapperAttackDamage = 3.0D;
 
 		@Config.Name("Goblin Shaman Max Health")
-		@Config.Comment("Max health for the Goblin Shaman. Default: 14.0")
+		@Config.Comment("Max health for the Goblin Shaman. Default: 30.0")
 		@Config.RangeDouble(min = 1.0D, max = 10000.0D)
-		public double goblinShamanMaxHealth = 14.0D;
+		public double goblinShamanMaxHealth = 30.0D;
 
 		@Config.Name("Goblin Shaman Attack Damage")
 		@Config.Comment("Base attack damage for the Goblin Shaman. Default: 2.0")
@@ -733,9 +741,9 @@ public class Settings {
 		public double goblinSkeletonAttackDamage = 2.0D;
 
 		@Config.Name("Tinybones Max Health")
-		@Config.Comment("Max health for the Tinybones skeleton variant. Default: 10.0")
+		@Config.Comment("Max health for the Tinybones skeleton variant. Default: 25.0")
 		@Config.RangeDouble(min = 1.0D, max = 10000.0D)
-		public double tinybonesMaxHealth = 10.0D;
+		public double tinybonesMaxHealth = 25.0D;
 
 		@Config.Name("Tinybones Life Leech Attack Damage")
 		@Config.Comment("Base attack damage per tick tick interval (every 10 ticks) for Tinybones Life Leech. Default: 0.6 (0.3 hearts)")
@@ -761,6 +769,7 @@ public class Settings {
                 ConfigManager.sync(TracesOfTheFallen.MODID, Config.Type.INSTANCE);
                 HauntingCapability.clearHauntingBlockCache();
                 TileEntityPorcelainVessel.clearHeatSourcesCache();
+                com.windanesz.tracesofthefallen.entity.ai.GoblinAITunnelerDig.clearBreakOverridesCache();
             }
         }
     }

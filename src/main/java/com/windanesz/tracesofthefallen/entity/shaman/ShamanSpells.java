@@ -2,6 +2,9 @@ package com.windanesz.tracesofthefallen.entity.shaman;
 
 import com.windanesz.tracesofthefallen.Settings;
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
+import com.windanesz.tracesofthefallen.network.PacketHandler;
+import com.windanesz.tracesofthefallen.packet.PacketSpawnCrumbs;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
 import com.windanesz.tracesofthefallen.entity.*;
 import com.windanesz.tracesofthefallen.init.ModItems;
 import net.minecraft.block.Block;
@@ -200,12 +203,12 @@ public class ShamanSpells {
 
 		@Override
 		public boolean canStartCastingIgnoringRng(EntityGoblinShaman shaman, EntityLivingBase target) {
-			if (!super.canStartCastingIgnoringRng(shaman, target) || target == null || shaman.getDistanceSq(target) >= 25.0D) {
+			if (!super.canStartCastingIgnoringRng(shaman, target) || target == null || shaman.getDistanceSq(target) >= 36.0D) {
 				return false;
 			}
-			List<EntityLivingBase> nearbyEnemies = shaman.world.getEntitiesWithinAABB(EntityLivingBase.class, shaman.getEntityBoundingBox().grow(5.0D, 3.0D, 5.0D));
+			List<EntityLivingBase> nearbyEnemies = shaman.world.getEntitiesWithinAABB(EntityLivingBase.class, shaman.getEntityBoundingBox().grow(6.0D, 3.5D, 6.0D));
 			for (EntityLivingBase entity : nearbyEnemies) {
-				if (entity.isEntityAlive() && entity != shaman && shaman.getDistanceSq(entity) < 25.0D && !isAlly(shaman, entity) && shaman.getEntitySenses().canSee(entity)) {
+				if (entity.isEntityAlive() && entity != shaman && shaman.getDistanceSq(entity) < 36.0D && !isAlly(shaman, entity) && shaman.getEntitySenses().canSee(entity)) {
 					return true;
 				}
 			}
@@ -254,14 +257,15 @@ public class ShamanSpells {
 						double mz = (shaman.posZ - pz) * 0.05D;
 						TracesOfTheFallen.proxy.spawnChillParticle(shaman.world, px, py, pz, mx, my, mz);
 					}
-					for (int i = 0; i < 4; i++) {
+					for (int i = 0; i < 5; i++) {
 						double ringAngle = shaman.getRNG().nextDouble() * Math.PI * 2.0D;
 						double ringX = shaman.posX + Math.cos(ringAngle) * 6.0D;
 						double ringZ = shaman.posZ + Math.sin(ringAngle) * 6.0D;
 						double ringY = shaman.posY + 0.1D + shaman.getRNG().nextDouble() * 0.3D;
 						TracesOfTheFallen.proxy.spawnChillParticle(shaman.world, ringX, ringY, ringZ, 0.0D, 0.02D, 0.0D);
+						shaman.world.spawnParticle(EnumParticleTypes.SNOWBALL, ringX, ringY, ringZ, 0.0D, 0.01D, 0.0D);
 						if (shaman.getRNG().nextBoolean()) {
-							shaman.world.spawnParticle(EnumParticleTypes.SNOWBALL, ringX, ringY, ringZ, 0.0D, 0.01D, 0.0D);
+							shaman.world.spawnParticle(EnumParticleTypes.SNOW_SHOVEL, ringX, ringY, ringZ, 0.0D, 0.02D, 0.0D);
 						}
 					}
 				} else if (castTimer == 1) {
@@ -291,6 +295,13 @@ public class ShamanSpells {
 						if (!isAlly(shaman, entity)) {
 							entity.attackEntityFrom(DamageSource.causeIndirectMagicDamage(shaman, shaman), (float) Settings.miscSettings.shamanChillPulseDamage);
 							entity.addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, 420, 1));
+							double dx = entity.posX - shaman.posX;
+							double dz = entity.posZ - shaman.posZ;
+							double dist = MathHelper.sqrt(dx * dx + dz * dz);
+							if (dist > 0.001D) {
+								entity.addVelocity((dx / dist) * 0.7D, 0.35D, (dz / dist) * 0.7D);
+								entity.velocityChanged = true;
+							}
 						}
 					}
 				}
@@ -815,12 +826,44 @@ public class ShamanSpells {
 
 		@Override
 		public void onCastingTick(EntityGoblinShaman shaman, EntityLivingBase target, int castTimer) {
-			if (castTimer % 5 == 0 && shaman.world instanceof WorldServer) {
-				double angle = shaman.getRNG().nextDouble() * Math.PI * 2.0D;
-				double radius = 1.2D;
-				double px = shaman.posX + Math.cos(angle) * radius;
-				double pz = shaman.posZ + Math.sin(angle) * radius;
-				((WorldServer) shaman.world).spawnParticle(EnumParticleTypes.SPELL_MOB, px, shaman.posY + 0.2D, pz, 3, 0.1D, 0.3D, 0.1D, 1.0D);
+			if (shaman.world.isRemote) {
+				if (castTimer > 1) {
+					for (int i = 0; i < 2; i++) {
+						double angle = shaman.getRNG().nextDouble() * Math.PI * 2.0D;
+						double radius = 0.8D + shaman.getRNG().nextDouble() * 1.2D;
+						double px = shaman.posX + Math.cos(angle) * radius;
+						double py = shaman.posY + shaman.getRNG().nextDouble() * 1.5D;
+						double pz = shaman.posZ + Math.sin(angle) * radius;
+						TracesOfTheFallen.proxy.spawnCrumbsParticle(shaman.world, px, py, pz, 0.0D, 0.04D + shaman.getRNG().nextDouble() * 0.02D, 0.0D);
+					}
+					for (int i = 0; i < 4; i++) {
+						double ringAngle = shaman.getRNG().nextDouble() * Math.PI * 2.0D;
+						double ringX = shaman.posX + Math.cos(ringAngle) * 4.5D;
+						double ringZ = shaman.posZ + Math.sin(ringAngle) * 4.5D;
+						double ringY = shaman.posY + 0.1D + shaman.getRNG().nextDouble() * 0.3D;
+						TracesOfTheFallen.proxy.spawnCrumbsParticle(shaman.world, ringX, ringY, ringZ, 0.0D, 0.03D, 0.0D);
+						if (shaman.getRNG().nextBoolean()) {
+							TracesOfTheFallen.proxy.spawnCrumbsParticle(shaman.world, ringX, ringY, ringZ, 0.0D, 0.01D, 0.0D);
+						}
+					}
+				} else if (castTimer == 1) {
+					for (int i = 0; i < 80; i++) {
+						double angle = shaman.getRNG().nextDouble() * Math.PI * 2.0D;
+						double speed = 0.15D + shaman.getRNG().nextDouble() * 0.35D;
+						double mx = Math.cos(angle) * speed;
+						double mz = Math.sin(angle) * speed;
+						double my = (shaman.getRNG().nextDouble() - 0.2D) * 0.2D;
+						TracesOfTheFallen.proxy.spawnCrumbsParticle(shaman.world, shaman.posX, shaman.posY + 1.0D, shaman.posZ, mx, my, mz);
+					}
+				}
+			} else {
+				if (castTimer % 5 == 0 && shaman.world instanceof WorldServer) {
+					double angle = shaman.getRNG().nextDouble() * Math.PI * 2.0D;
+					double radius = 1.2D;
+					double px = shaman.posX + Math.cos(angle) * radius;
+					double pz = shaman.posZ + Math.sin(angle) * radius;
+					((WorldServer) shaman.world).spawnParticle(EnumParticleTypes.SPELL_MOB, px, shaman.posY + 0.2D, pz, 3, 0.1D, 0.3D, 0.1D, 1.0D);
+				}
 			}
 		}
 
@@ -830,6 +873,20 @@ public class ShamanSpells {
 				shaman.world.playSound(null, shaman.posX, shaman.posY, shaman.posZ, SoundEvents.ENTITY_SKELETON_STEP, SoundCategory.HOSTILE, 1.2F, 0.8F);
 				shaman.world.playSound(null, shaman.posX, shaman.posY, shaman.posZ, SoundEvents.ENTITY_ZOMBIE_INFECT, SoundCategory.HOSTILE, 1.0F, 1.2F);
 				shaman.setCooldown(this, this.getTierCooldown(shaman));
+				List<EntityLivingBase> targets = shaman.world.getEntitiesWithinAABB(EntityLivingBase.class, shaman.getEntityBoundingBox().grow(4.5D, 2.5D, 4.5D));
+				for (EntityLivingBase entity : targets) {
+					if (entity.isEntityAlive() && entity != shaman && shaman.getDistanceSq(entity) <= 20.25D) {
+						if (!isAlly(shaman, entity)) {
+							double dx = entity.posX - shaman.posX;
+							double dz = entity.posZ - shaman.posZ;
+							double dist = MathHelper.sqrt(dx * dx + dz * dz);
+							if (dist > 0.001D) {
+								entity.addVelocity((dx / dist) * 0.7D, 0.35D, (dz / dist) * 0.7D);
+								entity.velocityChanged = true;
+							}
+						}
+					}
+				}
 				if (shaman.getRNG().nextInt(4) == 0) {
 					com.windanesz.tracesofthefallen.entity.EntityTinybones tinybones = new com.windanesz.tracesofthefallen.entity.EntityTinybones(shaman.world);
 					double angle = shaman.getRNG().nextDouble() * Math.PI * 2.0D;
@@ -843,7 +900,10 @@ public class ShamanSpells {
 					}
 					shaman.world.spawnEntity(tinybones);
 					if (shaman.world instanceof WorldServer) {
-						((WorldServer) shaman.world).spawnParticle(EnumParticleTypes.BLOCK_CRACK, sx, shaman.posY + 0.5D, sz, 30, 0.3D, 0.5D, 0.3D, 0.05D, Block.getIdFromBlock(Blocks.BONE_BLOCK));
+						PacketHandler.net.sendToAllAround(
+								new PacketSpawnCrumbs(sx, shaman.posY + 0.5D, sz, 30, 0.3D, 0.5D, 0.3D),
+								new NetworkRegistry.TargetPoint(shaman.dimension, sx, shaman.posY, sz, 64.0D)
+						);
 						((WorldServer) shaman.world).spawnParticle(EnumParticleTypes.SPELL_WITCH, sx, shaman.posY + 0.5D, sz, 10, 0.2D, 0.4D, 0.2D, 0.0D);
 					}
 				} else {
@@ -860,7 +920,10 @@ public class ShamanSpells {
 						}
 						shaman.world.spawnEntity(skeleton);
 						if (shaman.world instanceof WorldServer) {
-							((WorldServer) shaman.world).spawnParticle(EnumParticleTypes.BLOCK_CRACK, sx, shaman.posY + 0.5D, sz, 30, 0.3D, 0.5D, 0.3D, 0.05D, Block.getIdFromBlock(Blocks.BONE_BLOCK));
+							PacketHandler.net.sendToAllAround(
+									new PacketSpawnCrumbs(sx, shaman.posY + 0.5D, sz, 30, 0.3D, 0.5D, 0.3D),
+									new NetworkRegistry.TargetPoint(shaman.dimension, sx, shaman.posY, sz, 64.0D)
+							);
 							((WorldServer) shaman.world).spawnParticle(EnumParticleTypes.SPELL_WITCH, sx, shaman.posY + 0.5D, sz, 10, 0.2D, 0.4D, 0.2D, 0.0D);
 						}
 					}

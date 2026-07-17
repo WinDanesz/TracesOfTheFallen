@@ -2,6 +2,7 @@ package com.windanesz.tracesofthefallen.entity.ai;
 
 import com.windanesz.tracesofthefallen.Settings;
 import com.windanesz.tracesofthefallen.entity.EntityGoblinTunneler;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockLadder;
 import net.minecraft.block.BlockTorch;
 import net.minecraft.block.SoundType;
@@ -17,6 +18,9 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class GoblinAITunnelerDig extends EntityAIBase {
 	private final EntityGoblinTunneler tunneler;
@@ -176,10 +180,12 @@ public class GoblinAITunnelerDig extends EntityAIBase {
 						this.digTimer = 0;
 						IBlockState state = this.world.getBlockState(this.targetDigPos);
 						float hardness = state.getBlockHardness(this.world, this.targetDigPos);
-						// Multiplied by 5x for faster testing
-						double multiplier = Settings.miscSettings.tunnelerDigSpeedMultiplier * 5.0D;
-						if (multiplier <= 0.0D) multiplier = 1.0D;
-						this.maxBreakTime = Math.max(1, (int)((hardness * 15.0F) / multiplier));
+						Integer overrideTicks = getBlockBreakOverride(state);
+						if (overrideTicks != null && overrideTicks > 0) {
+							this.maxBreakTime = overrideTicks;
+						} else {
+							this.maxBreakTime = Math.max(1, (int) Math.round(hardness * Settings.miscSettings.tunnelerGlobalBlockBreakTime));
+						}
 						this.tunneler.getNavigator().clearPath();
 						EnumFacing facingToPlanned = EnumFacing.getFacingFromVector((float)(planned.getX() - this.tunneler.posX), 0, (float)(planned.getZ() - this.tunneler.posZ));
 						this.digFacing = (facingToPlanned != null && facingToPlanned.getAxis() != EnumFacing.Axis.Y) ? facingToPlanned : this.tunneler.getHorizontalFacing();
@@ -247,6 +253,20 @@ public class GoblinAITunnelerDig extends EntityAIBase {
 		if (state.getBlock() == Blocks.LADDER) return false;
 		if (state.getBlockHardness(this.world, p) < 0) return false;
 		if (state.getMaterial().isLiquid()) return false;
+
+		String maxLevelStr = Settings.miscSettings.tunnelerToolProgressionMaxMiningLevel;
+		if (maxLevelStr != null && !maxLevelStr.trim().isEmpty()) {
+			try {
+				int maxLevel = Integer.parseInt(maxLevelStr.trim());
+				int blockLevel = state.getBlock().getHarvestLevel(state);
+				if (blockLevel > maxLevel) {
+					return false;
+				}
+			} catch (NumberFormatException e) {
+				// Ignore invalid setting
+			}
+		}
+
 		return true;
 	}
 
@@ -357,5 +377,38 @@ public class GoblinAITunnelerDig extends EntityAIBase {
 				}
 			}
 		}
+	}
+
+	private static Map<String, Integer> breakOverrideCache = null;
+
+	public static void clearBreakOverridesCache() {
+		breakOverrideCache = null;
+	}
+
+	private static Integer getBlockBreakOverride(IBlockState state) {
+		if (breakOverrideCache == null) {
+			breakOverrideCache = new HashMap<>();
+			for (String entry : Settings.miscSettings.tunnelerBlockBreakTimeOverrides) {
+				if (entry == null || entry.trim().isEmpty()) continue;
+				String[] parts = entry.split(":");
+				if (parts.length < 3) continue;
+				try {
+					boolean hasMeta = parts.length == 4;
+					String key = hasMeta ? parts[0] + ":" + parts[1] + ":" + parts[2] : parts[0] + ":" + parts[1];
+					int ticks = Integer.parseInt(hasMeta ? parts[3] : parts[2]);
+					breakOverrideCache.put(key, ticks);
+				} catch (NumberFormatException e) {
+					com.windanesz.tracesofthefallen.TracesOfTheFallen.LOGGER.warn("Invalid tunneler block break override: " + entry);
+				}
+			}
+		}
+		Block block = state.getBlock();
+		int meta = block.getMetaFromState(state);
+		String blockId = block.getRegistryName().toString();
+		Integer ticks = breakOverrideCache.get(blockId + ":" + meta);
+		if (ticks == null) {
+			ticks = breakOverrideCache.get(blockId);
+		}
+		return ticks;
 	}
 }
