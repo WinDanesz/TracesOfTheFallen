@@ -3,8 +3,6 @@ package com.windanesz.tracesofthefallen.entity;
 import com.windanesz.tracesofthefallen.Settings;
 import com.windanesz.tracesofthefallen.entity.ai.GoblinAITunnelerDig;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
@@ -42,7 +40,6 @@ public class EntityGoblinTunneler extends EntityGoblin {
 	protected void initEntityAI() {
 		super.initEntityAI();
 		this.tasks.addTask(1, new GoblinAITunnelerDig(this));
-		this.targetTasks.addTask(1, new EntityAINearestAttackableTarget<>(this, EntityPlayer.class, false));
 	}
 
 	public int getBlocksDug() {
@@ -80,6 +77,19 @@ public class EntityGoblinTunneler extends EntityGoblin {
 		if (!this.plannedBlocks.contains(pos) && !this.dugBlocks.contains(pos)) {
 			this.plannedBlocks.add(pos);
 		}
+	}
+
+	@Override
+	public boolean isWorking() {
+		return super.isWorking() || !this.plannedBlocks.isEmpty();
+	}
+
+	@Override
+	public double getAITargetY() {
+		if (!this.plannedBlocks.isEmpty()) {
+			return this.plannedBlocks.get(0).getY();
+		}
+		return super.getAITargetY();
 	}
 
 	@Override

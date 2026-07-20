@@ -175,6 +175,10 @@ public class ModItems {
 		registerItemBlock(registry, ModBlocks.bricks_stone_dirty);
 		registerItemBlock(registry, ModBlocks.bricks_stone_mossy);
 		registerItemBlock(registry, ModBlocks.bricks_stone_carved_mossy);
+		registerItemBlock(registry, ModBlocks.bricks_stone_smooth);
+		registerItemBlock(registry, ModBlocks.bricks_stone_pillar_side);
+		registerItemBlock(registry, ModBlocks.bricks_stone_pillar_top);
+		registerItemBlock(registry, ModBlocks.stained_glass);
 		registerItemBlock(registry, ModBlocks.dreamcatcher);
 		registerItemBlock(registry, ModBlocks.stone_chest);
 		registerItemBlock(registry, ModBlocks.stone_chest_open);
@@ -184,6 +188,14 @@ public class ModItems {
 		ModBlocks.bonepile.setCreativeTab(ModCreativeTab.TOTF_TAB);
 		registry.register(bonepileItem);
 		registerItemBlock(registry, ModBlocks.hay_bed);
+		registerItemBlock(registry, ModBlocks.mozaic_pink);
+		registerItemBlock(registry, ModBlocks.mozaic_pink_washed);
+		registerItemBlock(registry, ModBlocks.mozaic_red);
+		registerItemBlock(registry, ModBlocks.mozaic_red_washed);
+		registerItemBlock(registry, ModBlocks.mozaic_teal);
+		registerItemBlock(registry, ModBlocks.mozaic_teal_washed);
+		registerItemBlock(registry, ModBlocks.mozaic_yellow);
+		registerItemBlock(registry, ModBlocks.mozaic_yellow_washed);
 	}
 
 	public static void registerOreDictionary() {

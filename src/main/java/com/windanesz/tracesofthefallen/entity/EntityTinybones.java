@@ -180,7 +180,7 @@ public class EntityTinybones extends EntityGoblinSkeleton {
 				return false;
 			}
 			if (this.tinybones.getFeedingTargetId() > 0) {
-				return false;
+				return true;
 			}
 			return !this.tinybones.getNavigator().noPath();
 		}

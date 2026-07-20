@@ -1,7 +1,6 @@
 package com.windanesz.tracesofthefallen.entity;
 
 import com.windanesz.tracesofthefallen.Settings;
-import com.windanesz.tracesofthefallen.entity.shaman.ShamanSpells;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.MoverType;
@@ -102,7 +101,8 @@ public class EntityMagmaPool extends Entity {
 			}
 			List<EntityLivingBase> targets = this.world.getEntitiesWithinAABB(EntityLivingBase.class, this.getEntityBoundingBox().grow(2.5D, 2.0D, 2.5D));
 			for (EntityLivingBase entity : targets) {
-				if (entity.isEntityAlive() && entity != this.owner && !(entity instanceof EntityGoblin) && (this.owner == null || !ShamanSpells.isAlly(this.owner, entity))) {
+				boolean isImmune = entity instanceof EntityGoblinShaman && ((EntityGoblinShaman) entity).getPyromancyMastery() == 3;
+				if (entity.isEntityAlive() && !isImmune) {
 					if (this.getDistanceSq(entity) <= 20.25D) {
 						entity.attackEntityFrom(DamageSource.causeIndirectMagicDamage(this, this.owner != null ? this.owner : this).setFireDamage().setExplosion(), (float) Settings.miscSettings.shamanMagmaBlastDamage);
 						entity.setFire(Settings.miscSettings.shamanMagmaBlastIgnitionDuration);
@@ -128,7 +128,8 @@ public class EntityMagmaPool extends Entity {
 			if (!this.world.isRemote) {
 				List<EntityLivingBase> contacts = this.world.getEntitiesWithinAABB(EntityLivingBase.class, this.getEntityBoundingBox().grow(0.3D, 0.5D, 0.3D));
 				for (EntityLivingBase entity : contacts) {
-					if (entity.isEntityAlive() && entity != this.owner && !(entity instanceof EntityGoblin) && (this.owner == null || !ShamanSpells.isAlly(this.owner, entity))) {
+					boolean isImmune = entity instanceof EntityGoblinShaman && ((EntityGoblinShaman) entity).getPyromancyMastery() == 3;
+					if (entity.isEntityAlive() && !isImmune) {
 						entity.attackEntityFrom(DamageSource.LAVA, (float) Settings.miscSettings.shamanMagmaBlastContactDamage);
 						entity.setFire(3);
 					}

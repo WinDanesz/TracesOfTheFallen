@@ -77,12 +77,24 @@ public class ModBlocks {
 	public static final Block bricks_stone_dirty = placeholder();
 	public static final Block bricks_stone_mossy = placeholder();
 	public static final Block bricks_stone_carved_mossy = placeholder();
+	public static final Block bricks_stone_smooth = placeholder();
+	public static final Block bricks_stone_pillar_side = placeholder();
+	public static final Block bricks_stone_pillar_top = placeholder();
+	public static final Block stained_glass = placeholder();
 	public static final Block dreamcatcher = placeholder();
 	public static final Block stone_chest = placeholder();
 	public static final Block stone_chest_open = placeholder();
 	public static final Block item_frame_wooden = placeholder();
 	public static final Block bonepile = placeholder();
 	public static final Block hay_bed = placeholder();
+	public static final Block mozaic_pink = placeholder();
+	public static final Block mozaic_pink_washed = placeholder();
+	public static final Block mozaic_red = placeholder();
+	public static final Block mozaic_red_washed = placeholder();
+	public static final Block mozaic_teal = placeholder();
+	public static final Block mozaic_teal_washed = placeholder();
+	public static final Block mozaic_yellow = placeholder();
+	public static final Block mozaic_yellow_washed = placeholder();
 
 	@Nonnull
 	@SuppressWarnings("ConstantConditions")
@@ -141,12 +153,24 @@ public class ModBlocks {
 		registerBlock(registry, "bricks_stone_dirty", new BlockTOTFStone());
 		registerBlock(registry, "bricks_stone_mossy", new BlockTOTFStone());
 		registerBlock(registry, "bricks_stone_carved_mossy", new BlockTOTFStone());
+		registerBlock(registry, "bricks_stone_smooth", new BlockTOTFStone());
+		registerBlock(registry, "bricks_stone_pillar_side", new BlockTOTFStone());
+		registerBlock(registry, "bricks_stone_pillar_top", new BlockTOTFStone());
+		registerBlock(registry, "stained_glass", new BlockTOTFGlass());
 		registerBlock(registry, "dreamcatcher", new BlockDreamcatcher(Material.WOOD));
 		registerBlock(registry, "stone_chest", new BlockStoneChest());
 		registerBlock(registry, "stone_chest_open", new BlockStoneChest().setBoundingBox(new AxisAlignedBB(0.0D, 0.0D, 0.25D, 1.0D, 0.5625D, 0.75D)));
 		registerBlock(registry, "item_frame_wooden", new BlockWoodenItemFrame());
 		registerBlock(registry, "bonepile", new BlockBonepile());
 		registerBlock(registry, "hay_bed", new BlockHayBed(Material.WOOD).setLootTable(new ResourceLocation(TracesOfTheFallen.MODID, "blocks/hay_bed")));
+		registerBlock(registry, "mozaic_pink", new BlockTOTFStone());
+		registerBlock(registry, "mozaic_pink_washed", new BlockTOTFStone());
+		registerBlock(registry, "mozaic_red", new BlockTOTFStone());
+		registerBlock(registry, "mozaic_red_washed", new BlockTOTFStone());
+		registerBlock(registry, "mozaic_teal", new BlockTOTFStone());
+		registerBlock(registry, "mozaic_teal_washed", new BlockTOTFStone());
+		registerBlock(registry, "mozaic_yellow", new BlockTOTFStone());
+		registerBlock(registry, "mozaic_yellow_washed", new BlockTOTFStone());
 	}
 
 	public static void registerBlock(IForgeRegistry<Block> registry, String name, Block block) {

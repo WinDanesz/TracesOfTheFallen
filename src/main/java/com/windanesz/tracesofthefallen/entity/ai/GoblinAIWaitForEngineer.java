@@ -7,7 +7,6 @@ import com.windanesz.tracesofthefallen.entity.EntityGoblinTunneler;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.init.Blocks;
 import net.minecraft.pathfinding.PathNavigate;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.List;
@@ -111,38 +110,31 @@ public class GoblinAIWaitForEngineer extends EntityAIBase {
 		double distSq = this.goblin.getDistanceSq(this.nearbyLeader);
 		if (distSq > 3.0D) {
 			if (this.nearbyLeader.posY > this.goblin.posY + 1.0D) {
-				if (this.goblin.isOnLadder() || isAdjacentToLadder()) {
-					BlockPos p = new BlockPos(this.goblin);
-					double cx = p.getX() + 0.5D;
-					double cz = p.getZ() + 0.5D;
-					this.goblin.motionX = (cx - this.goblin.posX) * 0.3D;
-					this.goblin.motionZ = (cz - this.goblin.posZ) * 0.3D;
-					this.goblin.motionY = 0.25D;
-				} else {
-					BlockPos shaftUp = findNearbyShaftUp();
-					if (shaftUp != null) {
-						if (this.navigator.noPath() || this.goblin.ticksExisted % 10 == 0) {
-							this.navigator.tryMoveToXYZ(shaftUp.getX() + 0.5D, shaftUp.getY(), shaftUp.getZ() + 0.5D, 1.25D);
-						}
-						double hdx = (shaftUp.getX() + 0.5D) - this.goblin.posX;
-						double hdz = (shaftUp.getZ() + 0.5D) - this.goblin.posZ;
-						double hDist = Math.sqrt(hdx * hdx + hdz * hdz);
-						if (hDist < 3.0D && hDist > 0.05D) {
-							this.goblin.motionX = (hdx / hDist) * 0.22D;
-							this.goblin.motionZ = (hdz / hDist) * 0.22D;
-						}
-					} else if (this.navigator.noPath() || this.goblin.ticksExisted % 10 == 0) {
-						this.navigator.tryMoveToEntityLiving(this.nearbyLeader, 1.15D);
+				BlockPos shaftUp = findNearbyShaftUp();
+				if (shaftUp != null) {
+					if (this.navigator.noPath() || this.goblin.ticksExisted % 10 == 0) {
+						this.navigator.tryMoveToXYZ(shaftUp.getX() + 0.5D, shaftUp.getY(), shaftUp.getZ() + 0.5D, 1.25D);
 					}
+					double hdx = (shaftUp.getX() + 0.5D) - this.goblin.posX;
+					double hdz = (shaftUp.getZ() + 0.5D) - this.goblin.posZ;
+					double hDist = Math.sqrt(hdx * hdx + hdz * hdz);
+					if (hDist < 3.0D && hDist > 0.05D) {
+						this.goblin.getMoveHelper().setMoveTo(shaftUp.getX() + 0.5D, this.goblin.posY, shaftUp.getZ() + 0.5D, 0.5D);
+					}
+				} else if (this.navigator.noPath() || this.goblin.ticksExisted % 10 == 0) {
+					double angle = this.goblin.getEntityId() * 1.5;
+					double rx = this.nearbyLeader.posX + Math.cos(angle) * 1.5;
+					double rz = this.nearbyLeader.posZ + Math.sin(angle) * 1.5;
+					this.navigator.tryMoveToXYZ(rx, this.nearbyLeader.posY, rz, 1.15D);
 				}
 			} else if (this.nearbyLeader.posY < this.goblin.posY - 1.0D) {
-				if (this.goblin.isOnLadder() || isAdjacentToLadder()) {
-					BlockPos p = new BlockPos(this.goblin);
+				if (this.goblin.isOnLadder()) {
+					this.navigator.clearPath();
+					BlockPos p = this.goblin.getActiveLadderPos();
+					if (p == null) p = new BlockPos(this.goblin);
 					double cx = p.getX() + 0.5D;
 					double cz = p.getZ() + 0.5D;
-					this.goblin.motionX = (cx - this.goblin.posX) * 0.35D;
-					this.goblin.motionZ = (cz - this.goblin.posZ) * 0.35D;
-					this.goblin.motionY = -0.32D;
+					this.goblin.getMoveHelper().setMoveTo(cx, this.goblin.posY, cz, 0.5D);
 				} else {
 					BlockPos shaftDown = findNearbyShaftDown();
 					if (shaftDown != null) {
@@ -153,16 +145,21 @@ public class GoblinAIWaitForEngineer extends EntityAIBase {
 						double hdz = (shaftDown.getZ() + 0.5D) - this.goblin.posZ;
 						double hDist = Math.sqrt(hdx * hdx + hdz * hdz);
 						if (hDist < 3.0D && hDist > 0.05D) {
-							this.goblin.motionX = (hdx / hDist) * 0.22D;
-							this.goblin.motionZ = (hdz / hDist) * 0.22D;
+							this.goblin.getMoveHelper().setMoveTo(shaftDown.getX() + 0.5D, this.goblin.posY, shaftDown.getZ() + 0.5D, 0.5D);
 						}
 					} else if (this.navigator.noPath() || this.goblin.ticksExisted % 10 == 0) {
-						this.navigator.tryMoveToEntityLiving(this.nearbyLeader, 1.15D);
+						double angle = this.goblin.getEntityId() * 1.5;
+						double rx = this.nearbyLeader.posX + Math.cos(angle) * 1.5;
+						double rz = this.nearbyLeader.posZ + Math.sin(angle) * 1.5;
+						this.navigator.tryMoveToXYZ(rx, this.nearbyLeader.posY, rz, 1.15D);
 					}
 				}
 			} else {
 				if (this.navigator.noPath() || this.goblin.ticksExisted % 10 == 0) {
-					this.navigator.tryMoveToEntityLiving(this.nearbyLeader, 1.15D);
+					double angle = this.goblin.getEntityId() * 1.5;
+					double rx = this.nearbyLeader.posX + Math.cos(angle) * 1.5;
+					double rz = this.nearbyLeader.posZ + Math.sin(angle) * 1.5;
+					this.navigator.tryMoveToXYZ(rx, this.nearbyLeader.posY, rz, 1.15D);
 				}
 			}
 		} else {
@@ -218,14 +215,6 @@ public class GoblinAIWaitForEngineer extends EntityAIBase {
 		return this.goblin.world.isAirBlock(pos) || this.goblin.world.getBlockState(pos).getBlock() == Blocks.LADDER;
 	}
 
-	private boolean isAdjacentToLadder() {
-		BlockPos p = new BlockPos(this.goblin);
-		if (this.goblin.world.getBlockState(p).getBlock() == Blocks.LADDER) return true;
-		for (EnumFacing facing : EnumFacing.HORIZONTALS) {
-			if (this.goblin.world.getBlockState(p.offset(facing)).getBlock() == Blocks.LADDER) return true;
-		}
-		return false;
-	}
 
 	@Override
 	public void resetTask() {

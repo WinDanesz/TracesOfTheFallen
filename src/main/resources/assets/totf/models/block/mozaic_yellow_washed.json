@@ -1,0 +1,6 @@
+{
+  "parent": "block/cube_all",
+  "textures": {
+    "all": "totf:blocks/mozaic_yellow_washed"
+  }
+}

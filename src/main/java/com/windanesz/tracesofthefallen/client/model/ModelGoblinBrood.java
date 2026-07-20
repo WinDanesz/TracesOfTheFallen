@@ -1,7 +1,10 @@
 package com.windanesz.tracesofthefallen.client.model;
 
+import com.windanesz.tracesofthefallen.entity.EntityGoblin;
 import net.minecraft.client.model.ModelBox;
 import net.minecraft.client.model.ModelRenderer;
+import net.minecraft.entity.Entity;
+import net.minecraft.util.math.MathHelper;
 
 public class ModelGoblinBrood extends ModelGoblinBase {
 	private final ModelRenderer ear_left;
@@ -65,5 +68,26 @@ public class ModelGoblinBrood extends ModelGoblinBase {
 		arm_right.cubeList.add(new ModelBox(arm_right, 0, 12, -3.0F, -1.0F, -1.5F, 3, 6, 3, 0.0F, true));
 
 		initBiped();
+	}
+	@Override
+	public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn) {
+		super.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scaleFactor, entityIn);
+
+		boolean isCarrying = false;
+		if (entityIn instanceof EntityGoblin) {
+			isCarrying = ((EntityGoblin) entityIn).isCarryingBomb();
+		}
+
+		if (!isCarrying && limbSwingAmount < 0.1F && this.swingProgress == 0.0F) {
+			int offset = entityIn.getEntityId() * 37;
+			// Nose scratch animation for broods
+			if ((entityIn.ticksExisted + offset) % 150 < 25) {
+				if (this.arm_left != null) {
+					this.arm_left.rotateAngleX = -2.2F + MathHelper.sin(ageInTicks * 1.5F) * 0.15F;
+					this.arm_left.rotateAngleY = 0.4F;
+					this.arm_left.rotateAngleZ = -0.6F;
+				}
+			}
+		}
 	}
 }

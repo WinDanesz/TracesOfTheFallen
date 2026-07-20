@@ -298,7 +298,17 @@ public class ClientProxy extends CommonProxy {
 
 	@Override
 	public void spawnCrumbsParticle(World world, double x, double y, double z, double motionX, double motionY, double motionZ) {
-		Minecraft.getMinecraft().effectRenderer.addEffect(new ParticleCrumbs(world, x, y, z, motionX, motionY, motionZ));
+		Minecraft.getMinecraft().effectRenderer.addEffect(new ParticleCrumbs(world, x, y, z, motionX, motionY, motionZ, 0.06F));
+	}
+
+	@Override
+	public void spawnHeavyCrumbsParticle(World world, double x, double y, double z, double motionX, double motionY, double motionZ) {
+		Minecraft.getMinecraft().effectRenderer.addEffect(new ParticleCrumbs(world, x, y, z, motionX, motionY, motionZ, 1.0F));
+	}
+
+	@Override
+	public void spawnDigHoleParticle(World world, double x, double y, double z) {
+		Minecraft.getMinecraft().effectRenderer.addEffect(new ParticleDigHole(world, x, y, z));
 	}
 
 	/**

@@ -53,6 +53,19 @@ public class EntityGoblinSapper extends EntityGoblin {
 	}
 
 	@Override
+	public boolean isWorking() {
+		return super.isWorking() || !this.plannedBlocks.isEmpty();
+	}
+
+	@Override
+	public double getAITargetY() {
+		if (!this.plannedBlocks.isEmpty()) {
+			return this.plannedBlocks.get(0).getY();
+		}
+		return super.getAITargetY();
+	}
+
+	@Override
 	public void writeEntityToNBT(NBTTagCompound compound) {
 		super.writeEntityToNBT(compound);
 		compound.setInteger("BlocksBuilt", this.getBlocksBuilt());
@@ -91,13 +104,14 @@ public class EntityGoblinSapper extends EntityGoblin {
 		this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(Settings.goblinSettings.goblinSapperMaxHealth);
 		this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(64.0D);
 		this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(Settings.goblinSettings.goblinSapperAttackDamage);
+		this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.15D);
 	}
 
 	@Override
 	protected void setEquipmentBasedOnDifficulty(DifficultyInstance difficulty) {
 		super.setEquipmentBasedOnDifficulty(difficulty);
 		this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(Items.IRON_PICKAXE));
-		this.setItemStackToSlot(EntityEquipmentSlot.OFFHAND, new ItemStack(Blocks.DIRT, 32));
+		this.setItemStackToSlot(EntityEquipmentSlot.OFFHAND, new ItemStack(Blocks.DIRT, 64));
 	}
 
 	@Override
@@ -106,8 +120,8 @@ public class EntityGoblinSapper extends EntityGoblin {
 		if (!this.world.isRemote && this.getHeldItemMainhand().isEmpty() && this.ticksExisted < 20) {
 			this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(Items.IRON_PICKAXE));
 		}
-		if (!this.world.isRemote && this.getItemStackFromSlot(EntityEquipmentSlot.OFFHAND).isEmpty() && this.getBlocksBuilt() == 0 && this.ticksExisted < 20) {
-			this.setItemStackToSlot(EntityEquipmentSlot.OFFHAND, new ItemStack(Blocks.DIRT, 32));
+		if (!this.world.isRemote && this.getItemStackFromSlot(EntityEquipmentSlot.OFFHAND).isEmpty() && this.getBlocksBuilt() < 128) {
+			this.setItemStackToSlot(EntityEquipmentSlot.OFFHAND, new ItemStack(Blocks.DIRT, 64));
 		}
 	}
 }

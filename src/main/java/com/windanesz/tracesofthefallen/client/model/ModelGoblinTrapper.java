@@ -1,7 +1,10 @@
 package com.windanesz.tracesofthefallen.client.model;// Made with Blockbench 5.1.4
 
+import com.windanesz.tracesofthefallen.entity.EntityGoblin;
 import net.minecraft.client.model.ModelBox;
 import net.minecraft.client.model.ModelRenderer;
+import net.minecraft.entity.Entity;
+import net.minecraft.util.math.MathHelper;
 
 public class ModelGoblinTrapper extends ModelGoblinBase {
 	private final ModelRenderer earring;
@@ -79,5 +82,31 @@ public class ModelGoblinTrapper extends ModelGoblinBase {
 		arm_right.cubeList.add(new ModelBox(arm_right, 0, 31, -2.0F, -1.0F, -1.5F, 3, 7, 3, 0.0F, true));
 
 		initBiped();
+	}
+
+	@Override
+	public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn) {
+		super.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scaleFactor, entityIn);
+
+		boolean isCarrying = false;
+		if (entityIn instanceof EntityGoblin) {
+			isCarrying = ((EntityGoblin) entityIn).isCarryingBomb();
+		}
+
+		if (!isCarrying && limbSwingAmount < 0.1F && this.swingProgress == 0.0F) {
+			int offset = entityIn.getEntityId() * 37;
+			if ((entityIn.ticksExisted + offset) % 400 < 300) {
+				if ((entityIn.ticksExisted + offset) % 200 < 50) {
+					if (this.arm_right != null) {
+						this.arm_right.rotateAngleX = -1.4F;
+						this.arm_right.rotateAngleY = -0.5F;
+						this.arm_right.rotateAngleZ = 0.5F;
+					}
+					if (this.head != null) {
+						this.head.rotateAngleY += MathHelper.sin(ageInTicks * 0.1F) * 0.6F;
+					}
+				}
+			}
+		}
 	}
 }

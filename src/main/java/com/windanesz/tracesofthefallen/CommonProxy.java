@@ -49,5 +49,11 @@ public class CommonProxy {
 
 	public void spawnCrumbsParticle(World world, double x, double y, double z, double motionX, double motionY, double motionZ) {
 	}
+
+	public void spawnHeavyCrumbsParticle(World world, double x, double y, double z, double motionX, double motionY, double motionZ) {
+	}
+
+	public void spawnDigHoleParticle(World world, double x, double y, double z) {
+	}
 }
 

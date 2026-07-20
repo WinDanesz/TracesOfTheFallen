@@ -42,11 +42,30 @@ public class GoblinAIRunBehindTarget extends EntityAIBase {
 			return false;
 		}
 
-        // Goblin is ready to
 		if (this.creature.getRevengeTarget() == null && !this.creature.isBurning()) {
 			return false;
-		} else {
-			if (this.creature.isBurning()) {
+		}
+		
+		boolean hasHighTier = false;
+		java.util.List<EntityGoblin> nearby = this.creature.world.getEntitiesWithinAABB(EntityGoblin.class, this.creature.getEntityBoundingBox().grow(16.0D));
+		for (EntityGoblin gob : nearby) {
+			if (!gob.isDead && (
+				gob instanceof com.windanesz.tracesofthefallen.entity.EntityGoblinShaman ||
+				gob instanceof com.windanesz.tracesofthefallen.entity.EntityGoblinEngineer ||
+				gob instanceof com.windanesz.tracesofthefallen.entity.EntityGoblinWarrior ||
+				gob instanceof com.windanesz.tracesofthefallen.entity.EntityGoblinWayfarer ||
+				gob instanceof com.windanesz.tracesofthefallen.entity.EntityGoblinBrute
+			)) {
+				hasHighTier = true;
+				break;
+			}
+		}
+		
+		if (hasHighTier) {
+			return false;
+		}
+
+		if (this.creature.isBurning()) {
 				BlockPos blockpos = this.getRandPos(this.creature.world, this.creature, 5, 4);
 
 				if (blockpos != null) {
@@ -56,8 +75,7 @@ public class GoblinAIRunBehindTarget extends EntityAIBase {
 					return true;
 				}
 			}
-				return this.findRandomPosition();
-		}
+			return this.findRandomPosition();
 	}
 
 	protected boolean findRandomPosition() {

@@ -10,7 +10,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class ParticleCrumbs extends Particle {
 
-	public ParticleCrumbs(World worldIn, double x, double y, double z, double motionX, double motionY, double motionZ) {
+	public ParticleCrumbs(World worldIn, double x, double y, double z, double motionX, double motionY, double motionZ, float gravityMultiplier) {
 		super(worldIn, x, y, z, motionX, motionY, motionZ);
 		this.motionX = motionX;
 		this.motionY = motionY;
@@ -20,9 +20,9 @@ public class ParticleCrumbs extends Particle {
 		this.particleGreen = shade;
 		this.particleBlue = shade;
 		this.particleAlpha = 1.0F;
-		this.particleScale = 0.6F + this.rand.nextFloat() * 0.5F;
+		this.particleScale = 1.0F + this.rand.nextFloat() * 0.8F;
 		this.particleMaxAge = 25 + this.rand.nextInt(20);
-		this.particleGravity = 0.06F;
+		this.particleGravity = gravityMultiplier;
 		this.canCollide = true;
 
 		TextureAtlasSprite sprite = ClientProxy.getCrumbsSprite();

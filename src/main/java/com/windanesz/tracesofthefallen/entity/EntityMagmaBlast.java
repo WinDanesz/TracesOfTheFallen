@@ -1,6 +1,5 @@
 package com.windanesz.tracesofthefallen.entity;
 
-import com.windanesz.tracesofthefallen.entity.shaman.ShamanSpells;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.projectile.EntityThrowable;
 import net.minecraft.init.SoundEvents;
@@ -84,21 +83,14 @@ public class EntityMagmaBlast extends EntityThrowable {
 
 	@Override
 	protected void onImpact(RayTraceResult result) {
-		if (result.entityHit != null) {
-			if (result.entityHit == this.getThrower() || result.entityHit instanceof EntityGoblin) {
-				return;
-			}
-			if (this.getThrower() instanceof EntityGoblinShaman && ShamanSpells.isAlly((EntityGoblinShaman) this.getThrower(), result.entityHit)) {
-				return;
-			}
+		if (result.typeOfHit == RayTraceResult.Type.ENTITY) {
+			return;
 		}
 		if (!this.world.isRemote) {
 			double hitX = result.hitVec != null ? result.hitVec.x : this.posX;
 			double hitY = result.hitVec != null ? result.hitVec.y : this.posY;
 			double hitZ = result.hitVec != null ? result.hitVec.z : this.posZ;
-			if (result.entityHit != null) {
-				hitY = result.entityHit.getEntityBoundingBox().minY;
-			} else if (result.typeOfHit == RayTraceResult.Type.BLOCK && result.getBlockPos() != null) {
+			if (result.typeOfHit == RayTraceResult.Type.BLOCK && result.getBlockPos() != null) {
 				if (result.sideHit == net.minecraft.util.EnumFacing.UP) {
 					hitY = result.getBlockPos().getY() + 1.0D;
 				}

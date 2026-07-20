@@ -126,7 +126,9 @@ public abstract class ModelGoblinBase extends ModelBiped {
 			this.arm_left.rotateAngleX -= MathHelper.sin(ageInTicks * 0.067F) * 0.05F;
 		}
 
-		if (entityIn.getClass() == EntityGoblin.class && ((EntityGoblin) entityIn).isCarryingBomb()) {
+		boolean isCarryingBomb = entityIn.getClass() == EntityGoblin.class && ((EntityGoblin) entityIn).isCarryingBomb();
+
+		if (isCarryingBomb) {
 			if (this.arm_right != null) {
 				this.arm_right.rotateAngleX = (float) -Math.PI;
 				this.arm_right.rotateAngleY = 0.0F;
@@ -147,6 +149,109 @@ public abstract class ModelGoblinBase extends ModelBiped {
 				this.arm_left.offsetY = 0.0F;
 			}
 		}
+
+		if (limbSwingAmount < 0.1F && this.swingProgress == 0.0F && !this.isRiding) {
+			int offset = entityIn.getEntityId() * 37;
+			boolean isSitting = false;
+			if (this instanceof ModelGoblinBrood && (entityIn.ticksExisted + offset) % 800 > 400) {
+				isSitting = true;
+			}
+			
+			if (isSitting) {
+				if (this.body != null) this.body.offsetY = 0.2F;
+				if (this.head != null) this.head.offsetY = 0.0F;
+				if (this.arm_right != null) {
+					this.arm_right.offsetY = isCarryingBomb ? -0.125F : 0.0F;
+					this.arm_right.rotateAngleX = 0.0F;
+					this.arm_right.rotateAngleY = 0.0F;
+					this.arm_right.rotateAngleZ = 0.0F;
+				}
+				if (this.arm_left != null) {
+					this.arm_left.offsetY = isCarryingBomb ? -0.125F : 0.0F;
+					this.arm_left.rotateAngleX = 0.0F;
+					this.arm_left.rotateAngleY = 0.0F;
+					this.arm_left.rotateAngleZ = 0.0F;
+				}
+				if (this.leg_left != null) {
+					this.leg_left.offsetY = 0.0F;
+					this.leg_left.rotateAngleX = -1.4F;
+					this.leg_left.rotateAngleY = -0.2F;
+					this.leg_left.rotateAngleZ = 0.0F;
+				}
+				if (this.leg_right != null) {
+					this.leg_right.offsetY = 0.0F;
+					this.leg_right.rotateAngleX = -1.4F;
+					this.leg_right.rotateAngleY = 0.2F;
+					this.leg_right.rotateAngleZ = 0.0F;
+				}
+			} else {
+				if (this.body != null) this.body.offsetY = 0.0F;
+				if (this.head != null) this.head.offsetY = 0.0F;
+				if (this.leg_left != null) this.leg_left.offsetY = 0.0F;
+				if (this.leg_right != null) this.leg_right.offsetY = 0.0F;
+			}
+
+			// Ear rubbing animation for all goblins
+			boolean isRubbing = false;
+			if (!isSitting && (entityIn.ticksExisted + offset + 100) % 300 < 40) {
+				isRubbing = true;
+				if (this.arm_left != null) {
+					// Reach up to the left ear
+					this.arm_left.rotateAngleX = -2.7F + MathHelper.sin(ageInTicks * 1.5F) * 0.15F;
+					this.arm_left.rotateAngleY = 0.0F;
+					this.arm_left.rotateAngleZ = 0.15F;
+				}
+				ModelRenderer leftEar = getLeftEar();
+				if (leftEar != null) {
+					if (origEarX == null) {
+						origEarX = leftEar.rotateAngleX;
+						origEarY = leftEar.rotateAngleY;
+						origEarZ = leftEar.rotateAngleZ;
+					}
+					// Wiggle the ear
+					leftEar.rotateAngleX = origEarX + MathHelper.sin(ageInTicks * 1.5F) * 0.2F;
+					leftEar.rotateAngleY = origEarY;
+					leftEar.rotateAngleZ = origEarZ + MathHelper.sin(ageInTicks * 1.5F) * 0.1F;
+				}
+			}
+			
+			if (!isRubbing) {
+				ModelRenderer leftEar = getLeftEar();
+				if (leftEar != null && origEarX != null) {
+					leftEar.rotateAngleX = origEarX;
+					leftEar.rotateAngleY = origEarY;
+					leftEar.rotateAngleZ = origEarZ;
+				}
+			}
+
+		} else {
+			if (this.body != null) this.body.offsetY = 0.0F;
+			if (this.head != null) this.head.offsetY = 0.0F;
+			if (this.leg_left != null) this.leg_left.offsetY = 0.0F;
+			if (this.leg_right != null) this.leg_right.offsetY = 0.0F;
+			
+			ModelRenderer leftEar = getLeftEar();
+			if (leftEar != null && origEarX != null) {
+				leftEar.rotateAngleX = origEarX;
+				leftEar.rotateAngleY = origEarY;
+				leftEar.rotateAngleZ = origEarZ;
+			}
+		}
+	}
+
+	private Float origEarX = null;
+	private Float origEarY = null;
+	private Float origEarZ = null;
+
+	protected ModelRenderer getLeftEar() {
+		if (this.head != null && this.head.childModels != null) {
+			for (ModelRenderer child : this.head.childModels) {
+				if (Math.abs(child.rotationPointX - 3.0497F) < 0.01F && Math.abs(child.rotationPointY + 3.0F) < 0.01F) {
+					return child;
+				}
+			}
+		}
+		return null;
 	}
 
 	@Override

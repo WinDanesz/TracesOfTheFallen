@@ -4,13 +4,10 @@ import com.windanesz.tracesofthefallen.Settings;
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
 import com.windanesz.tracesofthefallen.network.PacketHandler;
 import com.windanesz.tracesofthefallen.packet.PacketSpawnCrumbs;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraft.block.Block;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.*;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
@@ -26,6 +23,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
 
 import javax.annotation.Nullable;
 import java.util.UUID;
@@ -83,7 +81,8 @@ public class EntityGoblinSkeleton extends EntityMob implements IEntityOwnable {
 		return EnumCreatureAttribute.UNDEAD;
 	}
 
-	private float spawnRotationYaw = 0.0F;
+	public float spawnRotationYaw = 0.0F;
+	private boolean hasSpawnedHole = false;
 	private boolean hasSpawnRotation = false;
 
 	public int getLungeState() {
@@ -183,27 +182,34 @@ public class EntityGoblinSkeleton extends EntityMob implements IEntityOwnable {
 				this.setDead();
 				return;
 			}
+		}
 
-			if (this.ticksExisted <= 60) {
-				this.motionX = 0.0D;
-				this.motionZ = 0.0D;
-				if (this.world.isRemote) {
-					if (this.ticksExisted % 2 == 0) {
-						for (int i = 0; i < 3; i++) {
-							TracesOfTheFallen.proxy.spawnCrumbsParticle(this.world, this.posX + (this.rand.nextDouble() - 0.5D) * 0.4D, this.posY + 0.1D, this.posZ + (this.rand.nextDouble() - 0.5D) * 0.4D, (this.rand.nextDouble() - 0.5D) * 0.1D, 0.05D + this.rand.nextDouble() * 0.05D, (this.rand.nextDouble() - 0.5D) * 0.1D);
-						}
-					}
-					if (this.ticksExisted > 12 && this.ticksExisted <= 45 && this.ticksExisted % 2 == 0) {
-						for (int i = 0; i < 2; i++) {
-							TracesOfTheFallen.proxy.spawnCrumbsParticle(this.world, this.posX + (this.rand.nextDouble() - 0.5D) * 0.3D, this.posY + 0.25D, this.posZ + (this.rand.nextDouble() - 0.5D) * 0.3D, (this.rand.nextDouble() - 0.5D) * 0.1D, 0.07D + this.rand.nextDouble() * 0.04D, (this.rand.nextDouble() - 0.5D) * 0.1D);
-						}
-					}
-				} else {
-					if (this.ticksExisted % 4 == 0) {
-						this.world.playSound(null, this.posX, this.posY, this.posZ, SoundEvents.BLOCK_GRAVEL_BREAK, this.getSoundCategory(), 0.8F, 0.8F + this.rand.nextFloat() * 0.4F);
+		if (this.ticksExisted <= 60) {
+			this.motionX = 0.0D;
+			this.motionZ = 0.0D;
+			if (this.world.isRemote) {
+				if (!this.hasSpawnedHole) {
+					TracesOfTheFallen.proxy.spawnDigHoleParticle(this.world, this.posX, this.posY, this.posZ);
+					this.hasSpawnedHole = true;
+				}
+				if (this.ticksExisted % 2 == 0) {
+					for (int i = 0; i < 6; i++) {
+						TracesOfTheFallen.proxy.spawnHeavyCrumbsParticle(this.world, this.posX + (this.rand.nextDouble() - 0.5D) * 0.25D, this.posY, this.posZ + (this.rand.nextDouble() - 0.5D) * 0.25D, (this.rand.nextDouble() - 0.5D) * 0.15D, 0.15D + this.rand.nextDouble() * 0.15D, (this.rand.nextDouble() - 0.5D) * 0.15D);
 					}
 				}
+				if (this.ticksExisted > 12 && this.ticksExisted <= 45 && this.ticksExisted % 2 == 0) {
+					for (int i = 0; i < 4; i++) {
+						TracesOfTheFallen.proxy.spawnHeavyCrumbsParticle(this.world, this.posX + (this.rand.nextDouble() - 0.5D) * 0.2D, this.posY + 0.1D, this.posZ + (this.rand.nextDouble() - 0.5D) * 0.2D, (this.rand.nextDouble() - 0.5D) * 0.12D, 0.2D + this.rand.nextDouble() * 0.1D, (this.rand.nextDouble() - 0.5D) * 0.12D);
+					}
+				}
+			} else {
+				if (this.ticksExisted % 4 == 0) {
+					this.world.playSound(null, this.posX, this.posY, this.posZ, SoundEvents.BLOCK_GRAVEL_BREAK, this.getSoundCategory(), 0.8F, 0.8F + this.rand.nextFloat() * 0.4F);
+				}
 			}
+		}
+
+		if (!this.world.isRemote) {
 
 			if (--this.lifespan <= 0 || (this.getOwner() == null && this.ticksExisted > 600)) {
 				if (this.world instanceof WorldServer) {

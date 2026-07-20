@@ -1,6 +1,7 @@
 package com.windanesz.tracesofthefallen.entity;
 
 import com.windanesz.tracesofthefallen.Settings;
+import com.windanesz.tracesofthefallen.entity.ai.GoblinAIRunBehindTarget;
 import com.windanesz.tracesofthefallen.entity.ai.GoblinAIShamanCastSpell;
 import com.windanesz.tracesofthefallen.entity.ai.GoblinAIShamanDance;
 import com.windanesz.tracesofthefallen.entity.ai.GoblinAIShamanStandStill;
@@ -11,12 +12,15 @@ import com.windanesz.tracesofthefallen.init.ModItems;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.ai.EntityAIAttackMelee;
+import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.World;
 
@@ -55,8 +59,22 @@ public class EntityGoblinShaman extends EntityGoblin {
 	@Override
 	protected void initEntityAI() {
 		super.initEntityAI();
+		EntityAIBase meleeTask = null;
+		EntityAIBase runBehindTask = null;
+		for (net.minecraft.entity.ai.EntityAITasks.EntityAITaskEntry entry : this.tasks.taskEntries) {
+			if (entry.action instanceof EntityAIAttackMelee) {
+				meleeTask = entry.action;
+			}
+			if (entry.action instanceof GoblinAIRunBehindTarget) {
+				runBehindTask = entry.action;
+			}
+		}
+		if (meleeTask != null) this.tasks.removeTask(meleeTask);
+		if (runBehindTask != null) this.tasks.removeTask(runBehindTask);
+
 		this.tasks.addTask(1, new GoblinAIShamanStandStill(this));
 		this.tasks.addTask(2, new GoblinAIShamanCastSpell(this));
+		this.tasks.addTask(3, new AIShamanStrafeAway(this));
 		this.tasks.addTask(4, new GoblinAIShamanDance(this));
 	}
 
@@ -381,5 +399,50 @@ public class EntityGoblinShaman extends EntityGoblin {
 			}
 		}
 		return super.attackEntityAsMob(entityIn);
+	}
+
+	public static class AIShamanStrafeAway extends EntityAIBase {
+		private final EntityGoblinShaman shaman;
+		private EntityLivingBase target;
+
+		public AIShamanStrafeAway(EntityGoblinShaman shaman) {
+			this.shaman = shaman;
+			this.setMutexBits(3);
+		}
+
+		@Override
+		public boolean shouldExecute() {
+			this.target = this.shaman.getAttackTarget();
+			if (this.target == null || !this.target.isEntityAlive()) {
+				return false;
+			}
+			return this.shaman.getDistanceSq(this.target) < 81.0D;
+		}
+
+		@Override
+		public boolean shouldContinueExecuting() {
+			return this.shouldExecute();
+		}
+
+		@Override
+		public void updateTask() {
+			this.shaman.getNavigator().clearPath();
+			this.shaman.getLookHelper().setLookPositionWithEntity(this.target, 30.0F, 30.0F);
+			this.shaman.rotationYaw = this.shaman.rotationYawHead;
+
+			double dx = this.shaman.posX - this.target.posX;
+			double dz = this.shaman.posZ - this.target.posZ;
+			double len = MathHelper.sqrt(dx * dx + dz * dz);
+			if (len < 0.0001D) {
+				dx = 1.0D;
+				dz = 0.0D;
+				len = 1.0D;
+			}
+			
+			if (this.shaman.onGround) {
+				this.shaman.motionX += (dx / len) * 0.045D;
+				this.shaman.motionZ += (dz / len) * 0.045D;
+			}
+		}
 	}
 }

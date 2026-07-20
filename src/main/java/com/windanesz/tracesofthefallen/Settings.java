@@ -613,7 +613,11 @@ public class Settings {
 				"totf:bricks_stone_dirty:0|totf:bricks_stone:0",
 				"totf:bricks_stone_mossy:0|totf:bricks_stone:0",
 				"totf:bricks_stone_carved_dirty:0|totf:bricks_stone_carved:0",
-				"totf:bricks_stone_carved_mossy:0|totf:bricks_stone_carved:0"
+				"totf:bricks_stone_carved_mossy:0|totf:bricks_stone_carved:0",
+				"totf:mozaic_pink_washed:0|totf:mozaic_pink:0",
+				"totf:mozaic_red_washed:0|totf:mozaic_red:0",
+				"totf:mozaic_teal_washed:0|totf:mozaic_teal:0",
+				"totf:mozaic_yellow_washed:0|totf:mozaic_yellow:0"
 		};
     }
 
