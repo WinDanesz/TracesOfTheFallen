@@ -1,6 +1,7 @@
 package com.windanesz.tracesofthefallen.entity.ai;
 
 import com.windanesz.tracesofthefallen.entity.EntityGoblinSapper;
+import com.windanesz.tracesofthefallen.init.ModBlocks;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -791,12 +792,12 @@ public class GoblinAISapperBuildPath extends EntityAIBase {
 		clearHeadroom(pos.up(1));
 		clearHeadroom(pos.up(2));
 
-		this.world.setBlockState(pos, Blocks.DIRT.getDefaultState(), 3);
+		this.world.setBlockState(pos, ModBlocks.salvaged_scaffold.getDefaultState(), 3);
 		this.lastPlacedPos = pos;
 		this.sapper.setBlocksBuilt(this.sapper.getBlocksBuilt() + 1);
 
 		ItemStack offhand = this.sapper.getItemStackFromSlot(EntityEquipmentSlot.OFFHAND);
-		if (!offhand.isEmpty() && offhand.getItem() == Item.getItemFromBlock(Blocks.DIRT)) {
+		if (!offhand.isEmpty() && offhand.getItem() == Item.getItemFromBlock(ModBlocks.salvaged_scaffold)) {
 			offhand.shrink(1);
 			if (offhand.isEmpty()) {
 				this.sapper.setItemStackToSlot(EntityEquipmentSlot.OFFHAND, ItemStack.EMPTY);

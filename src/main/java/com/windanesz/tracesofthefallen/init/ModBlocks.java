@@ -42,6 +42,7 @@ public class ModBlocks {
 	public static final Block tent_abandoned_idol = placeholder();
 
 	public static final Block armillary = placeholder();
+	public static final Block salvaged_scaffold = placeholder();
 
 	// New decorative blocks
 	public static final Block ancestral_sifter_golden = placeholder();
@@ -118,6 +119,7 @@ public class ModBlocks {
 		registerBlock(registry, "tent_abandoned", new BlockTent(false).setLootTable(new ResourceLocation(TracesOfTheFallen.MODID, "blocks/tent_abandoned")));
 		registerBlock(registry, "tent_abandoned_idol", new BlockTent(false).setLootTable(new ResourceLocation(TracesOfTheFallen.MODID, "blocks/tent_with_idol")));
 		registerBlock(registry, "armillary", new BlockArmillary());
+		registerBlock(registry, "salvaged_scaffold", new BlockSalvagedScaffold());
 
 		// New decorative blocks
 		registerBlock(registry, "ancestral_sifter_golden", new BlockAncestralSifter(Material.WOOD, BlockAncestralSifter.SifterVariant.GOLDEN).setBoundingBox(new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 1.5D, 1.0D)));

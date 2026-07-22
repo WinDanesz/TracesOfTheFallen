@@ -122,6 +122,7 @@ public class ModItems {
 		registerItemBlock(registry, ModBlocks.tent);
 		registerItemBlock(registry, ModBlocks.tent_abandoned);
 		registerItemBlock(registry, ModBlocks.tent_abandoned_idol);
+		registerItemBlock(registry, ModBlocks.salvaged_scaffold);
 		
 		// Register armillary with custom ItemBlock for tooltip
 		ItemBlock armillaryItem = new ItemBlockArmillary(ModBlocks.armillary);

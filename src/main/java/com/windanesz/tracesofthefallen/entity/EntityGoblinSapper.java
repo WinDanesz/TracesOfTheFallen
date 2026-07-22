@@ -2,8 +2,8 @@ package com.windanesz.tracesofthefallen.entity;
 
 import com.windanesz.tracesofthefallen.Settings;
 import com.windanesz.tracesofthefallen.entity.ai.GoblinAISapperBuildPath;
+import com.windanesz.tracesofthefallen.init.ModBlocks;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
@@ -111,7 +111,7 @@ public class EntityGoblinSapper extends EntityGoblin {
 	protected void setEquipmentBasedOnDifficulty(DifficultyInstance difficulty) {
 		super.setEquipmentBasedOnDifficulty(difficulty);
 		this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(Items.IRON_PICKAXE));
-		this.setItemStackToSlot(EntityEquipmentSlot.OFFHAND, new ItemStack(Blocks.DIRT, 64));
+		this.setItemStackToSlot(EntityEquipmentSlot.OFFHAND, new ItemStack(ModBlocks.salvaged_scaffold, 64));
 	}
 
 	@Override
@@ -121,7 +121,7 @@ public class EntityGoblinSapper extends EntityGoblin {
 			this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(Items.IRON_PICKAXE));
 		}
 		if (!this.world.isRemote && this.getItemStackFromSlot(EntityEquipmentSlot.OFFHAND).isEmpty() && this.getBlocksBuilt() < 128) {
-			this.setItemStackToSlot(EntityEquipmentSlot.OFFHAND, new ItemStack(Blocks.DIRT, 64));
+			this.setItemStackToSlot(EntityEquipmentSlot.OFFHAND, new ItemStack(ModBlocks.salvaged_scaffold, 64));
 		}
 	}
 }
