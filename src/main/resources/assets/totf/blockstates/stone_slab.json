@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "half=bottom,variant=default": {
+      "model": "totf:stone_slab_half"
+    },
+    "half=top,variant=default": {
+      "model": "totf:stone_slab_upper"
+    }
+  }
+}

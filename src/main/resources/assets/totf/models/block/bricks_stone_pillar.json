@@ -1,0 +1,7 @@
+{
+    "parent": "block/cube_column",
+    "textures": {
+        "end": "totf:blocks/bricks_stone_pillar_top",
+        "side": "totf:blocks/bricks_stone_pillar_side"
+    }
+}

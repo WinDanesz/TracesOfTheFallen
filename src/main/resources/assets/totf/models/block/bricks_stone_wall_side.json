@@ -1,0 +1,6 @@
+{
+  "parent": "block/wall_side",
+  "textures": {
+    "wall": "totf:blocks/bricks_stone"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "parent": "block/outer_stairs",
+  "textures": {
+    "bottom": "totf:blocks/bricks_stone",
+    "top": "totf:blocks/bricks_stone",
+    "side": "totf:blocks/bricks_stone"
+  }
+}

@@ -177,8 +177,7 @@ public class ModItems {
 		registerItemBlock(registry, ModBlocks.bricks_stone_mossy);
 		registerItemBlock(registry, ModBlocks.bricks_stone_carved_mossy);
 		registerItemBlock(registry, ModBlocks.bricks_stone_smooth);
-		registerItemBlock(registry, ModBlocks.bricks_stone_pillar_side);
-		registerItemBlock(registry, ModBlocks.bricks_stone_pillar_top);
+		registerItemBlock(registry, ModBlocks.bricks_stone_pillar);
 		registerItemBlock(registry, ModBlocks.stained_glass);
 		registerItemBlock(registry, ModBlocks.dreamcatcher);
 		registerItemBlock(registry, ModBlocks.stone_chest);
@@ -197,6 +196,13 @@ public class ModItems {
 		registerItemBlock(registry, ModBlocks.mozaic_teal_washed);
 		registerItemBlock(registry, ModBlocks.mozaic_yellow);
 		registerItemBlock(registry, ModBlocks.mozaic_yellow_washed);
+
+		// New slabs, stairs, walls
+		registerSlabItemBlock(registry, ModBlocks.bricks_stone_slab, (net.minecraft.block.BlockSlab)ModBlocks.bricks_stone_slab, (net.minecraft.block.BlockSlab)ModBlocks.bricks_stone_double_slab);
+		
+		registerItemBlock(registry, ModBlocks.bricks_stone_stair);
+		
+		registerItemBlock(registry, ModBlocks.bricks_stone_wall);
 	}
 
 	public static void registerOreDictionary() {
@@ -207,6 +213,13 @@ public class ModItems {
 	// Helper for registering ItemBlocks
 	private static void registerItemBlock(IForgeRegistry<Item> registry, Block block) {
 		ItemBlock itemBlock = new ItemBlock(block);
+		itemBlock.setRegistryName(block.getRegistryName());
+		block.setCreativeTab(ModCreativeTab.TOTF_TAB);
+		registry.register(itemBlock);
+	}
+
+	private static void registerSlabItemBlock(IForgeRegistry<Item> registry, Block block, net.minecraft.block.BlockSlab halfSlab, net.minecraft.block.BlockSlab doubleSlab) {
+		net.minecraft.item.ItemSlab itemBlock = new net.minecraft.item.ItemSlab(block, halfSlab, doubleSlab);
 		itemBlock.setRegistryName(block.getRegistryName());
 		block.setCreativeTab(ModCreativeTab.TOTF_TAB);
 		registry.register(itemBlock);

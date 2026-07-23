@@ -1,0 +1,8 @@
+{
+    "parent": "minecraft:block/upper_slab",
+    "textures": {
+        "bottom": "totf:blocks/bricks_stone_smooth",
+        "top": "totf:blocks/bricks_stone_smooth",
+        "side": "totf:blocks/bricks_stone_slab_side"
+    }
+}

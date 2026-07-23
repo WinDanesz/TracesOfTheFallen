@@ -79,8 +79,7 @@ public class ModBlocks {
 	public static final Block bricks_stone_mossy = placeholder();
 	public static final Block bricks_stone_carved_mossy = placeholder();
 	public static final Block bricks_stone_smooth = placeholder();
-	public static final Block bricks_stone_pillar_side = placeholder();
-	public static final Block bricks_stone_pillar_top = placeholder();
+	public static final Block bricks_stone_pillar = placeholder();
 	public static final Block stained_glass = placeholder();
 	public static final Block dreamcatcher = placeholder();
 	public static final Block stone_chest = placeholder();
@@ -96,6 +95,10 @@ public class ModBlocks {
 	public static final Block mozaic_teal_washed = placeholder();
 	public static final Block mozaic_yellow = placeholder();
 	public static final Block mozaic_yellow_washed = placeholder();
+	public static final Block bricks_stone_slab = placeholder();
+	public static final Block bricks_stone_double_slab = placeholder();
+	public static final Block bricks_stone_stair = placeholder();
+	public static final Block bricks_stone_wall = placeholder();
 
 	@Nonnull
 	@SuppressWarnings("ConstantConditions")
@@ -156,8 +159,7 @@ public class ModBlocks {
 		registerBlock(registry, "bricks_stone_mossy", new BlockTOTFStone());
 		registerBlock(registry, "bricks_stone_carved_mossy", new BlockTOTFStone());
 		registerBlock(registry, "bricks_stone_smooth", new BlockTOTFStone());
-		registerBlock(registry, "bricks_stone_pillar_side", new BlockTOTFStone());
-		registerBlock(registry, "bricks_stone_pillar_top", new BlockTOTFStone());
+		registerBlock(registry, "bricks_stone_pillar", new BlockTOTFPillar(Material.ROCK));
 		registerBlock(registry, "stained_glass", new BlockTOTFGlass());
 		registerBlock(registry, "dreamcatcher", new BlockDreamcatcher(Material.WOOD));
 		registerBlock(registry, "stone_chest", new BlockStoneChest());
@@ -173,6 +175,14 @@ public class ModBlocks {
 		registerBlock(registry, "mozaic_teal_washed", new BlockTOTFStone());
 		registerBlock(registry, "mozaic_yellow", new BlockTOTFStone());
 		registerBlock(registry, "mozaic_yellow_washed", new BlockTOTFStone());
+
+		Block customBricksStoneSlab = new BlockTOTFHalfSlab(Material.ROCK).setHardness(2.0F).setResistance(10.0F);
+		registerBlock(registry, "bricks_stone_slab", customBricksStoneSlab);
+		registerBlockNoTab(registry, "bricks_stone_double_slab", new BlockTOTFDoubleSlab(Material.ROCK, customBricksStoneSlab).setHardness(2.0F).setResistance(10.0F));
+		
+		registerBlock(registry, "bricks_stone_stair", new BlockTOTFStairs(Blocks.STONEBRICK.getDefaultState()).setHardness(2.0F).setResistance(10.0F));
+		
+		registerBlock(registry, "bricks_stone_wall", new BlockTOTFWall(Blocks.STONEBRICK).setHardness(2.0F).setResistance(10.0F));
 	}
 
 	public static void registerBlock(IForgeRegistry<Block> registry, String name, Block block) {

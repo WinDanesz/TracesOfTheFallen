@@ -1,0 +1,6 @@
+{
+    "parent": "minecraft:block/cube_all",
+    "textures": {
+        "all": "totf:blocks/bricks_stone_slab_side"
+    }
+}
