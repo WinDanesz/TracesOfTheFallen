@@ -1,0 +1,24 @@
+{
+  "variants": {
+    "facing=up,light=0": { "model": "totf:brass_gas_lamp" },
+    "facing=down,light=0": { "model": "totf:brass_gas_lamp" },
+    "facing=north,light=0": { "model": "totf:brass_gas_lamp_wall" },
+    "facing=south,light=0": { "model": "totf:brass_gas_lamp_wall", "y": 180 },
+    "facing=west,light=0": { "model": "totf:brass_gas_lamp_wall", "y": 270 },
+    "facing=east,light=0": { "model": "totf:brass_gas_lamp_wall", "y": 90 },
+
+    "facing=up,light=1": { "model": "totf:brass_gas_lamp" },
+    "facing=down,light=1": { "model": "totf:brass_gas_lamp" },
+    "facing=north,light=1": { "model": "totf:brass_gas_lamp_wall" },
+    "facing=south,light=1": { "model": "totf:brass_gas_lamp_wall", "y": 180 },
+    "facing=west,light=1": { "model": "totf:brass_gas_lamp_wall", "y": 270 },
+    "facing=east,light=1": { "model": "totf:brass_gas_lamp_wall", "y": 90 },
+
+    "facing=up,light=2": { "model": "totf:brass_gas_lamp" },
+    "facing=down,light=2": { "model": "totf:brass_gas_lamp" },
+    "facing=north,light=2": { "model": "totf:brass_gas_lamp_wall" },
+    "facing=south,light=2": { "model": "totf:brass_gas_lamp_wall", "y": 180 },
+    "facing=west,light=2": { "model": "totf:brass_gas_lamp_wall", "y": 270 },
+    "facing=east,light=2": { "model": "totf:brass_gas_lamp_wall", "y": 90 }
+  }
+}

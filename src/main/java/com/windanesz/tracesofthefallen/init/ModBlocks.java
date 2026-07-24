@@ -100,6 +100,10 @@ public class ModBlocks {
 	public static final Block bricks_stone_stair = placeholder();
 	public static final Block bricks_stone_wall = placeholder();
 
+	public static final Block blue_caged_lamp = placeholder();
+	public static final Block brass_gas_lamp = placeholder();
+	public static final Block wrought_caged_lamp = placeholder();
+
 	@Nonnull
 	@SuppressWarnings("ConstantConditions")
 	private static <T> T placeholder() {
@@ -183,6 +187,10 @@ public class ModBlocks {
 		registerBlock(registry, "bricks_stone_stair", new BlockTOTFStairs(Blocks.STONEBRICK.getDefaultState()).setHardness(2.0F).setResistance(10.0F));
 		
 		registerBlock(registry, "bricks_stone_wall", new BlockTOTFWall(Blocks.STONEBRICK).setHardness(2.0F).setResistance(10.0F));
+
+		registerBlock(registry, "blue_caged_lamp", new BlockBlueCagedLamp());
+		registerBlock(registry, "brass_gas_lamp", new BlockBrassGasLamp());
+		registerBlock(registry, "wrought_caged_lamp", new BlockWroughtCagedLamp());
 	}
 
 	public static void registerBlock(IForgeRegistry<Block> registry, String name, Block block) {
@@ -241,5 +249,7 @@ public class ModBlocks {
 		GameRegistry.registerTileEntity(TileEntityStoneChest.class, new ResourceLocation(TracesOfTheFallen.MODID, "stone_chest"));
 		GameRegistry.registerTileEntity(TileEntityDreamcatcher.class, new ResourceLocation(TracesOfTheFallen.MODID, "dreamcatcher"));
 		GameRegistry.registerTileEntity(TileEntityWoodenItemFrame.class, new ResourceLocation(TracesOfTheFallen.MODID, "item_frame_wooden"));
+		GameRegistry.registerTileEntity(TileEntityBrassGasLamp.class, new ResourceLocation(TracesOfTheFallen.MODID, "brass_gas_lamp"));
+		GameRegistry.registerTileEntity(TileEntityWroughtCagedLamp.class, new ResourceLocation(TracesOfTheFallen.MODID, "wrought_caged_lamp"));
 	}
 }

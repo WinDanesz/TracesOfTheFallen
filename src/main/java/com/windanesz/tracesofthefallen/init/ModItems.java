@@ -203,6 +203,10 @@ public class ModItems {
 		registerItemBlock(registry, ModBlocks.bricks_stone_stair);
 		
 		registerItemBlock(registry, ModBlocks.bricks_stone_wall);
+
+		registerItemBlock(registry, ModBlocks.blue_caged_lamp);
+		registerItemBlock(registry, ModBlocks.brass_gas_lamp);
+		registerItemBlock(registry, ModBlocks.wrought_caged_lamp);
 	}
 
 	public static void registerOreDictionary() {

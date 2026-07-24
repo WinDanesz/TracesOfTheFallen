@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "facing=up": { "model": "totf:blue_caged_lamp_ground" },
+    "facing=down": { "model": "totf:blue_caged_lamp_ceiling" },
+    "facing=north": { "model": "totf:blue_caged_lamp_wall" },
+    "facing=south": { "model": "totf:blue_caged_lamp_wall", "y": 180 },
+    "facing=west": { "model": "totf:blue_caged_lamp_wall", "y": 270 },
+    "facing=east": { "model": "totf:blue_caged_lamp_wall", "y": 90 }
+  }
+}

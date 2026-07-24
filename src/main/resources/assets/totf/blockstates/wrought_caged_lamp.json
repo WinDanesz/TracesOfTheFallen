@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "facing=up": { "model": "totf:wrought_caged_lamp_floor" },
+    "facing=down": { "model": "totf:wrought_caged_lamp_ceiling" },
+    "facing=north": { "model": "totf:wrought_caged_lamp_wall" },
+    "facing=south": { "model": "totf:wrought_caged_lamp_wall", "y": 180 },
+    "facing=west": { "model": "totf:wrought_caged_lamp_wall", "y": 270 },
+    "facing=east": { "model": "totf:wrought_caged_lamp_wall", "y": 90 }
+  }
+}

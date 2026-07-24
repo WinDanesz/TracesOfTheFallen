@@ -68,6 +68,7 @@ public class ItemRuneOfSkimming extends ItemRune {
 				teleport(stack, (EntityPlayer) player);
 			}
 			player.stopActiveHand();
+			com.windanesz.tracesofthefallen.block.TileEntityWroughtCagedLamp.triggerNearbyWroughtLamps(player.world, player.getPosition());
 		}
 	}
 
