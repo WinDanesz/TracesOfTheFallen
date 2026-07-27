@@ -47,8 +47,7 @@ public class GoblinAISapperBuildPath extends EntityAIBase {
 	private static final int MAX_ROUTE_STEPS = 112;
 	private static final int MAX_DETOUR_DISTANCE = 24;
 	private static final int REPLAN_STUCK_TICKS = 60;
-	private static final int TARGET_REPLAN_INTERVAL = 20;
-	private static final double TARGET_REPLAN_DISTANCE_SQ = 16.0D;
+	private static final int PLAYER_STATIONARY_TICKS_REQUIRED = 60;
 
 	private final EntityGoblinSapper sapper;
 	private final World world;
@@ -67,6 +66,8 @@ public class GoblinAISapperBuildPath extends EntityAIBase {
 
 	private int buildTimer;
 	private int stuckTicks;
+	private BlockPos lastPlayerPos;
+	private int playerStationaryTicks;
 
 	public GoblinAISapperBuildPath(EntityGoblinSapper sapper) {
 		this.sapper = sapper;
@@ -84,31 +85,46 @@ public class GoblinAISapperBuildPath extends EntityAIBase {
 			return false;
 		}
 
-		this.targetPlayer = this.findTargetPlayer();
-		if (this.targetPlayer == null) {
-			return false;
-		}
-
 		// Continue an existing plan. The local stand-position list normally survives
 		// with this AI instance. If it somehow does not, updateTask() has a fallback.
 		if (!this.sapper.getPlannedBlocks().isEmpty()) {
 			return true;
 		}
 
-		if (hasDirectGroundPath(this.targetPlayer)) {
+		this.targetPlayer = this.findTargetPlayer();
+		if (this.targetPlayer == null || this.targetPlayer.isDead || this.targetPlayer.isSpectator()) {
+			this.playerStationaryTicks = 0;
+			this.lastPlayerPos = null;
 			return false;
 		}
 
-		if (canWalkCloserOnGround(this.targetPlayer)) {
+		BlockPos currentPlayerPos = new BlockPos(this.targetPlayer);
+		if (this.lastPlayerPos == null || !this.lastPlayerPos.equals(currentPlayerPos)) {
+			this.lastPlayerPos = currentPlayerPos;
+			this.playerStationaryTicks = 0;
 			return false;
 		}
 
-		if (!hasPathFromAir(this.targetPlayer)) {
-			return false;
+		this.playerStationaryTicks++;
+
+		if (this.playerStationaryTicks >= PLAYER_STATIONARY_TICKS_REQUIRED) {
+			if (hasDirectGroundPath(this.targetPlayer)) {
+				return false;
+			}
+
+			if (canWalkCloserOnGround(this.targetPlayer)) {
+				return false;
+			}
+
+			if (!hasPathFromAir(this.targetPlayer)) {
+				return false;
+			}
+
+			generateBuildPlan(this.targetPlayer);
+			return !this.sapper.getPlannedBlocks().isEmpty();
 		}
 
-		generateBuildPlan(this.targetPlayer);
-		return !this.sapper.getPlannedBlocks().isEmpty();
+		return false;
 	}
 
 	private EntityPlayer findTargetPlayer() {
@@ -582,10 +598,7 @@ public class GoblinAISapperBuildPath extends EntityAIBase {
 		}
 
 		return !this.sapper.getPlannedBlocks().isEmpty()
-				&& this.sapper.getBlocksBuilt() < MAX_BLOCKS_BUILT
-				&& this.targetPlayer != null
-				&& !this.targetPlayer.isDead
-				&& !this.targetPlayer.isSpectator();
+				&& this.sapper.getBlocksBuilt() < MAX_BLOCKS_BUILT;
 	}
 
 	@Override
@@ -619,18 +632,6 @@ public class GoblinAISapperBuildPath extends EntityAIBase {
 		}
 
 		this.sapper.stepHeight = 1.0F;
-
-		if (shouldReplanForMovingTarget()) {
-			generateBuildPlan(this.targetPlayer);
-			this.buildTimer = 0;
-			this.stuckTicks = 0;
-			this.sapper.getNavigator().clearPath();
-			return;
-		}
-
-		if (this.sapper.getPlannedBlocks().isEmpty()) {
-			return;
-		}
 
 		BlockPos targetPos = this.sapper.getPlannedBlocks().get(0);
 		BlockPos standPos = getCurrentStandPosition(targetPos);
@@ -734,25 +735,6 @@ public class GoblinAISapperBuildPath extends EntityAIBase {
 		}
 	}
 
-	private boolean shouldReplanForMovingTarget() {
-		if (this.targetPlayer == null
-				|| this.plannedTargetPos == null
-				|| this.sapper.ticksExisted % TARGET_REPLAN_INTERVAL != 0) {
-			return false;
-		}
-
-		BlockPos currentTargetPos = new BlockPos(
-				Math.floor(this.targetPlayer.posX),
-				Math.floor(this.targetPlayer.getEntityBoundingBox().minY + 0.001D),
-				Math.floor(this.targetPlayer.posZ)
-		);
-
-		double dx = currentTargetPos.getX() - this.plannedTargetPos.getX();
-		double dy = currentTargetPos.getY() - this.plannedTargetPos.getY();
-		double dz = currentTargetPos.getZ() - this.plannedTargetPos.getZ();
-
-		return dx * dx + dy * dy + dz * dz >= TARGET_REPLAN_DISTANCE_SQ;
-	}
 
 	private BlockPos getCurrentStandPosition(BlockPos targetPos) {
 		if (!this.plannedStandPositions.isEmpty()) {

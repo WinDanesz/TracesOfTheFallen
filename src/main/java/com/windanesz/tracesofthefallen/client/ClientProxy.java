@@ -148,6 +148,7 @@ public class ClientProxy extends CommonProxy {
 		RenderingRegistry.registerEntityRenderingHandler(EntityMinecrawler.class, RenderMinecrawler::new);
 		RenderingRegistry.registerEntityRenderingHandler(EntityWroughtBomb.class, RenderWroughtBomb::new);
 		RenderingRegistry.registerEntityRenderingHandler(EntityFetidDagger.class, RenderFetidDagger::new);
+		RenderingRegistry.registerEntityRenderingHandler(EntitySidhe.class, com.windanesz.tracesofthefallen.client.render.entity.RenderSidhe::new);
 		RenderingRegistry.registerEntityRenderingHandler(EntityFireOrb.class, RenderFireOrb::new);
 		RenderingRegistry.registerEntityRenderingHandler(EntityWillOWisp.class, RenderWillOWisp::new);
 		RenderingRegistry.registerEntityRenderingHandler(EntitySeekingOrb.class, RenderSeekingOrb::new);
@@ -157,6 +158,10 @@ public class ClientProxy extends CommonProxy {
 		RenderingRegistry.registerEntityRenderingHandler(EntityJawTrap.class, RenderJawTrap::new);
 		RenderingRegistry.registerEntityRenderingHandler(EntityBloodTotem.class, RenderBloodTotem::new);
 		RenderingRegistry.registerEntityRenderingHandler(EntityGoblinNest.class, RenderGoblinNest::new);
+		RenderingRegistry.registerEntityRenderingHandler(EntityLamphead.class, RenderLamphead::new);
+		RenderingRegistry.registerEntityRenderingHandler(EntityFrostling.class, RenderFrostling::new);
+		RenderingRegistry.registerEntityRenderingHandler(EntityFrostlingMask.class, RenderFrostlingMask::new);
+		RenderingRegistry.registerEntityRenderingHandler(EntityZapLightning.class, RenderZapLightning::new);
 	}
 
 	private void registerTileEntityRenderers() {

@@ -17,6 +17,7 @@ import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -43,6 +44,7 @@ public class TracesOfTheFallen implements ForgeChunkManager.LoadingCallback {
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
 		ForgeChunkManager.setForcedChunkLoadingCallback(instance, this);
+		NetworkRegistry.INSTANCE.registerGuiHandler(instance, new com.windanesz.tracesofthefallen.network.ModGuiHandler());
 		proxy.preInit(event);
 		ModBlocks.registerTileEntities();
 		ModLootTables.register();
@@ -66,6 +68,15 @@ public class TracesOfTheFallen implements ForgeChunkManager.LoadingCallback {
 		proxy.registerColorHandlers();
 		PacketHandler.initPackets();
 		ModItems.registerOreDictionary();
+		
+		for (net.minecraft.world.biome.Biome biome : net.minecraftforge.fml.common.registry.ForgeRegistries.BIOMES) {
+			if (biome != null && !biome.getSpawnableList(net.minecraft.entity.EnumCreatureType.MONSTER).isEmpty()) {
+				net.minecraftforge.fml.common.registry.EntityRegistry.addSpawn(com.windanesz.tracesofthefallen.entity.EntitySidhe.class, 5, 1, 1, net.minecraft.entity.EnumCreatureType.MONSTER, biome);
+				if (biome.getTempCategory() == net.minecraft.world.biome.Biome.TempCategory.COLD || biome.isSnowyBiome()) {
+					net.minecraftforge.fml.common.registry.EntityRegistry.addSpawn(com.windanesz.tracesofthefallen.entity.EntityFrostling.class, 15, 1, 3, net.minecraft.entity.EnumCreatureType.MONSTER, biome);
+				}
+			}
+		}
 	}
 
 	@Mod.EventHandler

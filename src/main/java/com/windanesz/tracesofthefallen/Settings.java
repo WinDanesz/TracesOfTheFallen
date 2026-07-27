@@ -54,6 +54,10 @@ public class Settings {
 	@Config.LangKey("settings.totf:general_settings")
 	public static GoblinSettings goblinSettings = new GoblinSettings();
 
+	@Config.Name("Mob Settings")
+	@Config.LangKey("settings.totf:general_settings")
+	public static MobSettings mobSettings = new MobSettings();
+
     public static class WorldgenSettings {
 
         @Config.Name("Lost Loot Dimensions")
@@ -619,6 +623,29 @@ public class Settings {
 				"totf:mozaic_teal_washed:0|totf:mozaic_teal:0",
 				"totf:mozaic_yellow_washed:0|totf:mozaic_yellow:0"
 		};
+		@Config.Name("Sidhe Interactions")
+		@Config.Comment({
+				"List of items that the Sidhe can interact with.",
+				"Format: 'modid:item_name:meta|action'",
+				"Meta is optional (defaults to 0 or any if *). NBT can be appended as JSON string if needed, e.g. modid:item:meta:{NBT}.",
+				"Action can be 'attack' to make the Sidhe retaliate, or an item stack to return as a reward (e.g. 'minecraft:diamond:0*1').",
+				"Examples: 'minecraft:fish:*|attack', 'totf:furred_trout:0|minecraft:diamond:0*1'"
+		})
+		public String[] sidheInteractItems = {
+				"minecraft:fish:*|attack",
+				"minecraft:cooked_fish:*|attack",
+				"totf:furred_trout:0|minecraft:diamond:0*1"
+		};
+
+		@Config.Name("Brass Fabricator Custom Fuels")
+		@Config.Comment({
+				"List of custom fuels (or overrides) for the Brass Fabricator.",
+				"Format per entry: 'modid:item_name|burn_time_ticks' or 'modid:item_name:meta|burn_time_ticks'.",
+				"Examples: 'minecraft:redstone|1600', 'minecraft:coal:1|3200'"
+		})
+		public String[] fabricatorCustomFuels = {
+				"minecraft:redstone|1600"
+		};
     }
 
     public static class ClientSettings {
@@ -764,6 +791,23 @@ public class Settings {
 		@Config.RangeDouble(min = 0.0D, max = 10000.0D)
 		public double specterAttackDamage = 4.0D;
 	}
+
+	public static class MobSettings {
+		@Config.Name("Lamphead Knockback Multiplier")
+		@Config.Comment("The knockback multiplier for Lamphead's attack. Default: 0.8")
+		@Config.RangeDouble(min = 0.0D, max = 100.0D)
+		public double lampheadKnockbackMultiplier = 0.8D;
+
+		@Config.Name("Lamphead Attack Damage")
+		@Config.Comment("Base attack damage for Lamphead. Default: 5.0")
+		@Config.RangeDouble(min = 0.0D, max = 10000.0D)
+		public double lampheadAttackDamage = 6.0D;
+
+		@Config.Name("Lamphead Max Health")
+		@Config.Comment("Max health for Lamphead. Default: 30.0")
+		@Config.RangeDouble(min = 1.0D, max = 10000.0D)
+		public double lampheadMaxHealth = 30.0D;
+	}
     @SuppressWarnings("unused")
     @Mod.EventBusSubscriber(modid = TracesOfTheFallen.MODID)
     private static class EventHandler {
@@ -774,6 +818,7 @@ public class Settings {
                 HauntingCapability.clearHauntingBlockCache();
                 TileEntityPorcelainVessel.clearHeatSourcesCache();
                 com.windanesz.tracesofthefallen.entity.ai.GoblinAITunnelerDig.clearBreakOverridesCache();
+                com.windanesz.tracesofthefallen.block.TileEntityBrassFabricator.clearFuelCache();
             }
         }
     }

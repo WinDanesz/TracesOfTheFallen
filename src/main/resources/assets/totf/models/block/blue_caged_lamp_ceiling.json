@@ -1,7 +1,6 @@
 {
 	"format_version": "1.9.0",
 	"credit": "Made by Foreck with Blockbench",
-	"parent": "blue_caged_lamp",
 	"textures": {
 		"0": "totf:blocks/blue_caged_lamp",
 		"particle": "totf:blocks/blue_caged_lamp"

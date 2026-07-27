@@ -1,0 +1,12 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "particle": "totf:blocks/brass_fabricator_side",
+    "down": "totf:blocks/brass_fabricator_top",
+    "up": "totf:blocks/brass_fabricator_top",
+    "north": "totf:blocks/brass_fabricator_interface",
+    "east": "totf:blocks/brass_fabricator_side",
+    "south": "totf:blocks/brass_fabricator_output",
+    "west": "totf:blocks/brass_fabricator_side"
+  }
+}

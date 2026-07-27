@@ -4,8 +4,8 @@ import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 
-public class BlockBlueCagedLamp extends BlockLampBase {
-    public BlockBlueCagedLamp() {
+public class BlockCagedLamp extends BlockLampBase {
+    public BlockCagedLamp() {
         super(Material.IRON);
         this.setHardness(3.5F);
         this.setSoundType(SoundType.METAL);
@@ -16,3 +16,4 @@ public class BlockBlueCagedLamp extends BlockLampBase {
         return 12;
     }
 }
+

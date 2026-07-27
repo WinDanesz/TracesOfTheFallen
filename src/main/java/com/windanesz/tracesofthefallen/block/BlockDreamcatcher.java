@@ -53,4 +53,23 @@ public class BlockDreamcatcher extends BlockDecoration {
 		com.windanesz.tracesofthefallen.client.ClientProxy.addMultiLineDescription(tooltip, net.minecraft.util.text.TextFormatting.BOLD + "" + net.minecraft.util.text.TextFormatting.GRAY + net.minecraft.client.resources.I18n.format("tile.totf:dreamcatcher.desc"));
 		com.windanesz.tracesofthefallen.client.ClientProxy.addMultiLineDescription(tooltip, net.minecraft.util.text.TextFormatting.DARK_GRAY + net.minecraft.client.resources.I18n.format("tile.totf:dreamcatcher.desc2"));
 	}
+
+	@Override
+	public boolean canPlaceBlockAt(net.minecraft.world.World worldIn, BlockPos pos) {
+		return super.canPlaceBlockAt(worldIn, pos) && this.canBlockStay(worldIn, pos);
+	}
+
+	private boolean canBlockStay(net.minecraft.world.World worldIn, BlockPos pos) {
+		IBlockState upState = worldIn.getBlockState(pos.up());
+		return upState.isSideSolid(worldIn, pos.up(), EnumFacing.DOWN) || upState.getBlock().isLeaves(upState, worldIn, pos.up()) || upState.isOpaqueCube();
+	}
+
+	@Override
+	public void neighborChanged(IBlockState state, net.minecraft.world.World worldIn, BlockPos pos, net.minecraft.block.Block blockIn, BlockPos fromPos) {
+		if (!this.canBlockStay(worldIn, pos)) {
+			this.dropBlockAsItem(worldIn, pos, state, 0);
+			worldIn.setBlockToAir(pos);
+		}
+		super.neighborChanged(state, worldIn, pos, blockIn, fromPos);
+	}
 }

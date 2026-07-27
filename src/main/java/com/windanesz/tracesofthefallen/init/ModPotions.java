@@ -21,6 +21,7 @@ public class ModPotions {
 	public static final Potion bliss = placeholder();
 	public static final Potion serenity = placeholder();
 	public static final Potion rage = placeholder();
+	public static final Potion static_vulnerability = placeholder();
 
 	@Nonnull
 	@SuppressWarnings("ConstantConditions")
@@ -41,7 +42,7 @@ public class ModPotions {
 		registerPotion(registry, "bliss", new PotionBliss("bliss",false, 0xf799e9, new ResourceLocation(TracesOfTheFallen.MODID, "textures/gui/potion_bliss.png")));
 		registerPotion(registry, "serenity", new PotionSerenity("serenity", false, 0x7fd8d8, new ResourceLocation(TracesOfTheFallen.MODID, "textures/gui/potion_serenity.png")));
 		registerPotion(registry, "rage", new PotionRage("rage", false, 0xff8a1f, new ResourceLocation(TracesOfTheFallen.MODID, "textures/gui/potion_rage.png")));
-
+		registerPotion(registry, "static_vulnerability", new com.windanesz.tracesofthefallen.potion.PotionStaticVulnerability("static_vulnerability", true, 0x00ffff, new ResourceLocation(TracesOfTheFallen.MODID, "textures/gui/potion_static_vulnerability.png")));
 
 		// Interestingly, setting the colour to black stops th e particles from rendering.
 	}

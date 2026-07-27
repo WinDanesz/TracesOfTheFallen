@@ -28,6 +28,7 @@ public class ModItems {
 	public static final Item goblin_idol = placeholder();
 	public static final Item idol_of_blades = placeholder();
 	public static final Item pemmican = placeholder();
+	public static final Item furred_trout = placeholder();
 	public static final Item mysterious_fur = placeholder();
 	public static final Item veiled_mask = placeholder();
 	public static final Item chitin_helmet = placeholder();
@@ -47,6 +48,9 @@ public class ModItems {
 	public static final Item primitive_mace = placeholder();
 	public static final Item brass_club = placeholder();
 	public static final Item bone_rattle = placeholder();
+	public static final Item chilled_gel = placeholder();
+	public static final Item zap_charge = placeholder();
+	public static final Item zap_charge_empty = placeholder();
 
 	public static final Item painting_in_the_woods = placeholder();
 	public static final Item painting_portrait = placeholder();
@@ -75,6 +79,7 @@ public class ModItems {
 		registerItem(registry, "goblin_idol", new ItemGoblinIdol().setCreativeTab(ModCreativeTab.TOTF_TAB));
 		registerItem(registry, "ward_of_blades", new ItemWardOfBlades().setCreativeTab(ModCreativeTab.TOTF_TAB));
 		registerItem(registry, "pemmican", new ItemFood(10, 0.8f, true).setCreativeTab(ModCreativeTab.TOTF_TAB));
+		registerItem(registry, "furred_trout", new ItemFood(2, 0.1f, false).setCreativeTab(ModCreativeTab.TOTF_TAB));
 
 		registerItem(registry, "painting_in_the_woods", new ItemModPainting(ItemModPainting.EnumPainting.PAINTING_IN_THE_WOODS).setCreativeTab(ModCreativeTab.TOTF_TAB));
 		registerItem(registry, "painting_portrait", new ItemModPainting(ItemModPainting.EnumPainting.PAINTING_PORTRAIT).setCreativeTab(ModCreativeTab.TOTF_TAB));
@@ -110,6 +115,9 @@ public class ModItems {
 		registerItem(registry, "brass_club", new ItemBrassClub().setCreativeTab(ModCreativeTab.TOTF_TAB));
 		registerItem(registry, "bone_rattle", new ItemBoneRattle().setCreativeTab(ModCreativeTab.TOTF_TAB));
 		registerItem(registry, "goblin_nest", new ItemGoblinNest().setCreativeTab(ModCreativeTab.TOTF_TAB));
+		registerItem(registry, "chilled_gel", new Item().setCreativeTab(ModCreativeTab.TOTF_TAB));
+		registerItem(registry, "zap_charge", new ItemZapCharge().setCreativeTab(ModCreativeTab.TOTF_TAB));
+		registerItem(registry, "zap_charge_empty", new Item().setCreativeTab(ModCreativeTab.TOTF_TAB));
 
 		// Register ItemBlocks
 		registerItemBlock(registry, ModBlocks.lost_cargo);
@@ -204,9 +212,10 @@ public class ModItems {
 		
 		registerItemBlock(registry, ModBlocks.bricks_stone_wall);
 
-		registerItemBlock(registry, ModBlocks.blue_caged_lamp);
 		registerItemBlock(registry, ModBlocks.brass_gas_lamp);
+		registerItemBlock(registry, ModBlocks.blue_caged_lamp);
 		registerItemBlock(registry, ModBlocks.wrought_caged_lamp);
+		registerItemBlock(registry, ModBlocks.brass_fabricator);
 	}
 
 	public static void registerOreDictionary() {
@@ -254,3 +263,4 @@ public class ModItems {
 	}
 
 }
+

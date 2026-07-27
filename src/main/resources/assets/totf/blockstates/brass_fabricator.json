@@ -1,0 +1,8 @@
+{
+    "variants": {
+        "facing=north": { "model": "totf:brass_fabricator" },
+        "facing=east":  { "model": "totf:brass_fabricator", "y": 90 },
+        "facing=south": { "model": "totf:brass_fabricator", "y": 180 },
+        "facing=west":  { "model": "totf:brass_fabricator", "y": 270 }
+    }
+}
