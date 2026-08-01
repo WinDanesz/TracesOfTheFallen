@@ -81,10 +81,11 @@ public class ModEntities {
 		registry.register(createEntry(EntityBloodTotem.class, "blood_totem", TrackingType.LIVING).build());
 		registry.register(createEntry(EntityGoblinNest.class, "goblin_nest", TrackingType.LIVING).build());
 		registry.register(createEntry(EntitySidhe.class, "sidhe", TrackingType.LIVING).egg(0x1a1a1a, 0x8b008b).build());
-		registry.register(createEntry(EntityLamphead.class, "lamphead", TrackingType.LIVING).egg(0x3e3e3e, 0xffff00).build());
+		registry.register(createEntry(EntityLamphead.class, "lamphead", TrackingType.LIVING).egg(0x0e4749, 0xffff00).build());
 		registry.register(createEntry(EntityFrostling.class, "frostling", TrackingType.LIVING).egg(0x5a8fb3, 0xbfd7e8).build());
 		registry.register(createEntry(EntityFrostlingMask.class, "frostling_mask", TrackingType.PROJECTILE).build());
 		registry.register(createEntry(EntityZapLightning.class, "zap_lightning", TrackingType.PROJECTILE).build());
+		registry.register(createEntry(EntityGnossic.class, "gnossic", TrackingType.LIVING).egg(0x2a2a2a, 0x6e1b1b).build());
 	}
 
 	/**

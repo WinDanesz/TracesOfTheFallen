@@ -66,6 +66,13 @@ public class RenderModPainting extends Render<EntityModPainting> {
             } else if (hauntingProgress >= 20) {
                 textureV = 32;
             }
+        } else if (p == ItemModPainting.EnumPainting.PAINTING_RESTING_MISCHIEF) {
+            int hauntingProgress = painting.getHauntingProgress();
+            if (hauntingProgress >= 40) {
+                textureV = 192;
+            } else if (hauntingProgress >= 20) {
+                textureV = 160;
+            }
         }
 
         this.renderPainting(painting, p.sizeX, p.sizeY, p.u, textureV);
@@ -121,7 +128,7 @@ public class RenderModPainting extends Render<EntityModPainting> {
     }
 
     private void renderPainting(EntityModPainting painting, int width, int height, int textureU, int textureV) {
-        float canvasSize = 128f;
+        float canvasSize = 256f;
         float f = (float) (-width) / 2.0F;
         float f1 = (float) (-height) / 2.0F;
         float f2 = 0.5F;

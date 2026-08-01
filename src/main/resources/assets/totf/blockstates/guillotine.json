@@ -1,0 +1,10 @@
+{
+    "variants": {
+        "facing=down":  { "model": "totf:guillotine_base" },
+        "facing=up":    { "model": "totf:guillotine_base", "x": 180 },
+        "facing=north": { "model": "totf:guillotine_base", "x": 90 },
+        "facing=south": { "model": "totf:guillotine_base", "x": 90, "y": 180 },
+        "facing=west":  { "model": "totf:guillotine_base", "x": 90, "y": 270 },
+        "facing=east":  { "model": "totf:guillotine_base", "x": 90, "y": 90 }
+    }
+}

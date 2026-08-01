@@ -1,0 +1,6 @@
+{
+  "variants": {
+    "powered=false": { "model": "totf:stone_receiver" },
+    "powered=true":  { "model": "totf:stone_receiver" }
+  }
+}

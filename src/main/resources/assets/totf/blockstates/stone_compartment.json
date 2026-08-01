@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "open=0": { "model": "totf:stone_compartment_0" },
+    "open=1": { "model": "totf:stone_compartment_1" },
+    "open=2": { "model": "totf:stone_compartment_2" },
+    "open=3": { "model": "totf:stone_compartment_3" }
+  }
+}

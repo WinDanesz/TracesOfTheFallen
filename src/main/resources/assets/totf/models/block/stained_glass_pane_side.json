@@ -1,0 +1,7 @@
+{
+  "parent": "block/pane_side",
+  "textures": {
+    "pane": "totf:blocks/stained_glass",
+    "edge": "totf:blocks/stained_glass"
+  }
+}

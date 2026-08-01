@@ -1,0 +1,35 @@
+{
+	"format_version": "1.9.0",
+	"credit": "Made by Foreck with Blockbench",
+	"textures": {
+		"particle": "totf:blocks/wrought_bars_base",
+		"texture": "totf:blocks/wrought_bars_base"
+	},
+	"elements": [
+		{
+			"from": [8, 0, 7.5],
+			"to": [16, 16, 8.5],
+			"faces": {
+				"north": {"uv": [0, 0, 8, 16], "texture": "#texture"},
+				"south": {"uv": [8, 0, 16, 16], "texture": "#texture"}
+			}
+		},
+		{
+			"from": [7.5, 0, 8],
+			"to": [8.5, 16, 16],
+			"rotation": {"angle": 0, "axis": "y", "origin": [15.9, 0, 0]},
+			"faces": {
+				"east": {"uv": [0, 0, 8, 16], "texture": "#texture"},
+				"west": {"uv": [8, 0, 16, 16], "texture": "#texture"}
+			}
+		},
+		{
+			"from": [7.88579, 0, 8.91421],
+			"to": [8.58579, 16, 8.91421],
+			"rotation": {"angle": 45, "axis": "y", "origin": [6.58579, 0, 8.91421]},
+			"faces": {
+				"north": {"uv": [7, 0, 7.7, 16], "texture": "#texture"}
+			}
+		}
+	]
+}

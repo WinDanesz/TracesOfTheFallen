@@ -1,0 +1,7 @@
+{
+  "parent": "block/pane_post",
+  "textures": {
+    "pane": "totf:blocks/stained_glass",
+    "edge": "totf:blocks/stained_glass"
+  }
+}

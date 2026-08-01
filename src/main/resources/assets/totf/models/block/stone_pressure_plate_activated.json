@@ -1,0 +1,12 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "particle": "totf:blocks/stone_pressure_plate_activated",
+    "up": "totf:blocks/stone_pressure_plate_activated",
+    "down": "totf:blocks/bricks_stone_smooth",
+    "north": "totf:blocks/bricks_stone_smooth",
+    "south": "totf:blocks/bricks_stone_smooth",
+    "west": "totf:blocks/bricks_stone_smooth",
+    "east": "totf:blocks/bricks_stone_smooth"
+  }
+}

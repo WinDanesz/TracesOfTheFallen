@@ -48,7 +48,7 @@ public class GuiBrassFabricator extends GuiContainer {
             int texY = 199 + ((te.speedLevel - 1) * 5); // 199, 204, 209, etc.
             
             // Draw the overlay bar
-            this.drawTexturedModalRect(x + 11, y + 109, texX, texY, progressWidth, 4);
+            this.drawTexturedModalRect(x + 11, y + 110, texX, texY, progressWidth, 4);
         }
 
         if (te.craftProgress > 0 && te.speedLevel >= 1 && te.speedLevel <= 6) {

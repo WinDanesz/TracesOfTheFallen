@@ -47,7 +47,7 @@ public class ParticleLifestealStream extends Particle {
 		Entity target = this.world.getEntityByID(this.targetEntityId);
 		if (target != null && target.isEntityAlive()) {
 			double targetX = target.posX;
-			double targetY = target.posY + (double) (target.height * 0.55F);
+			double targetY = target.posY + (double) target.getEyeHeight() + 0.3D; // Shifted up by 0.5
 			double targetZ = target.posZ;
 
 			double dx = targetX - this.posX;

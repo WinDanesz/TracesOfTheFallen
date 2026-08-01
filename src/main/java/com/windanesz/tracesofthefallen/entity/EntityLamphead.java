@@ -1,10 +1,7 @@
 package com.windanesz.tracesofthefallen.entity;
 
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
-import com.windanesz.tracesofthefallen.block.BlockBrassFabricator;
-import com.windanesz.tracesofthefallen.block.TileEntityBrassFabricator;
-import com.windanesz.tracesofthefallen.init.ModBlocks;
-import net.minecraft.block.state.IBlockState;
+import com.windanesz.tracesofthefallen.entity.ai.EntityAILampheadInteract;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAgeable;
@@ -21,9 +18,10 @@ import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.potion.PotionEffect;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.*;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
@@ -35,7 +33,7 @@ public class EntityLamphead extends EntityTameable {
     private static final DataParameter<Boolean> ATTACK_STANCE = EntityDataManager.createKey(EntityLamphead.class, DataSerializers.BOOLEAN);
     private static final DataParameter<Boolean> ANGRY = EntityDataManager.createKey(EntityLamphead.class, DataSerializers.BOOLEAN);
     private static final DataParameter<Boolean> HEAD_SLAMMING = EntityDataManager.createKey(EntityLamphead.class, DataSerializers.BOOLEAN);
-    private static final DataParameter<Boolean> FABRICATING = EntityDataManager.createKey(EntityLamphead.class, DataSerializers.BOOLEAN);
+    public static final DataParameter<Boolean> FABRICATING = EntityDataManager.createKey(EntityLamphead.class, DataSerializers.BOOLEAN);
 
     public int headSlamCooldown = 0;
     public float headSlamProgress = 0.0F;
@@ -45,10 +43,12 @@ public class EntityLamphead extends EntityTameable {
     public float prevAttackProgress;
     public float fabricateProgress = 0.0F;
     public float prevFabricateProgress = 0.0F;
+    public float squeezeProgress = 0.0F;
+    public float prevSqueezeProgress = 0.0F;
 
     public EntityLamphead(World worldIn) {
         super(worldIn);
-        this.setSize(0.8F, 1.8F);
+        this.setSize(0.7F, 1.7F);
         this.experienceValue = 5;
     }
 
@@ -64,6 +64,16 @@ public class EntityLamphead extends EntityTameable {
     @Override
     public void onUpdate() {
         super.onUpdate();
+
+        this.prevSqueezeProgress = this.squeezeProgress;
+        boolean squeezing = !this.world.getCollisionBoxes(this, this.getEntityBoundingBox().expand(0.0D, 0.4D, 0.0D)).isEmpty();
+        if (squeezing) {
+            this.squeezeProgress += 0.1F;
+            if (this.squeezeProgress > 1.0F) this.squeezeProgress = 1.0F;
+        } else {
+            this.squeezeProgress -= 0.1F;
+            if (this.squeezeProgress < 0.0F) this.squeezeProgress = 0.0F;
+        }
 
         this.prevHeadSlamProgress = this.headSlamProgress;
         if (this.isHeadSlamming()) {
@@ -131,15 +141,15 @@ public class EntityLamphead extends EntityTameable {
     @Override
     protected void initEntityAI() {
         this.aiSit = new EntityAISit(this);
-        this.tasks.addTask(1, new EntityAISwimming(this));
+        this.tasks.addTask(0, new EntityAISwimming(this));
+        this.tasks.addTask(1, new EntityAILampheadInteract(this, 0.8D));
         this.tasks.addTask(2, this.aiSit);
         this.tasks.addTask(3, new EntityAILampheadHeadSlam(this));
         this.tasks.addTask(4, new EntityAIAttackMelee(this, 1.2D, false));
-        this.tasks.addTask(5, new EntityAILampheadFabricate(this, 0.8D));
-        this.tasks.addTask(6, new EntityAIFollowOwner(this, 1.0D, 10.0F, 2.0F));
-        this.tasks.addTask(7, new EntityAIWanderAvoidWater(this, 1.0D));
-        this.tasks.addTask(8, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
-        this.tasks.addTask(9, new EntityAILookIdle(this));
+        this.tasks.addTask(5, new EntityAIFollowOwner(this, 1.0D, 10.0F, 2.0F));
+        this.tasks.addTask(6, new EntityAIWanderAvoidWater(this, 1.0D));
+        this.tasks.addTask(7, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
+        this.tasks.addTask(8, new EntityAILookIdle(this));
         
         this.targetTasks.addTask(1, new EntityAIOwnerHurtByTarget(this));
         this.targetTasks.addTask(2, new EntityAIOwnerHurtTarget(this));
@@ -157,14 +167,16 @@ public class EntityLamphead extends EntityTameable {
         ItemStack itemstack = player.getHeldItem(hand);
 
         if (this.isTamed()) {
-            if (this.isOwner(player) && !this.world.isRemote && !this.isBreedingItem(itemstack)) {
+            if (hand == EnumHand.MAIN_HAND && this.isOwner(player) && !this.world.isRemote && !this.isBreedingItem(itemstack)) {
                 if (player.isSneaking()) {
-                    this.aiSit.setSitting(!this.isSitting());
+                    boolean sitState = !this.isSitting();
+                    this.aiSit.setSitting(sitState);
+                    this.setSitting(sitState);
                     this.isJumping = false;
                     this.navigator.clearPath();
                     this.setAttackTarget(null);
                     
-                    if (this.isSitting()) {
+                    if (sitState) {
                         player.sendMessage(new TextComponentString("Lamphead will now stay here."));
                     } else {
                         player.sendMessage(new TextComponentString("Lamphead is now following you."));
@@ -173,21 +185,23 @@ public class EntityLamphead extends EntityTameable {
                 return true;
             }
         } else if (itemstack.getItem() == Items.NETHER_STAR) {
-            if (!player.capabilities.isCreativeMode) {
-                itemstack.shrink(1);
-            }
+            if (hand == EnumHand.MAIN_HAND) {
+                if (!player.capabilities.isCreativeMode) {
+                    itemstack.shrink(1);
+                }
 
-            if (!this.world.isRemote) {
-                this.setTamedBy(player);
-                this.navigator.clearPath();
-                this.setAttackTarget(null);
-                this.aiSit.setSitting(true);
-                this.setHealth(this.getMaxHealth());
-                this.playTameEffect(true);
-                this.world.setEntityState(this, (byte)7);
+                if (!this.world.isRemote) {
+                    this.setTamedBy(player);
+                    this.navigator.clearPath();
+                    this.setAttackTarget(null);
+                    this.aiSit.setSitting(true);
+                    this.setSitting(true);
+                    this.setHealth(this.getMaxHealth());
+                    this.playTameEffect(true);
+                    this.world.setEntityState(this, (byte)7);
+                }
+                return true;
             }
-
-            return true;
         }
 
         return super.processInteract(player, hand);
@@ -260,9 +274,8 @@ public class EntityLamphead extends EntityTameable {
             this.attackTimer = 12;
             this.attackProgress = 0.0F;
             this.prevAttackProgress = 0.0F;
-        } else {
-            super.handleStatusUpdate(id);
         }
+        super.handleStatusUpdate(id);
     }
 
     @Override
@@ -287,6 +300,7 @@ public class EntityLamphead extends EntityTameable {
             EntityLivingBase target = this.lamphead.getAttackTarget();
             if (target == null || !target.isEntityAlive()) return false;
             if (this.lamphead.headSlamCooldown > 0) return false;
+            if (this.lamphead.squeezeProgress > 0.0F) return false;
             return this.lamphead.getDistanceSq(target) <= 4.0D;
         }
 
@@ -335,125 +349,6 @@ public class EntityLamphead extends EntityTameable {
         public void resetTask() {
             this.lamphead.dataManager.set(HEAD_SLAMMING, false);
             this.lamphead.headSlamCooldown = 200;
-        }
-    }
-
-    public class EntityAILampheadFabricate extends EntityAIBase {
-        private final EntityLamphead lamphead;
-        private final double speed;
-        private BlockPos fabricatorPos = null;
-        private BlockPos interactPos = null;
-        private int searchCooldown = 0;
-        private int fabricateTimer = 0;
-
-        public EntityAILampheadFabricate(EntityLamphead lamphead, double speed) {
-            this.lamphead = lamphead;
-            this.speed = speed;
-            this.setMutexBits(3);
-        }
-
-        @Override
-        public boolean shouldExecute() {
-            if (this.lamphead.getAttackTarget() != null) return false;
-            if (this.lamphead.isSitting()) return false;
-            
-            if (this.searchCooldown > 0) {
-                this.searchCooldown--;
-                return false;
-            }
-
-            this.searchCooldown = 20 + this.lamphead.getRNG().nextInt(20);
-            
-            BlockPos currentPos = new BlockPos(this.lamphead);
-            for (int x = -8; x <= 8; x++) {
-                for (int y = -4; y <= 4; y++) {
-                    for (int z = -8; z <= 8; z++) {
-                        BlockPos checkPos = currentPos.add(x, y, z);
-                        IBlockState state = this.lamphead.world.getBlockState(checkPos);
-                        if (state.getBlock() == ModBlocks.brass_fabricator) {
-                            EnumFacing facing = state.getValue(BlockBrassFabricator.FACING);
-                            BlockPos frontPos = checkPos.offset(facing);
-                            
-                            if (this.lamphead.world.isAirBlock(frontPos) && this.lamphead.world.isAirBlock(frontPos.up()) && this.lamphead.world.getBlockState(frontPos.down()).isOpaqueCube()) {
-                                TileEntity te = this.lamphead.world.getTileEntity(checkPos);
-                                if (te instanceof TileEntityBrassFabricator) {
-                                    TileEntityBrassFabricator fabricatorTE = (TileEntityBrassFabricator) te;
-                                    if (fabricatorTE.connectedLamphead == null || !fabricatorTE.connectedLamphead.isEntityAlive()) {
-                                        this.fabricatorPos = checkPos;
-                                        this.interactPos = frontPos;
-                                        fabricatorTE.connectedLamphead = this.lamphead;
-                                        return true;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            return false;
-        }
-
-        @Override
-        public void startExecuting() {
-            this.fabricateTimer = 0;
-            this.lamphead.getNavigator().tryMoveToXYZ(this.interactPos.getX() + 0.5D, this.interactPos.getY(), this.interactPos.getZ() + 0.5D, this.speed);
-        }
-
-        @Override
-        public boolean shouldContinueExecuting() {
-            if (this.lamphead.getAttackTarget() != null || this.lamphead.isSitting()) return false;
-            if (this.fabricatorPos == null || this.lamphead.world.getBlockState(this.fabricatorPos).getBlock() != ModBlocks.brass_fabricator) return false;
-            return this.fabricateTimer < 400; // Increased from 100 to 400 (20 seconds)
-        }
-
-        @Override
-        public void updateTask() {
-            if (this.lamphead.getDistanceSqToCenter(this.interactPos) < 1.0D) { // Tighter distance check
-                this.lamphead.getNavigator().clearPath();
-                
-                this.lamphead.motionX = 0;
-                this.lamphead.motionZ = 0;
-                
-                // Snap rotation perfectly towards the block and position 2px further back
-                IBlockState state = this.lamphead.world.getBlockState(this.fabricatorPos);
-                if (state.getBlock() == ModBlocks.brass_fabricator) {
-                    EnumFacing facing = state.getValue(BlockBrassFabricator.FACING);
-                    float targetYaw = facing.getOpposite().getHorizontalAngle();
-                    this.lamphead.rotationYaw = targetYaw;
-                    this.lamphead.rotationYawHead = targetYaw;
-                    this.lamphead.renderYawOffset = targetYaw;
-                    
-                    double offsetX = facing.getXOffset() * 0.125D;
-                    double offsetZ = facing.getZOffset() * 0.125D;
-                    this.lamphead.setPositionAndUpdate(this.interactPos.getX() + 0.5D + offsetX, this.interactPos.getY(), this.interactPos.getZ() + 0.5D + offsetZ);
-                } else {
-                    this.lamphead.setPositionAndUpdate(this.interactPos.getX() + 0.5D, this.interactPos.getY(), this.interactPos.getZ() + 0.5D);
-                }
-                
-                this.lamphead.dataManager.set(FABRICATING, true);
-                this.fabricateTimer++;
-            } else {
-                this.lamphead.dataManager.set(FABRICATING, false);
-                if (this.lamphead.getNavigator().noPath()) {
-                    this.lamphead.getNavigator().tryMoveToXYZ(this.interactPos.getX() + 0.5D, this.interactPos.getY(), this.interactPos.getZ() + 0.5D, this.speed);
-                }
-            }
-        }
-
-        @Override
-        public void resetTask() {
-            this.lamphead.dataManager.set(FABRICATING, false);
-            if (this.fabricatorPos != null) {
-                TileEntity te = this.lamphead.world.getTileEntity(this.fabricatorPos);
-                if (te instanceof TileEntityBrassFabricator) {
-                    TileEntityBrassFabricator fabricatorTE = (TileEntityBrassFabricator) te;
-                    if (fabricatorTE.connectedLamphead == this.lamphead) {
-                        fabricatorTE.connectedLamphead = null;
-                    }
-                }
-            }
-            this.fabricatorPos = null;
-            this.interactPos = null;
         }
     }
 }

@@ -27,6 +27,12 @@
                     "name": "totf:painting_wheel",
                     "entryName": "painting_wheel",
                     "weight": 1
+                },
+                {
+                    "type": "item",
+                    "name": "totf:painting_resting_mischief",
+                    "entryName": "painting_resting_mischief",
+                    "weight": 1
                 }
             ]
         }

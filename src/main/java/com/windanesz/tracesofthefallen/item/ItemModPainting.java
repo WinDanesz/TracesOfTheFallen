@@ -29,7 +29,8 @@ public class ItemModPainting extends Item {
 		PAINTING_THE_BLOODCURLING("painting_the_bloodcurling", 16, 32, 32, 0, true),
 		PAINTING_WHEEL("painting_wheel", 16, 32, 48, 0, true),
 		PAINTING_WIZARDRY("painting_wizardry", 32, 48, 32, 80, true),
-		PAINTING_SUBTERFUGE("painting_subterfuge", 16, 32, 64, 64, true);
+		PAINTING_SUBTERFUGE("painting_subterfuge", 16, 32, 64, 64, true),
+		PAINTING_RESTING_MISCHIEF("painting_resting_mischief", 48, 32, 0, 128, false);
 
 		public final String name;
 		public final int sizeX;
@@ -72,6 +73,8 @@ public class ItemModPainting extends Item {
 					return ModItems.painting_wizardry;
 				case PAINTING_SUBTERFUGE:
 					return ModItems.painting_subterfuge;
+				case PAINTING_RESTING_MISCHIEF:
+					return ModItems.painting_resting_mischief;
 				default:
 					return null;
 			}

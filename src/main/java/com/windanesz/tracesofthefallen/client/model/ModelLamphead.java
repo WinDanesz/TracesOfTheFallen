@@ -154,9 +154,12 @@ public class ModelLamphead extends ModelBase {
 		this.neck.rotateAngleX = -0.3927F;
 
 		float slam = 0.0F;
+		float squeeze = 0.0F;
 		if (entityIn instanceof com.windanesz.tracesofthefallen.entity.EntityLamphead) {
 			com.windanesz.tracesofthefallen.entity.EntityLamphead lamphead = (com.windanesz.tracesofthefallen.entity.EntityLamphead) entityIn;
 			slam = lamphead.headSlamProgress;
+			float partialTicks = ageInTicks - (float)entityIn.ticksExisted;
+			squeeze = lamphead.prevSqueezeProgress + (lamphead.squeezeProgress - lamphead.prevSqueezeProgress) * partialTicks;
 		}
 
 		if (slam > 0.0F) {
@@ -164,6 +167,12 @@ public class ModelLamphead extends ModelBase {
 			this.body.rotateAngleX += slamAngle * 1.0F; // Pitch body heavily forward
 			this.neck.rotateAngleX += slamAngle * 0.5F; // Pitch neck forward
 			this.head.rotateAngleX += slamAngle * 0.5F; // Pitch head down
+		}
+		
+		if (squeeze > 0.0F) {
+			float squeezeAngle = MathHelper.sin(squeeze * (float)Math.PI / 2.0F);
+			this.neck.rotateAngleX -= squeezeAngle * 1.1345F; // Tilt neck back by 65 degrees
+			this.head.rotateAngleX += squeezeAngle * 0.5672F; // Tilt head forward slightly to keep it level (32.5 degrees)
 		}
 
 		// Leg animations
@@ -206,8 +215,8 @@ public class ModelLamphead extends ModelBase {
 
 			// Move the arms forward/backward along the Z axis for the punch
 			// Base Z is 3.3073F (moved back by 7 units from original). 
-			this.arm_left.rotationPointZ = 3.3073F + (leftPunch * -11.0F);
-			this.arm_right.rotationPointZ = 3.3073F + (rightPunch * -11.0F);
+			this.arm_left.rotationPointZ = 3.3073F + (leftPunch * -9.0F);
+			this.arm_right.rotationPointZ = 3.3073F + (rightPunch * -9.0F);
 		} else {
 			// Walk stance: arms hanging, no swing
 			this.arm_left.rotateAngleX = 0.0F;

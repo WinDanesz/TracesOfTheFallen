@@ -7,6 +7,7 @@ import com.windanesz.tracesofthefallen.block.*;
 import com.windanesz.tracesofthefallen.capability.HauntingCapability;
 import com.windanesz.tracesofthefallen.client.model.*;
 import com.windanesz.tracesofthefallen.client.particle.*;
+import com.windanesz.tracesofthefallen.client.render.entity.RenderGnossic;
 import com.windanesz.tracesofthefallen.client.renderer.*;
 import com.windanesz.tracesofthefallen.entity.*;
 import com.windanesz.tracesofthefallen.init.ModBlocks;
@@ -162,6 +163,7 @@ public class ClientProxy extends CommonProxy {
 		RenderingRegistry.registerEntityRenderingHandler(EntityFrostling.class, RenderFrostling::new);
 		RenderingRegistry.registerEntityRenderingHandler(EntityFrostlingMask.class, RenderFrostlingMask::new);
 		RenderingRegistry.registerEntityRenderingHandler(EntityZapLightning.class, RenderZapLightning::new);
+		RenderingRegistry.registerEntityRenderingHandler(EntityGnossic.class, RenderGnossic::new);
 	}
 
 	private void registerTileEntityRenderers() {
@@ -172,6 +174,7 @@ public class ClientProxy extends CommonProxy {
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityPorcelainVessel.class, new TileEntityPorcelainVesselRenderer());
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityPorcelainSet.class, new TileEntityPorcelainSetRenderer());
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityWoodenItemFrame.class, new TileEntityWoodenItemFrameRenderer());
+		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityGuillotine.class, new TileEntityGuillotineRenderer());
 	}
 
 	/**
@@ -201,6 +204,11 @@ public class ClientProxy extends CommonProxy {
 					new ModelResourceLocation(TracesOfTheFallen.MODID + ":balance_beam", "inventory"),
 					new ModelResourceLocation(TracesOfTheFallen.MODID + ":balance_left_pan", "inventory"),
 					new ModelResourceLocation(TracesOfTheFallen.MODID + ":balance_right_pan", "inventory"));
+		} else if (item == Item.getItemFromBlock(ModBlocks.guillotine)) {
+			ModelBakery.registerItemVariants(item,
+					inventoryModel,
+					new ModelResourceLocation(TracesOfTheFallen.MODID + ":guillotine_pole", "normal"),
+					new ModelResourceLocation(TracesOfTheFallen.MODID + ":guillotine_blade", "normal"));
 		} else if (item == Item.getItemFromBlock(ModBlocks.ancestral_sifter_golden)) {
 			ModelBakery.registerItemVariants(item, getSifterModels(inventoryModel, "ancestral_sifter_golden"));
 		} else if (item == Item.getItemFromBlock(ModBlocks.ancestral_sifter_red)) {

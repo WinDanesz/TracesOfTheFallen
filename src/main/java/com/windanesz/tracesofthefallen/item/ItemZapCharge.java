@@ -14,7 +14,7 @@ import net.minecraft.world.World;
 
 public class ItemZapCharge extends Item {
     public ItemZapCharge() {
-        this.setMaxStackSize(1);
+        // Default stack size is 64
     }
 
     @Override
@@ -45,7 +45,15 @@ public class ItemZapCharge extends Item {
         playerIn.getCooldownTracker().setCooldown(this, 60);
         
         if (!playerIn.capabilities.isCreativeMode) {
-            return new ActionResult<>(EnumActionResult.SUCCESS, new ItemStack(ModItems.zap_charge_empty));
+            itemstack.shrink(1);
+            if (itemstack.isEmpty()) {
+                return new ActionResult<>(EnumActionResult.SUCCESS, new ItemStack(ModItems.zap_charge_empty));
+            } else {
+                if (!playerIn.inventory.addItemStackToInventory(new ItemStack(ModItems.zap_charge_empty))) {
+                    playerIn.dropItem(new ItemStack(ModItems.zap_charge_empty), false);
+                }
+                return new ActionResult<>(EnumActionResult.SUCCESS, itemstack);
+            }
         }
         return new ActionResult<>(EnumActionResult.SUCCESS, itemstack);
     }

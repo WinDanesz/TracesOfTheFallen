@@ -646,6 +646,16 @@ public class Settings {
 		public String[] fabricatorCustomFuels = {
 				"minecraft:redstone|1600"
 		};
+
+		@Config.Name("Stone Pressure Plate Search Radius")
+		@Config.Comment("The radius in blocks that the Stone Pressure Plate searches for a Stone Receiver when activated. Default: 12")
+		@Config.RangeInt(min = 1, max = 64)
+		public int stonePressurePlateSearchRadius = 12;
+
+		@Config.Name("Stone Receiver Pulse Duration")
+		@Config.Comment("The duration (in ticks) that the Stone Receiver emits a redstone signal when triggered. Default: 60 (3 seconds)")
+		@Config.RangeInt(min = 1, max = 1200)
+		public int stoneReceiverPulseDurationTicks = 60;
     }
 
     public static class ClientSettings {
@@ -793,6 +803,10 @@ public class Settings {
 	}
 
 	public static class MobSettings {
+		@Config.Name("Gnossic Burns In Sun")
+		@Config.Comment("Whether the Gnossic mob burns in sunlight. Default: false")
+		public boolean gnossicBurnsInSun = false;
+
 		@Config.Name("Lamphead Knockback Multiplier")
 		@Config.Comment("The knockback multiplier for Lamphead's attack. Default: 0.8")
 		@Config.RangeDouble(min = 0.0D, max = 100.0D)

@@ -1,0 +1,20 @@
+{
+  "variants": {
+    "corner=false,facing=north,top=false": { "model": "totf:wrought_bars" },
+    "corner=false,facing=east,top=false": { "model": "totf:wrought_bars", "y": 90 },
+    "corner=false,facing=south,top=false": { "model": "totf:wrought_bars", "y": 180 },
+    "corner=false,facing=west,top=false": { "model": "totf:wrought_bars", "y": 270 },
+    "corner=false,facing=north,top=true": { "model": "totf:wrought_bars_top" },
+    "corner=false,facing=east,top=true": { "model": "totf:wrought_bars_top", "y": 90 },
+    "corner=false,facing=south,top=true": { "model": "totf:wrought_bars_top", "y": 180 },
+    "corner=false,facing=west,top=true": { "model": "totf:wrought_bars_top", "y": 270 },
+    "corner=true,facing=north,top=false": { "model": "totf:wrought_bars_corner" },
+    "corner=true,facing=east,top=false": { "model": "totf:wrought_bars_corner", "y": 90 },
+    "corner=true,facing=south,top=false": { "model": "totf:wrought_bars_corner", "y": 180 },
+    "corner=true,facing=west,top=false": { "model": "totf:wrought_bars_corner", "y": 270 },
+    "corner=true,facing=north,top=true": { "model": "totf:wrought_bars_top_corner" },
+    "corner=true,facing=east,top=true": { "model": "totf:wrought_bars_top_corner", "y": 90 },
+    "corner=true,facing=south,top=true": { "model": "totf:wrought_bars_top_corner", "y": 180 },
+    "corner=true,facing=west,top=true": { "model": "totf:wrought_bars_top_corner", "y": 270 }
+  }
+}

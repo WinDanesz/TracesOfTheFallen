@@ -54,7 +54,7 @@ public class ContainerBrassFabricator extends Container {
         });
 
         // Fuel Slots (12-17)
-        int[] fuelX = {11, 38, 66, 94, 121, 148};
+        int[] fuelX = {12, 39, 66, 94, 121, 148};
         for (int i = 0; i < 6; i++) {
             this.addSlotToContainer(new SlotItemHandler(inventory, 12 + i, fuelX[i], 91));
         }

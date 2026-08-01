@@ -81,6 +81,7 @@ public class ModBlocks {
 	public static final Block bricks_stone_smooth = placeholder();
 	public static final Block bricks_stone_pillar = placeholder();
 	public static final Block stained_glass = placeholder();
+	public static final Block stained_glass_pane = placeholder();
 	public static final Block dreamcatcher = placeholder();
 	public static final Block stone_chest = placeholder();
 	public static final Block stone_chest_open = placeholder();
@@ -104,6 +105,11 @@ public class ModBlocks {
 	public static final Block brass_gas_lamp = placeholder();
 	public static final Block wrought_caged_lamp = placeholder();
 	public static final Block brass_fabricator = placeholder();
+	public static final Block stone_compartment = placeholder();
+	public static final Block stone_pressure_plate = placeholder();
+	public static final Block stone_receiver = placeholder();
+	public static final Block wrought_bars = placeholder();
+	public static final Block guillotine = placeholder();
 
 	@Nonnull
 	@SuppressWarnings("ConstantConditions")
@@ -166,6 +172,7 @@ public class ModBlocks {
 		registerBlock(registry, "bricks_stone_smooth", new BlockTOTFStone());
 		registerBlock(registry, "bricks_stone_pillar", new BlockTOTFPillar(Material.ROCK));
 		registerBlock(registry, "stained_glass", new BlockTOTFGlass());
+		registerBlock(registry, "stained_glass_pane", new BlockTOTFGlassPane());
 		registerBlock(registry, "dreamcatcher", new BlockDreamcatcher(Material.WOOD));
 		registerBlock(registry, "stone_chest", new BlockStoneChest());
 		registerBlock(registry, "stone_chest_open", new BlockStoneChest().setBoundingBox(new AxisAlignedBB(0.0D, 0.0D, 0.25D, 1.0D, 0.5625D, 0.75D)));
@@ -193,6 +200,11 @@ public class ModBlocks {
 		registerBlock(registry, "brass_gas_lamp", new BlockBrassGasLamp());
 		registerBlock(registry, "wrought_caged_lamp", new BlockWroughtCagedLamp());
 		registerBlock(registry, "brass_fabricator", new BlockBrassFabricator());
+		registerBlock(registry, "stone_compartment", new BlockStoneCompartment());
+		registerBlock(registry, "stone_pressure_plate", new BlockStonePressurePlate());
+		registerBlock(registry, "stone_receiver", new BlockStoneReceiver());
+		registerBlock(registry, "wrought_bars", new BlockWroughtBars());
+		registerBlock(registry, "guillotine", new BlockGuillotine(Material.IRON));
 	}
 
 	public static void registerBlock(IForgeRegistry<Block> registry, String name, Block block) {
@@ -254,6 +266,9 @@ public class ModBlocks {
 		GameRegistry.registerTileEntity(TileEntityBrassGasLamp.class, new ResourceLocation(TracesOfTheFallen.MODID, "brass_gas_lamp"));
 		GameRegistry.registerTileEntity(TileEntityWroughtCagedLamp.class, new ResourceLocation(TracesOfTheFallen.MODID, "wrought_caged_lamp"));
 		GameRegistry.registerTileEntity(TileEntityBrassFabricator.class, new ResourceLocation(TracesOfTheFallen.MODID, "brass_fabricator"));
+		GameRegistry.registerTileEntity(TileEntityStoneCompartment.class, new ResourceLocation(TracesOfTheFallen.MODID, "stone_compartment"));
+		GameRegistry.registerTileEntity(TileEntityStoneReceiver.class, new ResourceLocation(TracesOfTheFallen.MODID, "stone_receiver"));
+		GameRegistry.registerTileEntity(TileEntityGuillotine.class, new ResourceLocation(TracesOfTheFallen.MODID, "guillotine"));
 	}
 }
 

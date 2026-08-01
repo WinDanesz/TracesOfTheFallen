@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "activated=false,facing=down":  { "model": "totf:stone_pressure_plate_armed", "x": 180 },
+    "activated=false,facing=east":  { "model": "totf:stone_pressure_plate_armed", "x": 90, "y": 90 },
+    "activated=false,facing=north": { "model": "totf:stone_pressure_plate_armed", "x": 90 },
+    "activated=false,facing=south": { "model": "totf:stone_pressure_plate_armed", "x": 90, "y": 180 },
+    "activated=false,facing=up":    { "model": "totf:stone_pressure_plate_armed" },
+    "activated=false,facing=west":  { "model": "totf:stone_pressure_plate_armed", "x": 90, "y": 270 },
+    "activated=true,facing=down":   { "model": "totf:stone_pressure_plate_activated", "x": 180 },
+    "activated=true,facing=east":   { "model": "totf:stone_pressure_plate_activated", "x": 90, "y": 90 },
+    "activated=true,facing=north":  { "model": "totf:stone_pressure_plate_activated", "x": 90 },
+    "activated=true,facing=south":  { "model": "totf:stone_pressure_plate_activated", "x": 90, "y": 180 },
+    "activated=true,facing=up":     { "model": "totf:stone_pressure_plate_activated" },
+    "activated=true,facing=west":   { "model": "totf:stone_pressure_plate_activated", "x": 90, "y": 270 }
+  }
+}

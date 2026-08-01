@@ -1,5 +1,6 @@
 package com.windanesz.tracesofthefallen.block;
 
+import com.windanesz.tracesofthefallen.api.ILampheadInteractable;
 import com.windanesz.tracesofthefallen.entity.EntityLamphead;
 import com.windanesz.tracesofthefallen.inventory.ContainerBrassFabricator;
 import net.minecraft.inventory.InventoryCrafting;
@@ -13,6 +14,7 @@ import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
@@ -24,7 +26,7 @@ import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class TileEntityBrassFabricator extends TileEntity implements ITickable {
+public class TileEntityBrassFabricator extends TileEntity implements ITickable, ILampheadInteractable {
     
     public EntityLamphead connectedLamphead = null;
     
@@ -306,5 +308,69 @@ public class TileEntityBrassFabricator extends TileEntity implements ITickable {
             return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(inventory);
         }
         return super.getCapability(capability, facing);
+    }
+
+    @Override
+    public boolean canLampheadInteract(EntityLamphead lamphead) {
+        if (this.connectedLamphead != null && this.connectedLamphead != lamphead && this.connectedLamphead.isEntityAlive()) {
+            return false;
+        }
+        ItemStack recipeOutput = CraftingManager.findMatchingResult(craftMatrix, world);
+        if (!recipeOutput.isEmpty()) {
+            for (int i = 9; i <= 11; i++) {
+                ItemStack outStack = inventory.getStackInSlot(i);
+                if (outStack.isEmpty() || (outStack.isItemEqual(recipeOutput) && outStack.getCount() + recipeOutput.getCount() <= outStack.getMaxStackSize())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public int getInteractionPriority() {
+        boolean hasFuel = burnTime > 0;
+        if (!hasFuel) {
+            for (int i = 12; i <= 17; i++) {
+                if (!inventory.getStackInSlot(i).isEmpty() && getFuelValue(inventory.getStackInSlot(i)) > 0) {
+                    hasFuel = true;
+                    break;
+                }
+            }
+        }
+        return hasFuel ? 4 : 3;
+    }
+
+    @Override
+    public void startInteraction(EntityLamphead lamphead) {
+        this.connectedLamphead = lamphead;
+    }
+
+    @Override
+    public void onLampheadInteractTick(EntityLamphead lamphead) {
+        // State updates are handled in update()
+    }
+
+    @Override
+    public boolean isInteractionComplete(EntityLamphead lamphead) {
+        return !canLampheadInteract(lamphead);
+    }
+
+    @Override
+    public void stopInteraction(EntityLamphead lamphead) {
+        if (this.connectedLamphead == lamphead) {
+            this.connectedLamphead = null;
+        }
+    }
+
+    @Override
+    public BlockPos getInteractionPosition() {
+        EnumFacing facing = world.getBlockState(pos).getValue(BlockBrassFabricator.FACING);
+        return pos.offset(facing);
+    }
+
+    @Override
+    public float getInteractionFacing() {
+        return world.getBlockState(pos).getValue(BlockBrassFabricator.FACING).getOpposite().getHorizontalAngle();
     }
 }

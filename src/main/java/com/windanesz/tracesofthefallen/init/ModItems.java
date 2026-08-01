@@ -58,6 +58,7 @@ public class ModItems {
 	public static final Item painting_wheel = placeholder();
 	public static final Item painting_wizardry = placeholder();
 	public static final Item painting_subterfuge = placeholder();
+	public static final Item painting_resting_mischief = placeholder();
 	public static final Item stone_chest = placeholder();
 	public static final Item stone_chest_open = placeholder();
 	public static final Item item_frame_wooden = placeholder();
@@ -87,6 +88,7 @@ public class ModItems {
 		registerItem(registry, "painting_wheel", new ItemModPainting(ItemModPainting.EnumPainting.PAINTING_WHEEL).setCreativeTab(ModCreativeTab.TOTF_TAB));
 		registerItem(registry, "painting_wizardry", new ItemModPainting(ItemModPainting.EnumPainting.PAINTING_WIZARDRY).setCreativeTab(ModCreativeTab.TOTF_TAB));
 		registerItem(registry, "painting_subterfuge", new ItemModPainting(ItemModPainting.EnumPainting.PAINTING_SUBTERFUGE).setCreativeTab(ModCreativeTab.TOTF_TAB));
+		registerItem(registry, "painting_resting_mischief", new ItemModPainting(ItemModPainting.EnumPainting.PAINTING_RESTING_MISCHIEF).setCreativeTab(ModCreativeTab.TOTF_TAB));
 
 		registerItem(registry, "mysterious_fur", new ItemMysteriousFur().setCreativeTab(ModCreativeTab.TOTF_TAB));
 		registerItem(registry, "silk_rope", new Item().setCreativeTab(ModCreativeTab.TOTF_TAB));
@@ -187,6 +189,7 @@ public class ModItems {
 		registerItemBlock(registry, ModBlocks.bricks_stone_smooth);
 		registerItemBlock(registry, ModBlocks.bricks_stone_pillar);
 		registerItemBlock(registry, ModBlocks.stained_glass);
+		registerItemBlock(registry, ModBlocks.stained_glass_pane);
 		registerItemBlock(registry, ModBlocks.dreamcatcher);
 		registerItemBlock(registry, ModBlocks.stone_chest);
 		registerItemBlock(registry, ModBlocks.stone_chest_open);
@@ -216,6 +219,11 @@ public class ModItems {
 		registerItemBlock(registry, ModBlocks.blue_caged_lamp);
 		registerItemBlock(registry, ModBlocks.wrought_caged_lamp);
 		registerItemBlock(registry, ModBlocks.brass_fabricator);
+		registerItemBlock(registry, ModBlocks.stone_compartment);
+		registerItemBlock(registry, ModBlocks.stone_pressure_plate);
+		registerItemBlock(registry, ModBlocks.stone_receiver);
+		registerItemBlock(registry, ModBlocks.wrought_bars);
+		registerItemBlock(registry, ModBlocks.guillotine);
 	}
 
 	public static void registerOreDictionary() {
