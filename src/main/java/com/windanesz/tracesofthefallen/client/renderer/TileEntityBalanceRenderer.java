@@ -179,13 +179,13 @@ public class TileEntityBalanceRenderer extends TileEntitySpecialRenderer<TileEnt
 		ItemStack stack = balance.getRightStack();
 		String text = stack.getCount() + " " + stack.getDisplayName();
 		if (balance.getMode() == BalanceMode.VENDING) {
-			return I18n.format("totf.balance.price", text);
+			return I18n.format("totf:balance.price", text);
 		}
 		return text;
 	}
 
 	private static String getSellerText(TileEntityBalance balance) {
-		return I18n.format("totf.balance.offered_by", balance.getOwnerName());
+		return I18n.format("totf:balance.offered_by", balance.getOwnerName());
 	}
 
 	private static Vec3d getPanAnchor(EnumFacing facing, boolean left, float tiltDegrees) {

@@ -27,6 +27,7 @@ public class ModItems {
 	public static final Item rune_of_skimming = placeholder();
 	public static final Item goblin_idol = placeholder();
 	public static final Item idol_of_blades = placeholder();
+	public static final Item ancestral_claw_necklace = placeholder();
 	public static final Item pemmican = placeholder();
 	public static final Item furred_trout = placeholder();
 	public static final Item mysterious_fur = placeholder();
@@ -36,6 +37,7 @@ public class ModItems {
 	public static final Item chitin_leggings = placeholder();
 	public static final Item chitin_boots = placeholder();
 	public static final Item silk_rope = placeholder();
+	public static final Item silk_spindle = placeholder();
 	public static final Item incense = placeholder();
 	public static final Item spirited_away_tea_leaves = placeholder();
 	public static final Item forbidden_ivory = placeholder();
@@ -61,6 +63,8 @@ public class ModItems {
 	public static final Item painting_resting_mischief = placeholder();
 	public static final Item stone_chest = placeholder();
 	public static final Item stone_chest_open = placeholder();
+	public static final Item floater_brown = placeholder();
+	public static final Item floater_white = placeholder();
 	public static final Item item_frame_wooden = placeholder();
 	public static final Item bonepile = placeholder();
 	public static final Item hay_bed = placeholder();
@@ -79,6 +83,7 @@ public class ModItems {
 		registerItem(registry, "rune_of_skimming", new ItemRuneOfSkimming().setCreativeTab(ModCreativeTab.TOTF_TAB));
 		registerItem(registry, "goblin_idol", new ItemGoblinIdol().setCreativeTab(ModCreativeTab.TOTF_TAB));
 		registerItem(registry, "ward_of_blades", new ItemWardOfBlades().setCreativeTab(ModCreativeTab.TOTF_TAB));
+		registerItem(registry, "ancestral_claw_necklace", new ItemAncestralClawNecklace().setCreativeTab(ModCreativeTab.TOTF_TAB));
 		registerItem(registry, "pemmican", new ItemFood(10, 0.8f, true).setCreativeTab(ModCreativeTab.TOTF_TAB));
 		registerItem(registry, "furred_trout", new ItemFood(2, 0.1f, false).setCreativeTab(ModCreativeTab.TOTF_TAB));
 
@@ -120,6 +125,10 @@ public class ModItems {
 		registerItem(registry, "chilled_gel", new Item().setCreativeTab(ModCreativeTab.TOTF_TAB));
 		registerItem(registry, "zap_charge", new ItemZapCharge().setCreativeTab(ModCreativeTab.TOTF_TAB));
 		registerItem(registry, "zap_charge_empty", new Item().setCreativeTab(ModCreativeTab.TOTF_TAB));
+		registerItem(registry, "floater_brown", new ItemFloater(ModBlocks.floater_brown, "floater_brown").setCreativeTab(ModCreativeTab.TOTF_TAB));
+		if (com.windanesz.tracesofthefallen.Settings.miscSettings.enableWhiteFloater) {
+			registerItem(registry, "floater_white", new ItemFloater(ModBlocks.floater_white, "floater_white").setCreativeTab(ModCreativeTab.TOTF_TAB));
+		}
 
 		// Register ItemBlocks
 		registerItemBlock(registry, ModBlocks.lost_cargo);
@@ -180,6 +189,16 @@ public class ModItems {
 		wroughtBombItem.setRegistryName(ModBlocks.wrought_bomb.getRegistryName());
 		ModBlocks.wrought_bomb.setCreativeTab(ModCreativeTab.TOTF_TAB);
 		registry.register(wroughtBombItem);
+		registerItemBlock(registry, ModBlocks.stained_glass);
+		registerItemBlock(registry, ModBlocks.stained_glass_pane);
+		registerItemBlock(registry, ModBlocks.dreamcatcher);
+		registerItemBlock(registry, ModBlocks.item_frame_wooden);
+		ItemBlock bonepileItem = new ItemBlockBonepile(ModBlocks.bonepile);
+		bonepileItem.setRegistryName(ModBlocks.bonepile.getRegistryName());
+		ModBlocks.bonepile.setCreativeTab(ModCreativeTab.TOTF_TAB);
+		registry.register(bonepileItem);
+		registerItemBlock(registry, ModBlocks.hay_bed);
+
 		registerItemBlock(registry, ModBlocks.bricks_stone);
 		registerItemBlock(registry, ModBlocks.bricks_stone_carved);
 		registerItemBlock(registry, ModBlocks.bricks_stone_carved_dirty);
@@ -188,17 +207,12 @@ public class ModItems {
 		registerItemBlock(registry, ModBlocks.bricks_stone_carved_mossy);
 		registerItemBlock(registry, ModBlocks.bricks_stone_smooth);
 		registerItemBlock(registry, ModBlocks.bricks_stone_pillar);
-		registerItemBlock(registry, ModBlocks.stained_glass);
-		registerItemBlock(registry, ModBlocks.stained_glass_pane);
-		registerItemBlock(registry, ModBlocks.dreamcatcher);
-		registerItemBlock(registry, ModBlocks.stone_chest);
-		registerItemBlock(registry, ModBlocks.stone_chest_open);
-		registerItemBlock(registry, ModBlocks.item_frame_wooden);
-		ItemBlock bonepileItem = new ItemBlockBonepile(ModBlocks.bonepile);
-		bonepileItem.setRegistryName(ModBlocks.bonepile.getRegistryName());
-		ModBlocks.bonepile.setCreativeTab(ModCreativeTab.TOTF_TAB);
-		registry.register(bonepileItem);
-		registerItemBlock(registry, ModBlocks.hay_bed);
+
+		// New slabs, stairs, walls
+		registerSlabItemBlock(registry, ModBlocks.bricks_stone_slab, (net.minecraft.block.BlockSlab)ModBlocks.bricks_stone_slab, (net.minecraft.block.BlockSlab)ModBlocks.bricks_stone_double_slab);
+		registerItemBlock(registry, ModBlocks.bricks_stone_stair);
+		registerItemBlock(registry, ModBlocks.bricks_stone_wall);
+
 		registerItemBlock(registry, ModBlocks.mozaic_pink);
 		registerItemBlock(registry, ModBlocks.mozaic_pink_washed);
 		registerItemBlock(registry, ModBlocks.mozaic_red);
@@ -208,22 +222,20 @@ public class ModItems {
 		registerItemBlock(registry, ModBlocks.mozaic_yellow);
 		registerItemBlock(registry, ModBlocks.mozaic_yellow_washed);
 
-		// New slabs, stairs, walls
-		registerSlabItemBlock(registry, ModBlocks.bricks_stone_slab, (net.minecraft.block.BlockSlab)ModBlocks.bricks_stone_slab, (net.minecraft.block.BlockSlab)ModBlocks.bricks_stone_double_slab);
-		
-		registerItemBlock(registry, ModBlocks.bricks_stone_stair);
-		
-		registerItemBlock(registry, ModBlocks.bricks_stone_wall);
+		registerItemBlock(registry, ModBlocks.stone_chest);
+		registerItemBlock(registry, ModBlocks.stone_chest_open);
+		registerItemBlock(registry, ModBlocks.stone_compartment);
+		registerItemBlock(registry, ModBlocks.stone_pressure_plate);
+		registerItemBlock(registry, ModBlocks.stone_receiver);
 
 		registerItemBlock(registry, ModBlocks.brass_gas_lamp);
 		registerItemBlock(registry, ModBlocks.blue_caged_lamp);
 		registerItemBlock(registry, ModBlocks.wrought_caged_lamp);
 		registerItemBlock(registry, ModBlocks.brass_fabricator);
-		registerItemBlock(registry, ModBlocks.stone_compartment);
-		registerItemBlock(registry, ModBlocks.stone_pressure_plate);
-		registerItemBlock(registry, ModBlocks.stone_receiver);
 		registerItemBlock(registry, ModBlocks.wrought_bars);
 		registerItemBlock(registry, ModBlocks.guillotine);
+		registerItemBlock(registry, ModBlocks.dancoil);
+		registerItemBlock(registry, ModBlocks.spinning_wheel);
 	}
 
 	public static void registerOreDictionary() {

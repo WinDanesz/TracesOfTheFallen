@@ -23,8 +23,16 @@ public class TileEntityGuillotineRenderer extends TileEntitySpecialRenderer<Tile
         if (!(state.getBlock() instanceof BlockGuillotine)) return;
 
         EnumFacing facing = state.getValue(BlockGuillotine.FACING);
-        int length = te.getExtensionLength();
-
+        
+        // Calculate smooth drop animation. Total animation lasts e.g. 5 ticks.
+        float ticksElapsed = (600 - te.getActiveTicks()) + partialTicks;
+        float dropSpeed = 1.0f; // blocks per tick
+        float targetDistance = te.getExtensionLength();
+        float currentDistance = Math.min(targetDistance, ticksElapsed * dropSpeed);
+        
+        // If it's retracting (last few ticks of the 30 seconds), snap back instantly or animate retraction? 
+        // For now, it stays fully extended until 0, then disappears.
+        
         GlStateManager.pushMatrix();
         GlStateManager.translate(x + 0.5, y + 0.5, z + 0.5);
 
@@ -37,16 +45,16 @@ public class TileEntityGuillotineRenderer extends TileEntitySpecialRenderer<Tile
                 GlStateManager.rotate(90, 1, 0, 0);
                 break;
             case SOUTH:
-                GlStateManager.rotate(90, 1, 0, 0);
                 GlStateManager.rotate(180, 0, 1, 0);
+                GlStateManager.rotate(90, 1, 0, 0);
                 break;
             case WEST:
-                GlStateManager.rotate(90, 1, 0, 0);
                 GlStateManager.rotate(270, 0, 1, 0);
+                GlStateManager.rotate(90, 1, 0, 0);
                 break;
             case EAST:
-                GlStateManager.rotate(90, 1, 0, 0);
                 GlStateManager.rotate(90, 0, 1, 0);
+                GlStateManager.rotate(90, 1, 0, 0);
                 break;
             case DOWN:
             default:
@@ -64,13 +72,12 @@ public class TileEntityGuillotineRenderer extends TileEntitySpecialRenderer<Tile
         // 1. Render the pole repeating downwards
         IBakedModel poleModel = blockRenderer.getBlockModelShapes().getModelManager().getModel(new ModelResourceLocation(TracesOfTheFallen.MODID + ":guillotine_pole", "normal"));
         
-        float distanceBlocks = length;
-        int numPoles = (int) Math.ceil(distanceBlocks * 16.0 / 6.0);
+        int numPoles = (int) Math.ceil(currentDistance * 16.0 / 6.0);
         for (int i = 0; i <= numPoles; i++) {
             GlStateManager.pushMatrix();
             float offset = i * 0.375f;
-            if (offset > distanceBlocks) {
-                offset = distanceBlocks;
+            if (offset > currentDistance) {
+                offset = currentDistance;
             }
             GlStateManager.translate(0, -offset, 0);
             blockRenderer.getBlockModelRenderer().renderModelBrightnessColor(poleModel, 1.0F, 1.0F, 1.0F, 1.0F);
@@ -79,7 +86,7 @@ public class TileEntityGuillotineRenderer extends TileEntitySpecialRenderer<Tile
 
         // 2. Render the blade at the end
         GlStateManager.pushMatrix();
-        GlStateManager.translate(0, -distanceBlocks, 0);
+        GlStateManager.translate(0, -currentDistance, 0);
         IBakedModel bladeModel = blockRenderer.getBlockModelShapes().getModelManager().getModel(new ModelResourceLocation(TracesOfTheFallen.MODID + ":guillotine_blade", "normal"));
         blockRenderer.getBlockModelRenderer().renderModelBrightnessColor(bladeModel, 1.0F, 1.0F, 1.0F, 1.0F);
         GlStateManager.popMatrix();

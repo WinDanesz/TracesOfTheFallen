@@ -6,5 +6,6 @@
   "entity.goblin_aggro":              {"category": "hostiles", "sounds": ["totf:goblin_aggro"]},
   "idol_activate":                    {"category": "blocks",    "sounds": ["totf:dhvara_tone"]},
   "dioptra":                          {"category": "blocks",    "sounds": ["totf:dioptra"]},
-  "bone_pile":                        {"category": "blocks",    "sounds": ["totf:bone_pile1", "totf:bone_pile2", "totf:bone_pile3"]}
+  "bone_pile":                        {"category": "blocks",    "sounds": ["totf:bone_pile1", "totf:bone_pile2", "totf:bone_pile3"]},
+  "lightning_zap":                    {"category": "weather",   "sounds": ["totf:lightning_zap"]}
 }

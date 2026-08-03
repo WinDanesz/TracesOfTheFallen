@@ -54,6 +54,7 @@ public class ClientProxy extends CommonProxy {
 	@Override
 	public void preInit(FMLPreInitializationEvent event) {
 		super.preInit(event);
+		net.minecraftforge.client.model.obj.OBJLoader.INSTANCE.addDomain(TracesOfTheFallen.MODID);
 		registerEntityRenderers();
 		registerTileEntityRenderers();
 	}
@@ -175,6 +176,7 @@ public class ClientProxy extends CommonProxy {
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityPorcelainSet.class, new TileEntityPorcelainSetRenderer());
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityWoodenItemFrame.class, new TileEntityWoodenItemFrameRenderer());
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityGuillotine.class, new TileEntityGuillotineRenderer());
+		ClientRegistry.bindTileEntitySpecialRenderer(TileEntitySpinningWheel.class, new TileEntitySpinningWheelRenderer());
 	}
 
 	/**
@@ -209,6 +211,10 @@ public class ClientProxy extends CommonProxy {
 					inventoryModel,
 					new ModelResourceLocation(TracesOfTheFallen.MODID + ":guillotine_pole", "normal"),
 					new ModelResourceLocation(TracesOfTheFallen.MODID + ":guillotine_blade", "normal"));
+		} else if (item == Item.getItemFromBlock(ModBlocks.spinning_wheel)) {
+			ModelBakery.registerItemVariants(item, new ModelResourceLocation(item.getRegistryName(), "inventory"),
+					new ModelResourceLocation(TracesOfTheFallen.MODID + ":spinning_wheel_small_wheel", "inventory"),
+					new ModelResourceLocation(TracesOfTheFallen.MODID + ":spinning_wheel_large_wheel", "inventory"));
 		} else if (item == Item.getItemFromBlock(ModBlocks.ancestral_sifter_golden)) {
 			ModelBakery.registerItemVariants(item, getSifterModels(inventoryModel, "ancestral_sifter_golden"));
 		} else if (item == Item.getItemFromBlock(ModBlocks.ancestral_sifter_red)) {

@@ -16,4 +16,14 @@ public interface IProxyMainBlock {
      * @return true if mainPos is the main block for proxyPos
      */
     boolean isMainBlockForProxy(IBlockAccess world, BlockPos mainPos, BlockPos proxyPos);
+
+    /**
+     * Determines whether the technical proxy blocks should just use a standard 1x1x1 full block AABB 
+     * instead of trying to perfectly wrap the main block's AABB.
+     * 
+     * @return true if proxies should use a 1x1x1 AABB
+     */
+    default boolean isFullAABBProxy() {
+        return false;
+    }
 }

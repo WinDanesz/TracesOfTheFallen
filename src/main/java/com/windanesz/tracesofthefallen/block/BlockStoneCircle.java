@@ -82,7 +82,7 @@ public class BlockStoneCircle extends BlockContainer {
 
 		if (heldItem.getItem() == ModItems.rune_of_skimming) {
 			if (!hasRequiredFlatMultiblock(worldIn, pos)) {
-				playerIn.sendMessage(new TextComponentTranslation("totf.stone_circle.incomplete"));
+				playerIn.sendMessage(new TextComponentTranslation("totf:stone_circle.incomplete"));
 				return true;
 			}
 			if (stoneCircle.getPair() != null) {
@@ -90,7 +90,7 @@ public class BlockStoneCircle extends BlockContainer {
 				teleportPlayerToTwin(playerIn, stoneCircle.getPair(), worldIn.provider.getDimension());
 			} else {
 				// Not paired.
-				playerIn.sendMessage(new TextComponentTranslation("totf.stone_circle.dormant"));
+				playerIn.sendMessage(new TextComponentTranslation("totf:stone_circle.dormant"));
 			}
 			return true;
 		}
@@ -175,7 +175,7 @@ public class BlockStoneCircle extends BlockContainer {
 
 	@Override
 	public EnumBlockRenderType getRenderType(IBlockState state) {
-		return EnumBlockRenderType.MODEL;
+		return state.getValue(CORE) ? EnumBlockRenderType.MODEL : EnumBlockRenderType.INVISIBLE;
 	}
 
 	@Override

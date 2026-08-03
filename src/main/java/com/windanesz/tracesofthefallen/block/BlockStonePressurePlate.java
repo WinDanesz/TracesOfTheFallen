@@ -110,7 +110,7 @@ public class BlockStonePressurePlate extends Block {
 
     @Override
     public void onEntityCollision(World worldIn, BlockPos pos, IBlockState state, Entity entityIn) {
-        if (!worldIn.isRemote) {
+        if (!worldIn.isRemote && entityIn instanceof EntityLivingBase) {
             if (!state.getValue(ACTIVATED)) {
                 this.updateState(worldIn, pos, state);
             }
@@ -144,9 +144,9 @@ public class BlockStonePressurePlate extends Block {
         boolean currentlyActivated = state.getValue(ACTIVATED);
         boolean shouldBeActivated = false;
 
-        List<Entity> list = worldIn.getEntitiesWithinAABBExcludingEntity(null, this.getTriggerBox(pos, state.getValue(FACING)));
+        List<EntityLivingBase> list = worldIn.getEntitiesWithinAABB(EntityLivingBase.class, this.getTriggerBox(pos, state.getValue(FACING)));
         if (!list.isEmpty()) {
-            for (Entity entity : list) {
+            for (EntityLivingBase entity : list) {
                 if (!entity.doesEntityNotTriggerPressurePlate()) {
                     shouldBeActivated = true;
                     break;

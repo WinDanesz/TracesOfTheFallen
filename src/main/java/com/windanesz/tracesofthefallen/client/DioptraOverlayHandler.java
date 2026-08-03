@@ -64,8 +64,8 @@ public final class DioptraOverlayHandler {
 		EntityDioptraSeat seat = (EntityDioptraSeat) player.getRidingEntity();
 		double distance = seat.getLookDistance(player, event.getPartialTicks());
 		String text = Double.isNaN(distance)
-				? I18n.format("totf.dioptra.distance_unknown")
-				: I18n.format("totf.dioptra.distance", String.format(Locale.ROOT, "%.1f", distance));
+				? I18n.format("totf:dioptra.distance_unknown")
+				: I18n.format("totf:dioptra.distance", String.format(Locale.ROOT, "%.1f", distance));
 
 		ScaledResolution resolution = event.getResolution();
 		int x = resolution.getScaledWidth() - minecraft.fontRenderer.getStringWidth(text) - 8;

@@ -35,7 +35,7 @@ public class ItemBlockBalance extends ItemBlock {
 
 		if (worldIn.isRemote) {
 			TracesOfTheFallen.proxy.renderItemActivation(stack.copy());
-			String key = nextMode == BalanceMode.REDSTONE ? "totf.balance.toast.redstone" : "totf.balance.toast.vending";
+			String key = nextMode == BalanceMode.REDSTONE ? "totf:balance.toast.redstone" : "totf:balance.toast.vending";
 			playerIn.sendStatusMessage(new TextComponentTranslation(key), true);
 		}
 

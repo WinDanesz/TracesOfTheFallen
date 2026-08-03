@@ -26,7 +26,9 @@ public class EntityAILampheadInteract extends EntityAIBase {
     @Override
     public boolean shouldExecute() {
         if (this.lamphead.getAttackTarget() != null) return false;
-        if (!this.lamphead.isSitting()) return false;
+        
+        int mode = this.lamphead.getMode();
+        if (mode == 0) return false; // Wandering mode doesn't work
         
         if (this.searchCooldown > 0) {
             this.searchCooldown--;
@@ -40,9 +42,12 @@ public class EntityAILampheadInteract extends EntityAIBase {
         BlockPos bestPos = null;
         int bestPriority = -1;
 
-        for (int x = -8; x <= 8; x++) {
-            for (int y = -4; y <= 4; y++) {
-                for (int z = -8; z <= 8; z++) {
+        int rangeXZ = (mode == 2) ? 2 : 8; // Static mode only checks immediately around it
+        int rangeY = (mode == 2) ? 1 : 4;
+
+        for (int x = -rangeXZ; x <= rangeXZ; x++) {
+            for (int y = -rangeY; y <= rangeY; y++) {
+                for (int z = -rangeXZ; z <= rangeXZ; z++) {
                     BlockPos checkPos = currentPos.add(x, y, z);
                     TileEntity te = this.lamphead.world.getTileEntity(checkPos);
                     
@@ -99,6 +104,7 @@ public class EntityAILampheadInteract extends EntityAIBase {
 
     @Override
     public boolean shouldContinueExecuting() {
+        if (this.lamphead.getMode() == 0) return false; // Stop if changed to Wandering
         if (this.lamphead.getAttackTarget() != null) return false;
         if (this.targetPos == null) return false;
         
@@ -147,10 +153,6 @@ public class EntityAILampheadInteract extends EntityAIBase {
 
     @Override
     public void resetTask() {
-        if (this.wasSitting) {
-            this.lamphead.setSitting(true);
-            this.wasSitting = false;
-        }
         this.lamphead.getDataManager().set(EntityLamphead.FABRICATING, false);
         if (this.targetInteractable != null) {
             this.targetInteractable.stopInteraction(this.lamphead);

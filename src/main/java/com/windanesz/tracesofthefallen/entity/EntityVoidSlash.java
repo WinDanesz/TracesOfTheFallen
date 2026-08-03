@@ -50,6 +50,13 @@ public class EntityVoidSlash extends EntityThrowable {
 		this.shoot(d0, d1, d2, 0.65F, 1.0F);
 	}
 
+	public EntityVoidSlash(World worldIn, EntityLivingBase throwerIn) {
+		super(worldIn, throwerIn);
+		this.dataManager.set(THROWER_ID, throwerIn.getEntityId());
+		this.shoot(throwerIn, throwerIn.rotationPitch, throwerIn.rotationYaw, 0.0F, 0.65F, 1.0F);
+	}
+
+
 	public EntityVoidSlash(World worldIn, double x, double y, double z) {
 		super(worldIn, x, y, z);
 	}

@@ -4,17 +4,17 @@
     "core=true,facing=east,snowy=false":  { "model": "totf:stone_circle", "y": 90 },
     "core=true,facing=south,snowy=false": { "model": "totf:stone_circle", "y": 180 },
     "core=true,facing=west,snowy=false":  { "model": "totf:stone_circle", "y": 270 },
-    "core=true,facing=north,snowy=true":  { "model": "totf:stone_circle" },
-    "core=true,facing=east,snowy=true":   { "model": "totf:stone_circle", "y": 90 },
-    "core=true,facing=south,snowy=true":  { "model": "totf:stone_circle", "y": 180 },
-    "core=true,facing=west,snowy=true":   { "model": "totf:stone_circle", "y": 270 },
+    "core=true,facing=north,snowy=true":  { "model": "totf:stone_circle_snowy" },
+    "core=true,facing=east,snowy=true":   { "model": "totf:stone_circle_snowy", "y": 90 },
+    "core=true,facing=south,snowy=true":  { "model": "totf:stone_circle_snowy", "y": 180 },
+    "core=true,facing=west,snowy=true":   { "model": "totf:stone_circle_snowy", "y": 270 },
     "core=false,facing=north,snowy=false": { "model": "totf:stone_circle" },
     "core=false,facing=east,snowy=false":  { "model": "totf:stone_circle", "y": 90 },
     "core=false,facing=south,snowy=false": { "model": "totf:stone_circle", "y": 180 },
     "core=false,facing=west,snowy=false":  { "model": "totf:stone_circle", "y": 270 },
-    "core=false,facing=north,snowy=true":  { "model": "totf:stone_circle" },
-    "core=false,facing=east,snowy=true":   { "model": "totf:stone_circle", "y": 90 },
-    "core=false,facing=south,snowy=true":  { "model": "totf:stone_circle", "y": 180 },
-    "core=false,facing=west,snowy=true":   { "model": "totf:stone_circle", "y": 270 }
+    "core=false,facing=north,snowy=true":  { "model": "totf:stone_circle_snowy" },
+    "core=false,facing=east,snowy=true":   { "model": "totf:stone_circle_snowy", "y": 90 },
+    "core=false,facing=south,snowy=true":  { "model": "totf:stone_circle_snowy", "y": 180 },
+    "core=false,facing=west,snowy=true":   { "model": "totf:stone_circle_snowy", "y": 270 }
   }
 }

@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "direction=up": { "model": "totf:floater_ground", "textures": { "0": "totf:blocks/floater_brown", "particle": "totf:blocks/floater_brown" } },
+    "direction=down": { "model": "totf:floater_ground", "textures": { "0": "totf:blocks/floater_brown", "particle": "totf:blocks/floater_brown" } },
+    "direction=north": { "model": "totf:floater_wall", "textures": { "0": "totf:blocks/floater_brown", "particle": "totf:blocks/floater_brown" } },
+    "direction=south": { "model": "totf:floater_wall", "y": 180, "textures": { "0": "totf:blocks/floater_brown", "particle": "totf:blocks/floater_brown" } },
+    "direction=west": { "model": "totf:floater_wall", "y": 270, "textures": { "0": "totf:blocks/floater_brown", "particle": "totf:blocks/floater_brown" } },
+    "direction=east": { "model": "totf:floater_wall", "y": 90, "textures": { "0": "totf:blocks/floater_brown", "particle": "totf:blocks/floater_brown" } }
+  }
+}

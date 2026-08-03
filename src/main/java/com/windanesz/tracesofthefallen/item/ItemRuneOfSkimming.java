@@ -84,12 +84,12 @@ public class ItemRuneOfSkimming extends ItemRune {
 		nbt.setInteger(TAG_DIM, player.dimension);
 
 		player.world.playSound(null, player.posX, player.posY, player.posZ, SoundEvents.ENTITY_ENDERMEN_TELEPORT, SoundCategory.PLAYERS, 0.5F, 1.2F);
-		player.sendMessage(new TextComponentTranslation("totf.rune.location_set"));
+		player.sendMessage(new TextComponentTranslation("totf:rune.location_set"));
 	}
 
 	private void teleport(ItemStack stack, EntityPlayer player) {
 		if (!stack.hasTagCompound() || !stack.getTagCompound().hasKey(TAG_DIM)) {
-			player.sendMessage(new TextComponentTranslation("totf.rune.no_location"));
+			player.sendMessage(new TextComponentTranslation("totf:rune.no_location"));
 			return;
 		}
 
@@ -98,7 +98,7 @@ public class ItemRuneOfSkimming extends ItemRune {
 		BlockPos pos = new BlockPos(nbt.getInteger(TAG_POS_X), nbt.getInteger(TAG_POS_Y), nbt.getInteger(TAG_POS_Z));
 
 		if (player.dimension != dim) {
-			player.sendMessage(new TextComponentTranslation("totf.rune.wrong_dimension"));
+			player.sendMessage(new TextComponentTranslation("totf:rune.wrong_dimension"));
 			return;
 		}
 
@@ -106,7 +106,7 @@ public class ItemRuneOfSkimming extends ItemRune {
 		double maxDistance = Settings.miscSettings.runeOfSkimmingMaxDistance;
 
 		if (distanceSq > maxDistance * maxDistance) {
-			player.sendMessage(new TextComponentTranslation("totf.rune.too_far"));
+			player.sendMessage(new TextComponentTranslation("totf:rune.too_far"));
 			return;
 		}
 
@@ -140,7 +140,7 @@ public class ItemRuneOfSkimming extends ItemRune {
 			int y = nbt.getInteger(TAG_POS_Y);
 			int z = nbt.getInteger(TAG_POS_Z);
 			int dim = nbt.getInteger(TAG_DIM);
-			tooltip.add(TextFormatting.GRAY + I18n.format("totf.rune.bound_to", x, y, z, dim));
+			tooltip.add(TextFormatting.GRAY + I18n.format("totf:rune.bound_to", x, y, z, dim));
 		}
 	}
 }

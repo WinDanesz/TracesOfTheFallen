@@ -23,12 +23,19 @@ public class RenderZapLightning extends Render<EntityZapLightning> {
 
     @Override
     public void doRender(EntityZapLightning entity, double x, double y, double z, float entityYaw, float partialTicks) {
+        if (!entity.isVisible) return;
+        
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferbuilder = tessellator.getBuffer();
         GlStateManager.disableTexture2D();
         GlStateManager.disableLighting();
         GlStateManager.enableBlend();
         GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE);
+        
+        int i = entity.getBrightnessForRender();
+        int j = i % 65536;
+        int k = i / 65536;
+        net.minecraft.client.renderer.OpenGlHelper.setLightmapTextureCoords(net.minecraft.client.renderer.OpenGlHelper.lightmapTexUnit, 240.0F, 240.0F);
         
         Vec3d start = new Vec3d(entity.startX, entity.startY, entity.startZ);
         Vec3d end = new Vec3d(entity.endX, entity.endY, entity.endZ);
@@ -107,6 +114,8 @@ public class RenderZapLightning extends Render<EntityZapLightning> {
         
         GlStateManager.popMatrix();
         
+        net.minecraft.client.renderer.OpenGlHelper.setLightmapTextureCoords(net.minecraft.client.renderer.OpenGlHelper.lightmapTexUnit, (float)j, (float)k);
+
         GlStateManager.depthMask(true);
         GlStateManager.enableCull();
         GlStateManager.disableBlend();

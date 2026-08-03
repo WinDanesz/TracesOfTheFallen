@@ -34,6 +34,7 @@ public class EntityLamphead extends EntityTameable {
     private static final DataParameter<Boolean> ANGRY = EntityDataManager.createKey(EntityLamphead.class, DataSerializers.BOOLEAN);
     private static final DataParameter<Boolean> HEAD_SLAMMING = EntityDataManager.createKey(EntityLamphead.class, DataSerializers.BOOLEAN);
     public static final DataParameter<Boolean> FABRICATING = EntityDataManager.createKey(EntityLamphead.class, DataSerializers.BOOLEAN);
+    public static final DataParameter<Integer> LAMPHEAD_MODE = EntityDataManager.createKey(EntityLamphead.class, DataSerializers.VARINT);
 
     public int headSlamCooldown = 0;
     public float headSlamProgress = 0.0F;
@@ -59,6 +60,15 @@ public class EntityLamphead extends EntityTameable {
         this.dataManager.register(ANGRY, false);
         this.dataManager.register(HEAD_SLAMMING, false);
         this.dataManager.register(FABRICATING, false);
+        this.dataManager.register(LAMPHEAD_MODE, 0); // 0 = Wandering, 1 = Versatile, 2 = Static
+    }
+
+    public int getMode() {
+        return this.dataManager.get(LAMPHEAD_MODE);
+    }
+
+    public void setMode(int mode) {
+        this.dataManager.set(LAMPHEAD_MODE, mode);
     }
 
     @Override
@@ -140,19 +150,38 @@ public class EntityLamphead extends EntityTameable {
 
     @Override
     protected void initEntityAI() {
-        this.aiSit = new EntityAISit(this);
         this.tasks.addTask(0, new EntityAISwimming(this));
-        this.tasks.addTask(1, new EntityAILampheadInteract(this, 0.8D));
-        this.tasks.addTask(2, this.aiSit);
+        this.tasks.addTask(1, new com.windanesz.tracesofthefallen.entity.ai.EntityAILampheadRegen(this));
+        this.tasks.addTask(2, new EntityAILampheadInteract(this, 0.8D));
         this.tasks.addTask(3, new EntityAILampheadHeadSlam(this));
-        this.tasks.addTask(4, new EntityAIAttackMelee(this, 1.2D, false));
-        this.tasks.addTask(5, new EntityAIFollowOwner(this, 1.0D, 10.0F, 2.0F));
-        this.tasks.addTask(6, new EntityAIWanderAvoidWater(this, 1.0D));
+        this.tasks.addTask(4, new com.windanesz.tracesofthefallen.entity.ai.EntityAILampheadMeleeAttack(this, 1.2D, true));
+        this.tasks.addTask(5, new EntityAIFollowOwner(this, 1.0D, 10.0F, 2.0F) {
+            @Override
+            public boolean shouldExecute() {
+                return EntityLamphead.this.getMode() == 0 && super.shouldExecute();
+            }
+        });
+        this.tasks.addTask(6, new EntityAIWanderAvoidWater(this, 1.0D) {
+            @Override
+            public boolean shouldExecute() {
+                return EntityLamphead.this.getMode() == 0 && super.shouldExecute();
+            }
+        });
         this.tasks.addTask(7, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
         this.tasks.addTask(8, new EntityAILookIdle(this));
         
-        this.targetTasks.addTask(1, new EntityAIOwnerHurtByTarget(this));
-        this.targetTasks.addTask(2, new EntityAIOwnerHurtTarget(this));
+        this.targetTasks.addTask(1, new EntityAIOwnerHurtByTarget(this) {
+            @Override
+            public boolean shouldExecute() {
+                return EntityLamphead.this.getMode() != 2 && super.shouldExecute();
+            }
+        });
+        this.targetTasks.addTask(2, new EntityAIOwnerHurtTarget(this) {
+            @Override
+            public boolean shouldExecute() {
+                return EntityLamphead.this.getMode() != 2 && super.shouldExecute();
+            }
+        });
         this.targetTasks.addTask(3, new EntityAIHurtByTarget(this, true));
         this.targetTasks.addTask(4, new EntityAINearestAttackableTarget<EntityPlayer>(this, EntityPlayer.class, true) {
             @Override
@@ -169,17 +198,22 @@ public class EntityLamphead extends EntityTameable {
         if (this.isTamed()) {
             if (hand == EnumHand.MAIN_HAND && this.isOwner(player) && !this.world.isRemote && !this.isBreedingItem(itemstack)) {
                 if (player.isSneaking()) {
-                    boolean sitState = !this.isSitting();
-                    this.aiSit.setSitting(sitState);
-                    this.setSitting(sitState);
+                    int nextMode = (this.getMode() + 1) % 3;
+                    this.setMode(nextMode);
+                    
                     this.isJumping = false;
                     this.navigator.clearPath();
                     this.setAttackTarget(null);
                     
-                    if (sitState) {
-                        player.sendMessage(new TextComponentString("Lamphead will now stay here."));
+                    if (nextMode == 0) {
+                        player.sendMessage(new TextComponentString("Lamphead is now Wandering: It will follow you and fight by your side."));
+                        this.setSitting(false);
+                    } else if (nextMode == 1) {
+                        player.sendMessage(new TextComponentString("Lamphead is now Versatile: It will search for work and defend the area."));
+                        this.setSitting(false);
                     } else {
-                        player.sendMessage(new TextComponentString("Lamphead is now following you."));
+                        player.sendMessage(new TextComponentString("Lamphead is now Static: It will hold its ground and work only on nearby stations."));
+                        this.setSitting(false);
                     }
                 }
                 return true;
@@ -194,8 +228,8 @@ public class EntityLamphead extends EntityTameable {
                     this.setTamedBy(player);
                     this.navigator.clearPath();
                     this.setAttackTarget(null);
-                    this.aiSit.setSitting(true);
-                    this.setSitting(true);
+                    this.setMode(0); // Default to Wandering
+                    this.setSitting(false);
                     this.setHealth(this.getMaxHealth());
                     this.playTameEffect(true);
                     this.world.setEntityState(this, (byte)7);
@@ -227,6 +261,7 @@ public class EntityLamphead extends EntityTameable {
         this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.225D);
         this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(com.windanesz.tracesofthefallen.Settings.mobSettings.lampheadAttackDamage);
         this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(4.0D);
+        this.getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(0.4D); // Help them against zombies
     }
 
     @Override
@@ -280,7 +315,7 @@ public class EntityLamphead extends EntityTameable {
 
     @Override
     public boolean isPotionApplicable(PotionEffect potioneffectIn) {
-        if (potioneffectIn.getPotion() == MobEffects.POISON) {
+        if (potioneffectIn.getPotion() == MobEffects.POISON || potioneffectIn.getPotion() == MobEffects.HUNGER || potioneffectIn.getPotion() == MobEffects.REGENERATION) {
             return false;
         }
         return super.isPotionApplicable(potioneffectIn);

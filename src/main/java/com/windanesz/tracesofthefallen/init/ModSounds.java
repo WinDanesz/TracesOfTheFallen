@@ -21,6 +21,7 @@ public class ModSounds {
 	public static final SoundEvent IDOL_ACTIVATE = createSound("idol_activate");
 	public static final SoundEvent DIOPTRA = createSound("dioptra");
 	public static final SoundEvent BONE_PILE = createSound("bone_pile");
+	public static final SoundEvent LIGHTNING_ZAP = createSound("lightning_zap");
 
 	public static SoundEvent createSound(String name) {
 		return createSound(TracesOfTheFallen.MODID, name);
@@ -43,5 +44,6 @@ public class ModSounds {
 		event.getRegistry().register(IDOL_ACTIVATE);
 		event.getRegistry().register(DIOPTRA);
 		event.getRegistry().register(BONE_PILE);
+		event.getRegistry().register(LIGHTNING_ZAP);
 	}
 }

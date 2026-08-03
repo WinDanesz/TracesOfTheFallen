@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "totf:silk_spindle"
+    }
+  ],
+  "result": {
+    "item": "totf:silk_rope",
+    "count": 16
+  }
+}

@@ -41,7 +41,7 @@ public class BlockTelescope extends BlockDecoration {
 
 		if (!isPlayerBehind(state, pos, playerIn)) {
 			if (!worldIn.isRemote) {
-				playerIn.sendStatusMessage(new TextComponentTranslation("totf.telescope.stand_behind"), true);
+				playerIn.sendStatusMessage(new TextComponentTranslation("totf:telescope.stand_behind"), true);
 			}
 			return true;
 		}

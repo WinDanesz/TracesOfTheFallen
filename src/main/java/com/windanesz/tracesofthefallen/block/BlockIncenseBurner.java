@@ -65,6 +65,11 @@ public class BlockIncenseBurner extends BlockDecoration {
 	}
 
 	@Override
+	public boolean isFullAABBProxy() {
+		return true;
+	}
+
+	@Override
 	@SideOnly(Side.CLIENT)
 	public void randomDisplayTick(IBlockState state, World world, BlockPos pos, Random rand) {
 		TileEntityIncenseBurner incenseBurner = getIncenseBurner(world, pos);
@@ -156,12 +161,130 @@ public class BlockIncenseBurner extends BlockDecoration {
 		return true;
 	}
 
+	private int[] getProxyBounds(IBlockState state) {
+		EnumFacing facing = state.getValue(FACING);
+		switch (facing) {
+			case EAST: return new int[]{-1, 0, 0, 1}; // minX, maxX, minZ, maxZ
+			case SOUTH: return new int[]{-1, 0, -1, 0};
+			case WEST: return new int[]{0, 1, -1, 0};
+			case NORTH:
+			default: return new int[]{0, 1, 0, 1};
+		}
+	}
+
+	@Override
+	public boolean canPlaceBlockAt(World worldIn, BlockPos pos) {
+		if (!hasSupport(worldIn, pos) || !super.canPlaceBlockAt(worldIn, pos)) {
+			return false;
+		}
+		int[] b = getProxyBounds(this.getDefaultState()); // Facing is not yet known before placement, but usually block can't rotate before placed, so we check default bounds (0,1,0,1)
+		for (int x = b[0]; x <= b[1]; x++) {
+			for (int y = 0; y <= 1; y++) {
+				for (int z = b[2]; z <= b[3]; z++) {
+					if (x == 0 && y == 0 && z == 0) continue;
+					BlockPos checkPos = pos.add(x, y, z);
+					IBlockState checkState = worldIn.getBlockState(checkPos);
+					if (!checkState.getBlock().isReplaceable(worldIn, checkPos) && !worldIn.isAirBlock(checkPos)) {
+						return false;
+					}
+				}
+			}
+		}
+		return true;
+	}
+
+	@Override
+	public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state) {
+		super.onBlockAdded(worldIn, pos, state);
+		if (!worldIn.isRemote) {
+			int[] b = getProxyBounds(state);
+			for (int x = b[0]; x <= b[1]; x++) {
+				for (int y = 0; y <= 1; y++) {
+					for (int z = b[2]; z <= b[3]; z++) {
+						if (x == 0 && y == 0 && z == 0) continue;
+						BlockPos proxyPos = pos.add(x, y, z);
+						if (worldIn.getBlockState(proxyPos).getBlock().isReplaceable(worldIn, proxyPos) || worldIn.isAirBlock(proxyPos)) {
+							worldIn.setBlockState(proxyPos, com.windanesz.tracesofthefallen.init.ModBlocks.technical_block.getDefaultState(), 3);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	@Override
+	public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
+		int[] b = getProxyBounds(state);
+		for (int x = b[0]; x <= b[1]; x++) {
+			for (int y = 0; y <= 1; y++) {
+				for (int z = b[2]; z <= b[3]; z++) {
+					if (x == 0 && y == 0 && z == 0) continue;
+					BlockPos proxyPos = pos.add(x, y, z);
+					if (worldIn.getBlockState(proxyPos).getBlock() == com.windanesz.tracesofthefallen.init.ModBlocks.technical_block) {
+						worldIn.setBlockToAir(proxyPos);
+					}
+				}
+			}
+		}
+		super.breakBlock(worldIn, pos, state);
+	}
+
+	@Override
+	public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, net.minecraft.block.Block blockIn, BlockPos fromPos) {
+		super.neighborChanged(state, worldIn, pos, blockIn, fromPos);
+
+		if (!worldIn.isRemote) {
+			if (!hasSupport(worldIn, pos)) {
+				dropBlockAsItem(worldIn, pos, state, 0);
+				worldIn.setBlockToAir(pos);
+				return;
+			}
+			int[] b = getProxyBounds(state);
+			for (int x = b[0]; x <= b[1]; x++) {
+				for (int y = 0; y <= 1; y++) {
+					for (int z = b[2]; z <= b[3]; z++) {
+						if (x == 0 && y == 0 && z == 0) continue;
+						BlockPos proxyPos = pos.add(x, y, z);
+						if (worldIn.getBlockState(proxyPos).getBlock() != com.windanesz.tracesofthefallen.init.ModBlocks.technical_block) {
+							if (worldIn.getBlockState(proxyPos).getBlock().isReplaceable(worldIn, proxyPos) || worldIn.isAirBlock(proxyPos)) {
+								worldIn.setBlockState(proxyPos, com.windanesz.tracesofthefallen.init.ModBlocks.technical_block.getDefaultState(), 3);
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	@Override
+	public boolean isMainBlockForProxy(net.minecraft.world.IBlockAccess world, BlockPos mainPos, BlockPos proxyPos) {
+		IBlockState state = world.getBlockState(mainPos);
+		if (state.getBlock() != this) return false;
+		int[] b = getProxyBounds(state);
+		int dx = proxyPos.getX() - mainPos.getX();
+		int dy = proxyPos.getY() - mainPos.getY();
+		int dz = proxyPos.getZ() - mainPos.getZ();
+		return dx >= b[0] && dx <= b[1] && dy >= 0 && dy <= 1 && dz >= b[2] && dz <= b[3];
+	}
+
+	private boolean hasSupport(World world, BlockPos pos) {
+		BlockPos belowPos = pos.down();
+		IBlockState belowState = world.getBlockState(belowPos);
+		if (belowState.isSideSolid(world, belowPos, EnumFacing.UP)) {
+			return true;
+		}
+
+		BlockPos abovePos = pos.up();
+		IBlockState aboveState = world.getBlockState(abovePos);
+		return aboveState.isSideSolid(world, abovePos, EnumFacing.DOWN);
+	}
+
 	private void sendRemainingBurnStatus(EntityPlayer player, TileEntityIncenseBurner incenseBurner) {
 		int remainingTicks = Math.max(0, incenseBurner.getRemainingBurnTime());
 		int potionTicks = Math.max(0, incenseBurner.getRemainingPotionDurationTicks());
 
 		if (!incenseBurner.isLit() && remainingTicks == 0 && potionTicks == 0 && !incenseBurner.isBurnedOut()) {
-			player.sendStatusMessage(new TextComponentTranslation("totf.incense_burner.empty"), true);
+			player.sendStatusMessage(new TextComponentTranslation("totf:incense_burner.empty"), true);
 			return;
 		}
 
@@ -169,24 +292,24 @@ public class BlockIncenseBurner extends BlockDecoration {
 
 		if (potionTicks <= 0) {
 			if (remainingTicks < 1200) {
-				player.sendStatusMessage(new TextComponentTranslation("totf.incense_burner.duration_nearly_spent"), true);
+				player.sendStatusMessage(new TextComponentTranslation("totf:incense_burner.duration_nearly_spent"), true);
 			} else {
 				int minutes = Math.max(1, Math.round(remainingTicks / 1200.0F));
-				player.sendStatusMessage(new TextComponentTranslation("totf.incense_burner.duration_minutes", minutes), true);
+				player.sendStatusMessage(new TextComponentTranslation("totf:incense_burner.duration_minutes", minutes), true);
 			}
 			return;
 		}
 
 		ITextComponent potionComponent = getDurationValueComponent(potionTicks);
-		player.sendStatusMessage(new TextComponentTranslation("totf.incense_burner.duration_combined", fuelComponent, potionComponent), true);
+		player.sendStatusMessage(new TextComponentTranslation("totf:incense_burner.duration_combined", fuelComponent, potionComponent), true);
 	}
 
 	private ITextComponent getDurationValueComponent(int ticks) {
 		if (ticks < 1200) {
-			return new TextComponentTranslation("totf.incense_burner.duration_value_nearly_spent");
+			return new TextComponentTranslation("totf:incense_burner.duration_value_nearly_spent");
 		}
 		int minutes = Math.max(1, Math.round(ticks / 1200.0F));
-		return new TextComponentTranslation("totf.incense_burner.duration_value_minutes", minutes);
+		return new TextComponentTranslation("totf:incense_burner.duration_value_minutes", minutes);
 	}
 
 	private AxisAlignedBB rotateClockwise(AxisAlignedBB box) {

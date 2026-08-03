@@ -148,7 +148,7 @@ public class EntityAncestralSifter extends Entity {
 				if (canRepair(player)) {
 					repair(player);
 				} else {
-					player.sendStatusMessage(new TextComponentTranslation("totf.ancestral_sifter.repair_requirements", REPAIR_FEATHER_COST, REPAIR_STRING_COST), true);
+					player.sendStatusMessage(new TextComponentTranslation("totf:ancestral_sifter.repair_requirements", REPAIR_FEATHER_COST, REPAIR_STRING_COST), true);
 				}
 			}
 		}

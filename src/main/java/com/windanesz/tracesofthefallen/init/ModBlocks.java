@@ -40,6 +40,8 @@ public class ModBlocks {
 	public static final Block tent = placeholder();
 	public static final Block tent_abandoned = placeholder();
 	public static final Block tent_abandoned_idol = placeholder();
+	public static final Block floater_brown = placeholder();
+	public static final Block floater_white = placeholder();
 
 	public static final Block armillary = placeholder();
 	public static final Block salvaged_scaffold = placeholder();
@@ -110,6 +112,8 @@ public class ModBlocks {
 	public static final Block stone_receiver = placeholder();
 	public static final Block wrought_bars = placeholder();
 	public static final Block guillotine = placeholder();
+	public static final Block dancoil = placeholder();
+	public static final Block spinning_wheel = placeholder();
 
 	@Nonnull
 	@SuppressWarnings("ConstantConditions")
@@ -134,6 +138,10 @@ public class ModBlocks {
 		registerBlock(registry, "tent_abandoned_idol", new BlockTent(false).setLootTable(new ResourceLocation(TracesOfTheFallen.MODID, "blocks/tent_with_idol")));
 		registerBlock(registry, "armillary", new BlockArmillary());
 		registerBlock(registry, "salvaged_scaffold", new BlockSalvagedScaffold());
+		registerBlock(registry, "floater_brown", new BlockFloater(Material.CLOTH));
+		if (com.windanesz.tracesofthefallen.Settings.miscSettings.enableWhiteFloater) {
+			registerBlock(registry, "floater_white", new BlockFloater(Material.CLOTH));
+		}
 
 		// New decorative blocks
 		registerBlock(registry, "ancestral_sifter_golden", new BlockAncestralSifter(Material.WOOD, BlockAncestralSifter.SifterVariant.GOLDEN).setBoundingBox(new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 1.5D, 1.0D)));
@@ -163,6 +171,14 @@ public class ModBlocks {
 		registerBlock(registry, "idol_vessel", new BlockIdolVessel(Material.ROCK).setBoundingBox(new AxisAlignedBB(0.0625D, 0.0D, 0.0625D, 0.9375D, 1.0D, 0.9375D)));
 		registerBlockNoTab(registry, "technical_block", new BlockTechnicalBlock());
 		registerBlock(registry, "wrought_bomb", new BlockWroughtBomb());
+		registerBlock(registry, "stained_glass", new BlockTOTFGlass());
+		registerBlock(registry, "stained_glass_pane", new BlockTOTFGlassPane());
+		registerBlock(registry, "dreamcatcher", new BlockDreamcatcher(Material.WOOD));
+		registerBlock(registry, "item_frame_wooden", new BlockWoodenItemFrame());
+		registerBlock(registry, "bonepile", new BlockBonepile());
+		registerBlock(registry, "hay_bed", new BlockHayBed(Material.WOOD).setLootTable(new ResourceLocation(TracesOfTheFallen.MODID, "blocks/hay_bed")));
+
+		// Stone blocks
 		registerBlock(registry, "bricks_stone", new BlockTOTFStone());
 		registerBlock(registry, "bricks_stone_carved", new BlockTOTFStone());
 		registerBlock(registry, "bricks_stone_carved_dirty", new BlockTOTFStone());
@@ -171,14 +187,14 @@ public class ModBlocks {
 		registerBlock(registry, "bricks_stone_carved_mossy", new BlockTOTFStone());
 		registerBlock(registry, "bricks_stone_smooth", new BlockTOTFStone());
 		registerBlock(registry, "bricks_stone_pillar", new BlockTOTFPillar(Material.ROCK));
-		registerBlock(registry, "stained_glass", new BlockTOTFGlass());
-		registerBlock(registry, "stained_glass_pane", new BlockTOTFGlassPane());
-		registerBlock(registry, "dreamcatcher", new BlockDreamcatcher(Material.WOOD));
-		registerBlock(registry, "stone_chest", new BlockStoneChest());
-		registerBlock(registry, "stone_chest_open", new BlockStoneChest().setBoundingBox(new AxisAlignedBB(0.0D, 0.0D, 0.25D, 1.0D, 0.5625D, 0.75D)));
-		registerBlock(registry, "item_frame_wooden", new BlockWoodenItemFrame());
-		registerBlock(registry, "bonepile", new BlockBonepile());
-		registerBlock(registry, "hay_bed", new BlockHayBed(Material.WOOD).setLootTable(new ResourceLocation(TracesOfTheFallen.MODID, "blocks/hay_bed")));
+
+		Block customBricksStoneSlab = new BlockTOTFHalfSlab(Material.ROCK).setHardness(2.0F).setResistance(10.0F);
+		registerBlock(registry, "bricks_stone_slab", customBricksStoneSlab);
+		registerBlockNoTab(registry, "bricks_stone_double_slab", new BlockTOTFDoubleSlab(Material.ROCK, customBricksStoneSlab).setHardness(2.0F).setResistance(10.0F));
+		
+		registerBlock(registry, "bricks_stone_stair", new BlockTOTFStairs(Blocks.STONEBRICK.getDefaultState()).setHardness(2.0F).setResistance(10.0F));
+		registerBlock(registry, "bricks_stone_wall", new BlockTOTFWall(Blocks.STONEBRICK).setHardness(2.0F).setResistance(10.0F));
+
 		registerBlock(registry, "mozaic_pink", new BlockTOTFStone());
 		registerBlock(registry, "mozaic_pink_washed", new BlockTOTFStone());
 		registerBlock(registry, "mozaic_red", new BlockTOTFStone());
@@ -188,23 +204,22 @@ public class ModBlocks {
 		registerBlock(registry, "mozaic_yellow", new BlockTOTFStone());
 		registerBlock(registry, "mozaic_yellow_washed", new BlockTOTFStone());
 
-		Block customBricksStoneSlab = new BlockTOTFHalfSlab(Material.ROCK).setHardness(2.0F).setResistance(10.0F);
-		registerBlock(registry, "bricks_stone_slab", customBricksStoneSlab);
-		registerBlockNoTab(registry, "bricks_stone_double_slab", new BlockTOTFDoubleSlab(Material.ROCK, customBricksStoneSlab).setHardness(2.0F).setResistance(10.0F));
-		
-		registerBlock(registry, "bricks_stone_stair", new BlockTOTFStairs(Blocks.STONEBRICK.getDefaultState()).setHardness(2.0F).setResistance(10.0F));
-		
-		registerBlock(registry, "bricks_stone_wall", new BlockTOTFWall(Blocks.STONEBRICK).setHardness(2.0F).setResistance(10.0F));
+		// Stone-related blocks
+		registerBlock(registry, "stone_chest", new BlockStoneChest());
+		registerBlock(registry, "stone_chest_open", new BlockStoneChest().setBoundingBox(new AxisAlignedBB(0.0D, 0.0D, 0.25D, 1.0D, 0.5625D, 0.75D)));
+		registerBlock(registry, "stone_compartment", new BlockStoneCompartment());
+		registerBlock(registry, "stone_pressure_plate", new BlockStonePressurePlate());
+		registerBlock(registry, "stone_receiver", new BlockStoneReceiver());
 
+		// Metals and machines
 		registerBlock(registry, "blue_caged_lamp", new BlockCagedLamp());
 		registerBlock(registry, "brass_gas_lamp", new BlockBrassGasLamp());
 		registerBlock(registry, "wrought_caged_lamp", new BlockWroughtCagedLamp());
 		registerBlock(registry, "brass_fabricator", new BlockBrassFabricator());
-		registerBlock(registry, "stone_compartment", new BlockStoneCompartment());
-		registerBlock(registry, "stone_pressure_plate", new BlockStonePressurePlate());
-		registerBlock(registry, "stone_receiver", new BlockStoneReceiver());
 		registerBlock(registry, "wrought_bars", new BlockWroughtBars());
 		registerBlock(registry, "guillotine", new BlockGuillotine(Material.IRON));
+		registerBlock(registry, "dancoil", new BlockDanCoil(Material.IRON));
+		registerBlock(registry, "spinning_wheel", new BlockSpinningWheel(Material.WOOD).setBoundingBox(new AxisAlignedBB(0.1D, 0.0D, 0.1D, 0.9D, 0.9D, 0.9D)));
 	}
 
 	public static void registerBlock(IForgeRegistry<Block> registry, String name, Block block) {
@@ -269,6 +284,8 @@ public class ModBlocks {
 		GameRegistry.registerTileEntity(TileEntityStoneCompartment.class, new ResourceLocation(TracesOfTheFallen.MODID, "stone_compartment"));
 		GameRegistry.registerTileEntity(TileEntityStoneReceiver.class, new ResourceLocation(TracesOfTheFallen.MODID, "stone_receiver"));
 		GameRegistry.registerTileEntity(TileEntityGuillotine.class, new ResourceLocation(TracesOfTheFallen.MODID, "guillotine"));
+		GameRegistry.registerTileEntity(TileEntityDanCoil.class, new ResourceLocation(TracesOfTheFallen.MODID, "dancoil"));
+		GameRegistry.registerTileEntity(TileEntitySpinningWheel.class, new ResourceLocation(TracesOfTheFallen.MODID, "spinning_wheel"));
 	}
 }
 

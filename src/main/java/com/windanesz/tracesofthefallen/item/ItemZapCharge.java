@@ -36,7 +36,34 @@ public class ItemZapCharge extends Item {
                 hitVec = raytraceresult.hitVec;
             }
             
+            double maxDot = -1.0;
+            net.minecraft.util.math.BlockPos targetCoil = null;
+
+            for (net.minecraft.tileentity.TileEntity te : worldIn.loadedTileEntityList) {
+                if (te instanceof com.windanesz.tracesofthefallen.block.TileEntityDanCoil) {
+                    net.minecraft.util.math.BlockPos pos = te.getPos();
+                    Vec3d coilVec = new Vec3d(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
+                    double dist = start.distanceTo(coilVec);
+                    if (dist <= 20.0D) {
+                        RayTraceResult sight = worldIn.rayTraceBlocks(start, coilVec, false, true, false);
+                        if (sight == null || sight.getBlockPos().equals(pos) || sight.typeOfHit == RayTraceResult.Type.MISS) {
+                            Vec3d dirToCoil = coilVec.subtract(start).normalize();
+                            double dot = look.dotProduct(dirToCoil);
+                            if (dot > maxDot && dot > 0) {
+                                maxDot = dot;
+                                targetCoil = pos;
+                            }
+                        }
+                    }
+                }
+            }
+            
+            if (targetCoil != null) {
+                hitVec = new Vec3d(targetCoil.getX() + 0.5, targetCoil.getY() + 0.5, targetCoil.getZ() + 0.5);
+            }
+            
             EntityZapLightning lightning = new EntityZapLightning(worldIn, start.x, start.y, start.z, hitVec.x, hitVec.y, hitVec.z, playerIn);
+            lightning.singleDamageInstance = true;
             worldIn.spawnEntity(lightning);
             
             playerIn.addPotionEffect(new net.minecraft.potion.PotionEffect(com.windanesz.tracesofthefallen.init.ModPotions.static_vulnerability, 60, 0));

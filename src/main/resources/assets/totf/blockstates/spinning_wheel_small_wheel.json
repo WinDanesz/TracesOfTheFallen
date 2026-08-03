@@ -1,0 +1,12 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "totf:spinning_wheel_small_wheel.obj",
+    "custom": {
+      "flip-v": true
+    }
+  },
+  "variants": {
+    "inventory": [{}]
+  }
+}

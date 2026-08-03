@@ -1,20 +1,84 @@
 {
-  "variants": {
-    "corner=false,facing=north,top=false": { "model": "totf:wrought_bars" },
-    "corner=false,facing=east,top=false": { "model": "totf:wrought_bars", "y": 90 },
-    "corner=false,facing=south,top=false": { "model": "totf:wrought_bars", "y": 180 },
-    "corner=false,facing=west,top=false": { "model": "totf:wrought_bars", "y": 270 },
-    "corner=false,facing=north,top=true": { "model": "totf:wrought_bars_top" },
-    "corner=false,facing=east,top=true": { "model": "totf:wrought_bars_top", "y": 90 },
-    "corner=false,facing=south,top=true": { "model": "totf:wrought_bars_top", "y": 180 },
-    "corner=false,facing=west,top=true": { "model": "totf:wrought_bars_top", "y": 270 },
-    "corner=true,facing=north,top=false": { "model": "totf:wrought_bars_corner" },
-    "corner=true,facing=east,top=false": { "model": "totf:wrought_bars_corner", "y": 90 },
-    "corner=true,facing=south,top=false": { "model": "totf:wrought_bars_corner", "y": 180 },
-    "corner=true,facing=west,top=false": { "model": "totf:wrought_bars_corner", "y": 270 },
-    "corner=true,facing=north,top=true": { "model": "totf:wrought_bars_top_corner" },
-    "corner=true,facing=east,top=true": { "model": "totf:wrought_bars_top_corner", "y": 90 },
-    "corner=true,facing=south,top=true": { "model": "totf:wrought_bars_top_corner", "y": 180 },
-    "corner=true,facing=west,top=true": { "model": "totf:wrought_bars_top_corner", "y": 270 }
-  }
+    "multipart": [
+        {
+            "when": { "top": false },
+            "apply": { "model": "totf:wrought_bars_post_ends" }
+        },
+        {
+            "when": { "top": true },
+            "apply": { "model": "totf:wrought_bars_top_post_ends" }
+        },
+        {   
+            "when": { "north": false, "east": false, "south": false, "west": false, "top": false },
+            "apply": { "model": "totf:wrought_bars_post" }
+        },
+        {   
+            "when": { "north": false, "east": false, "south": false, "west": false, "top": true },
+            "apply": { "model": "totf:wrought_bars_top_post" }
+        },
+        {   
+            "when": { "north": true, "east": false, "south": false, "west": false, "top": false },
+            "apply": { "model": "totf:wrought_bars_cap" }
+        },
+        {   
+            "when": { "north": true, "east": false, "south": false, "west": false, "top": true },
+            "apply": { "model": "totf:wrought_bars_top_cap" }
+        },
+        {   
+            "when": { "north": false, "east": true, "south": false, "west": false, "top": false },
+            "apply": { "model": "totf:wrought_bars_cap_alt", "y": 270 }
+        },
+        {   
+            "when": { "north": false, "east": true, "south": false, "west": false, "top": true },
+            "apply": { "model": "totf:wrought_bars_top_cap_alt", "y": 270 }
+        },
+        {   
+            "when": { "north": false, "east": false, "south": true, "west": false, "top": false },
+            "apply": { "model": "totf:wrought_bars_cap_alt" }
+        },
+        {   
+            "when": { "north": false, "east": false, "south": true, "west": false, "top": true },
+            "apply": { "model": "totf:wrought_bars_top_cap_alt" }
+        },
+        {   
+            "when": { "north": false, "east": false, "south": false, "west": true, "top": false },
+            "apply": { "model": "totf:wrought_bars_cap", "y": 270 }
+        },
+        {   
+            "when": { "north": false, "east": false, "south": false, "west": true, "top": true },
+            "apply": { "model": "totf:wrought_bars_top_cap", "y": 270 }
+        },
+        {   
+            "when": { "north": true, "top": false },
+            "apply": { "model": "totf:wrought_bars_side" }
+        },
+        {   
+            "when": { "north": true, "top": true },
+            "apply": { "model": "totf:wrought_bars_top_side" }
+        },
+        {   
+            "when": { "east": true, "top": false },
+            "apply": { "model": "totf:wrought_bars_side_alt", "y": 270 }
+        },
+        {   
+            "when": { "east": true, "top": true },
+            "apply": { "model": "totf:wrought_bars_top_side_alt", "y": 270 }
+        },
+        {   
+            "when": { "south": true, "top": false },
+            "apply": { "model": "totf:wrought_bars_side_alt" }
+        },
+        {   
+            "when": { "south": true, "top": true },
+            "apply": { "model": "totf:wrought_bars_top_side_alt" }
+        },
+        {   
+            "when": { "west": true, "top": false },
+            "apply": { "model": "totf:wrought_bars_side", "y": 270 }
+        },
+        {   
+            "when": { "west": true, "top": true },
+            "apply": { "model": "totf:wrought_bars_top_side", "y": 270 }
+        }
+    ]
 }

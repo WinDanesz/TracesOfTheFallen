@@ -323,7 +323,7 @@ public class BlockPorcelainPiece extends BlockDecoration {
 				}
 			}
 			worldIn.playSound(playerIn, pos, SoundEvents.ITEM_BOTTLE_EMPTY, SoundCategory.BLOCKS, 0.8F, 1.0F);
-			sendPotStatus(playerIn, "totf.porcelain_pot.status.water", getFluidDisplayName(vessel.getBaseFluidType()), vessel.getFluidLevel(), 3);
+			sendPotStatus(playerIn, "totf:porcelain_pot.status.water", getFluidDisplayName(vessel.getBaseFluidType()), vessel.getFluidLevel(), 3);
 			return true;
 		}
 
@@ -347,7 +347,7 @@ public class BlockPorcelainPiece extends BlockDecoration {
 				return false;
 			}
 			worldIn.playSound(playerIn, pos, SoundEvents.ITEM_BUCKET_EMPTY, SoundCategory.BLOCKS, 0.8F, 1.0F);
-			sendPotStatus(playerIn, "totf.porcelain_pot.status.full");
+			sendPotStatus(playerIn, "totf:porcelain_pot.status.full");
 			return true;
 		}
 
@@ -356,7 +356,7 @@ public class BlockPorcelainPiece extends BlockDecoration {
 			String requiredFluid = normalizeFluidName(liquidDefinition.forgeFluidName);
 			if (!requiredFluid.isEmpty() && !requiredFluid.equals(vessel.getBaseFluidType())) {
 				if (!worldIn.isRemote) {
-					sendPotStatus(playerIn, "totf.porcelain_pot.status.need_base_fluid", getFluidDisplayName(requiredFluid));
+					sendPotStatus(playerIn, "totf:porcelain_pot.status.need_base_fluid", getFluidDisplayName(requiredFluid));
 				}
 				return true;
 			}
@@ -380,7 +380,7 @@ public class BlockPorcelainPiece extends BlockDecoration {
 				heldStack.shrink(1);
 			}
 			worldIn.playSound(null, pos, SoundEvents.BLOCK_BREWING_STAND_BREW, SoundCategory.BLOCKS, 0.8F, 1.0F);
-			sendPotStatus(playerIn, "totf.porcelain_pot.status.tea_ready", vessel.getBrewServings());
+			sendPotStatus(playerIn, "totf:porcelain_pot.status.tea_ready", vessel.getBrewServings());
 			return true;
 		}
 
@@ -413,7 +413,7 @@ public class BlockPorcelainPiece extends BlockDecoration {
 			}
 
 			worldIn.playSound(null, pos, SoundEvents.ITEM_BOTTLE_FILL, SoundCategory.BLOCKS, 0.7F, 1.2F);
-			sendPotStatus(playerIn, "totf.porcelain_pot.status.poured", vessel.getBrewServings());
+			sendPotStatus(playerIn, "totf:porcelain_pot.status.poured", vessel.getBrewServings());
 			return true;
 		}
 
@@ -546,18 +546,18 @@ public class BlockPorcelainPiece extends BlockDecoration {
 
 	private String getWaterStatusKey(TileEntityPorcelainVessel vessel) {
 		if (vessel.isBrewReady()) {
-			return "totf.porcelain_pot.status.tea_ready";
+			return "totf:porcelain_pot.status.tea_ready";
 		}
 		if (vessel.isHeated()) {
-			return "totf.porcelain_pot.status.add_leaves";
+			return "totf:porcelain_pot.status.add_leaves";
 		}
 		if (vessel.getFluidLevel() >= 3) {
 			if (vessel.isHeatingInProgress()) {
-				return "totf.porcelain_pot.status.heating_progress";
+				return "totf:porcelain_pot.status.heating_progress";
 			}
-			return "totf.porcelain_pot.status.place_on_furnace";
+			return "totf:porcelain_pot.status.place_on_furnace";
 		}
-		return "totf.porcelain_pot.status.water";
+		return "totf:porcelain_pot.status.water";
 	}
 
 	private Object[] getWaterStatusArgs(TileEntityPorcelainVessel vessel) {
@@ -572,18 +572,18 @@ public class BlockPorcelainPiece extends BlockDecoration {
 
 	private String getTeaStatusKey(TileEntityPorcelainVessel vessel) {
 		if (vessel.isBrewReady()) {
-			return "totf.porcelain_pot.status.tea_ready";
+			return "totf:porcelain_pot.status.tea_ready";
 		}
 		if (vessel.getFluidLevel() < 3) {
-			return "totf.porcelain_pot.status.need_water";
+			return "totf:porcelain_pot.status.need_water";
 		}
 		if (vessel.isHeated()) {
-			return "totf.porcelain_pot.status.add_leaves";
+			return "totf:porcelain_pot.status.add_leaves";
 		}
 		if (vessel.isHeatingInProgress()) {
-			return "totf.porcelain_pot.status.heating_progress";
+			return "totf:porcelain_pot.status.heating_progress";
 		}
-		return "totf.porcelain_pot.status.place_on_furnace";
+		return "totf:porcelain_pot.status.place_on_furnace";
 	}
 
 	private Object[] getTeaStatusArgs(TileEntityPorcelainVessel vessel) {

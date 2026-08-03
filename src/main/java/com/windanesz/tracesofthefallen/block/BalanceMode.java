@@ -21,7 +21,7 @@ public enum BalanceMode {
 	}
 
 	public String getTranslationKey() {
-		return "totf.balance.mode." + serializedName;
+		return "totf:balance.mode." + serializedName;
 	}
 
 	public BalanceMode next() {

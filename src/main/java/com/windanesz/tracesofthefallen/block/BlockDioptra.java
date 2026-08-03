@@ -41,7 +41,7 @@ public class BlockDioptra extends BlockDecoration {
 
 		if (!isPlayerBehind(state, pos, playerIn)) {
 			if (!worldIn.isRemote) {
-				playerIn.sendStatusMessage(new TextComponentTranslation("totf.dioptra.stand_behind"), true);
+				playerIn.sendStatusMessage(new TextComponentTranslation("totf:dioptra.stand_behind"), true);
 			}
 			return true;
 		}

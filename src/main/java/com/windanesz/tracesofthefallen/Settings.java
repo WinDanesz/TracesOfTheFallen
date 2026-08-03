@@ -173,6 +173,19 @@ public class Settings {
     }
 
     public static class MiscSettings {
+		@Config.Name("Dan Coil Trap Damage")
+		@Config.Comment("The amount of damage the Dan Coil trap deals. Default: 3.0")
+		@Config.RangeDouble(min = 0.0, max = 10000.0)
+		public double dancoilTrapDamage = 3.0D;
+
+		@Config.Name("Dan Coil Ignored Entities")
+		@Config.Comment({
+				"List of entities that are ignored by the Dan Coil trap.",
+				"Format: 'modid:entity_name'"
+		})
+		public String[] dancoilIgnoredEntities = {
+				"totf:lamphead"
+		};
 
 		@Config.Name("Bonepile Base Item Chance")
 		@Config.Comment("The base chance (0.0 - 1.0) per layer of dropping a bone or bonemeal when breaking a bonepile. Default: 0.10 (10% per layer)")
@@ -634,7 +647,7 @@ public class Settings {
 		public String[] sidheInteractItems = {
 				"minecraft:fish:*|attack",
 				"minecraft:cooked_fish:*|attack",
-				"totf:furred_trout:0|minecraft:diamond:0*1"
+				"totf:furred_trout:0|totf:ancestral_claw_necklace:0*1"
 		};
 
 		@Config.Name("Brass Fabricator Custom Fuels")
@@ -656,6 +669,17 @@ public class Settings {
 		@Config.Comment("The duration (in ticks) that the Stone Receiver emits a redstone signal when triggered. Default: 60 (3 seconds)")
 		@Config.RangeInt(min = 1, max = 1200)
 		public int stoneReceiverPulseDurationTicks = 60;
+
+		@Config.Name("Ancestral Claw Necklace Durability")
+		@Config.Comment("The maximum durability (uses) for the Ancestral Claw Necklace. Default: 16")
+		@Config.RangeInt(min = 1, max = 10000)
+		@Config.RequiresMcRestart
+		public int ancestralClawNecklaceDurability = 16;
+
+		@Config.Name("Enable White Floater")
+		@Config.Comment("If true, the white variant of the Floater is enabled and registered. Default: false")
+		@Config.RequiresMcRestart
+		public boolean enableWhiteFloater = false;
     }
 
     public static class ClientSettings {
@@ -818,9 +842,9 @@ public class Settings {
 		public double lampheadAttackDamage = 6.0D;
 
 		@Config.Name("Lamphead Max Health")
-		@Config.Comment("Max health for Lamphead. Default: 30.0")
+		@Config.Comment("Max health for Lamphead. Default: 35.0")
 		@Config.RangeDouble(min = 1.0D, max = 10000.0D)
-		public double lampheadMaxHealth = 30.0D;
+		public double lampheadMaxHealth = 35.0D;
 	}
     @SuppressWarnings("unused")
     @Mod.EventBusSubscriber(modid = TracesOfTheFallen.MODID)

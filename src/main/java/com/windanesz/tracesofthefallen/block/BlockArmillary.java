@@ -58,7 +58,7 @@ public class BlockArmillary extends Block {
 				int hauntingProgress = hauntingCap.getHauntingProgress();
 				
 				if (hauntingProgress >= 50) {
-					TextComponentTranslation msg = new TextComponentTranslation("totf.armillary.haunted");
+					TextComponentTranslation msg = new TextComponentTranslation("totf:armillary.haunted");
 					msg.getStyle().setColor(TextFormatting.DARK_PURPLE);
 					playerIn.sendMessage(msg);
 				}

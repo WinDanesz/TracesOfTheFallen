@@ -1,0 +1,7 @@
+{
+  "parent": "totf:block/floater_ground",
+  "textures": {
+    "0": "totf:blocks/floater_brown",
+    "particle": "totf:blocks/floater_brown"
+  }
+}

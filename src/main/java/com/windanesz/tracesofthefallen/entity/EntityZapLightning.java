@@ -3,7 +3,6 @@ package com.windanesz.tracesofthefallen.entity;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.init.SoundEvents;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundCategory;
@@ -22,6 +21,14 @@ public class EntityZapLightning extends Entity implements IEntityAdditionalSpawn
     public double startX, startY, startZ;
     public double endX, endY, endZ;
     public EntityLivingBase caster;
+    public float damage = 3.0F;
+    public boolean visualOnly = false;
+    public boolean isVisible = true;
+    public int age = 0;
+    public int maxAge = 55;
+    private java.util.Map<Entity, Integer> hitCooldowns = new java.util.HashMap<>();
+    public boolean singleDamageInstance = false;
+    public boolean customMaxAge = false;
 
     public EntityZapLightning(World worldIn) {
         super(worldIn);
@@ -45,8 +52,6 @@ public class EntityZapLightning extends Entity implements IEntityAdditionalSpawn
         this.boltVertex = this.rand.nextLong();
         this.boltLivingTime = this.rand.nextInt(3) + 1;
         this.ignoreFrustumCheck = true;
-        
-        worldIn.playSound(null, x1, y1, z1, SoundEvents.ENTITY_LIGHTNING_THUNDER, SoundCategory.WEATHER, 2.0F, 1.2F);
     }
 
     @Override
@@ -57,65 +62,111 @@ public class EntityZapLightning extends Entity implements IEntityAdditionalSpawn
     public void onUpdate() {
         super.onUpdate();
 
-        if (this.lightningState == 2) {
-            this.world.playSound(null, this.startX, this.startY, this.startZ, SoundEvents.ENTITY_LIGHTNING_IMPACT, SoundCategory.WEATHER, 2.0F, 0.5F + this.rand.nextFloat() * 0.2F);
-            
-            if (!this.world.isRemote) {
-                double minX = Math.min(this.startX, this.endX) - 0.5;
-                double minY = Math.min(this.startY, this.endY) - 0.5;
-                double minZ = Math.min(this.startZ, this.endZ) - 0.5;
-                double maxX = Math.max(this.startX, this.endX) + 0.5;
-                double maxY = Math.max(this.startY, this.endY) + 0.5;
-                double maxZ = Math.max(this.startZ, this.endZ) + 0.5;
-                
-                List<Entity> list = this.world.getEntitiesWithinAABBExcludingEntity(this, new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ));
-                Vec3d startVec = new Vec3d(this.startX, this.startY, this.startZ);
-                Vec3d endVec = new Vec3d(this.endX, this.endY, this.endZ);
-                Vec3d dir = endVec.subtract(startVec).normalize();
-                
-                for (Entity e : list) {
-                    if (e != this.caster && e instanceof EntityLivingBase) {
-                        Vec3d ePos = new Vec3d(e.posX, e.posY + e.height / 2.0, e.posZ);
-                        Vec3d toEntity = ePos.subtract(startVec);
-                        double dot = toEntity.dotProduct(dir);
-                        if (dot > 0 && dot < endVec.subtract(startVec).length()) {
-                            Vec3d proj = startVec.add(dir.scale(dot));
-                            if (proj.distanceTo(ePos) <= 0.5 + e.width / 2.0) {
-                                if (e instanceof com.windanesz.tracesofthefallen.entity.EntityLamphead) {
-                                    com.windanesz.tracesofthefallen.entity.EntityLamphead lamphead = (com.windanesz.tracesofthefallen.entity.EntityLamphead) e;
-                                    if (!lamphead.isTamed()) {
-                                        lamphead.setTamedBy(this.caster instanceof net.minecraft.entity.player.EntityPlayer ? (net.minecraft.entity.player.EntityPlayer) this.caster : null);
-                                        lamphead.setHealth(lamphead.getMaxHealth());
-                                        lamphead.setAttackTarget(null);
-                                        lamphead.setRevengeTarget(null);
-                                        lamphead.world.setEntityState(lamphead, (byte) 7); // Heart particles
-                                        continue; // Skip dealing damage to the newly tamed lamphead
-                                    }
-                                }
-                                
-                                e.attackEntityFrom(DamageSource.causeIndirectMagicDamage(this, this.caster != null ? this.caster : this), 8.0F);
-                                if (e instanceof net.minecraft.entity.monster.EntityCreeper) {
-                                    e.onStruckByLightning(new net.minecraft.entity.effect.EntityLightningBolt(this.world, e.posX, e.posY, e.posZ, true));
-                                    e.extinguish();
-                                }
-                            }
-                        }
-                    }
-                }
+        if (!this.customMaxAge) {
+            if (this.visualOnly) {
+                this.maxAge = 10;
+            } else {
+                this.maxAge = 55;
             }
         }
 
-        --this.lightningState;
+        this.age++;
+        if (this.age >= this.maxAge) {
+            this.setDead();
+            return;
+        }
 
-        if (this.lightningState < 0) {
-            if (this.boltLivingTime == 0) {
-                if (this.lightningState < -5) {
-                    this.setDead();
+        if (this.age > 40 && this.age < 50 && !this.visualOnly) {
+            this.isVisible = false;
+            return;
+        }
+
+        this.isVisible = true;
+
+        if (this.age % 3 == 0) {
+            this.boltVertex = this.rand.nextLong();
+        }
+
+        if (this.age == 1 && !this.visualOnly) {
+            this.world.playSound(null, this.startX, this.startY, this.startZ, com.windanesz.tracesofthefallen.init.ModSounds.LIGHTNING_ZAP, SoundCategory.WEATHER, 2.0F, 0.5F + this.rand.nextFloat() * 0.2F);
+        }
+        
+        if (this.age == 50 && !this.visualOnly) {
+            this.world.playSound(null, this.startX, this.startY, this.startZ, com.windanesz.tracesofthefallen.init.ModSounds.LIGHTNING_ZAP, SoundCategory.WEATHER, 2.0F, 0.8F + this.rand.nextFloat() * 0.2F);
+        }
+
+        if (!this.world.isRemote && !this.visualOnly) {
+            if (this.singleDamageInstance) {
+                if (this.age == 1) {
+                    this.dealDamage(this.damage, true);
                 }
-            } else if (this.lightningState < -this.rand.nextInt(10)) {
-                --this.boltLivingTime;
-                this.lightningState = 1;
-                this.boltVertex = this.rand.nextLong();
+            } else {
+                if (this.age <= 40) {
+                    this.hitCooldowns.replaceAll((e, cd) -> cd - 1);
+                    this.hitCooldowns.values().removeIf(cd -> cd <= 0);
+                    this.dealDamage(this.damage, false);
+                } else if (this.age == 50) {
+                    this.dealDamage(this.damage * 0.2F, true);
+                }
+            }
+        }
+    }
+
+    private void dealDamage(float dmg, boolean ignoreCooldowns) {
+        double minX = Math.min(this.startX, this.endX) - 0.5;
+        double minY = Math.min(this.startY, this.endY) - 0.5;
+        double minZ = Math.min(this.startZ, this.endZ) - 0.5;
+        double maxX = Math.max(this.startX, this.endX) + 0.5;
+        double maxY = Math.max(this.startY, this.endY) + 0.5;
+        double maxZ = Math.max(this.startZ, this.endZ) + 0.5;
+        
+        List<Entity> list = this.world.getEntitiesWithinAABBExcludingEntity(this, new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ));
+        Vec3d startVec = new Vec3d(this.startX, this.startY, this.startZ);
+        Vec3d endVec = new Vec3d(this.endX, this.endY, this.endZ);
+        Vec3d dir = endVec.subtract(startVec).normalize();
+        
+        for (Entity e : list) {
+            if (e != this.caster && e instanceof EntityLivingBase) {
+                if (!ignoreCooldowns && this.hitCooldowns.containsKey(e)) continue;
+                
+                Vec3d ePos = new Vec3d(e.posX, e.posY + e.height / 2.0, e.posZ);
+                Vec3d toEntity = ePos.subtract(startVec);
+                double dot = toEntity.dotProduct(dir);
+                if (dot > 0 && dot < endVec.subtract(startVec).length()) {
+                    Vec3d proj = startVec.add(dir.scale(dot));
+                    if (proj.distanceTo(ePos) <= 0.5 + e.width / 2.0) {
+                        if (e instanceof com.windanesz.tracesofthefallen.entity.EntityLamphead) {
+                            com.windanesz.tracesofthefallen.entity.EntityLamphead lamphead = (com.windanesz.tracesofthefallen.entity.EntityLamphead) e;
+                            if (!lamphead.isTamed()) {
+                                net.minecraft.entity.player.EntityPlayer tamer = null;
+                                if (this.caster instanceof net.minecraft.entity.player.EntityPlayer) {
+                                    tamer = (net.minecraft.entity.player.EntityPlayer) this.caster;
+                                } else {
+                                    tamer = this.world.getClosestPlayerToEntity(lamphead, 12.0D);
+                                }
+                                
+                                if (tamer != null) {
+                                    lamphead.setTamedBy(tamer);
+                                    lamphead.setHealth(lamphead.getMaxHealth());
+                                    lamphead.setAttackTarget(null);
+                                    lamphead.setRevengeTarget(null);
+                                    lamphead.world.setEntityState(lamphead, (byte) 7);
+                                }
+                                if (!ignoreCooldowns) this.hitCooldowns.put(e, 20);
+                                continue;
+                            }
+                        }
+                        
+                        boolean hurt = e.attackEntityFrom(DamageSource.causeIndirectMagicDamage(this, this.caster != null ? this.caster : this), dmg);
+                        if (hurt && !ignoreCooldowns) {
+                            this.hitCooldowns.put(e, 20);
+                        }
+                        if (e instanceof net.minecraft.entity.monster.EntityCreeper) {
+                            e.onStruckByLightning(new net.minecraft.entity.effect.EntityLightningBolt(this.world, e.posX, e.posY, e.posZ, true));
+                            e.extinguish();
+                        }
+                    }
+                }
             }
         }
     }
@@ -128,6 +179,32 @@ public class EntityZapLightning extends Entity implements IEntityAdditionalSpawn
         this.endX = compound.getDouble("endX");
         this.endY = compound.getDouble("endY");
         this.endZ = compound.getDouble("endZ");
+        if (compound.hasKey("damage")) {
+            this.damage = compound.getFloat("damage");
+        }
+        this.visualOnly = compound.getBoolean("visualOnly");
+        this.singleDamageInstance = compound.getBoolean("singleDamageInstance");
+    }
+
+    public void setDamage(float damage) {
+        this.damage = damage;
+    }
+
+    public void setVisualOnly(boolean visualOnly) {
+        this.visualOnly = visualOnly;
+    }
+
+    public void setSingleDamageInstance(boolean singleDamageInstance) {
+        this.singleDamageInstance = singleDamageInstance;
+    }
+
+    public void setMaxAge(int maxAge) {
+        this.maxAge = maxAge;
+        this.customMaxAge = true;
+    }
+
+    public void setCaster(EntityLivingBase caster) {
+        this.caster = caster;
     }
 
     @Override
@@ -138,6 +215,9 @@ public class EntityZapLightning extends Entity implements IEntityAdditionalSpawn
         compound.setDouble("endX", this.endX);
         compound.setDouble("endY", this.endY);
         compound.setDouble("endZ", this.endZ);
+        compound.setFloat("damage", this.damage);
+        compound.setBoolean("visualOnly", this.visualOnly);
+        compound.setBoolean("singleDamageInstance", this.singleDamageInstance);
     }
 
     @Override
@@ -148,6 +228,8 @@ public class EntityZapLightning extends Entity implements IEntityAdditionalSpawn
         buffer.writeDouble(this.endX);
         buffer.writeDouble(this.endY);
         buffer.writeDouble(this.endZ);
+        buffer.writeBoolean(this.visualOnly);
+        buffer.writeBoolean(this.singleDamageInstance);
     }
 
     @Override
@@ -158,5 +240,7 @@ public class EntityZapLightning extends Entity implements IEntityAdditionalSpawn
         this.endX = additionalData.readDouble();
         this.endY = additionalData.readDouble();
         this.endZ = additionalData.readDouble();
+        this.visualOnly = additionalData.readBoolean();
+        this.singleDamageInstance = additionalData.readBoolean();
     }
 }

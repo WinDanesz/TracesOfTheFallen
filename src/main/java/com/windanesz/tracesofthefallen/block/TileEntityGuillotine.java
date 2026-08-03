@@ -12,6 +12,8 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -95,6 +97,27 @@ public class TileEntityGuillotine extends TileEntity implements ITickable {
 
     public int getExtensionLength() {
         return extensionLength;
+    }
+
+    public int getActiveTicks() {
+        return activeTicks;
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public AxisAlignedBB getRenderBoundingBox() {
+        if (!active || extensionLength == 0) {
+            return super.getRenderBoundingBox();
+        }
+        IBlockState state = world.getBlockState(pos);
+        if (!(state.getBlock() instanceof BlockGuillotine)) return super.getRenderBoundingBox();
+        
+        EnumFacing facing = state.getValue(BlockGuillotine.FACING);
+        AxisAlignedBB box = new AxisAlignedBB(pos);
+        AxisAlignedBB endBox = new AxisAlignedBB(pos).offset(facing.getDirectionVec().getX() * extensionLength, 
+                                                             facing.getDirectionVec().getY() * extensionLength, 
+                                                             facing.getDirectionVec().getZ() * extensionLength);
+        return box.union(endBox).grow(1.0); // Grow slightly to ensure it doesn't clip
     }
 
     public boolean isPoweredLastTick() {

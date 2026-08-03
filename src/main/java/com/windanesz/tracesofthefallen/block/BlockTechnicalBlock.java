@@ -23,7 +23,7 @@ import javax.annotation.Nullable;
 public class BlockTechnicalBlock extends Block {
 
 	public BlockTechnicalBlock() {
-		super(Material.AIR);
+		super(Material.ROCK);
 		setBlockUnbreakable();
 		setResistance(6000000.0F);
 	}
@@ -147,6 +147,9 @@ public class BlockTechnicalBlock extends Block {
 		BlockPos mainPos = getMainPos(source, pos);
 		IBlockState mainState = source.getBlockState(mainPos);
 		if (isProxyTarget(mainState)) {
+			if (mainState.getBlock() instanceof IProxyMainBlock && ((IProxyMainBlock) mainState.getBlock()).isFullAABBProxy()) {
+				return FULL_BLOCK_AABB;
+			}
 			AxisAlignedBB bb = mainState.getBlock().getBoundingBox(mainState, source, mainPos);
 			return bb.offset(mainPos.getX() - pos.getX(), mainPos.getY() - pos.getY(), mainPos.getZ() - pos.getZ());
 		}
@@ -158,6 +161,9 @@ public class BlockTechnicalBlock extends Block {
 		BlockPos mainPos = getMainPos(worldIn, pos);
 		IBlockState mainState = worldIn.getBlockState(mainPos);
 		if (isProxyTarget(mainState)) {
+			if (mainState.getBlock() instanceof IProxyMainBlock && ((IProxyMainBlock) mainState.getBlock()).isFullAABBProxy()) {
+				return super.getSelectedBoundingBox(state, worldIn, pos);
+			}
 			return mainState.getBlock().getSelectedBoundingBox(mainState, worldIn, mainPos);
 		}
 		return super.getSelectedBoundingBox(state, worldIn, pos);
@@ -169,6 +175,9 @@ public class BlockTechnicalBlock extends Block {
 		BlockPos mainPos = getMainPos(worldIn, pos);
 		IBlockState mainState = worldIn.getBlockState(mainPos);
 		if (isProxyTarget(mainState)) {
+			if (mainState.getBlock() instanceof IProxyMainBlock && ((IProxyMainBlock) mainState.getBlock()).isFullAABBProxy()) {
+				return super.getCollisionBoundingBox(blockState, worldIn, pos);
+			}
 			AxisAlignedBB bb = mainState.getBlock().getCollisionBoundingBox(mainState, worldIn, mainPos);
 			if (bb != null && bb != NULL_AABB) {
 				return bb.offset(mainPos.getX() - pos.getX(), mainPos.getY() - pos.getY(), mainPos.getZ() - pos.getZ());
@@ -183,6 +192,9 @@ public class BlockTechnicalBlock extends Block {
 		BlockPos mainPos = getMainPos(worldIn, pos);
 		IBlockState mainState = worldIn.getBlockState(mainPos);
 		if (isProxyTarget(mainState)) {
+			if (mainState.getBlock() instanceof IProxyMainBlock && ((IProxyMainBlock) mainState.getBlock()).isFullAABBProxy()) {
+				return super.collisionRayTrace(blockState, worldIn, pos, start, end);
+			}
 			RayTraceResult result = mainState.getBlock().collisionRayTrace(mainState, worldIn, mainPos, start, end);
 			if (result != null) {
 				return new RayTraceResult(result.hitVec, result.sideHit, pos);

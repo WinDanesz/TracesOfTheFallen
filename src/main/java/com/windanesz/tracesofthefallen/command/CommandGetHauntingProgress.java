@@ -25,7 +25,7 @@ public class CommandGetHauntingProgress extends CommandBase {
 	@Nonnull
 	@Override
 	public String getUsage(@Nonnull ICommandSender sender) {
-		return "commands.totf.gethauntingprogress.usage";
+		return "commands.totf:gethauntingprogress.usage";
 	}
 
 	@Override
@@ -44,9 +44,9 @@ public class CommandGetHauntingProgress extends CommandBase {
 		HauntingCapability haunting = HauntingCapability.get(player);
 		if (haunting != null) {
 			int progress = haunting.getHauntingProgress();
-			notifyCommandListener(sender, this, "commands.totf.gethauntingprogress.success", player.getName(), progress);
+			notifyCommandListener(sender, this, "commands.totf:gethauntingprogress.success", player.getName(), progress);
 		} else {
-			throw new CommandException("commands.totf.gethauntingprogress.error", player.getName());
+			throw new CommandException("commands.totf:gethauntingprogress.error", player.getName());
 		}
 	}
 
