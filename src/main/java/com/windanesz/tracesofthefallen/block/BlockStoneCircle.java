@@ -179,6 +179,48 @@ public class BlockStoneCircle extends BlockContainer {
 	}
 
 	@Override
+	public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
+		if (!worldIn.isRemote) {
+			IBlockState newState = worldIn.getBlockState(pos);
+			boolean isReplacingWithStoneCircle = newState.getBlock() instanceof BlockStoneCircle;
+
+			BlockPos corePos = state.getValue(CORE) ? pos : findCore(worldIn, pos);
+			if (corePos != null) {
+				forEachStructurePos(corePos, partPos -> {
+					if (!partPos.equals(pos)) {
+						IBlockState currentPartState = worldIn.getBlockState(partPos);
+						if (currentPartState.getBlock() == state.getBlock()) {
+							if (isReplacingWithStoneCircle) {
+								worldIn.setBlockState(partPos, newState.withProperty(CORE, partPos.equals(corePos)), 2);
+							} else {
+								worldIn.setBlockToAir(partPos);
+							}
+						}
+					}
+				});
+			}
+		}
+		super.breakBlock(worldIn, pos, state);
+	}
+
+	private BlockPos findCore(World worldIn, BlockPos satellitePos) {
+		for (int dx = -3; dx <= 3; dx++) {
+			for (int dz = -3; dz <= 3; dz++) {
+				BlockPos candidate = satellitePos.add(dx, 0, dz);
+				IBlockState s = worldIn.getBlockState(candidate);
+				if (s.getBlock() instanceof BlockStoneCircle && s.getValue(CORE)) {
+					boolean[] owned = {false};
+					REQUIRED_FLAT_MULTIBLOCK.forEachPosition(candidate, p -> {
+						if (p.equals(satellitePos)) owned[0] = true;
+					});
+					if (owned[0]) return candidate;
+				}
+			}
+		}
+		return null;
+	}
+
+	@Override
 	public void onBlockHarvested(World worldIn, BlockPos pos, IBlockState state, EntityPlayer player) {
 		if (!worldIn.isRemote && player.isCreative() && this.lootTable != null) {
 			LootTable loottable = worldIn.getLootTableManager().getLootTableFromLocation(this.lootTable);

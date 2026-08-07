@@ -146,62 +146,18 @@ public class BlockTechnicalBlock extends Block {
 	public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
 		BlockPos mainPos = getMainPos(source, pos);
 		IBlockState mainState = source.getBlockState(mainPos);
-		if (isProxyTarget(mainState)) {
-			if (mainState.getBlock() instanceof IProxyMainBlock && ((IProxyMainBlock) mainState.getBlock()).isFullAABBProxy()) {
-				return FULL_BLOCK_AABB;
-			}
-			AxisAlignedBB bb = mainState.getBlock().getBoundingBox(mainState, source, mainPos);
-			return bb.offset(mainPos.getX() - pos.getX(), mainPos.getY() - pos.getY(), mainPos.getZ() - pos.getZ());
+		if (mainState.getBlock() instanceof IProxyMainBlock) {
+			AxisAlignedBB aabb = ((IProxyMainBlock) mainState.getBlock()).getProxyCellAABB(mainState, source, mainPos, pos);
+			return aabb != null ? aabb : NULL_AABB;
 		}
 		return FULL_BLOCK_AABB;
 	}
 
-	@Override
-	public AxisAlignedBB getSelectedBoundingBox(IBlockState state, World worldIn, BlockPos pos) {
-		BlockPos mainPos = getMainPos(worldIn, pos);
-		IBlockState mainState = worldIn.getBlockState(mainPos);
-		if (isProxyTarget(mainState)) {
-			if (mainState.getBlock() instanceof IProxyMainBlock && ((IProxyMainBlock) mainState.getBlock()).isFullAABBProxy()) {
-				return super.getSelectedBoundingBox(state, worldIn, pos);
-			}
-			return mainState.getBlock().getSelectedBoundingBox(mainState, worldIn, mainPos);
-		}
-		return super.getSelectedBoundingBox(state, worldIn, pos);
-	}
-
 	@Nullable
 	@Override
-	public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, IBlockAccess worldIn, BlockPos pos) {
-		BlockPos mainPos = getMainPos(worldIn, pos);
-		IBlockState mainState = worldIn.getBlockState(mainPos);
-		if (isProxyTarget(mainState)) {
-			if (mainState.getBlock() instanceof IProxyMainBlock && ((IProxyMainBlock) mainState.getBlock()).isFullAABBProxy()) {
-				return super.getCollisionBoundingBox(blockState, worldIn, pos);
-			}
-			AxisAlignedBB bb = mainState.getBlock().getCollisionBoundingBox(mainState, worldIn, mainPos);
-			if (bb != null && bb != NULL_AABB) {
-				return bb.offset(mainPos.getX() - pos.getX(), mainPos.getY() - pos.getY(), mainPos.getZ() - pos.getZ());
-			}
-		}
-		return NULL_AABB;
-	}
-
-	@Nullable
-	@Override
-	public RayTraceResult collisionRayTrace(IBlockState blockState, World worldIn, BlockPos pos, Vec3d start, Vec3d end) {
-		BlockPos mainPos = getMainPos(worldIn, pos);
-		IBlockState mainState = worldIn.getBlockState(mainPos);
-		if (isProxyTarget(mainState)) {
-			if (mainState.getBlock() instanceof IProxyMainBlock && ((IProxyMainBlock) mainState.getBlock()).isFullAABBProxy()) {
-				return super.collisionRayTrace(blockState, worldIn, pos, start, end);
-			}
-			RayTraceResult result = mainState.getBlock().collisionRayTrace(mainState, worldIn, mainPos, start, end);
-			if (result != null) {
-				return new RayTraceResult(result.hitVec, result.sideHit, pos);
-			}
-			return null;
-		}
-		return super.collisionRayTrace(blockState, worldIn, pos, start, end);
+	public RayTraceResult collisionRayTrace(IBlockState state, World world, BlockPos pos, Vec3d start, Vec3d end) {
+		AxisAlignedBB aabb = getBoundingBox(state, world, pos);
+		return aabb == NULL_AABB ? null : rayTrace(pos, start, end, aabb);
 	}
 
 	@Override

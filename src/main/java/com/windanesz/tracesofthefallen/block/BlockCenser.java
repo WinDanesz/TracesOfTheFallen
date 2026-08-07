@@ -15,6 +15,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.SoundCategory;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.IBlockAccess;
@@ -29,8 +30,16 @@ public class BlockCenser extends BlockDecoration {
 
 	private static final int BURNING_LIGHT_LEVEL = 2;
 
+	// Tight model bounds (single-block space); censer is non-rotating so AABB is facing-invariant.
+	private static final AxisAlignedBB CENSER_AABB = new AxisAlignedBB(0.3125, 0.0, 0.3125, 0.6875, 0.9397, 0.6875);
+
 	public BlockCenser(Material material) {
 		super(material);
+	}
+
+	@Override
+	public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
+		return CENSER_AABB;
 	}
 
 	@Override
@@ -42,11 +51,6 @@ public class BlockCenser extends BlockDecoration {
 	public int getLightValue(IBlockState state, IBlockAccess world, BlockPos pos) {
 		TileEntityCenser censer = getCenser(world, pos);
 		return censer != null && censer.isActivelyBurning() ? BURNING_LIGHT_LEVEL : 0;
-	}
-
-	@Override
-	public boolean isFullAABBProxy() {
-		return true;
 	}
 
 	@Override
@@ -201,72 +205,9 @@ public class BlockCenser extends BlockDecoration {
 		return stack;
 	}
 
-	private int[] getProxyBounds(IBlockState state) {
-		EnumFacing facing = state.getValue(FACING);
-		switch (facing) {
-			case EAST: return new int[]{-1, 0, 0, 1}; // minX, maxX, minZ, maxZ
-			case SOUTH: return new int[]{-1, 0, -1, 0};
-			case WEST: return new int[]{0, 1, -1, 0};
-			case NORTH:
-			default: return new int[]{0, 1, 0, 1};
-		}
-	}
-
 	@Override
 	public boolean canPlaceBlockAt(World worldIn, BlockPos pos) {
-		if (!hasSupport(worldIn, pos) || !super.canPlaceBlockAt(worldIn, pos)) {
-			return false;
-		}
-		int[] b = getProxyBounds(this.getDefaultState()); // Facing is not yet known before placement, but usually block can't rotate before placed, so we check default bounds (0,1,0,1)
-		for (int x = b[0]; x <= b[1]; x++) {
-			for (int y = 0; y <= 1; y++) {
-				for (int z = b[2]; z <= b[3]; z++) {
-					if (x == 0 && y == 0 && z == 0) continue;
-					BlockPos checkPos = pos.add(x, y, z);
-					IBlockState checkState = worldIn.getBlockState(checkPos);
-					if (!checkState.getBlock().isReplaceable(worldIn, checkPos) && !worldIn.isAirBlock(checkPos)) {
-						return false;
-					}
-				}
-			}
-		}
-		return true;
-	}
-
-	@Override
-	public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state) {
-		super.onBlockAdded(worldIn, pos, state);
-		if (!worldIn.isRemote) {
-			int[] b = getProxyBounds(state);
-			for (int x = b[0]; x <= b[1]; x++) {
-				for (int y = 0; y <= 1; y++) {
-					for (int z = b[2]; z <= b[3]; z++) {
-						if (x == 0 && y == 0 && z == 0) continue;
-						BlockPos proxyPos = pos.add(x, y, z);
-						if (worldIn.getBlockState(proxyPos).getBlock().isReplaceable(worldIn, proxyPos) || worldIn.isAirBlock(proxyPos)) {
-							worldIn.setBlockState(proxyPos, com.windanesz.tracesofthefallen.init.ModBlocks.technical_block.getDefaultState(), 3);
-						}
-					}
-				}
-			}
-		}
-	}
-
-	@Override
-	public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
-		int[] b = getProxyBounds(state);
-		for (int x = b[0]; x <= b[1]; x++) {
-			for (int y = 0; y <= 1; y++) {
-				for (int z = b[2]; z <= b[3]; z++) {
-					if (x == 0 && y == 0 && z == 0) continue;
-					BlockPos proxyPos = pos.add(x, y, z);
-					if (worldIn.getBlockState(proxyPos).getBlock() == com.windanesz.tracesofthefallen.init.ModBlocks.technical_block) {
-						worldIn.setBlockToAir(proxyPos);
-					}
-				}
-			}
-		}
-		super.breakBlock(worldIn, pos, state);
+		return hasSupport(worldIn, pos) && super.canPlaceBlockAt(worldIn, pos);
 	}
 
 	@Override
@@ -277,34 +218,8 @@ public class BlockCenser extends BlockDecoration {
 			if (!hasSupport(worldIn, pos)) {
 				dropBlockAsItem(worldIn, pos, state, 0);
 				worldIn.setBlockToAir(pos);
-				return;
-			}
-			int[] b = getProxyBounds(state);
-			for (int x = b[0]; x <= b[1]; x++) {
-				for (int y = 0; y <= 1; y++) {
-					for (int z = b[2]; z <= b[3]; z++) {
-						if (x == 0 && y == 0 && z == 0) continue;
-						BlockPos proxyPos = pos.add(x, y, z);
-						if (worldIn.getBlockState(proxyPos).getBlock() != com.windanesz.tracesofthefallen.init.ModBlocks.technical_block) {
-							if (worldIn.getBlockState(proxyPos).getBlock().isReplaceable(worldIn, proxyPos) || worldIn.isAirBlock(proxyPos)) {
-								worldIn.setBlockState(proxyPos, com.windanesz.tracesofthefallen.init.ModBlocks.technical_block.getDefaultState(), 3);
-							}
-						}
-					}
-				}
 			}
 		}
-	}
-
-	@Override
-	public boolean isMainBlockForProxy(net.minecraft.world.IBlockAccess world, BlockPos mainPos, BlockPos proxyPos) {
-		IBlockState state = world.getBlockState(mainPos);
-		if (state.getBlock() != this) return false;
-		int[] b = getProxyBounds(state);
-		int dx = proxyPos.getX() - mainPos.getX();
-		int dy = proxyPos.getY() - mainPos.getY();
-		int dz = proxyPos.getZ() - mainPos.getZ();
-		return dx >= b[0] && dx <= b[1] && dy >= 0 && dy <= 1 && dz >= b[2] && dz <= b[3];
 	}
 
 	private boolean hasSupport(World world, BlockPos pos) {

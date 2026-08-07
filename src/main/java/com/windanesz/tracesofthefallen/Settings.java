@@ -634,7 +634,23 @@ public class Settings {
 				"totf:mozaic_pink_washed:0|totf:mozaic_pink:0",
 				"totf:mozaic_red_washed:0|totf:mozaic_red:0",
 				"totf:mozaic_teal_washed:0|totf:mozaic_teal:0",
-				"totf:mozaic_yellow_washed:0|totf:mozaic_yellow:0"
+				"totf:mozaic_yellow_washed:0|totf:mozaic_yellow:0",
+				"totf:stone_circle:0|totf:stone_circle_clean:0",
+				"totf:stone_circle:1|totf:stone_circle_clean:1",
+				"totf:stone_circle:2|totf:stone_circle_clean:2",
+				"totf:stone_circle:3|totf:stone_circle_clean:3",
+				"totf:stone_circle:4|totf:stone_circle_clean:4",
+				"totf:stone_circle:5|totf:stone_circle_clean:5",
+				"totf:stone_circle:6|totf:stone_circle_clean:6",
+				"totf:stone_circle:7|totf:stone_circle_clean:7",
+				"totf:stone_circle:8|totf:stone_circle_clean:8",
+				"totf:stone_circle:9|totf:stone_circle_clean:9",
+				"totf:stone_circle:10|totf:stone_circle_clean:10",
+				"totf:stone_circle:11|totf:stone_circle_clean:11",
+				"totf:stone_circle:12|totf:stone_circle_clean:12",
+				"totf:stone_circle:13|totf:stone_circle_clean:13",
+				"totf:stone_circle:14|totf:stone_circle_clean:14",
+				"totf:stone_circle:15|totf:stone_circle_clean:15"
 		};
 		@Config.Name("Sidhe Interactions")
 		@Config.Comment({

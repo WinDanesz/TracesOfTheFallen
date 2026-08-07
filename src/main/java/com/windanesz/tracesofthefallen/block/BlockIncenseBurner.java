@@ -21,15 +21,21 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import java.util.List;
 import java.util.Random;
 
 public class BlockIncenseBurner extends BlockDecoration {
 
 	private static final int BURNING_LIGHT_LEVEL = 2;
 
-	public BlockIncenseBurner(Material material, AxisAlignedBB boundingBox) {
+	private final MultiblockAABBHelper aabbHelper;
+	// When false the blockstate carries no y-rotation, so AABBs must never be rotated.
+	private final boolean rotating;
+
+	public BlockIncenseBurner(Material material, List<AxisAlignedBB> masterAABBs, boolean rotating) {
 		super(material);
-		setBoundingBox(boundingBox);
+		this.rotating = rotating;
+		this.aabbHelper = new MultiblockAABBHelper(masterAABBs, -1, 1, 0, 1, -1, 1);
 	}
 
 	@Override
@@ -50,23 +56,14 @@ public class BlockIncenseBurner extends BlockDecoration {
 
 	@Override
 	public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-		AxisAlignedBB box = this.boundingBox;
-		switch (state.getValue(FACING)) {
-			case EAST:
-				return rotateClockwise(box);
-			case SOUTH:
-				return rotateHalfTurn(box);
-			case WEST:
-				return rotateCounterClockwise(box);
-			case NORTH:
-			default:
-				return box;
-		}
+		EnumFacing facing = rotating ? state.getValue(FACING) : EnumFacing.NORTH;
+		return aabbHelper.get(facing, pos, pos);
 	}
 
 	@Override
-	public boolean isFullAABBProxy() {
-		return true;
+	public AxisAlignedBB getProxyCellAABB(IBlockState state, IBlockAccess world, BlockPos mainPos, BlockPos proxyPos) {
+		EnumFacing facing = rotating ? state.getValue(FACING) : EnumFacing.NORTH;
+		return aabbHelper.get(facing, mainPos, proxyPos);
 	}
 
 	@Override
@@ -162,14 +159,7 @@ public class BlockIncenseBurner extends BlockDecoration {
 	}
 
 	private int[] getProxyBounds(IBlockState state) {
-		EnumFacing facing = state.getValue(FACING);
-		switch (facing) {
-			case EAST: return new int[]{-1, 0, 0, 1}; // minX, maxX, minZ, maxZ
-			case SOUTH: return new int[]{-1, 0, -1, 0};
-			case WEST: return new int[]{0, 1, -1, 0};
-			case NORTH:
-			default: return new int[]{0, 1, 0, 1};
-		}
+		return rotating ? new int[]{-1, 1, -1, 1} : new int[]{0, 0, 0, 0};
 	}
 
 	@Override
@@ -310,18 +300,6 @@ public class BlockIncenseBurner extends BlockDecoration {
 		}
 		int minutes = Math.max(1, Math.round(ticks / 1200.0F));
 		return new TextComponentTranslation("totf:incense_burner.duration_value_minutes", minutes);
-	}
-
-	private AxisAlignedBB rotateClockwise(AxisAlignedBB box) {
-		return new AxisAlignedBB(1.0D - box.maxZ, box.minY, box.minX, 1.0D - box.minZ, box.maxY, box.maxX);
-	}
-
-	private AxisAlignedBB rotateHalfTurn(AxisAlignedBB box) {
-		return new AxisAlignedBB(1.0D - box.maxX, box.minY, 1.0D - box.maxZ, 1.0D - box.minX, box.maxY, 1.0D - box.minZ);
-	}
-
-	private AxisAlignedBB rotateCounterClockwise(AxisAlignedBB box) {
-		return new AxisAlignedBB(box.minZ, box.minY, 1.0D - box.maxX, box.maxZ, box.maxY, 1.0D - box.minX);
 	}
 
 	private TileEntityIncenseBurner getIncenseBurner(IBlockAccess world, BlockPos pos) {

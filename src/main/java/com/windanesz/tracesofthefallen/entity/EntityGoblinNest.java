@@ -31,7 +31,7 @@ public class EntityGoblinNest extends Entity {
 
 	public EntityGoblinNest(World worldIn) {
 		super(worldIn);
-		this.setSize(2.25F, 1.5F);
+		this.setSize(2.0F, 1.6875F);
 	}
 
 	public EntityGoblinNest(World worldIn, double x, double y, double z) {

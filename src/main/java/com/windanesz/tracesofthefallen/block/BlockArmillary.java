@@ -22,6 +22,8 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nullable;
+
 public class BlockArmillary extends Block {
 	public static final PropertyDirection FACING = PropertyDirection.create("facing", EnumFacing.Plane.HORIZONTAL);
 	public AxisAlignedBB boundingBox = new AxisAlignedBB(0.1D, 0.1D, 0.1D, 0.9D, 0.9D, 0.9D); // 0.8x0.8x0.8 cube
@@ -36,6 +38,17 @@ public class BlockArmillary extends Block {
 	@Override
 	public AxisAlignedBB getBoundingBox(IBlockState state, net.minecraft.world.IBlockAccess source, BlockPos pos) {
 		return this.boundingBox;
+	}
+
+	@Override
+	public boolean hasTileEntity(IBlockState state) {
+		return true;
+	}
+
+	@Nullable
+	@Override
+	public net.minecraft.tileentity.TileEntity createTileEntity(World world, IBlockState state) {
+		return new TileEntityArmillary();
 	}
 
 	@Override
@@ -54,14 +67,20 @@ public class BlockArmillary extends Block {
 			
 			// Check haunting progress and display cryptic message if high (50%+)
 			HauntingCapability hauntingCap = HauntingCapability.get(playerIn);
+			int hauntingProgress = 0;
 			if (hauntingCap != null) {
-				int hauntingProgress = hauntingCap.getHauntingProgress();
+				hauntingProgress = hauntingCap.getHauntingProgress();
 				
 				if (hauntingProgress >= 50) {
 					TextComponentTranslation msg = new TextComponentTranslation("totf:armillary.haunted");
 					msg.getStyle().setColor(TextFormatting.DARK_PURPLE);
 					playerIn.sendMessage(msg);
 				}
+			}
+
+			net.minecraft.tileentity.TileEntity te = worldIn.getTileEntity(pos);
+			if (te instanceof TileEntityArmillary) {
+				((TileEntityArmillary) te).onRightClick(playerIn, hauntingProgress);
 			}
 		}
 		return true;

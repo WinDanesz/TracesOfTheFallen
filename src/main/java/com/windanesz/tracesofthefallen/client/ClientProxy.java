@@ -177,6 +177,7 @@ public class ClientProxy extends CommonProxy {
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityWoodenItemFrame.class, new TileEntityWoodenItemFrameRenderer());
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityGuillotine.class, new TileEntityGuillotineRenderer());
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntitySpinningWheel.class, new TileEntitySpinningWheelRenderer());
+		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityArmillary.class, new TileEntityArmillaryRenderer());
 	}
 
 	/**
@@ -215,6 +216,10 @@ public class ClientProxy extends CommonProxy {
 			ModelBakery.registerItemVariants(item, new ModelResourceLocation(item.getRegistryName(), "inventory"),
 					new ModelResourceLocation(TracesOfTheFallen.MODID + ":spinning_wheel_small_wheel", "inventory"),
 					new ModelResourceLocation(TracesOfTheFallen.MODID + ":spinning_wheel_large_wheel", "inventory"));
+		} else if (item == Item.getItemFromBlock(ModBlocks.armillary)) {
+			ModelBakery.registerItemVariants(item, new ModelResourceLocation(item.getRegistryName(), "inventory"),
+					new ModelResourceLocation(TracesOfTheFallen.MODID + ":armillary_inner", "inventory"),
+					new ModelResourceLocation(TracesOfTheFallen.MODID + ":armillary_outer", "inventory"));
 		} else if (item == Item.getItemFromBlock(ModBlocks.ancestral_sifter_golden)) {
 			ModelBakery.registerItemVariants(item, getSifterModels(inventoryModel, "ancestral_sifter_golden"));
 		} else if (item == Item.getItemFromBlock(ModBlocks.ancestral_sifter_red)) {

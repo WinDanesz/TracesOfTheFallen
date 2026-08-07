@@ -136,6 +136,7 @@ public class ModItems {
 		registerItemBlock(registry, ModBlocks.lost_crate_potions);
 		registerItemBlock(registry, ModBlocks.bush_crate);
 		registerItemBlock(registry, ModBlocks.stone_circle);
+		registerItemBlock(registry, ModBlocks.stone_circle_clean);
 		registerItemBlock(registry, ModBlocks.grave_marker);
 		registerItemBlock(registry, ModBlocks.rose);
 		registerItemBlock(registry, ModBlocks.tent);

@@ -91,4 +91,34 @@ public class BlockFloater extends Block {
 		EnumFacing facing = EnumFacing.byIndex(meta);
 		return this.getDefaultState().withProperty(DIRECTION, facing);
 	}
+
+	@Override
+	public boolean canPlaceBlockAt(World worldIn, BlockPos pos) {
+		for (EnumFacing enumfacing : EnumFacing.values()) {
+			if (this.canBlockStay(worldIn, pos, enumfacing)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public boolean canPlaceBlockOnSide(World worldIn, BlockPos pos, EnumFacing side) {
+		return this.canBlockStay(worldIn, pos, side);
+	}
+
+	private boolean canBlockStay(World worldIn, BlockPos pos, EnumFacing facing) {
+		BlockPos supportingPos = pos.offset(facing.getOpposite());
+		IBlockState supportingState = worldIn.getBlockState(supportingPos);
+		return supportingState.getBlockFaceShape(worldIn, supportingPos, facing) == net.minecraft.block.state.BlockFaceShape.SOLID || supportingState.isSideSolid(worldIn, supportingPos, facing);
+	}
+
+	@Override
+	public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
+		if (!this.canBlockStay(worldIn, pos, state.getValue(DIRECTION))) {
+			this.dropBlockAsItem(worldIn, pos, state, 0);
+			worldIn.setBlockToAir(pos);
+		}
+		super.neighborChanged(state, worldIn, pos, blockIn, fromPos);
+	}
 }

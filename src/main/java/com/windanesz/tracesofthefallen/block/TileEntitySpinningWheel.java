@@ -22,7 +22,7 @@ public class TileEntitySpinningWheel extends TileEntity implements ITickable, IW
 
 	@Override
 	public String getName() {
-		return "container.totf.spinning_wheel";
+		return "container.totf:spinning_wheel";
 	}
 
 	@Override

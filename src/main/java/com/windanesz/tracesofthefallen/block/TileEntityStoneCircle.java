@@ -323,4 +323,9 @@ public class TileEntityStoneCircle extends TileEntity implements ITickable {
 	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
 		readFromNBT(pkt.getNbtCompound());
 	}
+
+	@Override
+	public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newState) {
+		return oldState.getBlock() != newState.getBlock() && !(oldState.getBlock() instanceof BlockStoneCircle && newState.getBlock() instanceof BlockStoneCircle);
+	}
 }

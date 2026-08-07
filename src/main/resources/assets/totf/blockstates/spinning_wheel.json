@@ -19,6 +19,8 @@
     "facing=west": {
       "y": 270
     },
-    "inventory": [{}]
+    "inventory": [{
+      "model": "totf:item/spinning_wheel"
+    }]
   }
 }

@@ -13,6 +13,7 @@ import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -181,6 +182,15 @@ public class BlockDecoration extends Block implements IProxyMainBlock {
     @Override
     public boolean isMainBlockForProxy(net.minecraft.world.IBlockAccess world, BlockPos mainPos, BlockPos proxyPos) {
         return proxyPos.equals(mainPos.up()) || proxyPos.equals(mainPos.down());
+    }
+
+    @Override
+    public AxisAlignedBB getProxyCellAABB(IBlockState state, IBlockAccess world, BlockPos mainPos, BlockPos proxyPos) {
+        return MultiblockAABBHelper.clipToCell(
+                getBoundingBox(state, world, mainPos),
+                proxyPos.getX() - mainPos.getX(),
+                proxyPos.getY() - mainPos.getY(),
+                proxyPos.getZ() - mainPos.getZ());
     }
 }
 

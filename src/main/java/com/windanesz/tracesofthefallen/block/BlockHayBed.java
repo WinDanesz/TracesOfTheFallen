@@ -37,20 +37,34 @@ public class BlockHayBed extends BlockTOFT implements IProxyMainBlock {
     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
         switch (state.getValue(FACING)) {
             case SOUTH:
-                return new AxisAlignedBB(0.125D, 0.0D, -0.5625D, 0.875D, 0.125D, 1.0D);
-            case WEST:
-                return new AxisAlignedBB(0.0D, 0.0D, 0.125D, 1.5625D, 0.125D, 0.875D);
-            case EAST:
-                return new AxisAlignedBB(-0.5625D, 0.0D, 0.125D, 1.0D, 0.125D, 0.875D);
             case NORTH:
             default:
-                return new AxisAlignedBB(0.125D, 0.0D, 0.0D, 0.875D, 0.125D, 1.5625D);
+                return new AxisAlignedBB(0.125D, 0.0D, 0.0D, 0.875D, 0.125D, 1.0D);
+            case WEST:
+            case EAST:
+                return new AxisAlignedBB(0.0D, 0.0D, 0.125D, 1.0D, 0.125D, 0.875D);
         }
     }
 
     @Override
     public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, IBlockAccess worldIn, BlockPos pos) {
         return getBoundingBox(blockState, worldIn, pos);
+    }
+
+    @Override
+    public AxisAlignedBB getProxyCellAABB(IBlockState state, IBlockAccess world, BlockPos mainPos, BlockPos proxyPos) {
+        // Proxy is the foot block; return the overhanging portion in the foot cell's [0,1] local space.
+        switch (state.getValue(FACING)) {
+            case NORTH: // foot is at dz=+1; bed extends to z=1.5625 in NORTH, so foot gets z [0, 0.5625]
+                return new AxisAlignedBB(0.125D, 0.0D, 0.0D, 0.875D, 0.125D, 0.5625D);
+            case SOUTH: // foot is at dz=-1; bed extends to z=-0.5625, so foot gets z [0.4375, 1]
+                return new AxisAlignedBB(0.125D, 0.0D, 0.4375D, 0.875D, 0.125D, 1.0D);
+            case WEST:  // foot is at dx=+1; bed extends to x=1.5625, so foot gets x [0, 0.5625]
+                return new AxisAlignedBB(0.0D, 0.0D, 0.125D, 0.5625D, 0.125D, 0.875D);
+            case EAST:  // foot is at dx=-1; bed extends to x=-0.5625, so foot gets x [0.4375, 1]
+            default:
+                return new AxisAlignedBB(0.4375D, 0.0D, 0.125D, 1.0D, 0.125D, 0.875D);
+        }
     }
 
     @Override
