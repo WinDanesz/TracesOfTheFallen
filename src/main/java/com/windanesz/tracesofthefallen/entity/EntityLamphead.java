@@ -1,7 +1,10 @@
 package com.windanesz.tracesofthefallen.entity;
 
+import com.windanesz.tracesofthefallen.Settings;
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
 import com.windanesz.tracesofthefallen.entity.ai.EntityAILampheadInteract;
+import com.windanesz.tracesofthefallen.entity.ai.EntityAILampheadMeleeAttack;
+import com.windanesz.tracesofthefallen.entity.ai.EntityAILampheadRegen;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAgeable;
@@ -151,10 +154,10 @@ public class EntityLamphead extends EntityTameable {
     @Override
     protected void initEntityAI() {
         this.tasks.addTask(0, new EntityAISwimming(this));
-        this.tasks.addTask(1, new com.windanesz.tracesofthefallen.entity.ai.EntityAILampheadRegen(this));
+        this.tasks.addTask(1, new EntityAILampheadRegen(this));
         this.tasks.addTask(2, new EntityAILampheadInteract(this, 0.8D));
         this.tasks.addTask(3, new EntityAILampheadHeadSlam(this));
-        this.tasks.addTask(4, new com.windanesz.tracesofthefallen.entity.ai.EntityAILampheadMeleeAttack(this, 1.2D, true));
+        this.tasks.addTask(4, new EntityAILampheadMeleeAttack(this, 1.2D, true));
         this.tasks.addTask(5, new EntityAIFollowOwner(this, 1.0D, 10.0F, 2.0F) {
             @Override
             public boolean shouldExecute() {
@@ -256,10 +259,10 @@ public class EntityLamphead extends EntityTameable {
     protected void applyEntityAttributes() {
         super.applyEntityAttributes();
         this.getAttributeMap().registerAttribute(SharedMonsterAttributes.ATTACK_DAMAGE);
-        this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(com.windanesz.tracesofthefallen.Settings.mobSettings.lampheadMaxHealth);
+        this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(Settings.mobSettings.lampheadMaxHealth);
         this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(35.0D);
         this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.225D);
-        this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(com.windanesz.tracesofthefallen.Settings.mobSettings.lampheadAttackDamage);
+        this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(Settings.mobSettings.lampheadAttackDamage);
         this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(4.0D);
         this.getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(0.4D); // Help them against zombies
     }
@@ -295,7 +298,7 @@ public class EntityLamphead extends EntityTameable {
         boolean flag = entityIn.attackEntityFrom(DamageSource.causeMobDamage(this), damage);
         
         if (flag && entityIn instanceof EntityLivingBase) {
-            float knockback = (float) com.windanesz.tracesofthefallen.Settings.mobSettings.lampheadKnockbackMultiplier;
+            float knockback = (float) Settings.mobSettings.lampheadKnockbackMultiplier;
             ((EntityLivingBase)entityIn).knockBack(this, knockback, (double) MathHelper.sin(this.rotationYaw * 0.017453292F), (double) (-MathHelper.cos(this.rotationYaw * 0.017453292F)));
             
             EnchantmentHelper.applyThornEnchantments((EntityLivingBase)entityIn, this);
@@ -359,7 +362,7 @@ public class EntityLamphead extends EntityTameable {
                 this.lamphead.getLookHelper().setLookPositionWithEntity(target, 30.0F, 30.0F);
             }
             if (this.attackTick == 5) {
-                double damage = com.windanesz.tracesofthefallen.Settings.mobSettings.lampheadAttackDamage * 1.5D;
+                double damage = Settings.mobSettings.lampheadAttackDamage * 1.5D;
                 for (EntityLivingBase entity : this.lamphead.world.getEntitiesWithinAABB(EntityLivingBase.class, this.lamphead.getEntityBoundingBox().grow(2.0D))) {
                     if (entity != this.lamphead && !this.lamphead.isOnSameTeam(entity) && entity != this.lamphead.getOwner()) {
                         
@@ -372,8 +375,8 @@ public class EntityLamphead extends EntityTameable {
                         }
 
                         entity.attackEntityFrom(DamageSource.causeMobDamage(this.lamphead), (float)damage);
-                        float knockback = (float) com.windanesz.tracesofthefallen.Settings.mobSettings.lampheadKnockbackMultiplier * 1.5F;
-                        entity.knockBack(this.lamphead, knockback, (double) net.minecraft.util.math.MathHelper.sin(this.lamphead.rotationYaw * 0.017453292F), (double) (-net.minecraft.util.math.MathHelper.cos(this.lamphead.rotationYaw * 0.017453292F)));
+                        float knockback = (float) Settings.mobSettings.lampheadKnockbackMultiplier * 1.5F;
+                        entity.knockBack(this.lamphead, knockback, (double) MathHelper.sin(this.lamphead.rotationYaw * 0.017453292F), (double) (-MathHelper.cos(this.lamphead.rotationYaw * 0.017453292F)));
                     }
                 }
                 this.lamphead.playSound(SoundEvents.ENTITY_GENERIC_EXPLODE, 0.5F, 1.0F);

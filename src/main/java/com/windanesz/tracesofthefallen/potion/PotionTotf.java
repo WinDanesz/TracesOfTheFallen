@@ -2,6 +2,8 @@ package com.windanesz.tracesofthefallen.potion;
 
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
 import com.windanesz.tracesofthefallen.client.Utils;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.ResourceLocation;
@@ -20,19 +22,19 @@ public abstract class PotionTotf extends Potion {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void renderInventoryEffect(int x, int y, PotionEffect effect, net.minecraft.client.Minecraft mc) {
+	public void renderInventoryEffect(int x, int y, PotionEffect effect, Minecraft mc) {
 		drawIcon(x + 6, y + 7, mc);
 	}
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void renderHUDEffect(int x, int y, PotionEffect effect, net.minecraft.client.Minecraft mc, float alpha) {
-		net.minecraft.client.renderer.GlStateManager.color(1, 1, 1, alpha);
+	public void renderHUDEffect(int x, int y, PotionEffect effect, Minecraft mc, float alpha) {
+		GlStateManager.color(1, 1, 1, alpha);
 		drawIcon(x + 3, y + 3, mc);
 	}
 
 	@SideOnly(Side.CLIENT)
-	protected void drawIcon(int x, int y, net.minecraft.client.Minecraft mc) {
+	protected void drawIcon(int x, int y, Minecraft mc) {
 		mc.renderEngine.bindTexture(texture);
 		Utils.drawTexturedRect(x, y, 0, 0, 18, 18, 18, 18);
 	}

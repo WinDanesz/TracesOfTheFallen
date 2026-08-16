@@ -17,10 +17,10 @@ public class ContainerStoneCompartment extends Container {
         
         IItemHandler inventory = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
         
-        // 4x2 slots for the stone compartment
-        for (int i = 0; i < 2; i++) {
-            for (int j = 0; j < 4; j++) {
-                this.addSlotToContainer(new SlotItemHandler(inventory, j + i * 4, 53 + j * 18, 20 + i * 18));
+        // 3x3 slots for the stone compartment
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                this.addSlotToContainer(new SlotItemHandler(inventory, j + i * 3, 62 + j * 18, 12 + i * 18));
             }
         }
         
@@ -51,12 +51,12 @@ public class ContainerStoneCompartment extends Container {
             ItemStack itemstack1 = slot.getStack();
             itemstack = itemstack1.copy();
 
-            if (index < 8) {
+            if (index < 9) {
                 // Move from compartment to player
-                if (!this.mergeItemStack(itemstack1, 8, this.inventorySlots.size(), true)) {
+                if (!this.mergeItemStack(itemstack1, 9, this.inventorySlots.size(), true)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (!this.mergeItemStack(itemstack1, 0, 8, false)) {
+            } else if (!this.mergeItemStack(itemstack1, 0, 9, false)) {
                 // Move from player to compartment
                 return ItemStack.EMPTY;
             }

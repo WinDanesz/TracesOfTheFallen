@@ -1,10 +1,12 @@
 package com.windanesz.tracesofthefallen.init;
 
+import com.windanesz.tracesofthefallen.Settings;
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
 import com.windanesz.tracesofthefallen.block.*;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDoublePlant;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -88,7 +90,7 @@ public class ModBlocks {
 	public static final Block stained_glass_pane = placeholder();
 	public static final Block dreamcatcher = placeholder();
 	public static final Block stone_chest = placeholder();
-	public static final Block stone_chest_open = placeholder();
+	public static final Block stone_chest_lid = placeholder();
 	public static final Block item_frame_wooden = placeholder();
 	public static final Block bonepile = placeholder();
 	public static final Block hay_bed = placeholder();
@@ -116,6 +118,7 @@ public class ModBlocks {
 	public static final Block guillotine = placeholder();
 	public static final Block dancoil = placeholder();
 	public static final Block spinning_wheel = placeholder();
+	public static final Block subtorch = placeholder();
 
 	@Nonnull
 	@SuppressWarnings("ConstantConditions")
@@ -129,7 +132,7 @@ public class ModBlocks {
 		registerBlock(registry, "lost_cargo", new BlockTOFT(Material.WOOD).setLootTable(new ResourceLocation(TracesOfTheFallen.MODID, "blocks/lost_cargo")));
 		registerBlock(registry, "lost_crate_potions", new BlockTOFT(Material.WOOD).setLootTable(new ResourceLocation(TracesOfTheFallen.MODID, "blocks/lost_crate_potions")));
 		registerBlock(registry, "skeleton_crate", new BlockRemains(Material.WOOD).setLootTable(new ResourceLocation(TracesOfTheFallen.MODID, "blocks/grave")));
-		registerBlock(registry, "bush_crate", new BlockTOFT(Material.WOOD).setSpawnGoblins(true).setLootTable(new ResourceLocation(TracesOfTheFallen.MODID, "blocks/bush_crate")));
+		registerBlock(registry, "bush_crate", new BlockBushCrate(Material.WOOD).setSpawnGoblins(true).setLootTable(new ResourceLocation(TracesOfTheFallen.MODID, "blocks/bush_crate")));
 		//registerBlock(registry, "loot_scene_dummy", new BlockLootSceneDummy(Material.IRON));
 		registerBlock(registry, "stone_circle", new BlockStoneCircle(Material.ROCK).setBoundingBox(new AxisAlignedBB(0, 0, 0, 1, 0.1, 1)));
 		registerBlock(registry, "stone_circle_clean", new BlockStoneCircle(Material.ROCK).setBoundingBox(new AxisAlignedBB(0, 0, 0, 1, 0.1, 1)));
@@ -142,7 +145,7 @@ public class ModBlocks {
 		registerBlock(registry, "armillary", new BlockArmillary());
 		registerBlock(registry, "salvaged_scaffold", new BlockSalvagedScaffold());
 		registerBlock(registry, "floater_brown", new BlockFloater(Material.CLOTH));
-		if (com.windanesz.tracesofthefallen.Settings.miscSettings.enableWhiteFloater) {
+		if (Settings.miscSettings.enableWhiteFloater) {
 			registerBlock(registry, "floater_white", new BlockFloater(Material.CLOTH));
 		}
 
@@ -217,7 +220,7 @@ public class ModBlocks {
 
 		// Stone-related blocks
 		registerBlock(registry, "stone_chest", new BlockStoneChest());
-		registerBlock(registry, "stone_chest_open", new BlockStoneChest().setBoundingBox(new AxisAlignedBB(0.0D, 0.0D, 0.25D, 1.0D, 0.5625D, 0.75D)));
+		registerBlockNoTab(registry, "stone_chest_lid", new net.minecraft.block.Block(net.minecraft.block.material.Material.ROCK));
 		registerBlock(registry, "stone_compartment", new BlockStoneCompartment());
 		registerBlock(registry, "stone_pressure_plate", new BlockStonePressurePlate());
 		registerBlock(registry, "stone_receiver", new BlockStoneReceiver());
@@ -231,6 +234,7 @@ public class ModBlocks {
 		registerBlock(registry, "guillotine", new BlockGuillotine(Material.IRON));
 		registerBlock(registry, "dancoil", new BlockDanCoil(Material.IRON));
 		registerBlock(registry, "spinning_wheel", new BlockSpinningWheel(Material.WOOD));
+		registerBlock(registry, "subtorch", new BlockSubtorch());
 	}
 
 	public static void registerBlock(IForgeRegistry<Block> registry, String name, Block block) {
@@ -258,7 +262,7 @@ public class ModBlocks {
 
 		ItemStack heldItem = event.getItemStack();
 		if (!heldItem.isEmpty() && heldItem.getItem() == Items.SHEARS) {
-			net.minecraft.block.state.IBlockState state = event.getWorld().getBlockState(event.getPos());
+			IBlockState state = event.getWorld().getBlockState(event.getPos());
 			if (state.getBlock() == Blocks.DOUBLE_PLANT && state.getValue(BlockDoublePlant.VARIANT) == BlockDoublePlant.EnumPlantType.ROSE) {
 				// Drop two red flowers
 				Block.spawnAsEntity(event.getWorld(), event.getPos(), new ItemStack(ModBlocks.rose, 2));

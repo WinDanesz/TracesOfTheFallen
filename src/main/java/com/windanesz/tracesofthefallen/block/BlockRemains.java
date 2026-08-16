@@ -89,7 +89,7 @@ public class BlockRemains extends BlockTOFT {
 							EntityPlayerMP player = (EntityPlayerMP) playerIn;
 							HauntingCapability haunting = HauntingCapability.get(player);
 							if (haunting != null) {
-								int toReduce = Settings.miscSettings.hauntingReducedByBuryingRemains;
+								int toReduce = Settings.hauntingSettings.hauntingReducedByBuryingRemains;
 								haunting.reduceHauntingProgress(toReduce);
 							}
 							// Advancement granting for bury_remains has been removed.

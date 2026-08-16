@@ -1,9 +1,12 @@
 package com.windanesz.tracesofthefallen.client.model;// Made with Blockbench 5.1.6
 
+import com.windanesz.tracesofthefallen.entity.EntityGnossic;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelBox;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.math.MathHelper;
 
 public class ModelGnossic extends ModelBase {
 	private final ModelRenderer main;
@@ -113,8 +116,8 @@ public class ModelGnossic extends ModelBase {
 
 	@Override
 	public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
-		if (entity instanceof com.windanesz.tracesofthefallen.entity.EntityGnossic) {
-			com.windanesz.tracesofthefallen.entity.EntityGnossic gnossic = (com.windanesz.tracesofthefallen.entity.EntityGnossic) entity;
+		if (entity instanceof EntityGnossic) {
+			EntityGnossic gnossic = (EntityGnossic) entity;
 			this.body.showModel = gnossic.deathTime == 0;
 		}
 		main.render(f5);
@@ -129,28 +132,28 @@ public class ModelGnossic extends ModelBase {
 	@Override
 	public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn) {
 		super.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scaleFactor, entityIn);
-		if (entityIn instanceof com.windanesz.tracesofthefallen.entity.EntityGnossic) {
-			com.windanesz.tracesofthefallen.entity.EntityGnossic gnossic = (com.windanesz.tracesofthefallen.entity.EntityGnossic) entityIn;
+		if (entityIn instanceof EntityGnossic) {
+			EntityGnossic gnossic = (EntityGnossic) entityIn;
 			
-			float partialTicks = net.minecraft.client.Minecraft.getMinecraft().getRenderPartialTicks();
+			float partialTicks = Minecraft.getMinecraft().getRenderPartialTicks();
 			float currentDraperyYaw = gnossic.prevDraperyYaw + (gnossic.draperyYaw - gnossic.prevDraperyYaw) * partialTicks;
 			float currentBodyYaw = gnossic.prevRenderYawOffset + (gnossic.renderYawOffset - gnossic.prevRenderYawOffset) * partialTicks;
 			
-			float relativeYaw = net.minecraft.util.math.MathHelper.wrapDegrees(currentDraperyYaw - currentBodyYaw);
-			relativeYaw = net.minecraft.util.math.MathHelper.clamp(relativeYaw, -30.0F, 30.0F); // Prevent ugly gaps from over-swinging
+			float relativeYaw = MathHelper.wrapDegrees(currentDraperyYaw - currentBodyYaw);
+			relativeYaw = MathHelper.clamp(relativeYaw, -30.0F, 30.0F); // Prevent ugly gaps from over-swinging
 			
 			float rad = (float) Math.toRadians(relativeYaw);
 			
 			// Gentle wind effect based on entity age
-			float windY = net.minecraft.util.math.MathHelper.sin(ageInTicks * 0.1F) * 0.03F; // Reduced amplitude
+			float windY = MathHelper.sin(ageInTicks * 0.1F) * 0.03F; // Reduced amplitude
 			
-			this.draperyLeft.rotateAngleY = 0;
-			this.draperyRight.rotateAngleY = 0;
+			this.draperyLeft.rotateAngleY = rad;
+			this.draperyRight.rotateAngleY = rad;
 			this.draperyLeft2.rotateAngleX = 0;
 			this.draperyRight2.rotateAngleX = 0;
 
 			// Add life to the sideways drapery pieces near the body (cube_r2)
-			float headWind = net.minecraft.util.math.MathHelper.sin(ageInTicks * 0.07F) * 0.05F; // Reduced amplitude
+			float headWind = MathHelper.sin(ageInTicks * 0.07F) * 0.05F; // Reduced amplitude
 			this.cube_r1.rotateAngleZ = 0.5934F; // Keep head still
 			this.cube_r2.rotateAngleZ = 0.5934F + (headWind * 0.8F);
 
@@ -165,13 +168,13 @@ public class ModelGnossic extends ModelBase {
             // Drapery is now directly attached to body segments, so it inherits the snaking motion automatically!
             float time = ageInTicks * 0.15F;
 
-            this.body2.rotateAngleX = net.minecraft.util.math.MathHelper.cos(time - 1.0F) * rippleAmp;
-            this.body3.rotateAngleX = net.minecraft.util.math.MathHelper.cos(time - 2.0F) * rippleAmp;
-            this.body4.rotateAngleX = net.minecraft.util.math.MathHelper.cos(time - 3.0F) * rippleAmp;
+            this.body2.rotateAngleX = MathHelper.cos(time - 1.0F) * rippleAmp;
+            this.body3.rotateAngleX = MathHelper.cos(time - 2.0F) * rippleAmp;
+            this.body4.rotateAngleX = MathHelper.cos(time - 3.0F) * rippleAmp;
             
-            this.body2.rotateAngleZ = net.minecraft.util.math.MathHelper.sin(time - 1.0F) * rippleAmp;
-            this.body3.rotateAngleZ = net.minecraft.util.math.MathHelper.sin(time - 2.0F) * rippleAmp;
-            this.body4.rotateAngleZ = net.minecraft.util.math.MathHelper.sin(time - 3.0F) * rippleAmp;
+            this.body2.rotateAngleZ = MathHelper.sin(time - 1.0F) * rippleAmp;
+            this.body3.rotateAngleZ = MathHelper.sin(time - 2.0F) * rippleAmp;
+            this.body4.rotateAngleZ = MathHelper.sin(time - 3.0F) * rippleAmp;
 			
 			// Head tracking
 			this.head.rotateAngleY = netHeadYaw * 0.017453292F;
@@ -180,9 +183,9 @@ public class ModelGnossic extends ModelBase {
 
             // Intense shaking while stealing life
             if (gnossic.getAttackState() == 2) {
-                this.head.rotateAngleY += net.minecraft.util.math.MathHelper.sin(ageInTicks * 0.5F) * 0.01F;
-                this.head.rotateAngleX += net.minecraft.util.math.MathHelper.sin(ageInTicks * 0.6F + 1.0F) * 0.01F;
-                this.head.rotateAngleZ += net.minecraft.util.math.MathHelper.sin(ageInTicks * 0.4F + 2.0F) * 0.01F;
+                this.head.rotateAngleY += MathHelper.sin(ageInTicks * 0.5F) * 0.01F;
+                this.head.rotateAngleX += MathHelper.sin(ageInTicks * 0.6F + 1.0F) * 0.01F;
+                this.head.rotateAngleZ += MathHelper.sin(ageInTicks * 0.4F + 2.0F) * 0.01F;
             }
 		}
 	}

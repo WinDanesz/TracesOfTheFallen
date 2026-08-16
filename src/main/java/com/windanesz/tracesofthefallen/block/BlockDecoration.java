@@ -43,7 +43,7 @@ public class BlockDecoration extends Block implements IProxyMainBlock {
     }
 
     @Override
-    public AxisAlignedBB getBoundingBox(IBlockState state, net.minecraft.world.IBlockAccess source, BlockPos pos) {
+    public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
         return this.boundingBox;
     }
 
@@ -149,7 +149,7 @@ public class BlockDecoration extends Block implements IProxyMainBlock {
     }
 
     @Override
-    public boolean isSideSolid(IBlockState base_state, net.minecraft.world.IBlockAccess world, BlockPos pos, EnumFacing side) {
+    public boolean isSideSolid(IBlockState base_state, IBlockAccess world, BlockPos pos, EnumFacing side) {
         return false;
     }
 
@@ -180,7 +180,7 @@ public class BlockDecoration extends Block implements IProxyMainBlock {
     }
 
     @Override
-    public boolean isMainBlockForProxy(net.minecraft.world.IBlockAccess world, BlockPos mainPos, BlockPos proxyPos) {
+    public boolean isMainBlockForProxy(IBlockAccess world, BlockPos mainPos, BlockPos proxyPos) {
         return proxyPos.equals(mainPos.up()) || proxyPos.equals(mainPos.down());
     }
 

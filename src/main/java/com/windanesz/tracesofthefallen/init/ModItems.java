@@ -1,16 +1,20 @@
 package com.windanesz.tracesofthefallen.init;
 
+import com.windanesz.tracesofthefallen.Settings;
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
 import com.windanesz.tracesofthefallen.item.*;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockSlab;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemFood;
+import net.minecraft.item.ItemSlab;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.registries.IForgeRegistry;
 
 import javax.annotation.Nonnull;
@@ -53,6 +57,8 @@ public class ModItems {
 	public static final Item chilled_gel = placeholder();
 	public static final Item zap_charge = placeholder();
 	public static final Item zap_charge_empty = placeholder();
+	public static final Item living_silver_speck = placeholder();
+	public static final Item living_silver_nugget = placeholder();
 
 	public static final Item painting_in_the_woods = placeholder();
 	public static final Item painting_portrait = placeholder();
@@ -62,12 +68,12 @@ public class ModItems {
 	public static final Item painting_subterfuge = placeholder();
 	public static final Item painting_resting_mischief = placeholder();
 	public static final Item stone_chest = placeholder();
-	public static final Item stone_chest_open = placeholder();
 	public static final Item floater_brown = placeholder();
 	public static final Item floater_white = placeholder();
 	public static final Item item_frame_wooden = placeholder();
 	public static final Item bonepile = placeholder();
 	public static final Item hay_bed = placeholder();
+	public static final Item subtorch = placeholder();
 	public static final Item goblin_nest = placeholder();
 	@Nonnull
 	@SuppressWarnings("ConstantConditions")
@@ -125,8 +131,10 @@ public class ModItems {
 		registerItem(registry, "chilled_gel", new Item().setCreativeTab(ModCreativeTab.TOTF_TAB));
 		registerItem(registry, "zap_charge", new ItemZapCharge().setCreativeTab(ModCreativeTab.TOTF_TAB));
 		registerItem(registry, "zap_charge_empty", new Item().setCreativeTab(ModCreativeTab.TOTF_TAB));
+		registerItem(registry, "living_silver_speck", new Item().setCreativeTab(ModCreativeTab.TOTF_TAB));
+		registerItem(registry, "living_silver_nugget", new Item().setCreativeTab(ModCreativeTab.TOTF_TAB));
 		registerItem(registry, "floater_brown", new ItemFloater(ModBlocks.floater_brown, "floater_brown").setCreativeTab(ModCreativeTab.TOTF_TAB));
-		if (com.windanesz.tracesofthefallen.Settings.miscSettings.enableWhiteFloater) {
+		if (Settings.miscSettings.enableWhiteFloater) {
 			registerItem(registry, "floater_white", new ItemFloater(ModBlocks.floater_white, "floater_white").setCreativeTab(ModCreativeTab.TOTF_TAB));
 		}
 
@@ -210,7 +218,7 @@ public class ModItems {
 		registerItemBlock(registry, ModBlocks.bricks_stone_pillar);
 
 		// New slabs, stairs, walls
-		registerSlabItemBlock(registry, ModBlocks.bricks_stone_slab, (net.minecraft.block.BlockSlab)ModBlocks.bricks_stone_slab, (net.minecraft.block.BlockSlab)ModBlocks.bricks_stone_double_slab);
+		registerSlabItemBlock(registry, ModBlocks.bricks_stone_slab, (BlockSlab)ModBlocks.bricks_stone_slab, (BlockSlab)ModBlocks.bricks_stone_double_slab);
 		registerItemBlock(registry, ModBlocks.bricks_stone_stair);
 		registerItemBlock(registry, ModBlocks.bricks_stone_wall);
 
@@ -224,7 +232,6 @@ public class ModItems {
 		registerItemBlock(registry, ModBlocks.mozaic_yellow_washed);
 
 		registerItemBlock(registry, ModBlocks.stone_chest);
-		registerItemBlock(registry, ModBlocks.stone_chest_open);
 		registerItemBlock(registry, ModBlocks.stone_compartment);
 		registerItemBlock(registry, ModBlocks.stone_pressure_plate);
 		registerItemBlock(registry, ModBlocks.stone_receiver);
@@ -237,11 +244,13 @@ public class ModItems {
 		registerItemBlock(registry, ModBlocks.guillotine);
 		registerItemBlock(registry, ModBlocks.dancoil);
 		registerItemBlock(registry, ModBlocks.spinning_wheel);
+		registerItemBlock(registry, ModBlocks.subtorch);
 	}
 
 	public static void registerOreDictionary() {
-		net.minecraftforge.oredict.OreDictionary.registerOre("cleaner", cleaner);
-		net.minecraftforge.oredict.OreDictionary.registerOre("soap", cleaner);
+		OreDictionary.registerOre("cleaner", cleaner);
+		OreDictionary.registerOre("soap", cleaner);
+		OreDictionary.registerOre("nuggetSilver", living_silver_nugget);
 	}
 
 	// Helper for registering ItemBlocks
@@ -252,8 +261,8 @@ public class ModItems {
 		registry.register(itemBlock);
 	}
 
-	private static void registerSlabItemBlock(IForgeRegistry<Item> registry, Block block, net.minecraft.block.BlockSlab halfSlab, net.minecraft.block.BlockSlab doubleSlab) {
-		net.minecraft.item.ItemSlab itemBlock = new net.minecraft.item.ItemSlab(block, halfSlab, doubleSlab);
+	private static void registerSlabItemBlock(IForgeRegistry<Item> registry, Block block, BlockSlab halfSlab, BlockSlab doubleSlab) {
+		ItemSlab itemBlock = new ItemSlab(block, halfSlab, doubleSlab);
 		itemBlock.setRegistryName(block.getRegistryName());
 		block.setCreativeTab(ModCreativeTab.TOTF_TAB);
 		registry.register(itemBlock);

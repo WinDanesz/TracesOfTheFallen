@@ -1,0 +1,197 @@
+package com.windanesz.tracesofthefallen.client.model;// Made with Blockbench 5.1.4
+
+import com.windanesz.tracesofthefallen.entity.EntitySubterfuge;
+import net.minecraft.client.model.ModelBase;
+import net.minecraft.client.model.ModelBox;
+import net.minecraft.client.model.ModelRenderer;
+import net.minecraft.entity.Entity;
+import net.minecraft.util.math.MathHelper;
+
+public class ModelSubterfuge extends ModelBase {
+	private final ModelRenderer body;
+	private final ModelRenderer torso;
+	private final ModelRenderer chest_r1;
+	private final ModelRenderer head;
+	private final ModelRenderer mask_left_r1;
+	private final ModelRenderer mask_right_r1;
+	private final ModelRenderer rightArm;
+	private final ModelRenderer rightForearm;
+	private final ModelRenderer leftArm;
+	private final ModelRenderer leftForearm;
+	private final ModelRenderer leftLeg;
+	private final ModelRenderer leftPuff_r1;
+	private final ModelRenderer leftKnee;
+	private final ModelRenderer rightLeg;
+	private final ModelRenderer rightPuff_r1;
+	private final ModelRenderer rightKnee;
+
+	public ModelSubterfuge() {
+		textureWidth = 64;
+		textureHeight = 64;
+
+		body = new ModelRenderer(this);
+		body.setRotationPoint(0.0F, 0.0F, 0.0F);
+		
+
+		torso = new ModelRenderer(this);
+		torso.setRotationPoint(0.0F, 14.0F, 2.0F);
+		body.addChild(torso);
+		torso.cubeList.add(new ModelBox(torso, 8, 16, -4.0F, 0.0F, -4.0F, 8, 11, 4, 0.0F, false));
+
+		chest_r1 = new ModelRenderer(this);
+		chest_r1.setRotationPoint(0.575F, 6.2824F, -4.2071F);
+		torso.addChild(chest_r1);
+		setRotationAngle(chest_r1, 0.0F, -0.7854F, 1.5708F);
+		chest_r1.cubeList.add(new ModelBox(chest_r1, 31, 53, -2.15F, -4.55F, -0.5F, 3, 7, 4, 0.0F, false));
+
+		head = new ModelRenderer(this);
+		head.setRotationPoint(0.0F, 11.0F, -3.0F);
+		torso.addChild(head);
+		
+
+		mask_left_r1 = new ModelRenderer(this);
+		mask_left_r1.setRotationPoint(-0.0131F, 5.0F, -0.077F);
+		head.addChild(mask_left_r1);
+		setRotationAngle(mask_left_r1, 0.0F, -0.3403F, 0.0F);
+		mask_left_r1.cubeList.add(new ModelBox(mask_left_r1, 44, 42, 0.0F, -4.0F, 0.0F, 4, 8, 0, 0.0F, false));
+
+		mask_right_r1 = new ModelRenderer(this);
+		mask_right_r1.setRotationPoint(-0.0131F, 5.0F, -0.077F);
+		head.addChild(mask_right_r1);
+		setRotationAngle(mask_right_r1, 0.0F, 0.3403F, 0.0F);
+		mask_right_r1.cubeList.add(new ModelBox(mask_right_r1, 36, 42, -4.0F, -4.0F, 0.0F, 4, 8, 0, 0.0F, false));
+
+		rightArm = new ModelRenderer(this);
+		rightArm.setRotationPoint(5.0F, 10.0F, -2.0F);
+		torso.addChild(rightArm);
+		setRotationAngle(rightArm, -0.3655F, 0.147F, 0.3655F);
+		rightArm.cubeList.add(new ModelBox(rightArm, 19, 35, -1.0F, -4.0F, -1.0F, 3, 5, 3, 0.0F, true));
+
+		rightForearm = new ModelRenderer(this);
+		rightForearm.setRotationPoint(2.0F, -4.0F, 2.0F);
+		rightArm.addChild(rightForearm);
+		rightForearm.cubeList.add(new ModelBox(rightForearm, 19, 45, -3.0F, -7.0F, -3.0F, 3, 7, 3, 0.01F, true));
+
+		leftArm = new ModelRenderer(this);
+		leftArm.setRotationPoint(-5.0F, 10.0F, -2.0F);
+		torso.addChild(leftArm);
+		setRotationAngle(leftArm, -0.3655F, -0.147F, -0.3655F);
+		leftArm.cubeList.add(new ModelBox(leftArm, 19, 35, -2.0F, -4.0F, -1.0F, 3, 5, 3, 0.0F, false));
+
+		leftForearm = new ModelRenderer(this);
+		leftForearm.setRotationPoint(-2.0F, -4.0F, 2.0F);
+		leftArm.addChild(leftForearm);
+		leftForearm.cubeList.add(new ModelBox(leftForearm, 19, 45, 0.0F, -7.0F, -3.0F, 3, 7, 3, 0.01F, false));
+
+		leftLeg = new ModelRenderer(this);
+		leftLeg.setRotationPoint(-1.9F, 14.0F, 0.0F);
+		body.addChild(leftLeg);
+		leftLeg.cubeList.add(new ModelBox(leftLeg, 42, 20, -2.1F, -7.0F, -2.0F, 4, 7, 4, 0.0F, false));
+
+		leftPuff_r1 = new ModelRenderer(this);
+		leftPuff_r1.setRotationPoint(-1.847F, -4.1746F, 0.0F);
+		leftLeg.addChild(leftPuff_r1);
+		setRotationAngle(leftPuff_r1, 0.0F, 0.0F, -0.3927F);
+		leftPuff_r1.cubeList.add(new ModelBox(leftPuff_r1, 42, 20, -1.0F, -2.0F, -2.0F, 2, 5, 4, -0.01F, false));
+
+		leftKnee = new ModelRenderer(this);
+		leftKnee.setRotationPoint(0.0F, -7.0F, -1.5F);
+		leftLeg.addChild(leftKnee);
+		leftKnee.cubeList.add(new ModelBox(leftKnee, 50, 10, -1.6F, -7.0F, 0.0F, 3, 7, 3, 0.0F, false));
+
+		rightLeg = new ModelRenderer(this);
+		rightLeg.setRotationPoint(1.9F, 14.0F, 0.0F);
+		body.addChild(rightLeg);
+		rightLeg.cubeList.add(new ModelBox(rightLeg, 42, 20, -1.9F, -7.0F, -2.0F, 4, 7, 4, 0.0F, true));
+
+		rightPuff_r1 = new ModelRenderer(this);
+		rightPuff_r1.setRotationPoint(1.847F, -4.1746F, 0.0F);
+		rightLeg.addChild(rightPuff_r1);
+		setRotationAngle(rightPuff_r1, 0.0F, 0.0F, 0.3927F);
+		rightPuff_r1.cubeList.add(new ModelBox(rightPuff_r1, 42, 20, -1.0F, -2.0F, -2.0F, 2, 5, 4, -0.01F, true));
+
+		rightKnee = new ModelRenderer(this);
+		rightKnee.setRotationPoint(0.0F, -7.0F, -1.5F);
+		rightLeg.addChild(rightKnee);
+		rightKnee.cubeList.add(new ModelBox(rightKnee, 50, 10, -1.4F, -7.0F, 0.0F, 3, 7, 3, 0.0F, true));
+	}
+
+	@Override
+	public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
+		if (entity instanceof EntitySubterfuge && ((EntitySubterfuge) entity).isHiddenState()) {
+			return; // Do not render if hidden
+		}
+		setRotationAngles(f, f1, f2, f3, f4, f5, entity);
+		
+		net.minecraft.client.renderer.GlStateManager.pushMatrix();
+		net.minecraft.client.renderer.GlStateManager.translate(0.0F, 1.5F, 0.0F);
+		net.minecraft.client.renderer.GlStateManager.scale(-1.0F, -1.0F, 1.0F);
+		body.render(f5);
+		net.minecraft.client.renderer.GlStateManager.popMatrix();
+	}
+
+	@Override
+	public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn) {
+		super.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scaleFactor, entityIn);
+		
+		// Reset rotations
+		head.rotateAngleX = 0.0F;
+		head.rotateAngleY = 0.0F;
+		head.rotateAngleZ = 0.0F;
+		
+		// Base head rotations from look vector - scaled down by 0.25 for "much less" rotation
+		head.rotateAngleY = (netHeadYaw * 0.017453292F) * 0.25F;
+		head.rotateAngleX = (headPitch * 0.017453292F) * 0.25F;
+
+		// Default arm rotations: Upper arms point forward/inward, elbows bend sharply across chest
+		rightArm.rotateAngleX = 0.5F; 
+		rightArm.rotateAngleY = -0.3F; 
+		rightArm.rotateAngleZ = 0.0F;
+
+		rightForearm.rotateAngleX = 0.0F;
+		rightForearm.rotateAngleY = -1.4F; // Bend elbow inward
+		rightForearm.rotateAngleZ = 0.0F;
+
+		leftArm.rotateAngleX = 0.5F;
+		leftArm.rotateAngleY = 0.3F; 
+		leftArm.rotateAngleZ = 0.0F;
+
+		leftForearm.rotateAngleX = 0.0F;
+		leftForearm.rotateAngleY = 1.4F; // Bend elbow inward
+		leftForearm.rotateAngleZ = 0.0F;
+
+		if (entityIn instanceof EntitySubterfuge) {
+			EntitySubterfuge subterfuge = (EntitySubterfuge) entityIn;
+			
+			// Facial expressions (head tilts)
+			int expression = subterfuge.getExpressionState();
+			if (expression == 1) { // Welcome
+				head.rotateAngleX -= 0.1F; // Subtle upward tilt
+			} else if (expression == 2) { // Approval
+				head.rotateAngleX += MathHelper.sin(ageInTicks * 0.25F) * 0.15F; // Slower, subtler nodding
+			} else if (expression == 3) { // Disapproval
+				head.rotateAngleZ = 0.15F; // Subtle tilt to the side
+			} else if (expression == 4) { // Angry
+				head.rotateAngleY += MathHelper.sin(ageInTicks * 0.8F) * 0.2F; // Slower, subtler aggressive shaking
+			}
+
+			// Godslap attack arm raise (dismissing target)
+			if (subterfuge.isAttackingState()) {
+				rightArm.rotateAngleX = ((float)Math.PI / 2F); // Raise arm straight forward
+				rightArm.rotateAngleY = -0.1F;
+				rightArm.rotateAngleZ = 0.0F;
+				
+				// Straighten the elbow to point directly at the target
+				rightForearm.rotateAngleX = 0.0F;
+				rightForearm.rotateAngleY = 0.0F;
+				rightForearm.rotateAngleZ = 0.0F;
+			}
+		}
+	}
+
+	public void setRotationAngle(ModelRenderer modelRenderer, float x, float y, float z) {
+		modelRenderer.rotateAngleX = x;
+		modelRenderer.rotateAngleY = y;
+		modelRenderer.rotateAngleZ = z;
+	}
+}

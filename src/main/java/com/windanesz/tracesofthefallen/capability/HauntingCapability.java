@@ -11,8 +11,10 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -26,6 +28,7 @@ import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -54,7 +57,7 @@ public class HauntingCapability implements INBTSerializable<NBTTagCompound> {
 
 		hauntingBlockCache = new HashMap<>();
 
-		for (String entry : Settings.miscSettings.hauntingBlocks) {
+		for (String entry : Settings.hauntingSettings.hauntingBlocks) {
 			if (entry == null || entry.trim().isEmpty()) continue;
 
 			String[] parts = entry.split(":");
@@ -80,8 +83,29 @@ public class HauntingCapability implements INBTSerializable<NBTTagCompound> {
 		return hauntingBlockCache;
 	}
 
+	private static Map<String, int[]> hauntingKillItemCache = null;
+
+	private static Map<String, int[]> getHauntingKillItems() {
+		if (hauntingKillItemCache != null) return hauntingKillItemCache;
+		hauntingKillItemCache = new HashMap<>();
+		for (String entry : Settings.hauntingSettings.hauntingKillItemReductions) {
+			if (entry == null || entry.trim().isEmpty()) continue;
+			String[] parts = entry.split("\\|");
+			if (parts.length != 3) continue;
+			try {
+				int reduction = Integer.parseInt(parts[1]);
+				int damage = Integer.parseInt(parts[2]);
+				hauntingKillItemCache.put(parts[0], new int[]{reduction, damage});
+			} catch (NumberFormatException e) {
+				TracesOfTheFallen.LOGGER.warn("Invalid haunting kill item entry: " + entry);
+			}
+		}
+		return hauntingKillItemCache;
+	}
+
 	public static void clearHauntingBlockCache() {
 		hauntingBlockCache = null;
+		hauntingKillItemCache = null;
 	}
 
 	private final EntityPlayer player;
@@ -120,6 +144,7 @@ public class HauntingCapability implements INBTSerializable<NBTTagCompound> {
 	}
 
 	public int hauntingProgress = 0;
+	public int hauntingSpawnCooldown = 0;
 
 	public HauntingCapability() {
 		this(null); // Nullary constructor for the registration method factory parameter
@@ -165,6 +190,7 @@ public class HauntingCapability implements INBTSerializable<NBTTagCompound> {
 	 */
 	public void copyFrom(HauntingCapability data, boolean respawn) {
 		this.hauntingProgress = data.hauntingProgress;
+		this.hauntingSpawnCooldown = data.hauntingSpawnCooldown;
 	}
 
 	/**
@@ -183,6 +209,7 @@ public class HauntingCapability implements INBTSerializable<NBTTagCompound> {
 
 		NBTTagCompound properties = new NBTTagCompound();
 		properties.setInteger("hauntingProgress", hauntingProgress);
+		properties.setInteger("hauntingSpawnCooldown", hauntingSpawnCooldown);
 		return properties;
 	}
 
@@ -191,6 +218,7 @@ public class HauntingCapability implements INBTSerializable<NBTTagCompound> {
 
 		if (nbt != null) {
 			this.hauntingProgress = nbt.getInteger("hauntingProgress");
+			this.hauntingSpawnCooldown = nbt.getInteger("hauntingSpawnCooldown");
 		}
 	}
 
@@ -226,22 +254,42 @@ public class HauntingCapability implements INBTSerializable<NBTTagCompound> {
 	@SubscribeEvent
 	public static void onLivingUpdateEvent(TickEvent.PlayerTickEvent event) {
 
-		if (event.player.ticksExisted % 20 == 0 && !event.player.world.isRemote && event.player.world.getDifficulty() != EnumDifficulty.PEACEFUL) {
+		if (event.phase == TickEvent.Phase.END && event.player.ticksExisted % 20 == 0 && !event.player.world.isRemote && event.player.world.getDifficulty() != EnumDifficulty.PEACEFUL) {
 			EntityPlayer player = event.player;
 			HauntingCapability cap = HauntingCapability.get(player);
-			if (HauntingCapability.get(player) != null && !player.capabilities.isCreativeMode) {
-				int hauntingProg = cap.hauntingProgress;
-				if (hauntingProg > 50) {
-					if (player.world.rand.nextInt(20) == 0) {
-						List<EntitySpecter> specters = player.world.getEntitiesWithinAABB(EntitySpecter.class, new AxisAlignedBB(player.getPosition()).grow(30));
+			if (cap != null) {
+				if (cap.hauntingSpawnCooldown > 0) {
+					cap.hauntingSpawnCooldown -= 20;
+					if (cap.hauntingSpawnCooldown < 0) cap.hauntingSpawnCooldown = 0;
+				}
+				
+				if (!player.capabilities.isCreativeMode) {
+					int hauntingProg = cap.hauntingProgress;
+					if (hauntingProg > 50 && cap.hauntingSpawnCooldown == 0) {
+						if (player.world.rand.nextInt(20) == 0) {
+							List<EntitySpecter> specters = player.world.getEntitiesWithinAABB(EntitySpecter.class, new AxisAlignedBB(player.getPosition()).grow(30));
 
-						if (specters.isEmpty()) {
-							BlockPos pos = Utils.findNearbyAirSpace(player.world, player.getPosition(), 6);
-							if (pos != null) {
-								EntitySpecter specter = new EntitySpecter(player.world);
-								specter.setPosition(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
-								player.world.spawnEntity(specter);
-								specter.setAttackTarget(player);
+							if (specters.isEmpty()) {
+								BlockPos pos = Utils.findNearbyAirSpace(player.world, player.getPosition(), 6);
+								if (pos != null) {
+									EntitySpecter specter;
+									if (hauntingProg >= 85 && player.world.rand.nextBoolean()) {
+										specter = new com.windanesz.tracesofthefallen.entity.EntitySpecterGrasper(player.world);
+									} else if (hauntingProg >= 95) {
+										specter = new com.windanesz.tracesofthefallen.entity.EntitySpecterGrasper(player.world);
+									} else {
+										specter = new EntitySpecter(player.world);
+									}
+									specter.setPosition(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
+									specter.getEntityData().setBoolean("HauntingSpawned", true);
+									player.world.spawnEntity(specter);
+									specter.setAttackTarget(player);
+									
+									// 5 minute cooldown if a Grasper spawns
+									if (specter instanceof com.windanesz.tracesofthefallen.entity.EntitySpecterGrasper) {
+										cap.hauntingSpawnCooldown = 6000;
+									}
+								}
 							}
 						}
 					}
@@ -279,6 +327,80 @@ public class HauntingCapability implements INBTSerializable<NBTTagCompound> {
 				}
 			}
 		}
+	}
+
+	@SubscribeEvent
+	public static void onLivingDeath(LivingDeathEvent event) {
+		if (event.getEntityLiving().world.isRemote) return;
+
+		// 1. If player is killed by haunting mob
+		if (event.getEntityLiving() instanceof EntityPlayer) {
+			EntityPlayer player = (EntityPlayer) event.getEntityLiving();
+			DamageSource source = event.getSource();
+			if (source != null && source.getTrueSource() != null) {
+				Entity killer = source.getTrueSource();
+				if (killer.getEntityData().getBoolean("HauntingSpawned")) {
+					HauntingCapability cap = HauntingCapability.get(player);
+					if (cap != null) {
+						cap.hauntingSpawnCooldown = Settings.hauntingSettings.hauntingSpawnCooldownAfterDeath;
+					}
+				}
+			}
+		}
+
+		// 2. If haunting mob is killed by player
+		if (event.getEntityLiving().getEntityData().getBoolean("HauntingSpawned")) {
+			DamageSource source = event.getSource();
+			if (source != null && source.getTrueSource() instanceof EntityPlayer) {
+				EntityPlayer player = (EntityPlayer) source.getTrueSource();
+				
+				if (event.getEntityLiving() instanceof com.windanesz.tracesofthefallen.entity.EntitySpecterGrasper) {
+					HauntingCapability cap = HauntingCapability.get(player);
+					if (cap != null) {
+						cap.hauntingSpawnCooldown = Math.max(cap.hauntingSpawnCooldown, 12000); // 10 mins
+					}
+				}
+				
+				ItemStack mainHand = player.getHeldItemMainhand();
+				ItemStack offHand = player.getHeldItemOffhand();
+				
+				Map<String, int[]> reductions = getHauntingKillItems();
+				
+				boolean applied = tryApplyHauntingKillReduction(player, mainHand, reductions);
+				if (!applied) {
+					tryApplyHauntingKillReduction(player, offHand, reductions);
+				}
+			}
+		}
+	}
+
+	private static boolean tryApplyHauntingKillReduction(EntityPlayer player, ItemStack stack, Map<String, int[]> reductions) {
+		if (stack.isEmpty()) return false;
+		String itemId = stack.getItem().getRegistryName().toString();
+		String keyWithMeta = itemId + ":" + stack.getMetadata();
+		
+		int[] params = reductions.get(keyWithMeta);
+		if (params == null) {
+			params = reductions.get(itemId);
+		}
+		
+		if (params != null) {
+			int reduction = params[0];
+			int damage = params[1];
+			
+			if (stack.isItemStackDamageable()) {
+				int remaining = stack.getMaxDamage() - stack.getItemDamage();
+				if (remaining >= damage) {
+					stack.damageItem(damage, player);
+					HauntingCapability cap = HauntingCapability.get(player);
+					if (cap != null) {
+						cap.reduceHauntingProgress(reduction);
+					}
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	public static class Provider implements ICapabilitySerializable<NBTTagCompound> {

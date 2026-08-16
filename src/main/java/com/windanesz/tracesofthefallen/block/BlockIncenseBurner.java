@@ -2,6 +2,8 @@ package com.windanesz.tracesofthefallen.block;
 
 import com.windanesz.tracesofthefallen.IncenseEffects;
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
+import com.windanesz.tracesofthefallen.init.ModBlocks;
+import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -194,7 +196,7 @@ public class BlockIncenseBurner extends BlockDecoration {
 						if (x == 0 && y == 0 && z == 0) continue;
 						BlockPos proxyPos = pos.add(x, y, z);
 						if (worldIn.getBlockState(proxyPos).getBlock().isReplaceable(worldIn, proxyPos) || worldIn.isAirBlock(proxyPos)) {
-							worldIn.setBlockState(proxyPos, com.windanesz.tracesofthefallen.init.ModBlocks.technical_block.getDefaultState(), 3);
+							worldIn.setBlockState(proxyPos, ModBlocks.technical_block.getDefaultState(), 3);
 						}
 					}
 				}
@@ -210,7 +212,7 @@ public class BlockIncenseBurner extends BlockDecoration {
 				for (int z = b[2]; z <= b[3]; z++) {
 					if (x == 0 && y == 0 && z == 0) continue;
 					BlockPos proxyPos = pos.add(x, y, z);
-					if (worldIn.getBlockState(proxyPos).getBlock() == com.windanesz.tracesofthefallen.init.ModBlocks.technical_block) {
+					if (worldIn.getBlockState(proxyPos).getBlock() == ModBlocks.technical_block) {
 						worldIn.setBlockToAir(proxyPos);
 					}
 				}
@@ -220,7 +222,7 @@ public class BlockIncenseBurner extends BlockDecoration {
 	}
 
 	@Override
-	public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, net.minecraft.block.Block blockIn, BlockPos fromPos) {
+	public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
 		super.neighborChanged(state, worldIn, pos, blockIn, fromPos);
 
 		if (!worldIn.isRemote) {
@@ -235,9 +237,9 @@ public class BlockIncenseBurner extends BlockDecoration {
 					for (int z = b[2]; z <= b[3]; z++) {
 						if (x == 0 && y == 0 && z == 0) continue;
 						BlockPos proxyPos = pos.add(x, y, z);
-						if (worldIn.getBlockState(proxyPos).getBlock() != com.windanesz.tracesofthefallen.init.ModBlocks.technical_block) {
+						if (worldIn.getBlockState(proxyPos).getBlock() != ModBlocks.technical_block) {
 							if (worldIn.getBlockState(proxyPos).getBlock().isReplaceable(worldIn, proxyPos) || worldIn.isAirBlock(proxyPos)) {
-								worldIn.setBlockState(proxyPos, com.windanesz.tracesofthefallen.init.ModBlocks.technical_block.getDefaultState(), 3);
+								worldIn.setBlockState(proxyPos, ModBlocks.technical_block.getDefaultState(), 3);
 							}
 						}
 					}
@@ -247,7 +249,7 @@ public class BlockIncenseBurner extends BlockDecoration {
 	}
 
 	@Override
-	public boolean isMainBlockForProxy(net.minecraft.world.IBlockAccess world, BlockPos mainPos, BlockPos proxyPos) {
+	public boolean isMainBlockForProxy(IBlockAccess world, BlockPos mainPos, BlockPos proxyPos) {
 		IBlockState state = world.getBlockState(mainPos);
 		if (state.getBlock() != this) return false;
 		int[] b = getProxyBounds(state);

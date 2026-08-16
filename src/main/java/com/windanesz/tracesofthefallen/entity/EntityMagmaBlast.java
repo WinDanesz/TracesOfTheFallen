@@ -3,6 +3,7 @@ package com.windanesz.tracesofthefallen.entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.projectile.EntityThrowable;
 import net.minecraft.init.SoundEvents;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.MathHelper;
@@ -91,7 +92,7 @@ public class EntityMagmaBlast extends EntityThrowable {
 			double hitY = result.hitVec != null ? result.hitVec.y : this.posY;
 			double hitZ = result.hitVec != null ? result.hitVec.z : this.posZ;
 			if (result.typeOfHit == RayTraceResult.Type.BLOCK && result.getBlockPos() != null) {
-				if (result.sideHit == net.minecraft.util.EnumFacing.UP) {
+				if (result.sideHit == EnumFacing.UP) {
 					hitY = result.getBlockPos().getY() + 1.0D;
 				}
 			}

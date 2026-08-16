@@ -17,10 +17,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionUtils;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.util.SoundCategory;
+import net.minecraft.util.*;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
@@ -36,6 +33,8 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
+import java.util.Locale;
+import java.util.Random;
 
 public class BlockPorcelainPiece extends BlockDecoration {
 
@@ -162,7 +161,7 @@ public class BlockPorcelainPiece extends BlockDecoration {
 	}
 
 	@Override
-	public void getDrops(net.minecraft.util.NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
+	public void getDrops(NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
 		TileEntityPorcelainVessel vessel = getVessel(world, pos);
 		if (vessel != null) {
 			ItemStack stack = vessel.createStack(this);
@@ -191,7 +190,7 @@ public class BlockPorcelainPiece extends BlockDecoration {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void randomDisplayTick(IBlockState state, World worldIn, BlockPos pos, java.util.Random rand) {
+	public void randomDisplayTick(IBlockState state, World worldIn, BlockPos pos, Random rand) {
 		super.randomDisplayTick(state, worldIn, pos, rand);
 		if (pieceType != PieceType.POT) {
 			return;
@@ -486,7 +485,7 @@ public class BlockPorcelainPiece extends BlockDecoration {
 			return "";
 		}
 		String fluidName = fluidStack.getFluid().getName();
-		return fluidName == null ? "" : fluidName.trim().toLowerCase(java.util.Locale.ROOT);
+		return fluidName == null ? "" : fluidName.trim().toLowerCase(Locale.ROOT);
 	}
 
 	private boolean consumeFilledFluidContainer(EntityPlayer player, EnumHand hand, ItemStack heldStack, String expectedFluid) {
@@ -537,7 +536,7 @@ public class BlockPorcelainPiece extends BlockDecoration {
 	}
 
 	private String normalizeFluidName(String fluidName) {
-		return fluidName == null ? "" : fluidName.trim().toLowerCase(java.util.Locale.ROOT);
+		return fluidName == null ? "" : fluidName.trim().toLowerCase(Locale.ROOT);
 	}
 
 	private void sendPotStatus(EntityPlayer player, String translationKey, Object... args) {

@@ -1,6 +1,7 @@
 package com.windanesz.tracesofthefallen.item;
 
 import com.windanesz.tracesofthefallen.Settings;
+import com.windanesz.tracesofthefallen.block.TileEntityWroughtCagedLamp;
 import com.windanesz.tracesofthefallen.client.ClientProxy;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
@@ -68,7 +69,7 @@ public class ItemRuneOfSkimming extends ItemRune {
 				teleport(stack, (EntityPlayer) player);
 			}
 			player.stopActiveHand();
-			com.windanesz.tracesofthefallen.block.TileEntityWroughtCagedLamp.triggerNearbyWroughtLamps(player.world, player.getPosition());
+			TileEntityWroughtCagedLamp.triggerNearbyWroughtLamps(player.world, player.getPosition());
 		}
 	}
 

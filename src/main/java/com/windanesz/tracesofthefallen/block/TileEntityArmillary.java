@@ -1,5 +1,7 @@
 package com.windanesz.tracesofthefallen.block;
 
+import com.windanesz.tracesofthefallen.capability.HauntingCapability;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
@@ -7,11 +9,12 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ITickable;
 
 import javax.annotation.Nullable;
+import java.util.UUID;
 
 public class TileEntityArmillary extends TileEntity implements ITickable {
 
 	private int lastHauntingLevel = 0;
-	private java.util.UUID lastPlayerUUID = null;
+	private UUID lastPlayerUUID = null;
 	private int tickCount = 0;
 	private float currentClickSpinSpeed = 0.0F;
 	
@@ -24,9 +27,9 @@ public class TileEntityArmillary extends TileEntity implements ITickable {
 			tickCount++;
 			if (tickCount >= 200) {
 				tickCount = 0;
-				net.minecraft.entity.player.EntityPlayer player = world.getMinecraftServer().getPlayerList().getPlayerByUUID(lastPlayerUUID);
+				EntityPlayer player = world.getMinecraftServer().getPlayerList().getPlayerByUUID(lastPlayerUUID);
 				if (player != null) {
-					com.windanesz.tracesofthefallen.capability.HauntingCapability cap = com.windanesz.tracesofthefallen.capability.HauntingCapability.get(player);
+					HauntingCapability cap = HauntingCapability.get(player);
 					if (cap != null) {
 						int newLevel = cap.getHauntingProgress();
 						if (newLevel != this.lastHauntingLevel) {
@@ -79,7 +82,7 @@ public class TileEntityArmillary extends TileEntity implements ITickable {
 		}
 	}
 
-	public void onRightClick(net.minecraft.entity.player.EntityPlayer player, int hauntingLevel) {
+	public void onRightClick(EntityPlayer player, int hauntingLevel) {
 		this.lastPlayerUUID = player.getUniqueID();
 		this.lastHauntingLevel = hauntingLevel;
 		if (hauntingLevel < 50) {

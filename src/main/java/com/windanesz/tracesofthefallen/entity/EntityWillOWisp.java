@@ -2,6 +2,7 @@ package com.windanesz.tracesofthefallen.entity;
 
 import com.windanesz.tracesofthefallen.Settings;
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
+import com.windanesz.tracesofthefallen.entity.shaman.ShamanSpells;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockBush;
 import net.minecraft.block.BlockVine;
@@ -147,7 +148,7 @@ public class EntityWillOWisp extends EntityThrowable {
 			if (result.entityHit == this.getThrower() || result.entityHit instanceof EntityGoblin) {
 				return;
 			}
-			if (this.getThrower() instanceof com.windanesz.tracesofthefallen.entity.EntityGoblinShaman && com.windanesz.tracesofthefallen.entity.shaman.ShamanSpells.isAlly((com.windanesz.tracesofthefallen.entity.EntityGoblinShaman) this.getThrower(), result.entityHit)) {
+			if (this.getThrower() instanceof EntityGoblinShaman && ShamanSpells.isAlly((EntityGoblinShaman) this.getThrower(), result.entityHit)) {
 				return;
 			}
 			if (result.entityHit instanceof EntityLivingBase) {

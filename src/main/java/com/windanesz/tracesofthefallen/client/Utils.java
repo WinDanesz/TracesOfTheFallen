@@ -2,6 +2,8 @@ package com.windanesz.tracesofthefallen.client;
 
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import org.lwjgl.opengl.GL11;
 
 public class Utils {
 
@@ -22,7 +24,7 @@ public class Utils {
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder buffer = tessellator.getBuffer();
 
-		buffer.begin(org.lwjgl.opengl.GL11.GL_QUADS, net.minecraft.client.renderer.vertex.DefaultVertexFormats.POSITION_TEX);
+		buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
 
 		buffer.pos((double) (x), (double) (y + height), 0).tex((double) ((float) (u1) * f), (double) ((float) (v2) * f1)).endVertex();
 		buffer.pos((double) (x + width), (double) (y + height), 0).tex((double) ((float) (u2) * f), (double) ((float) (v2) * f1)).endVertex();

@@ -13,13 +13,13 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class TileEntityDanCoil extends TileEntity implements ITickable {
     private int cooldown = 0;
     private int chargeUp = 0;
-    private BlockPos targetPos = null;
-    public boolean isMaster = false;
+    private boolean wasPowered = false;
 
     @Override
     public void update() {
@@ -45,19 +45,24 @@ public class TileEntityDanCoil extends TileEntity implements ITickable {
                 this.world.spawnEntity(visual);
             }
 
-            if (this.chargeUp == 0 && !this.world.isRemote && this.targetPos != null) {
-                if (this.isMaster) {
-                    // Fire lightning
+            if (this.chargeUp == 0 && !this.world.isRemote) {
+                List<BlockPos> targets = findConnectedCoils(true);
+                for (BlockPos target : targets) {
                     double x1 = this.pos.getX() + 0.5;
                     double y1 = this.pos.getY() + 0.5;
                     double z1 = this.pos.getZ() + 0.5;
-                    double x2 = this.targetPos.getX() + 0.5;
-                    double y2 = this.targetPos.getY() + 0.5;
-                    double z2 = this.targetPos.getZ() + 0.5;
+                    double x2 = target.getX() + 0.5;
+                    double y2 = target.getY() + 0.5;
+                    double z2 = target.getZ() + 0.5;
                     
                     EntityZapLightning lightning = new EntityZapLightning(this.world, x1, y1, z1, x2, y2, z2, null);
                     lightning.setDamage((float) Settings.miscSettings.dancoilTrapDamage);
                     this.world.spawnEntity(lightning);
+
+                    TileEntity te = this.world.getTileEntity(target);
+                    if (te instanceof TileEntityDanCoil) {
+                        ((TileEntityDanCoil) te).trigger();
+                    }
                 }
 
                 this.setCooldown(600);
@@ -66,64 +71,76 @@ public class TileEntityDanCoil extends TileEntity implements ITickable {
             // Check for trigger
             IBlockState state = this.world.getBlockState(this.pos);
             if (state.getBlock() instanceof BlockDanCoil) {
-                EnumFacing facing = state.getValue(BlockDanCoil.FACING);
+                List<BlockPos> positiveTargets = findConnectedCoils(false);
                 
-                // Only process for one of the pair (the one pointing to a larger coordinate or positive direction) to avoid double trigger
-                if (facing.getAxisDirection() == EnumFacing.AxisDirection.POSITIVE) {
-                    BlockPos searchPos = this.pos.offset(facing);
-                    BlockPos foundTarget = null;
+                for (BlockPos foundTarget : positiveTargets) {
+                    // Check for entities in the path
+                    AxisAlignedBB aabb = new AxisAlignedBB(
+                        Math.min(this.pos.getX(), foundTarget.getX()),
+                        Math.min(this.pos.getY(), foundTarget.getY()),
+                        Math.min(this.pos.getZ(), foundTarget.getZ()),
+                        Math.max(this.pos.getX(), foundTarget.getX()) + 1.0,
+                        Math.max(this.pos.getY(), foundTarget.getY()) + 1.0,
+                        Math.max(this.pos.getZ(), foundTarget.getZ()) + 1.0
+                    );
                     
-                    for (int i = 1; i <= 9; i++) {
-                        IBlockState targetState = this.world.getBlockState(searchPos);
-                        if (targetState.getBlock() instanceof BlockDanCoil) {
-                            if (targetState.getValue(BlockDanCoil.FACING) == facing.getOpposite()) {
-                                TileEntity te = this.world.getTileEntity(searchPos);
-                                if (te instanceof TileEntityDanCoil && ((TileEntityDanCoil) te).getCooldown() == 0) {
-                                    foundTarget = searchPos;
-                                }
-                            }
-                            break; // Blocked by a coil (even if wrong facing or on cooldown)
-                        } else if (targetState.isFullBlock() && targetState.isOpaqueCube()) {
-                            break; // Blocked by solid block
+                    List<EntityLivingBase> entities = this.world.getEntitiesWithinAABB(EntityLivingBase.class, aabb);
+                    boolean triggered = false;
+                    for (EntityLivingBase e : entities) {
+                        if (!isEntityIgnored(e)) {
+                            triggered = true;
+                            break;
                         }
-                        searchPos = searchPos.offset(facing);
                     }
                     
-                    if (foundTarget != null) {
-                        // Check for entities in the path
-                        AxisAlignedBB aabb = new AxisAlignedBB(
-                            Math.min(this.pos.getX(), foundTarget.getX()),
-                            Math.min(this.pos.getY(), foundTarget.getY()),
-                            Math.min(this.pos.getZ(), foundTarget.getZ()),
-                            Math.max(this.pos.getX(), foundTarget.getX()) + 1.0,
-                            Math.max(this.pos.getY(), foundTarget.getY()) + 1.0,
-                            Math.max(this.pos.getZ(), foundTarget.getZ()) + 1.0
-                        );
-                        
-                        List<EntityLivingBase> entities = this.world.getEntitiesWithinAABB(EntityLivingBase.class, aabb);
-                        boolean triggered = false;
-                        for (EntityLivingBase e : entities) {
-                            if (!isEntityIgnored(e)) {
-                                triggered = true;
-                                break;
-                            }
+                    if (triggered) {
+                        this.trigger();
+                        TileEntity targetTe = this.world.getTileEntity(foundTarget);
+                        if (targetTe instanceof TileEntityDanCoil) {
+                            ((TileEntityDanCoil) targetTe).trigger();
                         }
-                        
-                        if (triggered) {
-                            this.chargeUp = 20;
-                            this.targetPos = foundTarget;
-                            this.isMaster = true;
-                            this.world.addBlockEvent(this.pos, this.getBlockType(), 1, 20); // trigger client chargeup
-                            
-                            TileEntity targetTe = this.world.getTileEntity(foundTarget);
-                            if (targetTe instanceof TileEntityDanCoil) {
-                                ((TileEntityDanCoil) targetTe).startClientCharge(this.pos);
-                            }
-                        }
+                        break;
                     }
                 }
             }
         }
+    }
+
+    public List<BlockPos> findConnectedCoils(boolean allDirections) {
+        List<BlockPos> found = new ArrayList<>();
+        for (EnumFacing facing : EnumFacing.values()) {
+            if (!allDirections && facing.getAxisDirection() != EnumFacing.AxisDirection.POSITIVE) {
+                continue;
+            }
+            BlockPos searchPos = this.pos.offset(facing);
+            for (int i = 1; i <= 9; i++) {
+                IBlockState targetState = this.world.getBlockState(searchPos);
+                if (targetState.getBlock() instanceof BlockDanCoil) {
+                    found.add(searchPos);
+                    break; // Blocked by a coil
+                } else if (targetState.isFullBlock() && targetState.isOpaqueCube()) {
+                    break; // Blocked by solid block
+                }
+                searchPos = searchPos.offset(facing);
+            }
+        }
+        return found;
+    }
+
+    public void trigger() {
+        if (this.cooldown == 0 && this.chargeUp == 0) {
+            this.chargeUp = 20;
+            if (!this.world.isRemote) {
+                this.world.addBlockEvent(this.pos, this.getBlockType(), 1, 20); // trigger client chargeup
+            }
+        }
+    }
+
+    public void updateRedstone(boolean isPowered) {
+        if (isPowered && !this.wasPowered) {
+            this.trigger();
+        }
+        this.wasPowered = isPowered;
     }
 
     private boolean isEntityIgnored(EntityLivingBase entity) {
@@ -147,38 +164,10 @@ public class TileEntityDanCoil extends TileEntity implements ITickable {
         return this.cooldown;
     }
 
-    public void startClientCharge(BlockPos targetPos) {
-        this.chargeUp = 20;
-        this.targetPos = targetPos;
-        this.isMaster = false;
-        if (!this.world.isRemote) {
-            this.world.addBlockEvent(this.pos, this.getBlockType(), 1, 20);
-        }
-    }
-
     @Override
     public boolean receiveClientEvent(int id, int type) {
         if (id == 1) {
             this.chargeUp = type;
-            // Target pos might not be known perfectly on client unless synced via packet,
-            // but we can try to guess it by raytracing forward from FACING
-            if (this.world.isRemote && this.targetPos == null) {
-                IBlockState state = this.world.getBlockState(this.pos);
-                if (state.getBlock() instanceof BlockDanCoil) {
-                    EnumFacing facing = state.getValue(BlockDanCoil.FACING);
-                    BlockPos searchPos = this.pos.offset(facing);
-                    for (int i = 1; i <= 9; i++) {
-                        IBlockState targetState = this.world.getBlockState(searchPos);
-                        if (targetState.getBlock() instanceof BlockDanCoil) {
-                            if (targetState.getValue(BlockDanCoil.FACING) == facing.getOpposite()) {
-                                this.targetPos = searchPos;
-                                break;
-                            }
-                        }
-                        searchPos = searchPos.offset(facing);
-                    }
-                }
-            }
             return true;
         }
         return super.receiveClientEvent(id, type);
@@ -188,11 +177,13 @@ public class TileEntityDanCoil extends TileEntity implements ITickable {
     public void readFromNBT(NBTTagCompound compound) {
         super.readFromNBT(compound);
         this.cooldown = compound.getInteger("cooldown");
+        this.wasPowered = compound.getBoolean("wasPowered");
     }
 
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound compound) {
         compound.setInteger("cooldown", this.cooldown);
+        compound.setBoolean("wasPowered", this.wasPowered);
         return super.writeToNBT(compound);
     }
 }

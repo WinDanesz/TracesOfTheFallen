@@ -55,5 +55,8 @@ public class CommonProxy {
 
 	public void spawnDigHoleParticle(World world, double x, double y, double z) {
 	}
+
+	public void spawnGodSlapParticle(World world, double x, double y, double z) {
+	}
 }
 

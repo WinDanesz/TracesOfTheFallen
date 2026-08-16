@@ -8,6 +8,8 @@ import com.windanesz.tracesofthefallen.capability.HauntingCapability;
 import com.windanesz.tracesofthefallen.client.model.*;
 import com.windanesz.tracesofthefallen.client.particle.*;
 import com.windanesz.tracesofthefallen.client.render.entity.RenderGnossic;
+import com.windanesz.tracesofthefallen.client.render.entity.RenderSidhe;
+import com.windanesz.tracesofthefallen.client.render.entity.RenderSubterfuge;
 import com.windanesz.tracesofthefallen.client.renderer.*;
 import com.windanesz.tracesofthefallen.entity.*;
 import com.windanesz.tracesofthefallen.init.ModBlocks;
@@ -17,7 +19,9 @@ import com.windanesz.tracesofthefallen.packet.PacketPlayerSync;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.renderer.entity.RenderSnowball;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -26,6 +30,7 @@ import net.minecraft.world.biome.BiomeColorHelper;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.client.model.obj.OBJLoader;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.Mod;
@@ -45,16 +50,18 @@ public class ClientProxy extends CommonProxy {
 	private static final ResourceLocation FROST_SPRITE = new ResourceLocation(TracesOfTheFallen.MODID, "particle/frost");
 	private static final ResourceLocation WIND_SPRITE = new ResourceLocation(TracesOfTheFallen.MODID, "particle/wind");
 	private static final ResourceLocation CRUMBS_SPRITE = new ResourceLocation(TracesOfTheFallen.MODID, "particle/crumbs");
+	private static final ResourceLocation GOD_SLAP_SPRITE = new ResourceLocation(TracesOfTheFallen.MODID, "particle/god_slap");
 	private static TextureAtlasSprite incenseLineSprite;
 	private static TextureAtlasSprite puddleBloodSprite;
 	private static TextureAtlasSprite frostSprite;
 	private static TextureAtlasSprite windSprite;
 	private static TextureAtlasSprite crumbsSprite;
+	private static TextureAtlasSprite godSlapSprite;
 
 	@Override
 	public void preInit(FMLPreInitializationEvent event) {
 		super.preInit(event);
-		net.minecraftforge.client.model.obj.OBJLoader.INSTANCE.addDomain(TracesOfTheFallen.MODID);
+		OBJLoader.INSTANCE.addDomain(TracesOfTheFallen.MODID);
 		registerEntityRenderers();
 		registerTileEntityRenderers();
 	}
@@ -103,12 +110,71 @@ public class ClientProxy extends CommonProxy {
 	}
 
 	@SubscribeEvent
+	public static void onRenderLivingPre(net.minecraftforge.client.event.RenderLivingEvent.Pre event) {
+		net.minecraft.entity.EntityLivingBase entity = event.getEntity();
+		if (entity.getRidingEntity() instanceof EntityLost) {
+			EntityLost lost = (EntityLost) entity.getRidingEntity();
+			if (lost.grabTicks > 20) {
+				// Calculate exact visual distance between entities using partial ticks
+				float pt = event.getPartialRenderTick();
+				double vx = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * pt;
+				double vz = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * pt;
+				
+				double lx = lost.lastTickPosX + (lost.posX - lost.lastTickPosX) * pt;
+				double lz = lost.lastTickPosZ + (lost.posZ - lost.lastTickPosZ) * pt;
+				
+				double dx = vx - lx;
+				double dz = vz - lz;
+				double actualDist = Math.sqrt(dx * dx + dz * dz);
+				
+				org.lwjgl.opengl.GL11.glEnable(org.lwjgl.opengl.GL11.GL_CLIP_PLANE0);
+				
+				// Translate to entity feet to lock the plane to world space
+				org.lwjgl.opengl.GL11.glPushMatrix();
+				org.lwjgl.opengl.GL11.glTranslated(event.getX(), event.getY(), event.getZ());
+				
+				// Compute normal vector pointing from the Lost to the victim
+				float f = lost.prevRenderYawOffset + (lost.renderYawOffset - lost.prevRenderYawOffset) * pt;
+				double yawRad = f * 0.017453292D;
+				double nx = -Math.sin(yawRad);
+				double nz = Math.cos(yawRad);
+				
+				// Offset the slice slightly into the chest to prevent a visible gap
+				double clipDist = actualDist - 0.15D; 
+				
+				java.nio.DoubleBuffer buffer = org.lwjgl.BufferUtils.createDoubleBuffer(4);
+				buffer.put(nx).put(0.0D).put(nz).put(clipDist).flip();
+				org.lwjgl.opengl.GL11.glClipPlane(org.lwjgl.opengl.GL11.GL_CLIP_PLANE0, buffer);
+				
+				// Disable culling to render the inside faces of the sliced geometry
+				org.lwjgl.opengl.GL11.glDisable(org.lwjgl.opengl.GL11.GL_CULL_FACE);
+				
+				org.lwjgl.opengl.GL11.glPopMatrix();
+			}
+		}
+	}
+
+	@SubscribeEvent
+	public static void onRenderLivingPost(net.minecraftforge.client.event.RenderLivingEvent.Post event) {
+		net.minecraft.entity.EntityLivingBase entity = event.getEntity();
+		if (entity.getRidingEntity() instanceof EntityLost) {
+			org.lwjgl.opengl.GL11.glDisable(org.lwjgl.opengl.GL11.GL_CLIP_PLANE0);
+			org.lwjgl.opengl.GL11.glEnable(org.lwjgl.opengl.GL11.GL_CULL_FACE);
+		}
+	}
+
+	@SubscribeEvent
 	public static void registerSprites(TextureStitchEvent.Pre event) {
 		incenseLineSprite = event.getMap().registerSprite(INCENSE_LINE_SPRITE);
 		puddleBloodSprite = event.getMap().registerSprite(PUDDLE_BLOOD_SPRITE);
 		frostSprite = event.getMap().registerSprite(FROST_SPRITE);
 		windSprite = event.getMap().registerSprite(WIND_SPRITE);
 		crumbsSprite = event.getMap().registerSprite(CRUMBS_SPRITE);
+		godSlapSprite = event.getMap().registerSprite(GOD_SLAP_SPRITE);
+	}
+
+	public static TextureAtlasSprite getGodSlapSprite() {
+		return godSlapSprite;
 	}
 
 	public static TextureAtlasSprite getIncenseLineSprite() {
@@ -132,6 +198,7 @@ public class ClientProxy extends CommonProxy {
 		RenderingRegistry.registerEntityRenderingHandler(EntityDioptraSeat.class, RenderDioptraSeat::new);
 		RenderingRegistry.registerEntityRenderingHandler(EntityTelescopeSeat.class, RenderTelescopeSeat::new);
 		RenderingRegistry.registerEntityRenderingHandler(EntitySpecter.class, RenderSpecter::new);
+		RenderingRegistry.registerEntityRenderingHandler(EntitySpecterGrasper.class, RenderSpecterGrasper::new);
 		RenderingRegistry.registerEntityRenderingHandler(EntityFamiliarSpecter.class, RenderFamiliarSpecter::new);
 		RenderingRegistry.registerEntityRenderingHandler(EntityGlassFloat.class, RenderGlassFloat::new);
 		RenderingRegistry.registerEntityRenderingHandler(EntityModPainting.class, RenderModPainting::new);
@@ -150,7 +217,7 @@ public class ClientProxy extends CommonProxy {
 		RenderingRegistry.registerEntityRenderingHandler(EntityMinecrawler.class, RenderMinecrawler::new);
 		RenderingRegistry.registerEntityRenderingHandler(EntityWroughtBomb.class, RenderWroughtBomb::new);
 		RenderingRegistry.registerEntityRenderingHandler(EntityFetidDagger.class, RenderFetidDagger::new);
-		RenderingRegistry.registerEntityRenderingHandler(EntitySidhe.class, com.windanesz.tracesofthefallen.client.render.entity.RenderSidhe::new);
+		RenderingRegistry.registerEntityRenderingHandler(EntitySidhe.class, RenderSidhe::new);
 		RenderingRegistry.registerEntityRenderingHandler(EntityFireOrb.class, RenderFireOrb::new);
 		RenderingRegistry.registerEntityRenderingHandler(EntityWillOWisp.class, RenderWillOWisp::new);
 		RenderingRegistry.registerEntityRenderingHandler(EntitySeekingOrb.class, RenderSeekingOrb::new);
@@ -160,11 +227,14 @@ public class ClientProxy extends CommonProxy {
 		RenderingRegistry.registerEntityRenderingHandler(EntityJawTrap.class, RenderJawTrap::new);
 		RenderingRegistry.registerEntityRenderingHandler(EntityBloodTotem.class, RenderBloodTotem::new);
 		RenderingRegistry.registerEntityRenderingHandler(EntityGoblinNest.class, RenderGoblinNest::new);
+		RenderingRegistry.registerEntityRenderingHandler(EntityNestRock.class, manager -> new RenderSnowball<>(manager, Item.getItemFromBlock(Blocks.COBBLESTONE), Minecraft.getMinecraft().getRenderItem()));
 		RenderingRegistry.registerEntityRenderingHandler(EntityLamphead.class, RenderLamphead::new);
 		RenderingRegistry.registerEntityRenderingHandler(EntityFrostling.class, RenderFrostling::new);
 		RenderingRegistry.registerEntityRenderingHandler(EntityFrostlingMask.class, RenderFrostlingMask::new);
 		RenderingRegistry.registerEntityRenderingHandler(EntityZapLightning.class, RenderZapLightning::new);
 		RenderingRegistry.registerEntityRenderingHandler(EntityGnossic.class, RenderGnossic::new);
+		RenderingRegistry.registerEntityRenderingHandler(EntitySubterfuge.class, RenderSubterfuge::new);
+		RenderingRegistry.registerEntityRenderingHandler(EntityLost.class, RenderLost::new);
 	}
 
 	private void registerTileEntityRenderers() {
@@ -178,6 +248,7 @@ public class ClientProxy extends CommonProxy {
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityGuillotine.class, new TileEntityGuillotineRenderer());
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntitySpinningWheel.class, new TileEntitySpinningWheelRenderer());
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityArmillary.class, new TileEntityArmillaryRenderer());
+		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityStoneChest.class, new TileEntityStoneChestRenderer());
 	}
 
 	/**
@@ -333,6 +404,11 @@ public class ClientProxy extends CommonProxy {
 	@Override
 	public void spawnDigHoleParticle(World world, double x, double y, double z) {
 		Minecraft.getMinecraft().effectRenderer.addEffect(new ParticleDigHole(world, x, y, z));
+	}
+
+	@Override
+	public void spawnGodSlapParticle(World world, double x, double y, double z) {
+		Minecraft.getMinecraft().effectRenderer.addEffect(new ParticleGodSlap(world, x, y, z));
 	}
 
 	/**

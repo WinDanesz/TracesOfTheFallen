@@ -143,6 +143,13 @@ public class EntityGoblinEngineer extends EntityGoblin {
 			this.spawnedDaggers = true;
 		}
 
+		if (!this.world.isRemote && this.ticksExisted % 20 == 0) {
+			double followRange = this.hasMountedBomb() ? Settings.goblinSettings.goblinEngineerBombFollowRange : 32.0D;
+			if (this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).getBaseValue() != followRange) {
+				this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(followRange);
+			}
+		}
+
 		if (!this.world.isRemote) {
 			if (this.hasMountedBomb()) {
 				EntityLivingBase target = this.getAttackTarget();

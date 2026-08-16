@@ -1,7 +1,9 @@
 package com.windanesz.tracesofthefallen.block;
 
+import com.windanesz.tracesofthefallen.TracesOfTheFallen;
 import com.windanesz.tracesofthefallen.init.ModBlocks;
 import com.windanesz.tracesofthefallen.init.ModItems;
+import com.windanesz.tracesofthefallen.network.ModGuiHandler;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -33,6 +35,7 @@ public class BlockSpinningWheel extends BlockDecoration {
 		super(material);
 		setHardness(2.0F);
 		setResistance(5.0F);
+		setLightOpacity(0);
 	}
 
 	// --- proxy positions -------------------------------------------------
@@ -174,13 +177,13 @@ public class BlockSpinningWheel extends BlockDecoration {
 				}
 			} else if (heldItem.isEmpty()) {
 				if (playerIn.isSneaking()) {
-					playerIn.openGui(com.windanesz.tracesofthefallen.TracesOfTheFallen.instance, com.windanesz.tracesofthefallen.network.ModGuiHandler.GUI_SPINNING_WHEEL, worldIn, pos.getX(), pos.getY(), pos.getZ());
+					playerIn.openGui(TracesOfTheFallen.instance, ModGuiHandler.GUI_SPINNING_WHEEL, worldIn, pos.getX(), pos.getY(), pos.getZ());
 				} else if (!te.isSpinning()) {
 					te.startSpinning(60); // Spin for 3 seconds (60 ticks)
 					worldIn.playSound(null, pos, SoundEvents.BLOCK_WOOD_BUTTON_CLICK_ON, SoundCategory.BLOCKS, 1.0F, 0.5F);
 				}
 			} else {
-				playerIn.openGui(com.windanesz.tracesofthefallen.TracesOfTheFallen.instance, com.windanesz.tracesofthefallen.network.ModGuiHandler.GUI_SPINNING_WHEEL, worldIn, pos.getX(), pos.getY(), pos.getZ());
+				playerIn.openGui(TracesOfTheFallen.instance, ModGuiHandler.GUI_SPINNING_WHEEL, worldIn, pos.getX(), pos.getY(), pos.getZ());
 			}
 		}
 

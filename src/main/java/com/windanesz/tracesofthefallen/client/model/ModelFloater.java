@@ -41,6 +41,7 @@ public class ModelFloater extends ModelBiped {
 		// Since RenderItem shifts Y by -8 pixels, we translate down by 18 pixels (1.125F)
 		// so that the model (which goes from 0 to 3 pixels in Y) ends up at Y=10 to 13.
 		GlStateManager.translate(0.0F, 1.125F, 0.0F);
+		GlStateManager.rotate(180.0F, 1.0F, 0.0F, 0.0F);
 
 		Minecraft.getMinecraft().getRenderItem().renderItem(this.stack, ItemCameraTransforms.TransformType.NONE);
 

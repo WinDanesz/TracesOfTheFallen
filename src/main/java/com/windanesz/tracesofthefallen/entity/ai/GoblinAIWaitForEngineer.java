@@ -30,7 +30,7 @@ public class GoblinAIWaitForEngineer extends EntityAIBase {
 		if (this.goblin.isCarryingBomb() || this.goblin.isHoldingIdol() || this.goblin.getBombDeliveryTarget() != null) {
 			return false;
 		}
-		if (this.goblin.getAttackTarget() != null && this.goblin.getDistanceSq(this.goblin.getAttackTarget()) < 12.25D) {
+		if (this.goblin.getAttackTarget() != null) {
 			return false;
 		}
 
@@ -89,7 +89,7 @@ public class GoblinAIWaitForEngineer extends EntityAIBase {
 		if (this.goblin.getDistanceSq(this.nearbyLeader) > 4096.0D) {
 			return false;
 		}
-		if (this.goblin.getAttackTarget() != null && this.goblin.getDistanceSq(this.goblin.getAttackTarget()) < 12.25D) {
+		if (this.goblin.getAttackTarget() != null) {
 			return false;
 		}
 		return true;

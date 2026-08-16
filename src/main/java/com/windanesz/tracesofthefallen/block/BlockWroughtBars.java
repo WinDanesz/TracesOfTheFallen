@@ -1,10 +1,12 @@
 package com.windanesz.tracesofthefallen.block;
 
 import net.minecraft.block.BlockPane;
+import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.fml.relauncher.Side;
@@ -23,7 +25,7 @@ public class BlockWroughtBars extends BlockPane {
                 .withProperty(TOP, false));
         this.setHardness(5.0F);
         this.setResistance(10.0F);
-        this.setSoundType(net.minecraft.block.SoundType.METAL);
+        this.setSoundType(SoundType.METAL);
     }
 
     @Override
@@ -39,7 +41,7 @@ public class BlockWroughtBars extends BlockPane {
 
     @SideOnly(Side.CLIENT)
     @Override
-    public net.minecraft.util.BlockRenderLayer getRenderLayer() {
-        return net.minecraft.util.BlockRenderLayer.CUTOUT;
+    public BlockRenderLayer getRenderLayer() {
+        return BlockRenderLayer.CUTOUT;
     }
 }

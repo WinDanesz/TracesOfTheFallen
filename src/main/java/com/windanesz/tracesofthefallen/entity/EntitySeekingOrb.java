@@ -1,6 +1,7 @@
 package com.windanesz.tracesofthefallen.entity;
 
 import com.windanesz.tracesofthefallen.Settings;
+import com.windanesz.tracesofthefallen.entity.shaman.ShamanSpells;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockBush;
 import net.minecraft.block.BlockVine;
@@ -219,8 +220,8 @@ public class EntitySeekingOrb extends EntityThrowable {
 		if (entityIn == null) return false;
 		if (entityIn == this.getThrower()) return true;
 		if (this.dataManager.get(THROWER_ID) == entityIn.getEntityId()) return true;
-		if (this.getThrower() instanceof com.windanesz.tracesofthefallen.entity.EntityGoblinShaman) {
-			return com.windanesz.tracesofthefallen.entity.shaman.ShamanSpells.isAlly((com.windanesz.tracesofthefallen.entity.EntityGoblinShaman) this.getThrower(), entityIn);
+		if (this.getThrower() instanceof EntityGoblinShaman) {
+			return ShamanSpells.isAlly((EntityGoblinShaman) this.getThrower(), entityIn);
 		}
 		if (this.getThrower() instanceof EntityGoblin && entityIn instanceof EntityGoblin) {
 			return ((EntityGoblin) this.getThrower()).isOwner(entityIn);

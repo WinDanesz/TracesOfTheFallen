@@ -85,6 +85,8 @@ public class TileEntityArmillaryRenderer extends TileEntitySpecialRenderer<TileE
 		GlStateManager.translate(-0.5D, -0.5D, -0.5D);
 
 		GlStateManager.translate(centerX, centerY, centerZ);
+		// Apply outer ring's rotation first so it acts as a bone
+		GlStateManager.rotate(outerAngle, 0.0F, 1.0F, 0.0F);
 		// Apply static 90-degree offset so it is perpendicular to the outer ring
 		GlStateManager.rotate(90.0F, 0.0F, 1.0F, 0.0F);
 		// Rotate on X axis

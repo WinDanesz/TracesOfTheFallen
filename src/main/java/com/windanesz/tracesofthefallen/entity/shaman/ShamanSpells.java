@@ -2,24 +2,25 @@ package com.windanesz.tracesofthefallen.entity.shaman;
 
 import com.windanesz.tracesofthefallen.Settings;
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
-import com.windanesz.tracesofthefallen.network.PacketHandler;
-import com.windanesz.tracesofthefallen.packet.PacketSpawnCrumbs;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
 import com.windanesz.tracesofthefallen.entity.*;
 import com.windanesz.tracesofthefallen.init.ModItems;
-import net.minecraft.block.Block;
+import com.windanesz.tracesofthefallen.network.PacketHandler;
+import com.windanesz.tracesofthefallen.packet.PacketSpawnCrumbs;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.init.Blocks;
+import net.minecraft.entity.IEntityOwnable;
 import net.minecraft.init.MobEffects;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.WorldServer;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
 
 import java.util.*;
 
@@ -30,16 +31,16 @@ public class ShamanSpells {
 	private static final Map<Integer, ShamanSpell> SPELLS_BY_ID = new HashMap<>();
 	private static final List<ShamanSpell> ALL_SPELLS = new ArrayList<>();
 
-	public static boolean isAlly(EntityGoblinShaman shaman, net.minecraft.entity.Entity entity) {
+	public static boolean isAlly(EntityGoblinShaman shaman, Entity entity) {
 		if (entity == null || entity == shaman) return true;
 		if (shaman.isOwner(entity)) return true;
 		if (entity instanceof EntityGoblin) return true;
 		if (entity instanceof EntityGoblinSkeleton) return true;
-		if (entity instanceof com.windanesz.tracesofthefallen.entity.EntityTinybones) return true;
-		if (entity instanceof com.windanesz.tracesofthefallen.entity.EntityMinecrawler) return true;
-		if (entity instanceof com.windanesz.tracesofthefallen.entity.EntitySpecter || entity instanceof com.windanesz.tracesofthefallen.entity.EntityFamiliarSpecter) return true;
+		if (entity instanceof EntityTinybones) return true;
+		if (entity instanceof EntityMinecrawler) return true;
+		if (entity instanceof EntitySpecter || entity instanceof EntityFamiliarSpecter) return true;
 		if (entity instanceof EntityBloodTotem) return true;
-		if (entity instanceof net.minecraft.entity.IEntityOwnable && shaman.getOwner() != null && shaman.getOwner().equals(((net.minecraft.entity.IEntityOwnable) entity).getOwner())) return true;
+		if (entity instanceof IEntityOwnable && shaman.getOwner() != null && shaman.getOwner().equals(((IEntityOwnable) entity).getOwner())) return true;
 		return false;
 	}
 
@@ -764,7 +765,7 @@ public class ShamanSpells {
 				double d1 = target.getEntityBoundingBox().minY + (double) (target.height * 0.5F) - slash.posY;
 				double d2 = target.posZ - shaman.posZ;
 				slash.shoot(d0, d1, d2, 0.65F, 1.0F);
-				shaman.swingArm(net.minecraft.util.EnumHand.MAIN_HAND);
+				shaman.swingArm(EnumHand.MAIN_HAND);
 
 				shaman.world.playSound(null, shaman.posX, shaman.posY, shaman.posZ, SoundEvents.ENTITY_WITHER_SHOOT, SoundCategory.HOSTILE, 1.0F, 0.8F + shaman.getRNG().nextFloat() * 0.3F);
 				shaman.world.playSound(null, shaman.posX, shaman.posY, shaman.posZ, SoundEvents.ENTITY_PLAYER_ATTACK_SWEEP, SoundCategory.HOSTILE, 1.0F, 0.7F);
@@ -802,7 +803,7 @@ public class ShamanSpells {
 			List<EntityGoblinSkeleton> skeletons = shaman.world.getEntitiesWithinAABB(EntityGoblinSkeleton.class, shaman.getEntityBoundingBox().grow(32.0D, 16.0D, 32.0D));
 			for (EntityGoblinSkeleton skel : skeletons) {
 				if (skel.isOwner(shaman)) {
-					if (skel instanceof com.windanesz.tracesofthefallen.entity.EntityTinybones) {
+					if (skel instanceof EntityTinybones) {
 						ownedCount += 3;
 					} else {
 						ownedCount++;
@@ -888,7 +889,7 @@ public class ShamanSpells {
 					}
 				}
 				if (shaman.getRNG().nextInt(4) == 0) {
-					com.windanesz.tracesofthefallen.entity.EntityTinybones tinybones = new com.windanesz.tracesofthefallen.entity.EntityTinybones(shaman.world);
+					EntityTinybones tinybones = new EntityTinybones(shaman.world);
 					double angle = shaman.getRNG().nextDouble() * Math.PI * 2.0D;
 					double dist = 1.0D + shaman.getRNG().nextDouble() * 0.8D;
 					double sx = shaman.posX + Math.cos(angle) * dist;

@@ -54,6 +54,7 @@ public class ModEntities {
 		registry.register(createEntry(EntityTelescopeSeat.class, "telescope_seat", TrackingType.CONSTRUCT).build());
 		registry.register(createEntry(EntityGlassFloat.class, "glass_float", TrackingType.CONSTRUCT).build());
 		registry.register(createEntry(EntitySpecter.class, "specter", TrackingType.LIVING).egg(0xebf2ff,0x6aeba6).build());
+		registry.register(createEntry(EntitySpecterGrasper.class, "specter_grasper", TrackingType.LIVING).egg(0xebf2ff,0x4aaba6).build());
 		registry.register(createEntry(EntityFamiliarSpecter.class, "specter_familiar", TrackingType.LIVING).egg(0xebf2ff,0x6aeba6).build());
 		registry.register(createEntry(EntityModPainting.class, "forest_painting", TrackingType.LIVING).build());
 		registry.register(createEntry(EntityGoblin.class, "goblin", TrackingType.LIVING).egg(0x0d2e11,0x3eb049).build());
@@ -80,12 +81,15 @@ public class ModEntities {
 		registry.register(createEntry(EntityJawTrap.class, "jaw_trap", TrackingType.LIVING).build());
 		registry.register(createEntry(EntityBloodTotem.class, "blood_totem", TrackingType.LIVING).build());
 		registry.register(createEntry(EntityGoblinNest.class, "goblin_nest", TrackingType.LIVING).build());
+		registry.register(createEntry(EntityNestRock.class, "nest_rock", TrackingType.PROJECTILE).build());
 		registry.register(createEntry(EntitySidhe.class, "sidhe", TrackingType.LIVING).egg(0x1a1a1a, 0x8b008b).build());
 		registry.register(createEntry(EntityLamphead.class, "lamphead", TrackingType.LIVING).egg(0x0e4749, 0xffff00).build());
 		registry.register(createEntry(EntityFrostling.class, "frostling", TrackingType.LIVING).egg(0x5a8fb3, 0xbfd7e8).build());
 		registry.register(createEntry(EntityFrostlingMask.class, "frostling_mask", TrackingType.PROJECTILE).build());
 		registry.register(createEntry(EntityZapLightning.class, "zap_lightning", TrackingType.PROJECTILE).build());
 		registry.register(createEntry(EntityGnossic.class, "gnossic", TrackingType.LIVING).egg(0x2a2a2a, 0x6e1b1b).build());
+		registry.register(createEntry(EntitySubterfuge.class, "subterfuge", TrackingType.LIVING).egg(0x4a148c, 0xe1bee7).build());
+		registry.register(createEntry(EntityLost.class, "lost", TrackingType.LIVING).egg(0xffb6c1, 0x8b4513).build());
 	}
 
 	/**

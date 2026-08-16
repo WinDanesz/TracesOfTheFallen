@@ -3,17 +3,21 @@ package com.windanesz.tracesofthefallen.entity;
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAgeable;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.*;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
+import net.minecraft.init.MobEffects;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.pathfinding.Path;
+import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -85,7 +89,7 @@ public class EntityFrostling extends EntityTameable {
         this.tasks.addTask(2, this.aiSit);
         this.tasks.addTask(3, new EntityAIAttackMelee(this, 1.2D, false) {
             @Override
-            protected double getAttackReachSqr(net.minecraft.entity.EntityLivingBase attackTarget) {
+            protected double getAttackReachSqr(EntityLivingBase attackTarget) {
                 if (((EntityFrostling)this.attacker).biteCooldown <= 0) {
                     return 3.4D + attackTarget.width; // 4.0 squared (2.0 blocks distance) against standard 0.6 width players
                 }
@@ -350,15 +354,15 @@ public class EntityFrostling extends EntityTameable {
             this.world.setEntityState(this, (byte) 4);
             float damage = (float)this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).getAttributeValue();
             boolean flag = entityIn.attackEntityFrom(DamageSource.causeMobDamage(this), damage * 1.5F); // Bites hurt a bit more
-            if (flag && entityIn instanceof net.minecraft.entity.EntityLivingBase) {
-                ((net.minecraft.entity.EntityLivingBase) entityIn).addPotionEffect(new net.minecraft.potion.PotionEffect(net.minecraft.init.MobEffects.SLOWNESS, 40, 0));
+            if (flag && entityIn instanceof EntityLivingBase) {
+                ((EntityLivingBase) entityIn).addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, 40, 0));
             }
             return flag;
         } else {
             // Standard attack while biting is on cooldown
             this.world.setEntityState(this, (byte) 5);
             this.slashTimer = 12;
-            this.swingArm(net.minecraft.util.EnumHand.MAIN_HAND);
+            this.swingArm(EnumHand.MAIN_HAND);
             float damage = (float)this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).getAttributeValue();
             return entityIn.attackEntityFrom(DamageSource.causeMobDamage(this), damage);
         }
@@ -394,7 +398,7 @@ public class EntityFrostling extends EntityTameable {
             return false;
         }
         
-        if (!this.world.getBlockState(pos.down()).isSideSolid(this.world, pos.down(), net.minecraft.util.EnumFacing.UP)) {
+        if (!this.world.getBlockState(pos.down()).isSideSolid(this.world, pos.down(), EnumFacing.UP)) {
             return false;
         }
         

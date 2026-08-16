@@ -31,16 +31,14 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class BlockStoneCircle extends BlockContainer {
 	public static final PropertyDirection FACING = PropertyDirection.create("facing", EnumFacing.Plane.HORIZONTAL);
 	public static final PropertyBool SNOWY = PropertyBool.create("snowy");
 	public static final PropertyBool CORE = PropertyBool.create("core");
 	private static final FlatMultiblockPattern REQUIRED_FLAT_MULTIBLOCK = FlatMultiblockPattern.builder()
-			.addSquare(0, -2, 1)
-			.addSquare(0, 2, 1)
-			.addSquare(-2, 0, 1)
-			.addSquare(2, 0, 1)
+			.addRing(0, 0, 1)
 			.build();
 	public ResourceLocation lootTable;
 	public AxisAlignedBB boundingBox;
@@ -107,6 +105,11 @@ public class BlockStoneCircle extends BlockContainer {
 	public BlockStoneCircle setBoundingBox(AxisAlignedBB boundingBox) {
 		this.boundingBox = boundingBox;
 		return this;
+	}
+
+	@Override
+	public boolean canPlaceBlockAt(World worldIn, BlockPos pos) {
+		return super.canPlaceBlockAt(worldIn, pos) && canGenerateStructureAt(worldIn, pos.down());
 	}
 
 	@Override
@@ -265,7 +268,7 @@ public class BlockStoneCircle extends BlockContainer {
 			// Play teleport sound
 			playerMP.world.playSound(null, playerMP.posX, playerMP.posY, playerMP.posZ, SoundEvents.ENTITY_ENDERMEN_TELEPORT, SoundCategory.PLAYERS, 1.0F, 1.0F);
 
-			com.windanesz.tracesofthefallen.block.TileEntityWroughtCagedLamp.triggerNearbyWroughtLamps(playerMP.world, playerMP.getPosition());
+			TileEntityWroughtCagedLamp.triggerNearbyWroughtLamps(playerMP.world, playerMP.getPosition());
 
 			player.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "You have been teleported!"));
 		}
@@ -303,7 +306,7 @@ public class BlockStoneCircle extends BlockContainer {
 		return state.getBlock() instanceof BlockStoneCircle && !state.getValue(CORE);
 	}
 
-	public static void forEachStructurePos(BlockPos centerPos, java.util.function.Consumer<BlockPos> consumer) {
+	public static void forEachStructurePos(BlockPos centerPos, Consumer<BlockPos> consumer) {
 		consumer.accept(centerPos);
 		REQUIRED_FLAT_MULTIBLOCK.forEachPosition(centerPos, consumer);
 	}

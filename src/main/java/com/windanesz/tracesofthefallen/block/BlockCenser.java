@@ -2,8 +2,10 @@ package com.windanesz.tracesofthefallen.block;
 
 import com.windanesz.tracesofthefallen.IncenseEffects;
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
+import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.init.SoundEvents;
@@ -152,7 +154,7 @@ public class BlockCenser extends BlockDecoration {
 	}
 
 	@Override
-	public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, net.minecraft.entity.EntityLivingBase placer, ItemStack stack) {
+	public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
 		super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
 		TileEntityCenser censer = getCenser(worldIn, pos);
 		if (censer == null || !stack.hasTagCompound()) {
@@ -211,7 +213,7 @@ public class BlockCenser extends BlockDecoration {
 	}
 
 	@Override
-	public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, net.minecraft.block.Block blockIn, BlockPos fromPos) {
+	public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
 		super.neighborChanged(state, worldIn, pos, blockIn, fromPos);
 
 		if (!worldIn.isRemote) {

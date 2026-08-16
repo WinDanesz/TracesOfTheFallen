@@ -2,6 +2,7 @@ package com.windanesz.tracesofthefallen.entity;
 
 import com.windanesz.tracesofthefallen.Settings;
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
+import com.windanesz.tracesofthefallen.entity.shaman.ShamanSpells;
 import com.windanesz.tracesofthefallen.init.ModSounds;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.*;
@@ -135,7 +136,7 @@ public class EntitySpecter extends EntityMob implements IEntityOwnable {
             super.setAttackTarget(null);
             return;
         }
-        if (this.getOwner() instanceof com.windanesz.tracesofthefallen.entity.EntityGoblinShaman && com.windanesz.tracesofthefallen.entity.shaman.ShamanSpells.isAlly((com.windanesz.tracesofthefallen.entity.EntityGoblinShaman) this.getOwner(), entitylivingbaseIn)) {
+        if (this.getOwner() instanceof EntityGoblinShaman && ShamanSpells.isAlly((EntityGoblinShaman) this.getOwner(), entitylivingbaseIn)) {
             super.setAttackTarget(null);
             return;
         }
@@ -151,7 +152,7 @@ public class EntitySpecter extends EntityMob implements IEntityOwnable {
             if (this.isOwner(source.getTrueSource())) {
                 return false;
             }
-            if (this.getOwner() instanceof com.windanesz.tracesofthefallen.entity.EntityGoblinShaman && com.windanesz.tracesofthefallen.entity.shaman.ShamanSpells.isAlly((com.windanesz.tracesofthefallen.entity.EntityGoblinShaman) this.getOwner(), source.getTrueSource())) {
+            if (this.getOwner() instanceof EntityGoblinShaman && ShamanSpells.isAlly((EntityGoblinShaman) this.getOwner(), source.getTrueSource())) {
                 return false;
             }
         }
@@ -318,7 +319,7 @@ public class EntitySpecter extends EntityMob implements IEntityOwnable {
                     }
 
                     double distanceSq = this.parentEntity.getDistanceSq(target);
-                    if (distanceSq < 4.0D && this.attackCooldown <= 0) {
+                    if (distanceSq < 2.25D && this.attackCooldown <= 0) {
                         this.parentEntity.attackEntityAsMob(target);
                         this.attackCooldown = 20;
                         this.dashCooldown = 20;
@@ -369,7 +370,12 @@ public class EntitySpecter extends EntityMob implements IEntityOwnable {
 
     static class AIFindPlayerToAttack extends EntityAINearestAttackableTarget<EntityPlayer> {
         public AIFindPlayerToAttack(EntityCreature mob) {
-            super(mob, EntityPlayer.class, true);
+            super(mob, EntityPlayer.class, 10, true, false, new com.google.common.base.Predicate<EntityPlayer>() {
+                @Override
+                public boolean apply(@Nullable EntityPlayer player) {
+                    return player != null && !player.isPotionActive(com.windanesz.tracesofthefallen.init.ModPotions.serenity);
+                }
+            });
         }
 
         @Override

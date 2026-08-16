@@ -71,17 +71,21 @@ public class EntityWroughtBomb extends Entity implements IEntityMultiPart {
 
 		boolean isFire = source.isFireDamage() || (source.getImmediateSource() != null && source.getImmediateSource().isBurning());
 
-		if (this.getFuse() <= 0 && isFire) {
-			if (!this.world.isRemote) {
-				this.setFuse(Settings.miscSettings.wroughtBombFuseTime);
-				this.world.playSound(null, posX, posY, posZ, SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.BLOCKS, 1.0F, 1.0F);
+		if (this.getFuse() <= 0) {
+			if (isFire) {
+				if (!this.world.isRemote) {
+					this.setFuse(Settings.miscSettings.wroughtBombFuseTime);
+					this.world.playSound(null, posX, posY, posZ, SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.BLOCKS, 1.0F, 1.0F);
+				}
+			} else {
+				this.convertToBlock(false);
 			}
 			return true;
 		}
 
 		if (part == this.fusePart) {
 			if (this.getFuse() > 0 && !isFire) {
-				this.extinguishAndConvertToBlock();
+				this.convertToBlock(true);
 				return true;
 			}
 		}
@@ -92,22 +96,28 @@ public class EntityWroughtBomb extends Entity implements IEntityMultiPart {
 	public boolean attackEntityFrom(DamageSource source, float amount) {
 		if (this.isEntityInvulnerable(source)) return false;
 		boolean isFire = source.isFireDamage() || (source.getImmediateSource() != null && source.getImmediateSource().isBurning());
-		if (this.getFuse() <= 0 && isFire) {
-			if (!this.world.isRemote) {
-				this.setFuse(Settings.miscSettings.wroughtBombFuseTime);
-				this.world.playSound(null, posX, posY, posZ, SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.BLOCKS, 1.0F, 1.0F);
+		if (this.getFuse() <= 0) {
+			if (isFire) {
+				if (!this.world.isRemote) {
+					this.setFuse(Settings.miscSettings.wroughtBombFuseTime);
+					this.world.playSound(null, posX, posY, posZ, SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.BLOCKS, 1.0F, 1.0F);
+				}
+			} else {
+				this.convertToBlock(false);
 			}
 			return true;
 		}
 		return false;
 	}
 
-	public void extinguishAndConvertToBlock() {
+	public void convertToBlock(boolean playExtinguish) {
 		if (this.isDead) return;
 		Entity riding = this.getRidingEntity();
 		this.setDead();
 		if (!this.world.isRemote) {
-			this.world.playSound(null, posX, posY, posZ, SoundEvents.BLOCK_FIRE_EXTINGUISH, SoundCategory.BLOCKS, 0.5F, 2.6F + (this.world.rand.nextFloat() - this.world.rand.nextFloat()) * 0.8F);
+			if (playExtinguish) {
+				this.world.playSound(null, posX, posY, posZ, SoundEvents.BLOCK_FIRE_EXTINGUISH, SoundCategory.BLOCKS, 0.5F, 2.6F + (this.world.rand.nextFloat() - this.world.rand.nextFloat()) * 0.8F);
+			}
 			if (riding != null || !this.onGround) {
 				this.entityDropItem(new ItemStack(ModBlocks.wrought_bomb), 0.0F);
 			} else {
@@ -119,6 +129,10 @@ public class EntityWroughtBomb extends Entity implements IEntityMultiPart {
 				}
 			}
 		}
+	}
+
+	public void extinguishAndConvertToBlock() {
+		this.convertToBlock(true);
 	}
 
 	@Override

@@ -1,7 +1,9 @@
 package com.windanesz.tracesofthefallen;
 
+import com.windanesz.tracesofthefallen.block.TileEntityBrassFabricator;
 import com.windanesz.tracesofthefallen.block.TileEntityPorcelainVessel;
 import com.windanesz.tracesofthefallen.capability.HauntingCapability;
+import com.windanesz.tracesofthefallen.entity.ai.GoblinAITunnelerDig;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;
@@ -57,6 +59,10 @@ public class Settings {
 	@Config.Name("Mob Settings")
 	@Config.LangKey("settings.totf:general_settings")
 	public static MobSettings mobSettings = new MobSettings();
+
+	@Config.Name("Haunting Settings")
+	@Config.LangKey("settings.totf:general_settings")
+	public static HauntingSettings hauntingSettings = new HauntingSettings();
 
     public static class WorldgenSettings {
 
@@ -241,13 +247,6 @@ public class Settings {
 		@Config.Comment("The duration of the bliss effect in ticks.")
 		public double blissDurationForBurying = 1600;
 
-		@Config.Name("Haunting Reduced by Burying Remains")
-		@Config.Comment("The amount of haunting reduced by burying remains. Default: 3")
-		public int hauntingReducedByBuryingRemains = 3;
-
-		@Config.Name("Haunting Reduced by Placing a Flower on a Grave")
-		@Config.Comment("The amount of haunting reduced by placing a flower on a grave.")
-		public int hauntingReducedByPlacingFlowerOnGrave = 2;
 
 		@Config.Name("Goblin Group Hostility Threshold")
 		@Config.Comment("When this many or more goblins are nearby, they will ignore active goblin idols and become hostile. Set to 0 to disable group behavior. Default: 6")
@@ -332,7 +331,8 @@ public class Settings {
 		})
 		public String[] porcelainLiquidDefinitions = {
 				"tea|totf:spirited_away_tea_leaves|water|#891516|minecraft:regeneration|0|300",
-				"hot_chocolate|minecraft:dye@3|milk|#5A341A|minecraft:speed|0|900"
+				"hot_chocolate|minecraft:dye@3|milk|#5A341A|minecraft:speed|0|900",
+				"living_silver_tea|totf:living_silver_nugget|water|#A9B2C3|minecraft:haste|0|1200"
 		};
 
 		@Config.Name("Porcelain Heat Sources Map")
@@ -387,6 +387,10 @@ public class Settings {
 		@Config.Comment("Maximum number of goblins spawned by goblin nests. Default: 4")
 		public int nestGoblinMaxCount = 4;
 
+		@Config.Name("Nest Rock Attack Range")
+		@Config.Comment("The range in blocks for goblin nests to shoot rocks at nearby players. Default: 12")
+		public double nestRockAttackRange = 12.0D;
+
 		@Config.Name("Glass Float Max Rope Length")
 		@Config.Comment("Maximum number of rope segments that can be added to a glass float. Default: 6")
 		@Config.RangeInt(min = 1, max = 64)
@@ -401,13 +405,6 @@ public class Settings {
 		@Config.RequiresMcRestart
 		public int veiledMaskDurability = 500;
 
-		@Config.Name("Veiled Mask Haunting Amount")
-		@Config.Comment("The amount of haunting gained each time while wearing the Veiled Mask. Default: 1")
-		public int veiledMaskHauntingAmount = 1;
-
-		@Config.Name("Veiled Mask Haunting Tick Rate")
-		@Config.Comment("How often (in ticks) the Veiled Mask gains haunting and consumes durability. Default: 60 (3 seconds)")
-		public int veiledMaskHauntingTickRate = 60;
 
 		@Config.Name("Chitin Armor Durability")
 		@Config.Comment("Durability multiplier for the Chitin armor material. Iron is 15, Diamond is 33. Default: 24")
@@ -491,12 +488,6 @@ public class Settings {
 		@Config.RangeInt(min = 1)
 		public int siftersPerChunk = 1;
 
-		@Config.Name("Haunting Blocks")
-		@Config.Comment("List of blocks that affect haunting when mined. Format: 'modid:blockname:amount' or 'modid:blockname:meta:amount'. Negative values reduce haunting. Examples: 'totf:skeleton_crate:3', 'minecraft:wool:0:5', 'totf:grave_marker:-2'")
-		public String[] hauntingBlocks = {
-				"totf:skeleton_crate:3",
-				"totf:grave_marker:2"
-		};
 
 		@Config.Name("Wrought Bomb Fuse Time")
 		@Config.Comment("The fuse duration (in ticks) for the Wrought Bomb when primed or lit. Default: 200 (10 seconds)")
@@ -741,6 +732,11 @@ public class Settings {
 		@Config.RangeDouble(min = 0.0D, max = 10000.0D)
 		public double goblinEngineerAttackDamage = 3.0D;
 
+		@Config.Name("Goblin Engineer Bomb Follow Range")
+		@Config.Comment("Follow/detect range for the Goblin Engineer when carrying a bomb. Default: 45.0")
+		@Config.RangeDouble(min = 1.0D, max = 256.0D)
+		public double goblinEngineerBombFollowRange = 45.0D;
+
 		@Config.Name("Goblin Sapper Max Health")
 		@Config.Comment("Max health for the Goblin Sapper. Default: 20.0")
 		@Config.RangeDouble(min = 1.0D, max = 10000.0D)
@@ -840,9 +836,80 @@ public class Settings {
 		@Config.Comment("Base attack damage for Specters (and Familiar Specters). Default: 4.0")
 		@Config.RangeDouble(min = 0.0D, max = 10000.0D)
 		public double specterAttackDamage = 4.0D;
+
+		@Config.Name("Lost Edible Entities")
+		@Config.Comment("List of entity registry names that the Lost mob can grab, hold, and eat. Format: 'modid:entityname'")
+		public String[] lostEdibleEntities = {
+				"minecraft:chicken",
+				"minecraft:pig",
+				"minecraft:sheep",
+				"minecraft:rabbit",
+				"totf:goblin_starved",
+				"totf:goblin"
+		};
 	}
 
 	public static class MobSettings {
+		@Config.Name("Sidhe Spawn Weight")
+		@Config.Comment("Spawn weight for the Sidhe. Default: 5 (0 to disable)")
+		public int sidheSpawnWeight = 5;
+
+		@Config.Name("Sidhe Spawn Min Group")
+		@Config.Comment("Minimum group size for the Sidhe. Default: 1")
+		public int sidheSpawnMinGroup = 1;
+
+		@Config.Name("Sidhe Spawn Max Group")
+		@Config.Comment("Maximum group size for the Sidhe. Default: 1")
+		public int sidheSpawnMaxGroup = 1;
+
+		@Config.Name("Sidhe Biome Whitelist")
+		@Config.Comment("Biomes where Sidhe can spawn (empty = all allowed). Format: modid:biome")
+		public String[] sidheBiomeWhitelist = new String[0];
+
+		@Config.Name("Sidhe Biome Blacklist")
+		@Config.Comment("Biomes where Sidhe cannot spawn. Format: modid:biome")
+		public String[] sidheBiomeBlacklist = new String[0];
+
+		@Config.Name("Gnossic Spawn Weight")
+		@Config.Comment("Spawn weight for the Gnossic. Default: 5 (0 to disable)")
+		public int gnossicSpawnWeight = 5;
+
+		@Config.Name("Gnossic Spawn Min Group")
+		@Config.Comment("Minimum group size for the Gnossic. Default: 1")
+		public int gnossicSpawnMinGroup = 1;
+
+		@Config.Name("Gnossic Spawn Max Group")
+		@Config.Comment("Maximum group size for the Gnossic. Default: 1")
+		public int gnossicSpawnMaxGroup = 1;
+
+		@Config.Name("Gnossic Biome Whitelist")
+		@Config.Comment("Biomes where Gnossic can spawn (empty = all allowed). Format: modid:biome")
+		public String[] gnossicBiomeWhitelist = new String[0];
+
+		@Config.Name("Gnossic Biome Blacklist")
+		@Config.Comment("Biomes where Gnossic cannot spawn. Format: modid:biome")
+		public String[] gnossicBiomeBlacklist = new String[0];
+
+		@Config.Name("Frostling Spawn Weight")
+		@Config.Comment("Spawn weight for the Frostling. Default: 15 (0 to disable)")
+		public int frostlingSpawnWeight = 15;
+
+		@Config.Name("Frostling Spawn Min Group")
+		@Config.Comment("Minimum group size for the Frostling. Default: 1")
+		public int frostlingSpawnMinGroup = 1;
+
+		@Config.Name("Frostling Spawn Max Group")
+		@Config.Comment("Maximum group size for the Frostling. Default: 3")
+		public int frostlingSpawnMaxGroup = 3;
+
+		@Config.Name("Frostling Biome Whitelist")
+		@Config.Comment("Biomes where Frostling can spawn (empty = all allowed). Format: modid:biome")
+		public String[] frostlingBiomeWhitelist = new String[0];
+
+		@Config.Name("Frostling Biome Blacklist")
+		@Config.Comment("Biomes where Frostling cannot spawn. Format: modid:biome")
+		public String[] frostlingBiomeBlacklist = new String[0];
+
 		@Config.Name("Gnossic Burns In Sun")
 		@Config.Comment("Whether the Gnossic mob burns in sunlight. Default: false")
 		public boolean gnossicBurnsInSun = false;
@@ -861,7 +928,56 @@ public class Settings {
 		@Config.Comment("Max health for Lamphead. Default: 35.0")
 		@Config.RangeDouble(min = 1.0D, max = 10000.0D)
 		public double lampheadMaxHealth = 35.0D;
+
+		@Config.Name("Subterfuge Attack Damage")
+		@Config.Comment("Base attack damage for Subterfuge. Default: 300.0")
+		@Config.RangeDouble(min = 0.0D, max = 10000.0D)
+		public double subterfugeAttackDamage = 300.0D;
+
+		@Config.Name("Subterfuge Max Health")
+		@Config.Comment("Max health for Subterfuge. Default: 1000.0")
+		@Config.RangeDouble(min = 1.0D, max = 10000.0D)
+		public double subterfugeMaxHealth = 1000.0D;
 	}
+	public static class HauntingSettings {
+		@Config.Name("Haunting Reduced by Burying Remains")
+		@Config.Comment("The amount of haunting reduced by burying remains. Default: 3")
+		public int hauntingReducedByBuryingRemains = 3;
+
+		@Config.Name("Haunting Reduced by Placing a Flower on a Grave")
+		@Config.Comment("The amount of haunting reduced by placing a flower on a grave.")
+		public int hauntingReducedByPlacingFlowerOnGrave = 2;
+
+		@Config.Name("Veiled Mask Haunting Amount")
+		@Config.Comment("The amount of haunting gained each time while wearing the Veiled Mask. Default: 1")
+		public int veiledMaskHauntingAmount = 1;
+
+		@Config.Name("Veiled Mask Haunting Tick Rate")
+		@Config.Comment("How often (in ticks) the Veiled Mask gains haunting and consumes durability. Default: 60 (3 seconds)")
+		public int veiledMaskHauntingTickRate = 60;
+
+		@Config.Name("Haunting Blocks")
+		@Config.Comment("List of blocks that affect haunting when mined. Format: 'modid:blockname:amount' or 'modid:blockname:meta:amount'. Negative values reduce haunting. Examples: 'totf:skeleton_crate:3', 'minecraft:wool:0:5', 'totf:grave_marker:-2'")
+		public String[] hauntingBlocks = {
+				"totf:skeleton_crate:3",
+				"totf:grave_marker:2"
+		};
+
+		@Config.Name("Haunting Spawn Cooldown After Death")
+		@Config.Comment("How long (in ticks) haunting mobs are prevented from spawning after they kill a player. Default: 24000 (20 minutes)")
+		public int hauntingSpawnCooldownAfterDeath = 24000;
+
+		@Config.Name("Haunting Kill Item Reductions")
+		@Config.Comment("List of items that reduce haunting when used to land a killing blow on a haunting mob. Format: 'modid:item_name|haunting_reduction|item_damage' or 'modid:item_name:meta|haunting_reduction|item_damage'.")
+		public String[] hauntingKillItemReductions = {
+				"minecraft:golden_sword|1|5",
+				"minecraft:golden_pickaxe|1|5",
+				"minecraft:golden_axe|1|5",
+				"minecraft:golden_shovel|1|5",
+				"minecraft:golden_hoe|1|5"
+		};
+	}
+
     @SuppressWarnings("unused")
     @Mod.EventBusSubscriber(modid = TracesOfTheFallen.MODID)
     private static class EventHandler {
@@ -871,8 +987,8 @@ public class Settings {
                 ConfigManager.sync(TracesOfTheFallen.MODID, Config.Type.INSTANCE);
                 HauntingCapability.clearHauntingBlockCache();
                 TileEntityPorcelainVessel.clearHeatSourcesCache();
-                com.windanesz.tracesofthefallen.entity.ai.GoblinAITunnelerDig.clearBreakOverridesCache();
-                com.windanesz.tracesofthefallen.block.TileEntityBrassFabricator.clearFuelCache();
+                GoblinAITunnelerDig.clearBreakOverridesCache();
+                TileEntityBrassFabricator.clearFuelCache();
             }
         }
     }

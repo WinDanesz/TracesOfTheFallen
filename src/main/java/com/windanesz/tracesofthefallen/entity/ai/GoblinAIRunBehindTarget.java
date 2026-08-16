@@ -1,6 +1,6 @@
 package com.windanesz.tracesofthefallen.entity.ai;
 
-import com.windanesz.tracesofthefallen.entity.EntityGoblin;
+import com.windanesz.tracesofthefallen.entity.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
@@ -12,6 +12,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
 public class GoblinAIRunBehindTarget extends EntityAIBase {
 	protected final EntityCreature creature;
@@ -47,14 +48,14 @@ public class GoblinAIRunBehindTarget extends EntityAIBase {
 		}
 		
 		boolean hasHighTier = false;
-		java.util.List<EntityGoblin> nearby = this.creature.world.getEntitiesWithinAABB(EntityGoblin.class, this.creature.getEntityBoundingBox().grow(16.0D));
+		List<EntityGoblin> nearby = this.creature.world.getEntitiesWithinAABB(EntityGoblin.class, this.creature.getEntityBoundingBox().grow(16.0D));
 		for (EntityGoblin gob : nearby) {
 			if (!gob.isDead && (
-				gob instanceof com.windanesz.tracesofthefallen.entity.EntityGoblinShaman ||
-				gob instanceof com.windanesz.tracesofthefallen.entity.EntityGoblinEngineer ||
-				gob instanceof com.windanesz.tracesofthefallen.entity.EntityGoblinWarrior ||
-				gob instanceof com.windanesz.tracesofthefallen.entity.EntityGoblinWayfarer ||
-				gob instanceof com.windanesz.tracesofthefallen.entity.EntityGoblinBrute
+				gob instanceof EntityGoblinShaman ||
+				gob instanceof EntityGoblinEngineer ||
+				gob instanceof EntityGoblinWarrior ||
+				gob instanceof EntityGoblinWayfarer ||
+				gob instanceof EntityGoblinBrute
 			)) {
 				hasHighTier = true;
 				break;

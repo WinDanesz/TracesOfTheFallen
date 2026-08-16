@@ -2,6 +2,9 @@ package com.windanesz.tracesofthefallen.block;
 
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockBush;
+import net.minecraft.block.BlockLeaves;
+import net.minecraft.block.BlockVine;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
@@ -223,9 +226,9 @@ public class TileEntityStoneCircle extends TileEntity implements ITickable {
 		return block.isAir(state, world, pos)
 				|| block.isReplaceable(world, pos)
 				|| mat.isReplaceable()
-				|| block instanceof net.minecraft.block.BlockBush
-				|| block instanceof net.minecraft.block.BlockLeaves
-				|| block instanceof net.minecraft.block.BlockVine;
+				|| block instanceof BlockBush
+				|| block instanceof BlockLeaves
+				|| block instanceof BlockVine;
 	}
 
 	private boolean canGenerateAltarAt(World world, BlockPos pos) {

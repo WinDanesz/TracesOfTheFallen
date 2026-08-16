@@ -58,7 +58,7 @@ public class BlockTOFT extends BlockContainer {
     }
 
     @Override
-    public AxisAlignedBB getBoundingBox(IBlockState state, net.minecraft.world.IBlockAccess source, BlockPos pos) {
+    public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
         return this.boundingBox;
     }
 
@@ -96,7 +96,7 @@ public class BlockTOFT extends BlockContainer {
     }
 
     @Override
-    public boolean isSideSolid(IBlockState base_state, net.minecraft.world.IBlockAccess world, BlockPos pos, EnumFacing side) {
+    public boolean isSideSolid(IBlockState base_state, IBlockAccess world, BlockPos pos, EnumFacing side) {
         return false;
     }
 
@@ -159,7 +159,7 @@ public class BlockTOFT extends BlockContainer {
     }
 
 	@Override
-	public List<ItemStack> getDrops(net.minecraft.world.IBlockAccess iBlockAccess, BlockPos pos, IBlockState state, int fortune) {
+	public List<ItemStack> getDrops(IBlockAccess iBlockAccess, BlockPos pos, IBlockState state, int fortune) {
 		if (!(iBlockAccess instanceof WorldServer) || ((WorldServer) iBlockAccess).isRemote) {
 			return Collections.emptyList();
 		}

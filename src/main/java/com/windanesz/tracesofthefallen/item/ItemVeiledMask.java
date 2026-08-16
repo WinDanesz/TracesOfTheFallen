@@ -47,11 +47,11 @@ public class ItemVeiledMask extends ItemArmor {
         }
 
         // Check if it's time to apply effects (every X ticks based on config)
-        if (player.ticksExisted % Settings.miscSettings.veiledMaskHauntingTickRate == 0) {
+        if (player.ticksExisted % Settings.hauntingSettings.veiledMaskHauntingTickRate == 0) {
             // Increase haunting progress
             HauntingCapability cap = HauntingCapability.get(player);
             if (cap != null) {
-                cap.addHauntingProgress(Settings.miscSettings.veiledMaskHauntingAmount);
+                cap.addHauntingProgress(Settings.hauntingSettings.veiledMaskHauntingAmount);
             }
 
             // Consume durability (unless in creative mode)

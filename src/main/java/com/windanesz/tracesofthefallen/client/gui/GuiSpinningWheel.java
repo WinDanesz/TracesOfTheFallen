@@ -17,7 +17,7 @@ public class GuiSpinningWheel extends GuiContainer {
         super(new ContainerSpinningWheel(player, tileEntity));
         this.tileEntity = tileEntity;
         this.player = player;
-        this.xSize = 176;
+        this.xSize = 212;
         this.ySize = 133;
     }
 
@@ -30,8 +30,6 @@ public class GuiSpinningWheel extends GuiContainer {
 
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
-        String s = this.tileEntity.getDisplayName().getUnformattedText();
-        this.fontRenderer.drawString(s, this.xSize / 2 - this.fontRenderer.getStringWidth(s) / 2, 6, 4210752);
         this.fontRenderer.drawString(this.player.inventory.getDisplayName().getUnformattedText(), 8, this.ySize - 96 + 2, 4210752);
     }
 

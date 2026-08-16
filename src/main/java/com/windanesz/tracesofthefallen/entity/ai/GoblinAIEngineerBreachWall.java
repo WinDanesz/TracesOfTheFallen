@@ -596,7 +596,8 @@ public class GoblinAIEngineerBreachWall extends EntityAIBase {
 				for (int z = -10; z <= 10; z++) {
 					BlockPos pos = playerPos.add(x, y, z);
 
-					if (pos.distanceSq(this.engineer.posX, this.engineer.posY, this.engineer.posZ) > 900.0D) {
+					double maxDist = Settings.goblinSettings.goblinEngineerBombFollowRange + 10.0D;
+					if (pos.distanceSq(this.engineer.posX, this.engineer.posY, this.engineer.posZ) > maxDist * maxDist) {
 						continue;
 					}
 

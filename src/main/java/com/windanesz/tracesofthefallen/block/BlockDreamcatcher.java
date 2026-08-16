@@ -1,13 +1,24 @@
 package com.windanesz.tracesofthefallen.block;
 
+import com.windanesz.tracesofthefallen.client.ClientProxy;
+import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
 public class BlockDreamcatcher extends BlockDecoration {
 
@@ -36,36 +47,41 @@ public class BlockDreamcatcher extends BlockDecoration {
 	}
 
 	@Override
+	public boolean isPassable(IBlockAccess worldIn, BlockPos pos) {
+		return true;
+	}
+
+	@Override
 	public boolean hasTileEntity(IBlockState state) {
 		return true;
 	}
 
 	@Nullable
 	@Override
-	public net.minecraft.tileentity.TileEntity createTileEntity(net.minecraft.world.World world, IBlockState state) {
+	public TileEntity createTileEntity(World world, IBlockState state) {
 		return new TileEntityDreamcatcher();
 	}
 
 	@Override
-	@net.minecraftforge.fml.relauncher.SideOnly(net.minecraftforge.fml.relauncher.Side.CLIENT)
-	public void addInformation(net.minecraft.item.ItemStack stack, @Nullable net.minecraft.world.World worldIn, java.util.List<String> tooltip, net.minecraft.client.util.ITooltipFlag flagIn) {
+	@SideOnly(Side.CLIENT)
+	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
 		super.addInformation(stack, worldIn, tooltip, flagIn);
-		com.windanesz.tracesofthefallen.client.ClientProxy.addMultiLineDescription(tooltip, net.minecraft.util.text.TextFormatting.BOLD + "" + net.minecraft.util.text.TextFormatting.GRAY + net.minecraft.client.resources.I18n.format("tile.totf:dreamcatcher.desc"));
-		com.windanesz.tracesofthefallen.client.ClientProxy.addMultiLineDescription(tooltip, net.minecraft.util.text.TextFormatting.DARK_GRAY + net.minecraft.client.resources.I18n.format("tile.totf:dreamcatcher.desc2"));
+		ClientProxy.addMultiLineDescription(tooltip, TextFormatting.BOLD + "" + TextFormatting.GRAY + I18n.format("tile.totf:dreamcatcher.desc"));
+		ClientProxy.addMultiLineDescription(tooltip, TextFormatting.DARK_GRAY + I18n.format("tile.totf:dreamcatcher.desc2"));
 	}
 
 	@Override
-	public boolean canPlaceBlockAt(net.minecraft.world.World worldIn, BlockPos pos) {
+	public boolean canPlaceBlockAt(World worldIn, BlockPos pos) {
 		return super.canPlaceBlockAt(worldIn, pos) && this.canBlockStay(worldIn, pos);
 	}
 
-	private boolean canBlockStay(net.minecraft.world.World worldIn, BlockPos pos) {
+	private boolean canBlockStay(World worldIn, BlockPos pos) {
 		IBlockState upState = worldIn.getBlockState(pos.up());
 		return upState.isSideSolid(worldIn, pos.up(), EnumFacing.DOWN) || upState.getBlock().isLeaves(upState, worldIn, pos.up()) || upState.isOpaqueCube();
 	}
 
 	@Override
-	public void neighborChanged(IBlockState state, net.minecraft.world.World worldIn, BlockPos pos, net.minecraft.block.Block blockIn, BlockPos fromPos) {
+	public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
 		if (!this.canBlockStay(worldIn, pos)) {
 			this.dropBlockAsItem(worldIn, pos, state, 0);
 			worldIn.setBlockToAir(pos);

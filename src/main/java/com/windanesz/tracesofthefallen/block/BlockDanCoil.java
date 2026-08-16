@@ -1,5 +1,6 @@
 package com.windanesz.tracesofthefallen.block;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.material.Material;
@@ -41,12 +42,12 @@ public class BlockDanCoil extends BlockContainer {
     @Override
     @SideOnly(Side.CLIENT)
     public BlockRenderLayer getRenderLayer() {
-        return net.minecraft.util.BlockRenderLayer.CUTOUT;
+        return BlockRenderLayer.CUTOUT;
     }
 
     @Override
-    public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, net.minecraft.item.ItemStack stack) {
-        worldIn.setBlockState(pos, state.withProperty(FACING, EnumFacing.getDirectionFromEntityLiving(pos, placer)), 2);
+    public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
+        return this.getDefaultState().withProperty(FACING, facing);
     }
 
     @Override
@@ -80,5 +81,16 @@ public class BlockDanCoil extends BlockContainer {
         super.eventReceived(state, worldIn, pos, id, param);
         TileEntity tileentity = worldIn.getTileEntity(pos);
         return tileentity != null && tileentity.receiveClientEvent(id, param);
+    }
+
+    @Override
+    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
+        if (!worldIn.isRemote) {
+            boolean isPowered = worldIn.isBlockPowered(pos);
+            TileEntity te = worldIn.getTileEntity(pos);
+            if (te instanceof TileEntityDanCoil) {
+                ((TileEntityDanCoil) te).updateRedstone(isPowered);
+            }
+        }
     }
 }

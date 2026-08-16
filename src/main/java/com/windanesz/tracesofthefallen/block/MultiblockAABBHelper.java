@@ -54,7 +54,7 @@ public class MultiblockAABBHelper {
         }
 
         AxisAlignedBB northAABB = precomputedNorth.get(new BlockPos(ndx, dy, ndz));
-        if (northAABB == null || northAABB == Block.NULL_AABB) return Block.NULL_AABB;
+        if (northAABB == Block.NULL_AABB) return Block.NULL_AABB;
 
         // Rotate the canonical AABB into world-aligned local coordinates.
         switch (facing) {

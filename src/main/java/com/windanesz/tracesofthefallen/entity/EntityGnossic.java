@@ -1,18 +1,30 @@
 package com.windanesz.tracesofthefallen.entity;
 
+import com.windanesz.tracesofthefallen.Settings;
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.EnumCreatureAttribute;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.ai.EntityAIHurtByTarget;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
+import net.minecraft.entity.ai.EntityAIWander;
+import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.item.ItemStack;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.pathfinding.PathNodeType;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
@@ -39,10 +51,10 @@ public class EntityGnossic extends EntityMob {
         super(worldIn);
         this.setSize(0.6F, 1.95F);
         this.isImmuneToFire = true;
-        this.setPathPriority(net.minecraft.pathfinding.PathNodeType.WATER, 0.0F);
-        this.setPathPriority(net.minecraft.pathfinding.PathNodeType.LAVA, 0.0F);
-        this.setPathPriority(net.minecraft.pathfinding.PathNodeType.DANGER_FIRE, 0.0F);
-        this.setPathPriority(net.minecraft.pathfinding.PathNodeType.DAMAGE_FIRE, 0.0F);
+        this.setPathPriority(PathNodeType.WATER, 0.0F);
+        this.setPathPriority(PathNodeType.LAVA, 0.0F);
+        this.setPathPriority(PathNodeType.DANGER_FIRE, 0.0F);
+        this.setPathPriority(PathNodeType.DAMAGE_FIRE, 0.0F);
     }
 
     @Override
@@ -86,7 +98,7 @@ public class EntityGnossic extends EntityMob {
         this.tasks.addTask(3, new AIGnossicStalk(this));
         this.tasks.addTask(4, new AIGnossicWatchClosest(this, 40.0F));
         this.tasks.addTask(5, new AIGnossicLookIdle(this));
-        this.tasks.addTask(6, new net.minecraft.entity.ai.EntityAIWander(this, 0.35D)); // Very slow wander
+        this.tasks.addTask(6, new EntityAIWander(this, 0.35D)); // Very slow wander
 
         this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, false));
         this.targetTasks.addTask(2, new EntityAINearestAttackableTarget<>(this, EntityPlayer.class, true));
@@ -110,7 +122,7 @@ public class EntityGnossic extends EntityMob {
                 double mx = this.rand.nextGaussian() * 0.02D;
                 double my = this.rand.nextGaussian() * 0.02D;
                 double mz = this.rand.nextGaussian() * 0.02D;
-                this.world.spawnParticle(net.minecraft.util.EnumParticleTypes.SMOKE_LARGE, 
+                this.world.spawnParticle(EnumParticleTypes.SMOKE_LARGE,
                     this.posX + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width, 
                     this.posY + (double)(this.rand.nextFloat() * this.height), 
                     this.posZ + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width, 
@@ -122,9 +134,9 @@ public class EntityGnossic extends EntityMob {
             if (!this.world.isRemote && (this.recentlyHit > 0 && this.canDropLoot() && this.world.getGameRules().getBoolean("doMobLoot"))) {
                 int i = this.getExperiencePoints(this.attackingPlayer);
                 while (i > 0) {
-                    int j = net.minecraft.entity.item.EntityXPOrb.getXPSplit(i);
+                    int j = EntityXPOrb.getXPSplit(i);
                     i -= j;
-                    this.world.spawnEntity(new net.minecraft.entity.item.EntityXPOrb(this.world, this.posX, this.posY, this.posZ, j));
+                    this.world.spawnEntity(new EntityXPOrb(this.world, this.posX, this.posY, this.posZ, j));
                 }
             }
             this.setDead();
@@ -135,7 +147,7 @@ public class EntityGnossic extends EntityMob {
                     double mx = this.rand.nextGaussian() * 0.02D;
                     double my = this.rand.nextGaussian() * 0.02D;
                     double mz = this.rand.nextGaussian() * 0.02D;
-                    this.world.spawnParticle(net.minecraft.util.EnumParticleTypes.SMOKE_NORMAL, 
+                    this.world.spawnParticle(EnumParticleTypes.SMOKE_NORMAL,
                         this.posX + (double)(this.rand.nextFloat() * this.width), 
                         this.posY + 0.1D, 
                         this.posZ + (double)(this.rand.nextFloat() * this.width), 
@@ -157,23 +169,23 @@ public class EntityGnossic extends EntityMob {
     }
 
     @Override
-    public net.minecraft.entity.EnumCreatureAttribute getCreatureAttribute() {
-        return net.minecraft.entity.EnumCreatureAttribute.UNDEAD;
+    public EnumCreatureAttribute getCreatureAttribute() {
+        return EnumCreatureAttribute.UNDEAD;
     }
 
     @Override
     public void onLivingUpdate() {
-        if (this.world.isDaytime() && !this.world.isRemote && com.windanesz.tracesofthefallen.Settings.mobSettings.gnossicBurnsInSun) {
+        if (this.world.isDaytime() && !this.world.isRemote && Settings.mobSettings.gnossicBurnsInSun) {
             float f = this.getBrightness();
-            if (f > 0.5F && this.rand.nextFloat() * 30.0F < (f - 0.4F) * 2.0F && this.world.canSeeSky(new net.minecraft.util.math.BlockPos(this.posX, this.posY + (double)this.getEyeHeight(), this.posZ))) {
+            if (f > 0.5F && this.rand.nextFloat() * 30.0F < (f - 0.4F) * 2.0F && this.world.canSeeSky(new BlockPos(this.posX, this.posY + (double)this.getEyeHeight(), this.posZ))) {
                 boolean flag = true;
-                net.minecraft.item.ItemStack itemstack = this.getItemStackFromSlot(net.minecraft.inventory.EntityEquipmentSlot.HEAD);
+                ItemStack itemstack = this.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
                 if (!itemstack.isEmpty()) {
                     if (itemstack.isItemStackDamageable()) {
                         itemstack.setItemDamage(itemstack.getItemDamage() + this.rand.nextInt(2));
                         if (itemstack.getItemDamage() >= itemstack.getMaxDamage()) {
                             this.renderBrokenItemStack(itemstack);
-                            this.setItemStackToSlot(net.minecraft.inventory.EntityEquipmentSlot.HEAD, net.minecraft.item.ItemStack.EMPTY);
+                            this.setItemStackToSlot(EntityEquipmentSlot.HEAD, ItemStack.EMPTY);
                         }
                     }
                     flag = false;
@@ -187,7 +199,7 @@ public class EntityGnossic extends EntityMob {
         super.onLivingUpdate();
 
         this.prevDraperyYaw = this.draperyYaw;
-        float yawDiff = net.minecraft.util.math.MathHelper.wrapDegrees(this.renderYawOffset - this.draperyYaw);
+        float yawDiff = MathHelper.wrapDegrees(this.renderYawOffset - this.draperyYaw);
         this.draperyYaw += yawDiff * 0.15F; // Interpolate toward body yaw by 15% each tick
         
         this.prevFlightPitch = this.flightPitch;
@@ -201,8 +213,8 @@ public class EntityGnossic extends EntityMob {
         this.rippleIntensity += (targetRipple - this.rippleIntensity) * 0.2F;
 
         // Walk on water and lava logic
-        net.minecraft.util.math.BlockPos posDown = new net.minecraft.util.math.BlockPos(this.posX, this.getEntityBoundingBox().minY - 0.05D, this.posZ);
-        net.minecraft.block.state.IBlockState stateDown = this.world.getBlockState(posDown);
+        BlockPos posDown = new BlockPos(this.posX, this.getEntityBoundingBox().minY - 0.05D, this.posZ);
+        IBlockState stateDown = this.world.getBlockState(posDown);
         if (stateDown.getMaterial().isLiquid()) {
             if (this.motionY < 0.0D) {
                 this.motionY = 0.0D;
@@ -210,7 +222,7 @@ public class EntityGnossic extends EntityMob {
                 this.fallDistance = 0.0F;
             }
             // Keep them on top
-            if (this.world.getBlockState(new net.minecraft.util.math.BlockPos(this.posX, this.getEntityBoundingBox().minY, this.posZ)).getMaterial().isLiquid()) {
+            if (this.world.getBlockState(new BlockPos(this.posX, this.getEntityBoundingBox().minY, this.posZ)).getMaterial().isLiquid()) {
                 this.motionY = 0.1D;
             }
         }
@@ -223,7 +235,7 @@ public class EntityGnossic extends EntityMob {
             int state = this.getAttackState();
             int targetId = this.getDrainTargetId();
             if (state > 0 && targetId >= 0) {
-                net.minecraft.entity.Entity target = this.world.getEntityByID(targetId);
+                Entity target = this.world.getEntityByID(targetId);
                 if (target != null) {
                     if (state == 1 && this.ticksExisted % 2 == 0) { // Charging: slightly more smoke
                         double px = this.posX + (this.rand.nextDouble() - 0.5D) * 0.5D;
@@ -232,7 +244,7 @@ public class EntityGnossic extends EntityMob {
                         double dx = (target.posX - px) * 0.1D;
                         double dy = (target.posY + target.height / 2.0F - py) * 0.1D;
                         double dz = (target.posZ - pz) * 0.1D;
-                        this.world.spawnParticle(net.minecraft.util.EnumParticleTypes.SMOKE_NORMAL, px, py, pz, dx, dy, dz);
+                        this.world.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, px, py, pz, dx, dy, dz);
                     } else if (state == 2) { // Draining: lots of red particles every tick
                         for (int i = 0; i < 4; i++) {
                             double px = target.posX + (this.rand.nextDouble() - 0.5D) * (target.width * 0.8D);
@@ -247,13 +259,13 @@ public class EntityGnossic extends EntityMob {
     }
 
     @Override
-    protected void collideWithEntity(net.minecraft.entity.Entity entityIn) {
+    protected void collideWithEntity(Entity entityIn) {
         // No physical push or damage
     }
 
     @Override
-    public boolean attackEntityFrom(net.minecraft.util.DamageSource source, float amount) {
-        if (source == net.minecraft.util.DamageSource.IN_WALL) {
+    public boolean attackEntityFrom(DamageSource source, float amount) {
+        if (source == DamageSource.IN_WALL) {
             return false; // Immune to suffocation while noclipping
         }
         return super.attackEntityFrom(source, amount);
@@ -582,7 +594,7 @@ public class EntityGnossic extends EntityMob {
     // AIGnossicWatchClosest
     public static class AIGnossicWatchClosest extends EntityAIBase {
         private final EntityGnossic gnossic;
-        private net.minecraft.entity.Entity closestEntity;
+        private Entity closestEntity;
         private final float maxDistance;
         private int lookTime;
 

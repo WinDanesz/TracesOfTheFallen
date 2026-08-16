@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "XXX",
+    "XXX",
+    "XXX"
+  ],
+  "key": {
+    "X": {
+      "item": "totf:living_silver_speck"
+    }
+  },
+  "result": {
+    "item": "totf:living_silver_nugget"
+  }
+}

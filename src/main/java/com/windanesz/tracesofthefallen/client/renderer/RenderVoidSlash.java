@@ -8,6 +8,7 @@ import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.util.ResourceLocation;
+import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nullable;
 
@@ -47,7 +48,7 @@ public class RenderVoidSlash extends Render<EntityVoidSlash> {
 		GlStateManager.disableLighting();
 		OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 240.0F);
 
-		GlStateManager.matrixMode(org.lwjgl.opengl.GL11.GL_TEXTURE);
+		GlStateManager.matrixMode(GL11.GL_TEXTURE);
 		GlStateManager.pushMatrix();
 		GlStateManager.loadIdentity();
 		int[] frames = new int[]{0, 1, 2, 3, 4, 5, 3, 4, 3, 5, 3, 4, 3, 5, 3, 4, 3, 5, 3, 4, 3, 5, 3, 5};
@@ -55,15 +56,15 @@ public class RenderVoidSlash extends Render<EntityVoidSlash> {
 		if (frameIndex < 0) frameIndex = 0;
 		float vOffset = (float) frames[frameIndex] * (32.0F / 192.0F);
 		GlStateManager.translate(0.0F, vOffset, 0.0F);
-		GlStateManager.matrixMode(org.lwjgl.opengl.GL11.GL_MODELVIEW);
+		GlStateManager.matrixMode(GL11.GL_MODELVIEW);
 
 		GlStateManager.disableCull();
 		this.model.render(entity, 0.0F, 0.0F, (float) entity.ticksExisted + partialTicks, 0.0F, 0.0F, 0.0625F);
 		GlStateManager.enableCull();
 
-		GlStateManager.matrixMode(org.lwjgl.opengl.GL11.GL_TEXTURE);
+		GlStateManager.matrixMode(GL11.GL_TEXTURE);
 		GlStateManager.popMatrix();
-		GlStateManager.matrixMode(org.lwjgl.opengl.GL11.GL_MODELVIEW);
+		GlStateManager.matrixMode(GL11.GL_MODELVIEW);
 
 		int packedLight = entity.getBrightnessForRender();
 		int blockLight = packedLight % 65536;

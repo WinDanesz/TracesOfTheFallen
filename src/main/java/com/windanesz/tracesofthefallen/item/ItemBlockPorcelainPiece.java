@@ -23,6 +23,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Locale;
 
 public class ItemBlockPorcelainPiece extends ItemBlock {
 
@@ -166,7 +167,7 @@ public class ItemBlockPorcelainPiece extends ItemBlock {
 
 	@SideOnly(Side.CLIENT)
 	private String getLiquidDisplayName(String liquidType) {
-		String normalized = liquidType == null ? "" : liquidType.trim().toLowerCase(java.util.Locale.ROOT);
+		String normalized = liquidType == null ? "" : liquidType.trim().toLowerCase(Locale.ROOT);
 		if (normalized.isEmpty()) {
 			normalized = "tea";
 		}
@@ -177,7 +178,7 @@ public class ItemBlockPorcelainPiece extends ItemBlock {
 
 	@SideOnly(Side.CLIENT)
 	private String getFluidDisplayName(String fluidType) {
-		String normalized = fluidType == null ? "" : fluidType.trim().toLowerCase(java.util.Locale.ROOT);
+		String normalized = fluidType == null ? "" : fluidType.trim().toLowerCase(Locale.ROOT);
 		if (normalized.isEmpty()) {
 			return I18n.format("item.totf:porcelain_fluid.generic");
 		}

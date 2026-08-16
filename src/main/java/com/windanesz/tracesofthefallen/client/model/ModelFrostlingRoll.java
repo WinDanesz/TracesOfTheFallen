@@ -6,6 +6,7 @@ package com.windanesz.tracesofthefallen.client.model;// Made with Blockbench 5.1
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelBox;
 import net.minecraft.client.model.ModelRenderer;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
 
 public class ModelFrostlingRoll extends ModelBase {
@@ -139,17 +140,17 @@ public class ModelFrostlingRoll extends ModelBase {
 	public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
 		setRotationAngles(f, f1, f3, f4, f5, f5, entity);
 		
-		net.minecraft.client.renderer.GlStateManager.pushMatrix();
+		GlStateManager.pushMatrix();
 		
 		// Center of mass adjusted for the folded pose
-		net.minecraft.client.renderer.GlStateManager.translate(0.0F, 18.0F * f5, 1.0F * f5);
+		GlStateManager.translate(0.0F, 18.0F * f5, 1.0F * f5);
 		// Rotate the entire entity model over the X axis
-		net.minecraft.client.renderer.GlStateManager.rotate(f * 60.0F, 1.0F, 0.0F, 0.0F);
-		net.minecraft.client.renderer.GlStateManager.translate(0.0F, -18.0F * f5, -1.0F * f5);
+		GlStateManager.rotate(f * 60.0F, 1.0F, 0.0F, 0.0F);
+		GlStateManager.translate(0.0F, -18.0F * f5, -1.0F * f5);
 		
 		bone.render(f5);
 		
-		net.minecraft.client.renderer.GlStateManager.popMatrix();
+		GlStateManager.popMatrix();
 	}
 
 	@Override

@@ -18,6 +18,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
@@ -195,7 +196,7 @@ public class EntityAncestralSifter extends Entity {
 	}
 
 	@Override
-	public ItemStack getPickedResult(net.minecraft.util.math.RayTraceResult target) {
+	public ItemStack getPickedResult(RayTraceResult target) {
 		return getVariant().createStack();
 	}
 

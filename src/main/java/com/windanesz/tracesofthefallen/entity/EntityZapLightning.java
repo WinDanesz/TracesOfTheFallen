@@ -1,8 +1,12 @@
 package com.windanesz.tracesofthefallen.entity;
 
+import com.windanesz.tracesofthefallen.init.ModSounds;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.effect.EntityLightningBolt;
+import net.minecraft.entity.monster.EntityCreeper;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundCategory;
@@ -11,7 +15,9 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class EntityZapLightning extends Entity implements IEntityAdditionalSpawnData {
     private int lightningState;
@@ -26,9 +32,10 @@ public class EntityZapLightning extends Entity implements IEntityAdditionalSpawn
     public boolean isVisible = true;
     public int age = 0;
     public int maxAge = 55;
-    private java.util.Map<Entity, Integer> hitCooldowns = new java.util.HashMap<>();
+    private Map<Entity, Integer> hitCooldowns = new HashMap<>();
     public boolean singleDamageInstance = false;
     public boolean customMaxAge = false;
+    public boolean isReducedVisuals = false;
 
     public EntityZapLightning(World worldIn) {
         super(worldIn);
@@ -88,11 +95,11 @@ public class EntityZapLightning extends Entity implements IEntityAdditionalSpawn
         }
 
         if (this.age == 1 && !this.visualOnly) {
-            this.world.playSound(null, this.startX, this.startY, this.startZ, com.windanesz.tracesofthefallen.init.ModSounds.LIGHTNING_ZAP, SoundCategory.WEATHER, 2.0F, 0.5F + this.rand.nextFloat() * 0.2F);
+            this.world.playSound(null, this.startX, this.startY, this.startZ, ModSounds.LIGHTNING_ZAP, SoundCategory.WEATHER, 2.0F, 0.5F + this.rand.nextFloat() * 0.2F);
         }
         
         if (this.age == 50 && !this.visualOnly) {
-            this.world.playSound(null, this.startX, this.startY, this.startZ, com.windanesz.tracesofthefallen.init.ModSounds.LIGHTNING_ZAP, SoundCategory.WEATHER, 2.0F, 0.8F + this.rand.nextFloat() * 0.2F);
+            this.world.playSound(null, this.startX, this.startY, this.startZ, ModSounds.LIGHTNING_ZAP, SoundCategory.WEATHER, 2.0F, 0.8F + this.rand.nextFloat() * 0.2F);
         }
 
         if (!this.world.isRemote && !this.visualOnly) {
@@ -134,13 +141,14 @@ public class EntityZapLightning extends Entity implements IEntityAdditionalSpawn
                 double dot = toEntity.dotProduct(dir);
                 if (dot > 0 && dot < endVec.subtract(startVec).length()) {
                     Vec3d proj = startVec.add(dir.scale(dot));
-                    if (proj.distanceTo(ePos) <= 0.5 + e.width / 2.0) {
-                        if (e instanceof com.windanesz.tracesofthefallen.entity.EntityLamphead) {
-                            com.windanesz.tracesofthefallen.entity.EntityLamphead lamphead = (com.windanesz.tracesofthefallen.entity.EntityLamphead) e;
+                    double hitboxRadius = (this.isReducedVisuals ? 0.45 : 0.5) + e.width / 2.0;
+                    if (proj.distanceTo(ePos) <= hitboxRadius) {
+                        if (e instanceof EntityLamphead) {
+                            EntityLamphead lamphead = (EntityLamphead) e;
                             if (!lamphead.isTamed()) {
-                                net.minecraft.entity.player.EntityPlayer tamer = null;
-                                if (this.caster instanceof net.minecraft.entity.player.EntityPlayer) {
-                                    tamer = (net.minecraft.entity.player.EntityPlayer) this.caster;
+                                EntityPlayer tamer = null;
+                                if (this.caster instanceof EntityPlayer) {
+                                    tamer = (EntityPlayer) this.caster;
                                 } else {
                                     tamer = this.world.getClosestPlayerToEntity(lamphead, 12.0D);
                                 }
@@ -161,8 +169,8 @@ public class EntityZapLightning extends Entity implements IEntityAdditionalSpawn
                         if (hurt && !ignoreCooldowns) {
                             this.hitCooldowns.put(e, 20);
                         }
-                        if (e instanceof net.minecraft.entity.monster.EntityCreeper) {
-                            e.onStruckByLightning(new net.minecraft.entity.effect.EntityLightningBolt(this.world, e.posX, e.posY, e.posZ, true));
+                        if (e instanceof EntityCreeper) {
+                            e.onStruckByLightning(new EntityLightningBolt(this.world, e.posX, e.posY, e.posZ, true));
                             e.extinguish();
                         }
                     }
@@ -184,6 +192,7 @@ public class EntityZapLightning extends Entity implements IEntityAdditionalSpawn
         }
         this.visualOnly = compound.getBoolean("visualOnly");
         this.singleDamageInstance = compound.getBoolean("singleDamageInstance");
+        this.isReducedVisuals = compound.getBoolean("isReducedVisuals");
     }
 
     public void setDamage(float damage) {
@@ -196,6 +205,10 @@ public class EntityZapLightning extends Entity implements IEntityAdditionalSpawn
 
     public void setSingleDamageInstance(boolean singleDamageInstance) {
         this.singleDamageInstance = singleDamageInstance;
+    }
+
+    public void setReducedVisuals(boolean reduced) {
+        this.isReducedVisuals = reduced;
     }
 
     public void setMaxAge(int maxAge) {
@@ -218,6 +231,7 @@ public class EntityZapLightning extends Entity implements IEntityAdditionalSpawn
         compound.setFloat("damage", this.damage);
         compound.setBoolean("visualOnly", this.visualOnly);
         compound.setBoolean("singleDamageInstance", this.singleDamageInstance);
+        compound.setBoolean("isReducedVisuals", this.isReducedVisuals);
     }
 
     @Override
@@ -230,6 +244,7 @@ public class EntityZapLightning extends Entity implements IEntityAdditionalSpawn
         buffer.writeDouble(this.endZ);
         buffer.writeBoolean(this.visualOnly);
         buffer.writeBoolean(this.singleDamageInstance);
+        buffer.writeBoolean(this.isReducedVisuals);
     }
 
     @Override
@@ -242,5 +257,6 @@ public class EntityZapLightning extends Entity implements IEntityAdditionalSpawn
         this.endZ = additionalData.readDouble();
         this.visualOnly = additionalData.readBoolean();
         this.singleDamageInstance = additionalData.readBoolean();
+        this.isReducedVisuals = additionalData.readBoolean();
     }
 }

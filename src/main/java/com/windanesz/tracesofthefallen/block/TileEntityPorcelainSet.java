@@ -6,6 +6,7 @@ import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 
 import javax.annotation.Nullable;
+import java.util.Locale;
 
 public class TileEntityPorcelainSet extends TileEntity {
 
@@ -117,6 +118,6 @@ public class TileEntityPorcelainSet extends TileEntity {
 	}
 
 	private static String normalize(String content) {
-		return content == null ? "" : content.trim().toLowerCase(java.util.Locale.ROOT);
+		return content == null ? "" : content.trim().toLowerCase(Locale.ROOT);
 	}
 }

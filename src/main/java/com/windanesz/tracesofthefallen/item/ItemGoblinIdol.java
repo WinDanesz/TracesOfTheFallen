@@ -4,6 +4,7 @@ import com.windanesz.tracesofthefallen.init.ModSounds;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -72,9 +73,6 @@ public class ItemGoblinIdol extends Item {
 
 		return true;
 
-//		if (ItemStack.areItemsEqualIgnoreDurability(oldStack, newStack))
-//			return true;
-//		return super.canContinueUsing(oldStack, newStack);
 	}
 
 	@Override
@@ -115,7 +113,7 @@ public class ItemGoblinIdol extends Item {
 	}
 
 	@Override
-	public void onUpdate(ItemStack stack, World worldIn, net.minecraft.entity.Entity entityIn, int itemSlot, boolean isSelected) {
+	public void onUpdate(ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
 		if (!worldIn.isRemote && stack.hasTagCompound() && stack.getTagCompound().getBoolean("active")) {
 			if (entityIn instanceof EntityPlayerMP && entityIn.ticksExisted % 20 == 0) {
 				EntityPlayerMP player = (EntityPlayerMP) entityIn;

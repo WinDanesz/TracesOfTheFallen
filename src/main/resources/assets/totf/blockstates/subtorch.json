@@ -1,0 +1,9 @@
+{
+    "variants": {
+        "facing=up": { "model": "totf:subtorch" },
+        "facing=east": { "model": "totf:subtorch_wall" },
+        "facing=south": { "model": "totf:subtorch_wall", "y": 90 },
+        "facing=west": { "model": "totf:subtorch_wall", "y": 180 },
+        "facing=north": { "model": "totf:subtorch_wall", "y": 270 }
+    }
+}

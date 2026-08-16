@@ -8,10 +8,13 @@ import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.IWorldNameable;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
@@ -34,6 +37,12 @@ public class TileEntitySpinningWheel extends TileEntity implements ITickable, IW
 	@Override
 	public ITextComponent getDisplayName() {
 		return new TextComponentTranslation(getName());
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public AxisAlignedBB getRenderBoundingBox() {
+		return new AxisAlignedBB(getPos().add(-1, 0, -1), getPos().add(2, 2, 2));
 	}
 
 	private final ItemStackHandler stickInventory = new ItemStackHandler(1) {

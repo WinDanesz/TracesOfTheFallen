@@ -1,5 +1,6 @@
 package com.windanesz.tracesofthefallen.block;
 
+import com.windanesz.tracesofthefallen.Settings;
 import com.windanesz.tracesofthefallen.api.ILampheadInteractable;
 import com.windanesz.tracesofthefallen.entity.EntityLamphead;
 import com.windanesz.tracesofthefallen.inventory.ContainerBrassFabricator;
@@ -148,7 +149,7 @@ public class TileEntityBrassFabricator extends TileEntity implements ITickable, 
     private int getFuelValue(ItemStack stack) {
         if (customFuelCache == null) {
             customFuelCache = new HashMap<>();
-            for (String entry : com.windanesz.tracesofthefallen.Settings.miscSettings.fabricatorCustomFuels) {
+            for (String entry : Settings.miscSettings.fabricatorCustomFuels) {
                 String[] parts = entry.split("\\|");
                 if (parts.length == 2) {
                     try {

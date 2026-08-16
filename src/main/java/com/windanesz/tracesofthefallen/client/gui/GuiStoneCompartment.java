@@ -9,7 +9,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 
 public class GuiStoneCompartment extends GuiContainer {
-    private static final ResourceLocation TEXTURE = new ResourceLocation(TracesOfTheFallen.MODID, "textures/gui/gui_stone_compartment.png");
+    private static final ResourceLocation TEXTURE = new ResourceLocation(TracesOfTheFallen.MODID, "textures/gui/gui_stone_chest.png");
 
     public GuiStoneCompartment(EntityPlayer player, TileEntityStoneCompartment te) {
         super(new ContainerStoneCompartment(player, te));
@@ -26,9 +26,7 @@ public class GuiStoneCompartment extends GuiContainer {
 
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
-        String s = "Stone Compartment";
-        this.fontRenderer.drawString(s, this.xSize / 2 - this.fontRenderer.getStringWidth(s) / 2, 6, 4210752);
-        this.fontRenderer.drawString("Inventory", 8, this.ySize - 96 + 2, 4210752);
+        // Labels hidden
     }
 
     @Override

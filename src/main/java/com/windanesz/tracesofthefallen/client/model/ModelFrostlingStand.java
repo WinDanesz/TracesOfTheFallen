@@ -3,10 +3,12 @@ package com.windanesz.tracesofthefallen.client.model;// Made with Blockbench 5.1
 // Paste this class into your mod and generate all required imports
 
 
+import com.windanesz.tracesofthefallen.entity.EntityFrostling;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelBox;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.math.MathHelper;
 
 public class ModelFrostlingStand extends ModelBase {
 	private final ModelRenderer bone;
@@ -135,8 +137,8 @@ public class ModelFrostlingStand extends ModelBase {
 		float slash = 0.0F;
 		boolean noMask = false;
 		boolean shooting = false;
-		if (entityIn instanceof com.windanesz.tracesofthefallen.entity.EntityFrostling) {
-			com.windanesz.tracesofthefallen.entity.EntityFrostling frostling = (com.windanesz.tracesofthefallen.entity.EntityFrostling) entityIn;
+		if (entityIn instanceof EntityFrostling) {
+			EntityFrostling frostling = (EntityFrostling) entityIn;
 			float partialTicks = ageInTicks - entityIn.ticksExisted;
 			bite = frostling.getBiteProgress(partialTicks);
 			shoot = frostling.getShootProgress(partialTicks);
@@ -164,7 +166,7 @@ public class ModelFrostlingStand extends ModelBase {
 			this.craneum.rotateAngleX = 0.0F;
 			this.arm_left.rotateAngleY = 0.0F;
 			
-			float swingArc = net.minecraft.util.math.MathHelper.sin(slash * (float)Math.PI);
+			float swingArc = MathHelper.sin(slash * (float)Math.PI);
 			
 			// Right arm horizontal sweep forward
 			float rightArmX = -0.45F + (-1.2F - -0.45F) * swingArc;
@@ -183,11 +185,11 @@ public class ModelFrostlingStand extends ModelBase {
 			this.lower_jaw.rotateAngleX = 1.2F * bite;
 			
 			// Horizontally slide legs back and forth
-			this.leg_left.rotationPointZ = 8.5F + net.minecraft.util.math.MathHelper.cos(limbSwing * 0.6662F) * 2.5F * limbSwingAmount;
-			this.leg_right.rotationPointZ = 8.5F + net.minecraft.util.math.MathHelper.cos(limbSwing * 0.6662F + (float)Math.PI) * 2.5F * limbSwingAmount;
+			this.leg_left.rotationPointZ = 8.5F + MathHelper.cos(limbSwing * 0.6662F) * 2.5F * limbSwingAmount;
+			this.leg_right.rotationPointZ = 8.5F + MathHelper.cos(limbSwing * 0.6662F + (float)Math.PI) * 2.5F * limbSwingAmount;
 			
-			this.arm_left.rotateAngleX = net.minecraft.util.math.MathHelper.cos(limbSwing * 0.6662F + (float)Math.PI) * 0.4F * limbSwingAmount - 0.45F;
-			this.arm_right.rotateAngleX = net.minecraft.util.math.MathHelper.cos(limbSwing * 0.6662F) * 0.4F * limbSwingAmount + rightArmX;
+			this.arm_left.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F + (float)Math.PI) * 0.4F * limbSwingAmount - 0.45F;
+			this.arm_right.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F) * 0.4F * limbSwingAmount + rightArmX;
 		}
 	}
 

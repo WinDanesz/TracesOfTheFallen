@@ -7,17 +7,21 @@ import com.windanesz.tracesofthefallen.entity.ai.*;
 import com.windanesz.tracesofthefallen.init.ModBlocks;
 import com.windanesz.tracesofthefallen.init.ModItems;
 import com.windanesz.tracesofthefallen.init.ModSounds;
+import net.minecraft.block.BlockLadder;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IEntityOwnable;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.*;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.entity.monster.EntityGhast;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.passive.AbstractHorse;
 import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -28,6 +32,7 @@ import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.server.management.PreYggdrasilConverter;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
@@ -64,9 +69,10 @@ public class EntityGoblin extends EntityMob implements IEntityOwnable {
 		this.tasks.addTask(1, new GoblinAIPickupBomb(this));
 		this.tasks.addTask(1, new GoblinAIWaitForEngineer(this));
 		this.tasks.addTask(2, new GoblinAIRunBehindTarget(this, 2.0D));
-		this.tasks.addTask(3, new EntityAIAttackMelee(this, 1.3D, false));
-		this.tasks.addTask(3, new GoblinAIFollowOwner(this, 1.3D, 5.0F, 3.0F));
-		this.tasks.addTask(3, new GoblinAIMountMinecrawler(this, 1.2D));
+		this.tasks.addTask(3, new EntityAIAttackMelee(this, 1.3D, true));
+		this.tasks.addTask(4, new GoblinAIFollowOwner(this, 1.3D, 5.0F, 3.0F));
+		this.tasks.addTask(4, new GoblinAIMountMinecrawler(this, 1.2D));
+		this.tasks.addTask(5, new EntityAIWanderAvoidWater(this, 1.0D));
 		this.tasks.addTask(6, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
 		this.tasks.addTask(7, new EntityAILookIdle(this));
 
@@ -216,17 +222,17 @@ public class EntityGoblin extends EntityMob implements IEntityOwnable {
 
 	public BlockPos getActiveLadderPos() {
 		BlockPos pos = new BlockPos(this);
-		if (this.world.getBlockState(pos).getBlock() == net.minecraft.init.Blocks.LADDER) return pos;
-		for (net.minecraft.util.EnumFacing side : net.minecraft.util.EnumFacing.HORIZONTALS) {
-			if (this.world.getBlockState(pos.offset(side)).getBlock() == net.minecraft.init.Blocks.LADDER) {
+		if (this.world.getBlockState(pos).getBlock() == Blocks.LADDER) return pos;
+		for (EnumFacing side : EnumFacing.HORIZONTALS) {
+			if (this.world.getBlockState(pos.offset(side)).getBlock() == Blocks.LADDER) {
 				return pos.offset(side);
 			}
 		}
 		
 		pos = pos.down();
-		if (this.world.getBlockState(pos).getBlock() == net.minecraft.init.Blocks.LADDER) return pos;
-		for (net.minecraft.util.EnumFacing side : net.minecraft.util.EnumFacing.HORIZONTALS) {
-			if (this.world.getBlockState(pos.offset(side)).getBlock() == net.minecraft.init.Blocks.LADDER) {
+		if (this.world.getBlockState(pos).getBlock() == Blocks.LADDER) return pos;
+		for (EnumFacing side : EnumFacing.HORIZONTALS) {
+			if (this.world.getBlockState(pos.offset(side)).getBlock() == Blocks.LADDER) {
 				return pos.offset(side);
 			}
 		}
@@ -238,7 +244,7 @@ public class EntityGoblin extends EntityMob implements IEntityOwnable {
 	}
 
 	public double getAITargetY() {
-		net.minecraft.entity.EntityLivingBase target = this.getAttackTarget();
+		EntityLivingBase target = this.getAttackTarget();
 		if (target != null && !this.isWorking()) {
 			return target.posY;
 		} else if (this.getNavigator().getPath() != null && !this.getNavigator().getPath().isFinished()) {
@@ -270,12 +276,12 @@ public class EntityGoblin extends EntityMob implements IEntityOwnable {
 				if (this.isOnLadder()) {
 					BlockPos ladderPos = this.getActiveLadderPos();
 					if (ladderPos == null) ladderPos = new BlockPos(this);
-					boolean isTopLadder = this.world.getBlockState(ladderPos.up()).getBlock() != net.minecraft.init.Blocks.LADDER;
+					boolean isTopLadder = this.world.getBlockState(ladderPos.up()).getBlock() != Blocks.LADDER;
 					
 					if (!isTopLadder || this.posY - ladderPos.getY() < 1.5D) {
-						net.minecraft.block.state.IBlockState ladderState = this.world.getBlockState(ladderPos);
-						if (ladderState.getBlock() == net.minecraft.init.Blocks.LADDER) {
-							net.minecraft.util.EnumFacing facing = ladderState.getValue(net.minecraft.block.BlockLadder.FACING);
+						IBlockState ladderState = this.world.getBlockState(ladderPos);
+						if (ladderState.getBlock() == Blocks.LADDER) {
+							EnumFacing facing = ladderState.getValue(BlockLadder.FACING);
 							float targetYaw = facing.getHorizontalAngle();
 							this.rotationYaw = targetYaw;
 							this.rotationYawHead = targetYaw;
@@ -288,8 +294,8 @@ public class EntityGoblin extends EntityMob implements IEntityOwnable {
 					}
 				} else {
 					BlockPos pos = new BlockPos(this);
-					for (net.minecraft.util.EnumFacing side : net.minecraft.util.EnumFacing.HORIZONTALS) {
-						if (this.world.getBlockState(pos.offset(side)).getBlock() == net.minecraft.init.Blocks.LADDER) {
+					for (EnumFacing side : EnumFacing.HORIZONTALS) {
+						if (this.world.getBlockState(pos.offset(side)).getBlock() == Blocks.LADDER) {
 							float targetYaw = side.getHorizontalAngle();
 							this.rotationYaw = targetYaw;
 							this.rotationYawHead = targetYaw;
@@ -306,9 +312,9 @@ public class EntityGoblin extends EntityMob implements IEntityOwnable {
 				if (this.isOnLadder()) {
 					BlockPos ladderPos = this.getActiveLadderPos();
 					if (ladderPos != null) {
-						net.minecraft.block.state.IBlockState ladderState = this.world.getBlockState(ladderPos);
-						if (ladderState.getBlock() == net.minecraft.init.Blocks.LADDER) {
-							net.minecraft.util.EnumFacing facing = ladderState.getValue(net.minecraft.block.BlockLadder.FACING);
+						IBlockState ladderState = this.world.getBlockState(ladderPos);
+						if (ladderState.getBlock() == Blocks.LADDER) {
+							EnumFacing facing = ladderState.getValue(BlockLadder.FACING);
 							float targetYaw = facing.getHorizontalAngle();
 							this.rotationYaw = targetYaw;
 							this.rotationYawHead = targetYaw;
@@ -464,7 +470,7 @@ public class EntityGoblin extends EntityMob implements IEntityOwnable {
 	}
 
 	@Override
-	public void applyEntityCollision(net.minecraft.entity.Entity entityIn) {
+	public void applyEntityCollision(Entity entityIn) {
 		if (entityIn instanceof EntityGoblin) {
 			return;
 		}
@@ -552,7 +558,7 @@ public class EntityGoblin extends EntityMob implements IEntityOwnable {
 	}
 
 	@Override
-	protected void setEquipmentBasedOnDifficulty(net.minecraft.world.DifficultyInstance difficulty) {
+	protected void setEquipmentBasedOnDifficulty(DifficultyInstance difficulty) {
 		super.setEquipmentBasedOnDifficulty(difficulty);
 		this.initBroodEquipment();
 	}
@@ -574,7 +580,7 @@ public class EntityGoblin extends EntityMob implements IEntityOwnable {
 	}
 
 	@Override
-	protected void updateEquipmentIfNeeded(net.minecraft.entity.item.EntityItem itemEntity) {
+	protected void updateEquipmentIfNeeded(EntityItem itemEntity) {
 		ItemStack itemstack = itemEntity.getItem();
 		
 		if (itemstack.getItem() == Item.getItemFromBlock(ModBlocks.wrought_bomb)) {

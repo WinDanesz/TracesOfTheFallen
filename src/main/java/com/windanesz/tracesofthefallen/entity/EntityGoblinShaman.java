@@ -9,11 +9,13 @@ import com.windanesz.tracesofthefallen.entity.shaman.ShamanSpell;
 import com.windanesz.tracesofthefallen.entity.shaman.ShamanSpells;
 import com.windanesz.tracesofthefallen.entity.shaman.SpellSchool;
 import com.windanesz.tracesofthefallen.init.ModItems;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIAttackMelee;
 import net.minecraft.entity.ai.EntityAIBase;
+import net.minecraft.entity.ai.EntityAITasks;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -61,7 +63,7 @@ public class EntityGoblinShaman extends EntityGoblin {
 		super.initEntityAI();
 		EntityAIBase meleeTask = null;
 		EntityAIBase runBehindTask = null;
-		for (net.minecraft.entity.ai.EntityAITasks.EntityAITaskEntry entry : this.tasks.taskEntries) {
+		for (EntityAITasks.EntityAITaskEntry entry : this.tasks.taskEntries) {
 			if (entry.action instanceof EntityAIAttackMelee) {
 				meleeTask = entry.action;
 			}
@@ -382,7 +384,7 @@ public class EntityGoblinShaman extends EntityGoblin {
 	}
 
 	@Override
-	public boolean attackEntityAsMob(net.minecraft.entity.Entity entityIn) {
+	public boolean attackEntityAsMob(Entity entityIn) {
 		if (this.getSpellCastingTimer() > 0) {
 			return false;
 		}

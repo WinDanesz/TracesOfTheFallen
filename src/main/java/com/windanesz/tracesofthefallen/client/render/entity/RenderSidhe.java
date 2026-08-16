@@ -2,6 +2,7 @@ package com.windanesz.tracesofthefallen.client.render.entity;
 
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
 import com.windanesz.tracesofthefallen.client.model.ModelSidhe;
+import com.windanesz.tracesofthefallen.client.render.entity.layers.LayerSidheEyes;
 import com.windanesz.tracesofthefallen.entity.EntitySidhe;
 import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.client.renderer.entity.RenderManager;
@@ -15,7 +16,7 @@ public class RenderSidhe extends RenderLiving<EntitySidhe> {
 
 	public RenderSidhe(RenderManager rendermanagerIn) {
 		super(rendermanagerIn, new ModelSidhe(), 0.5F);
-		this.addLayer(new com.windanesz.tracesofthefallen.client.render.entity.layers.LayerSidheEyes(this));
+		this.addLayer(new LayerSidheEyes(this));
 	}
 
 	@Nullable

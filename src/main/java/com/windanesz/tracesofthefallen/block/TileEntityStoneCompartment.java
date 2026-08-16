@@ -22,7 +22,7 @@ public class TileEntityStoneCompartment extends TileEntity implements ITickable,
     public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newSate) {
         return oldState.getBlock() != newSate.getBlock();
     }
-    public final ItemStackHandler inventory = new ItemStackHandler(8) {
+    public final ItemStackHandler inventory = new ItemStackHandler(9) {
         @Override
         protected void onContentsChanged(int slot) {
             markDirty();

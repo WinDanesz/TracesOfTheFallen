@@ -1,0 +1,57 @@
+{
+	"format_version": "1.9.0",
+	"credit": "Made by Foreck with Blockbench",
+	"textures": {
+		"0": "totf:blocks/stone_chest_top",
+		"1": "totf:blocks/stone_chest_front",
+		"2": "totf:blocks/stone_chest_side",
+		"particle": "totf:blocks/stone_chest_top"
+	},
+	"elements": [
+		{
+			"from": [0, 9, 4],
+			"to": [16, 10, 12],
+			"rotation": {"angle": 0, "axis": "x", "origin": [8, 9.78377, 8]},
+			"faces": {
+				"north": {"uv": [0, 0, 16, 1], "texture": "#0"},
+				"east": {"uv": [0, 0, 8, 1], "texture": "#0"},
+				"south": {"uv": [0, 0, 16, 1], "texture": "#0"},
+				"west": {"uv": [0, 0, 8, 1], "texture": "#0"},
+				"up": {"uv": [0, 0, 16, 8], "texture": "#0"},
+				"down": {"uv": [0, 0, 16, 8], "texture": "#0"}
+			}
+		},
+		{
+			"from": [1, 9.93159, 5.31111],
+			"to": [15, 11.13159, 8.56111],
+			"rotation": {"angle": -22.5, "axis": "x", "origin": [8, 9.78377, 8]},
+			"faces": {
+				"north": {"uv": [0, 0, 14, 1], "texture": "#0"},
+				"east": {"uv": [0, 0, 3, 1], "texture": "#0"},
+				"south": {"uv": [0, 0, 14, 1], "texture": "#0"},
+				"west": {"uv": [0, 0, 3, 1], "texture": "#0"},
+				"up": {"uv": [0, 0, 14, 3], "texture": "#0"},
+				"down": {"uv": [1, 1, 15, 4], "texture": "#0"}
+			}
+		},
+		{
+			"from": [1, 9.93159, 7.43889],
+			"to": [15, 11.13159, 10.68889],
+			"rotation": {"angle": 22.5, "axis": "x", "origin": [8, 9.78377, 8]},
+			"faces": {
+				"north": {"uv": [14, 0, 0, 1], "texture": "#0"},
+				"east": {"uv": [3, 0, 0, 1], "texture": "#0"},
+				"south": {"uv": [14, 0, 0, 1], "texture": "#0"},
+				"west": {"uv": [3, 0, 0, 1], "texture": "#0"},
+				"up": {"uv": [1, 7, 15, 4], "texture": "#0"},
+				"down": {"uv": [1, 4, 15, 1], "texture": "#0"}
+			}
+		}
+	],
+	"display": {
+		"gui": {
+			"rotation": [30, -135, 0],
+			"scale": [0.625, 0.625, 0.625]
+		}
+	}
+}

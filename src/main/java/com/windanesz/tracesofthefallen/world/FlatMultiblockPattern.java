@@ -51,6 +51,20 @@ public final class FlatMultiblockPattern {
 			return this;
 		}
 
+		public Builder addRing(int centerX, int centerZ, int radius) {
+			for (int x = centerX - radius; x <= centerX + radius; x++) {
+				for (int z = centerZ - radius; z <= centerZ + radius; z++) {
+					if (Math.abs(x - centerX) == radius || Math.abs(z - centerZ) == radius) {
+						BlockPos offset = new BlockPos(x, 0, z);
+						if (!positions.contains(offset)) {
+							positions.add(offset);
+						}
+					}
+				}
+			}
+			return this;
+		}
+
 		public FlatMultiblockPattern build() {
 			return new FlatMultiblockPattern(positions);
 		}

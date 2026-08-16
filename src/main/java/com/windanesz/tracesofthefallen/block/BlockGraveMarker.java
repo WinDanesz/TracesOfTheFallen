@@ -7,11 +7,13 @@ import com.windanesz.tracesofthefallen.init.ModBlocks;
 import com.windanesz.tracesofthefallen.init.ModPotions;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockFlower;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemSpade;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionEffect;
@@ -70,7 +72,7 @@ public class BlockGraveMarker extends BlockTOFT {
 							EntityPlayerMP player = (EntityPlayerMP) playerIn;
 							HauntingCapability haunting = HauntingCapability.get(player);
 							if (haunting != null) {
-								int toReduce = Settings.miscSettings.hauntingReducedByPlacingFlowerOnGrave;
+								int toReduce = Settings.hauntingSettings.hauntingReducedByPlacingFlowerOnGrave;
 								haunting.reduceHauntingProgress(toReduce);
 							}
 							Advancement advancement = player.getServer().getAdvancementManager().getAdvancement(new ResourceLocation(TracesOfTheFallen.MODID, "flower_on_grave"));
@@ -101,14 +103,14 @@ public class BlockGraveMarker extends BlockTOFT {
 	}
 
 	private boolean canBePotted(ItemStack stack) {
-		return stack.getItem() instanceof net.minecraft.item.ItemBlock && (
-				getBlockFromItem(stack.getItem()) instanceof net.minecraft.block.BlockFlower ||
-						getBlockFromItem(stack.getItem()) == net.minecraft.init.Blocks.RED_MUSHROOM ||
-						getBlockFromItem(stack.getItem()) == net.minecraft.init.Blocks.BROWN_MUSHROOM ||
-						getBlockFromItem(stack.getItem()) == net.minecraft.init.Blocks.CACTUS ||
-						getBlockFromItem(stack.getItem()) == net.minecraft.init.Blocks.TALLGRASS ||
-						getBlockFromItem(stack.getItem()) == net.minecraft.init.Blocks.DEADBUSH ||
-						getBlockFromItem(stack.getItem()) == net.minecraft.init.Blocks.YELLOW_FLOWER ||
+		return stack.getItem() instanceof ItemBlock && (
+				getBlockFromItem(stack.getItem()) instanceof BlockFlower ||
+						getBlockFromItem(stack.getItem()) == Blocks.RED_MUSHROOM ||
+						getBlockFromItem(stack.getItem()) == Blocks.BROWN_MUSHROOM ||
+						getBlockFromItem(stack.getItem()) == Blocks.CACTUS ||
+						getBlockFromItem(stack.getItem()) == Blocks.TALLGRASS ||
+						getBlockFromItem(stack.getItem()) == Blocks.DEADBUSH ||
+						getBlockFromItem(stack.getItem()) == Blocks.YELLOW_FLOWER ||
 						getBlockFromItem(stack.getItem()) == ModBlocks.rose ||
 						getBlockFromItem(stack.getItem()) == ModBlocks.grave_rose
 		);

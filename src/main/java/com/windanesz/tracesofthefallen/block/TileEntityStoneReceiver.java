@@ -1,5 +1,6 @@
 package com.windanesz.tracesofthefallen.block;
 
+import com.windanesz.tracesofthefallen.Settings;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -31,7 +32,7 @@ public class TileEntityStoneReceiver extends TileEntity implements ITickable {
 
     public void trigger() {
         if (!world.isRemote) {
-            this.ticksRemaining = com.windanesz.tracesofthefallen.Settings.miscSettings.stoneReceiverPulseDurationTicks;
+            this.ticksRemaining = Settings.miscSettings.stoneReceiverPulseDurationTicks;
             if (!active) {
                 this.active = true;
                 IBlockState state = world.getBlockState(pos);

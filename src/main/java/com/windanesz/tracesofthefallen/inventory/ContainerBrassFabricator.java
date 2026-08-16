@@ -3,8 +3,11 @@ package com.windanesz.tracesofthefallen.inventory;
 import com.windanesz.tracesofthefallen.block.TileEntityBrassFabricator;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
+import net.minecraft.inventory.IContainerListener;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
 
@@ -120,7 +123,7 @@ public class ContainerBrassFabricator extends Container {
         if (te == null) return;
         
         for (int i = 0; i < this.listeners.size(); ++i) {
-            net.minecraft.inventory.IContainerListener listener = this.listeners.get(i);
+            IContainerListener listener = this.listeners.get(i);
             
             if (this.burnTime != te.burnTime) {
                 listener.sendWindowProperty(this, 0, te.burnTime);
@@ -143,7 +146,7 @@ public class ContainerBrassFabricator extends Container {
     }
 
     @Override
-    @net.minecraftforge.fml.relauncher.SideOnly(net.minecraftforge.fml.relauncher.Side.CLIENT)
+    @SideOnly(Side.CLIENT)
     public void updateProgressBar(int id, int data) {
         if (te == null) return;
         

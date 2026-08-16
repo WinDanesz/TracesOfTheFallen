@@ -1,5 +1,6 @@
 package com.windanesz.tracesofthefallen.client.model;
 
+import com.windanesz.tracesofthefallen.entity.EntityLamphead;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelBox;
 import net.minecraft.client.model.ModelRenderer;
@@ -155,8 +156,8 @@ public class ModelLamphead extends ModelBase {
 
 		float slam = 0.0F;
 		float squeeze = 0.0F;
-		if (entityIn instanceof com.windanesz.tracesofthefallen.entity.EntityLamphead) {
-			com.windanesz.tracesofthefallen.entity.EntityLamphead lamphead = (com.windanesz.tracesofthefallen.entity.EntityLamphead) entityIn;
+		if (entityIn instanceof EntityLamphead) {
+			EntityLamphead lamphead = (EntityLamphead) entityIn;
 			slam = lamphead.headSlamProgress;
 			float partialTicks = ageInTicks - (float)entityIn.ticksExisted;
 			squeeze = lamphead.prevSqueezeProgress + (lamphead.squeezeProgress - lamphead.prevSqueezeProgress) * partialTicks;
@@ -188,8 +189,8 @@ public class ModelLamphead extends ModelBase {
 		boolean attackStance = false;
 		float interpolatedAttackProgress = 0.0F;
 
-		if (entityIn instanceof com.windanesz.tracesofthefallen.entity.EntityLamphead) {
-			com.windanesz.tracesofthefallen.entity.EntityLamphead lamphead = (com.windanesz.tracesofthefallen.entity.EntityLamphead) entityIn;
+		if (entityIn instanceof EntityLamphead) {
+			EntityLamphead lamphead = (EntityLamphead) entityIn;
 			attackStance = lamphead.isInAttackStance();
 			
 			float partialTicks = ageInTicks - (float)entityIn.ticksExisted;
@@ -229,8 +230,8 @@ public class ModelLamphead extends ModelBase {
 
 		// Fabricating animation
 		float fabricate = 0.0F;
-		if (entityIn instanceof com.windanesz.tracesofthefallen.entity.EntityLamphead) {
-			com.windanesz.tracesofthefallen.entity.EntityLamphead lamphead = (com.windanesz.tracesofthefallen.entity.EntityLamphead) entityIn;
+		if (entityIn instanceof EntityLamphead) {
+			EntityLamphead lamphead = (EntityLamphead) entityIn;
 			float partialTicks = ageInTicks - (float)entityIn.ticksExisted;
 			fabricate = lamphead.prevFabricateProgress + (lamphead.fabricateProgress - lamphead.prevFabricateProgress) * partialTicks;
 		}

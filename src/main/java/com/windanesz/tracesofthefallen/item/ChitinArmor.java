@@ -13,6 +13,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
@@ -104,7 +105,7 @@ public class ChitinArmor extends ItemArmor {
 				&& isChitinPiece(player.getItemStackFromSlot(EntityEquipmentSlot.FEET), ModItems.chitin_boots);
 	}
 
-	private static boolean isChitinPiece(ItemStack stack, net.minecraft.item.Item expected) {
+	private static boolean isChitinPiece(ItemStack stack, Item expected) {
 		return !stack.isEmpty() && stack.getItem() == expected;
 	}
 }

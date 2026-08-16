@@ -4,6 +4,8 @@ import com.windanesz.tracesofthefallen.PorcelainLiquids;
 import com.windanesz.tracesofthefallen.Settings;
 import com.windanesz.tracesofthefallen.init.ModBlocks;
 import net.minecraft.block.Block;
+import net.minecraft.block.properties.IProperty;
+import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
@@ -417,7 +419,7 @@ public class TileEntityPorcelainVessel extends TileEntity implements ITickable {
 	}
 
 	@Override
-	public boolean shouldRefresh(World world, BlockPos pos, net.minecraft.block.state.IBlockState oldState, net.minecraft.block.state.IBlockState newState) {
+	public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newState) {
 		return oldState.getBlock() != newState.getBlock();
 	}
 
@@ -578,10 +580,10 @@ public class TileEntityPorcelainVessel extends TileEntity implements ITickable {
 						if ("*".equals(trimmed) || "any".equalsIgnoreCase(trimmed)) {
 							return true;
 						}
-						for (net.minecraft.block.properties.IProperty<?> prop : belowState.getPropertyKeys()) {
+						for (IProperty<?> prop : belowState.getPropertyKeys()) {
 							if (prop.getName().equalsIgnoreCase(trimmed)) {
-								if (prop instanceof net.minecraft.block.properties.PropertyBool) {
-									return belowState.getValue((net.minecraft.block.properties.PropertyBool) prop);
+								if (prop instanceof PropertyBool) {
+									return belowState.getValue((PropertyBool) prop);
 								}
 							}
 						}

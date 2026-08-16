@@ -26,6 +26,7 @@ import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 
 import javax.annotation.Nullable;
+import java.util.List;
 import java.util.UUID;
 
 public class EntityGoblinSkeleton extends EntityMob implements IEntityOwnable {
@@ -55,7 +56,7 @@ public class EntityGoblinSkeleton extends EntityMob implements IEntityOwnable {
 	@Override
 	protected void initEntityAI() {
 		this.tasks.addTask(1, new EntityAISwimming(this));
-		this.tasks.addTask(2, new EntityAIAttackMelee(this, 1.25D, false));
+		this.tasks.addTask(2, new EntityAIAttackMelee(this, 1.25D, true));
 		this.tasks.addTask(3, new AISkeletonFollowOwner(this, 1.1D, 5.0F, 2.0F));
 		this.tasks.addTask(4, new EntityAIWanderAvoidWater(this, 1.0D));
 		this.tasks.addTask(5, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
@@ -247,10 +248,10 @@ public class EntityGoblinSkeleton extends EntityMob implements IEntityOwnable {
 		if (state == 1) {
 			this.lungeTicks++;
 			if (!this.hasHitInCurrentLunge) {
-				java.util.List<EntityLivingBase> targets = this.world.getEntitiesWithinAABB(EntityLivingBase.class, this.getEntityBoundingBox().grow(0.2D, 0.3D, 0.2D));
+				List<EntityLivingBase> targets = this.world.getEntitiesWithinAABB(EntityLivingBase.class, this.getEntityBoundingBox().grow(0.2D, 0.3D, 0.2D));
 				for (EntityLivingBase target : targets) {
 					if (target != this && target != this.getOwner() && !this.isOnSameTeam(target) && target.isEntityAlive()) {
-						target.attackEntityFrom(net.minecraft.util.DamageSource.causeMobDamage(this), (float)this.getEntityAttribute(net.minecraft.entity.SharedMonsterAttributes.ATTACK_DAMAGE).getAttributeValue());
+						target.attackEntityFrom(DamageSource.causeMobDamage(this), (float)this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).getAttributeValue());
 						this.world.playSound(null, this.posX, this.posY, this.posZ, SoundEvents.ENTITY_PLAYER_ATTACK_SWEEP, this.getSoundCategory(), 1.0F, 1.1F);
 						this.hasHitInCurrentLunge = true;
 						this.motionX *= 0.3D;
@@ -382,7 +383,7 @@ public class EntityGoblinSkeleton extends EntityMob implements IEntityOwnable {
 
 	@Override
 	public boolean isOnSameTeam(Entity entityIn) {
-		if (entityIn instanceof EntityGoblinSkeleton || entityIn instanceof EntityGoblinShaman || entityIn instanceof EntityGoblin || this.isOwner(entityIn)) {
+		if (entityIn instanceof EntityGoblinSkeleton || entityIn instanceof EntityGoblin || this.isOwner(entityIn)) {
 			return true;
 		}
 		return super.isOnSameTeam(entityIn);

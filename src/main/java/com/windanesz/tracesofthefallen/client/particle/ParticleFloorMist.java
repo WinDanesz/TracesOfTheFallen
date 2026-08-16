@@ -14,7 +14,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class ParticleFloorMist extends ParticleBase {
 
-	private static final ResourceLocation MIST_TEXTURE = new ResourceLocation(TracesOfTheFallen.MODID, "textures/particles/mist.png");
+	private static final ResourceLocation MIST_TEXTURE = new ResourceLocation(TracesOfTheFallen.MODID, "textures/particle/mist.png");
 
 	public ParticleFloorMist(TextureManager textureManager, World world, double x, double y, double z, double movementX,
 			double movementY, double movementZ, int color) {

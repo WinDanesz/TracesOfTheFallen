@@ -7,6 +7,7 @@ import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -81,13 +82,27 @@ public class BlockTechnicalBlock extends Block {
 		return 1.0F;
 	}
 
+	@SuppressWarnings("deprecation")
+	@Override
+	public float getPlayerRelativeBlockHardness(IBlockState state, EntityPlayer player, World worldIn, BlockPos pos) {
+		BlockPos mainPos = getMainPos(worldIn, pos);
+		IBlockState mainState = worldIn.getBlockState(mainPos);
+		if (isProxyTarget(mainState)) {
+			return mainState.getBlock().getPlayerRelativeBlockHardness(mainState, player, worldIn, mainPos);
+		}
+		return super.getPlayerRelativeBlockHardness(state, player, worldIn, pos);
+	}
+
 	@Override
 	public boolean removedByPlayer(IBlockState state, World world, BlockPos pos, EntityPlayer player, boolean willHarvest) {
 		BlockPos mainPos = getMainPos(world, pos);
 		IBlockState mainState = world.getBlockState(mainPos);
 		if (isProxyTarget(mainState)) {
 			if (!player.capabilities.isCreativeMode && !world.isRemote) {
-				mainState.getBlock().dropBlockAsItem(world, mainPos, mainState, 0);
+				boolean canHarvest = mainState.getBlock().canHarvestBlock(world, mainPos, player);
+				if (canHarvest) {
+					mainState.getBlock().dropBlockAsItem(world, mainPos, mainState, 0);
+				}
 			}
 			world.setBlockToAir(mainPos);
 			return true;
@@ -96,7 +111,7 @@ public class BlockTechnicalBlock extends Block {
 	}
 
 	@Override
-	public void harvestBlock(World worldIn, EntityPlayer player, BlockPos pos, IBlockState state, @Nullable net.minecraft.tileentity.TileEntity te, ItemStack stack) {
+	public void harvestBlock(World worldIn, EntityPlayer player, BlockPos pos, IBlockState state, @Nullable TileEntity te, ItemStack stack) {
 		// Main block drops item when broken in removedByPlayer
 	}
 
@@ -151,6 +166,31 @@ public class BlockTechnicalBlock extends Block {
 			return aabb != null ? aabb : NULL_AABB;
 		}
 		return FULL_BLOCK_AABB;
+	}
+
+	@Nullable
+	@Override
+	public AxisAlignedBB getCollisionBoundingBox(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
+		BlockPos mainPos = getMainPos(worldIn, pos);
+		IBlockState mainState = worldIn.getBlockState(mainPos);
+		if (isProxyTarget(mainState)) {
+			AxisAlignedBB mainCol = mainState.getBlock().getCollisionBoundingBox(mainState, worldIn, mainPos);
+			if (mainCol == NULL_AABB) {
+				return NULL_AABB;
+			}
+			return getBoundingBox(state, worldIn, pos);
+		}
+		return super.getCollisionBoundingBox(state, worldIn, pos);
+	}
+
+	@Override
+	public boolean isPassable(IBlockAccess worldIn, BlockPos pos) {
+		BlockPos mainPos = getMainPos(worldIn, pos);
+		IBlockState mainState = worldIn.getBlockState(mainPos);
+		if (isProxyTarget(mainState)) {
+			return mainState.getBlock().isPassable(worldIn, mainPos);
+		}
+		return super.isPassable(worldIn, pos);
 	}
 
 	@Nullable

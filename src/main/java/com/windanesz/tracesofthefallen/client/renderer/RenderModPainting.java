@@ -308,10 +308,6 @@ public class RenderModPainting extends Render<EntityModPainting> {
             float armX1 = armX0 + armLength;
             float armY0 = bodyY1 - armWidth;
             float armY1 = bodyY1;
-            // bufferbuilder.pos(armX1 + xOffset, armY0 + yOffset, -0.5D).tex(44 / skinWidth, 20 / skinHeight).endVertex(); // Bottom-right
-            // bufferbuilder.pos(armX0 + xOffset, armY0 + yOffset, -0.5D).tex(44 / skinWidth, 32 / skinHeight).endVertex(); // Bottom-left
-            // bufferbuilder.pos(armX0 + xOffset, armY1 + yOffset, -0.5D).tex(40 / skinWidth, 32 / skinHeight).endVertex(); // Top-left
-            // bufferbuilder.pos(armX1 + xOffset, armY1 + yOffset, -0.5D).tex(40 / skinWidth, 20 / skinHeight).endVertex(); // Top-right
             bufferbuilder.pos(armX1 + xOffset, armY0 + yOffset, -0.5D).tex(44 / skinWidth, 32 / skinHeight).endVertex(); // Bottom-right
             bufferbuilder.pos(armX0 + xOffset, armY0 + yOffset, -0.5D).tex(44 / skinWidth, 20 / skinHeight).endVertex(); // Bottom-left
             bufferbuilder.pos(armX0 + xOffset, armY1 + yOffset, -0.5D).tex(40 / skinWidth, 20 / skinHeight).endVertex(); // Top-left

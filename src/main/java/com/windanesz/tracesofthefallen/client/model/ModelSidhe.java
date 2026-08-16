@@ -1,9 +1,12 @@
 package com.windanesz.tracesofthefallen.client.model;
 
+import com.windanesz.tracesofthefallen.entity.EntitySidhe;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelBox;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.math.MathHelper;
 
 public class ModelSidhe extends ModelBase {
 	private final ModelRenderer bone;
@@ -84,9 +87,9 @@ public class ModelSidhe extends ModelBase {
 		
 		float progress = 0.0F;
 		boolean isTilting = false;
-		if (entityIn instanceof com.windanesz.tracesofthefallen.entity.EntitySidhe) {
-			com.windanesz.tracesofthefallen.entity.EntitySidhe sidhe = (com.windanesz.tracesofthefallen.entity.EntitySidhe) entityIn;
-			float partialTicks = net.minecraft.client.Minecraft.getMinecraft().getRenderPartialTicks();
+		if (entityIn instanceof EntitySidhe) {
+			EntitySidhe sidhe = (EntitySidhe) entityIn;
+			float partialTicks = Minecraft.getMinecraft().getRenderPartialTicks();
 			progress = sidhe.prevStandProgress + (sidhe.standProgress - sidhe.prevStandProgress) * partialTicks;
 			isTilting = sidhe.isTilting();
 		}
@@ -137,18 +140,18 @@ public class ModelSidhe extends ModelBase {
 		
 		// Slashing animation
 		if (this.swingProgress > 0.0F) {
-			float swingX = net.minecraft.util.math.MathHelper.sin(net.minecraft.util.math.MathHelper.sqrt(this.swingProgress) * (float)Math.PI);
+			float swingX = MathHelper.sin(MathHelper.sqrt(this.swingProgress) * (float)Math.PI);
 			this.front_right_leg.rotateAngleX -= swingX * 2.0F;
-			this.front_right_leg.rotateAngleZ += net.minecraft.util.math.MathHelper.sin(this.swingProgress * (float)Math.PI) * 0.4F;
+			this.front_right_leg.rotateAngleZ += MathHelper.sin(this.swingProgress * (float)Math.PI) * 0.4F;
 		}
 
 		// Walking animations for all limbs (handles both quadruped and bipedal smoothly)
 		float frontSwingAmp = interpolate(1.4F, 1.0F, progress);
-		this.front_left_leg.rotateAngleX += net.minecraft.util.math.MathHelper.cos(limbSwing * 0.6662F) * frontSwingAmp * limbSwingAmount;
-		this.front_right_leg.rotateAngleX += net.minecraft.util.math.MathHelper.cos(limbSwing * 0.6662F + (float)Math.PI) * frontSwingAmp * limbSwingAmount;
+		this.front_left_leg.rotateAngleX += MathHelper.cos(limbSwing * 0.6662F) * frontSwingAmp * limbSwingAmount;
+		this.front_right_leg.rotateAngleX += MathHelper.cos(limbSwing * 0.6662F + (float)Math.PI) * frontSwingAmp * limbSwingAmount;
 		
-		this.back_left_leg.rotateAngleX += net.minecraft.util.math.MathHelper.cos(limbSwing * 0.6662F + (float)Math.PI) * 1.4F * limbSwingAmount;
-		this.back_right_leg.rotateAngleX += net.minecraft.util.math.MathHelper.cos(limbSwing * 0.6662F) * 1.4F * limbSwingAmount;
+		this.back_left_leg.rotateAngleX += MathHelper.cos(limbSwing * 0.6662F + (float)Math.PI) * 1.4F * limbSwingAmount;
+		this.back_right_leg.rotateAngleX += MathHelper.cos(limbSwing * 0.6662F) * 1.4F * limbSwingAmount;
 		
 		// Head tracking and tilting
 		float yawAngle = netHeadYaw * 0.017453292F;

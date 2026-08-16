@@ -2,6 +2,7 @@ package com.windanesz.tracesofthefallen.entity;
 
 import com.windanesz.tracesofthefallen.Settings;
 import com.windanesz.tracesofthefallen.init.ModItems;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.EntityEquipmentSlot;
@@ -93,7 +94,7 @@ public class EntityGoblinBrute extends EntityGoblin {
 	}
 
 	@Override
-	public boolean attackEntityAsMob(net.minecraft.entity.Entity entityIn) {
+	public boolean attackEntityAsMob(Entity entityIn) {
 		this.tastedBlood = true;
 		return super.attackEntityAsMob(entityIn);
 	}

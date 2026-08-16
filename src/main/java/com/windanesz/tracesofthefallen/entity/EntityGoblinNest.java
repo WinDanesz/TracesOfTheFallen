@@ -28,6 +28,7 @@ public class EntityGoblinNest extends Entity {
 	private float nestHealth = Settings.miscSettings.nestHealth;
 	private int broodsSpawned = 0;
 	private int spawnTimer = 0;
+	private int shootTimer = 0;
 
 	public EntityGoblinNest(World worldIn) {
 		super(worldIn);
@@ -58,6 +59,16 @@ public class EntityGoblinNest extends Entity {
 	@Override
 	public boolean canBeCollidedWith() {
 		return true;
+	}
+
+	@Override
+	public net.minecraft.util.math.AxisAlignedBB getCollisionBoundingBox() {
+		return this.getEntityBoundingBox();
+	}
+
+	@Override
+	public net.minecraft.util.math.AxisAlignedBB getCollisionBox(Entity entityIn) {
+		return entityIn.getEntityBoundingBox();
 	}
 
 	@Override
@@ -119,11 +130,59 @@ public class EntityGoblinNest extends Entity {
 		}
 
 		if (!this.world.isRemote) {
+			if (this.shootTimer > 0) {
+				this.shootTimer--;
+			}
 			if (this.spawnTimer > 0) {
 				this.spawnTimer--;
 			} else if (this.ticksExisted % 20 == 0) {
 				this.trySpawnBrood();
 			}
+			if (this.shootTimer <= 0 && this.ticksExisted % 10 == 0) {
+				this.tryShootRock();
+			}
+		}
+	}
+
+	private void tryShootRock() {
+		double detectionRange = Settings.miscSettings.nestRockAttackRange;
+		EntityPlayer target = null;
+		double closestDist = Double.MAX_VALUE;
+		EnumFacing facing = this.getFacing();
+
+		for (EntityPlayer player : this.world.playerEntities) {
+			if (player.isEntityAlive() && !player.isCreative() && !player.isSpectator()) {
+				double dist = this.getDistanceSq(player);
+				if (dist <= detectionRange * detectionRange && dist < closestDist) {
+					double dx = player.posX - this.posX;
+					double dz = player.posZ - this.posZ;
+					double dot = dx * facing.getXOffset() + dz * facing.getZOffset();
+					
+					if (dot > 0 && player.canEntityBeSeen(this)) {
+						closestDist = dist;
+						target = player;
+					}
+				}
+			}
+		}
+
+		if (target != null) {
+			double spawnX = this.posX + facing.getXOffset() * 1.5D;
+			double spawnY = this.posY + 0.6D;
+			double spawnZ = this.posZ + facing.getZOffset() * 1.5D;
+
+			EntityNestRock rock = new EntityNestRock(this.world, spawnX, spawnY, spawnZ);
+			
+			double dx = target.posX - spawnX;
+			double dy = target.getEntityBoundingBox().minY + (double)(target.height / 3.0F) - spawnY;
+			double dz = target.posZ - spawnZ;
+			
+			rock.shoot(dx, dy, dz, 1.2F, 4.0F);
+			this.world.spawnEntity(rock);
+			
+			this.world.playSound(null, this.posX, this.posY, this.posZ, SoundEvents.ENTITY_SNOWMAN_SHOOT, SoundCategory.HOSTILE, 1.0F, 0.4F / (this.rand.nextFloat() * 0.4F + 0.8F));
+
+			this.shootTimer = 80;
 		}
 	}
 
@@ -176,6 +235,9 @@ public class EntityGoblinNest extends Entity {
 		if (compound.hasKey("SpawnTimer")) {
 			this.spawnTimer = compound.getInteger("SpawnTimer");
 		}
+		if (compound.hasKey("ShootTimer")) {
+			this.shootTimer = compound.getInteger("ShootTimer");
+		}
 	}
 
 	@Override
@@ -184,5 +246,6 @@ public class EntityGoblinNest extends Entity {
 		compound.setFloat("NestHealth", this.nestHealth);
 		compound.setInteger("BroodsSpawned", this.broodsSpawned);
 		compound.setInteger("SpawnTimer", this.spawnTimer);
+		compound.setInteger("ShootTimer", this.shootTimer);
 	}
 }

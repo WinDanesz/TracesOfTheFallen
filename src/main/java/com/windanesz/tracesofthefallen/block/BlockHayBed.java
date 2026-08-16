@@ -8,6 +8,7 @@ import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Biomes;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -145,7 +146,7 @@ public class BlockHayBed extends BlockTOFT implements IProxyMainBlock {
         if (worldIn.isRemote) {
             return true;
         } else {
-            if (worldIn.provider.canRespawnHere() && worldIn.getBiome(pos) != net.minecraft.init.Biomes.HELL) {
+            if (worldIn.provider.canRespawnHere() && worldIn.getBiome(pos) != Biomes.HELL) {
                 EntityPlayer.SleepResult result = playerIn.trySleep(pos);
                 if (result == EntityPlayer.SleepResult.OK) {
                     return true;

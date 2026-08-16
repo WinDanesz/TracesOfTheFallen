@@ -8,6 +8,7 @@ import net.minecraft.entity.*;
 import net.minecraft.entity.ai.*;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
+import net.minecraft.item.ItemStack;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
@@ -153,7 +154,7 @@ public class EntityFamiliarSpecter extends EntityCreature implements IEntityOwna
 			boolean found = false;
 			UUID myUUID = this.getUniqueID();
 			// Check main hand
-			net.minecraft.item.ItemStack mainHand = player.getHeldItemMainhand();
+			ItemStack mainHand = player.getHeldItemMainhand();
 			if (mainHand != null && mainHand.getItem() instanceof ItemGraveRose && mainHand.getSubCompound("SpecterUUID") != null) {
 				String uuidString = mainHand.getSubCompound("SpecterUUID").getString("UUID");
 				if (!uuidString.isEmpty() && myUUID.toString().equals(uuidString)) {
@@ -162,7 +163,7 @@ public class EntityFamiliarSpecter extends EntityCreature implements IEntityOwna
 			}
 			// Check offhand
 			if (!found) {
-				net.minecraft.item.ItemStack offHand = player.getHeldItemOffhand();
+				ItemStack offHand = player.getHeldItemOffhand();
 				if (offHand != null && offHand.getItem() != null && offHand.getSubCompound("SpecterUUID") != null) {
 					String uuidString = offHand.getSubCompound("SpecterUUID").getString("UUID");
 					if (!uuidString.isEmpty() && myUUID.toString().equals(uuidString)) {

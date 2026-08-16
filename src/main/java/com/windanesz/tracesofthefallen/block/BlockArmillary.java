@@ -9,6 +9,7 @@ import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
@@ -18,6 +19,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -26,7 +28,7 @@ import javax.annotation.Nullable;
 
 public class BlockArmillary extends Block {
 	public static final PropertyDirection FACING = PropertyDirection.create("facing", EnumFacing.Plane.HORIZONTAL);
-	public AxisAlignedBB boundingBox = new AxisAlignedBB(0.1D, 0.1D, 0.1D, 0.9D, 0.9D, 0.9D); // 0.8x0.8x0.8 cube
+	public AxisAlignedBB boundingBox = new AxisAlignedBB(0.25D, 0.0D, 0.25D, 0.75D, 0.9375D, 0.75D);
 
 	public BlockArmillary() {
 		super(Material.IRON);
@@ -36,7 +38,7 @@ public class BlockArmillary extends Block {
 	}
 
 	@Override
-	public AxisAlignedBB getBoundingBox(IBlockState state, net.minecraft.world.IBlockAccess source, BlockPos pos) {
+	public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
 		return this.boundingBox;
 	}
 
@@ -47,7 +49,7 @@ public class BlockArmillary extends Block {
 
 	@Nullable
 	@Override
-	public net.minecraft.tileentity.TileEntity createTileEntity(World world, IBlockState state) {
+	public TileEntity createTileEntity(World world, IBlockState state) {
 		return new TileEntityArmillary();
 	}
 
@@ -78,7 +80,7 @@ public class BlockArmillary extends Block {
 				}
 			}
 
-			net.minecraft.tileentity.TileEntity te = worldIn.getTileEntity(pos);
+			TileEntity te = worldIn.getTileEntity(pos);
 			if (te instanceof TileEntityArmillary) {
 				((TileEntityArmillary) te).onRightClick(playerIn, hauntingProgress);
 			}
@@ -122,7 +124,7 @@ public class BlockArmillary extends Block {
 	}
 
 	@Override
-	public boolean isSideSolid(IBlockState base_state, net.minecraft.world.IBlockAccess world, BlockPos pos, EnumFacing side) {
+	public boolean isSideSolid(IBlockState base_state, IBlockAccess world, BlockPos pos, EnumFacing side) {
 		return false;
 	}
 

@@ -2,6 +2,7 @@ package com.windanesz.tracesofthefallen.packet;
 
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
@@ -17,7 +18,7 @@ public class PacketPlayerSync implements IMessageHandler<PacketPlayerSync.Messag
 		if (ctx.side.isClient()) {
 			// Using a fully qualified name is a good course of action here; we don't really want to clutter the proxy
 			// methods any more than necessary.
-			net.minecraft.client.Minecraft.getMinecraft().addScheduledTask(() -> TracesOfTheFallen.proxy.handlePlayerSyncPacket(message));
+			Minecraft.getMinecraft().addScheduledTask(() -> TracesOfTheFallen.proxy.handlePlayerSyncPacket(message));
 		}
 
 		return null;

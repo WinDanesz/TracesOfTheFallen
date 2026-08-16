@@ -6,13 +6,14 @@ import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 
 public class TileEntityWroughtCagedLamp extends TileEntity implements ITickable {
     private int flashTimer = 0;
 
-    public static void triggerNearbyWroughtLamps(net.minecraft.world.World world, BlockPos pos) {
+    public static void triggerNearbyWroughtLamps(World world, BlockPos pos) {
         int radius = 16;
         for (int x = -radius; x <= radius; x++) {
             for (int y = -radius; y <= radius; y++) {

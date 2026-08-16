@@ -82,16 +82,18 @@ public class RenderZapLightning extends Render<EntityZapLightning> {
                     
                     Vec3d pos = dir.scale(progress * dist);
                     
+                    double noiseScale = entity.isReducedVisuals ? 0.025 : 0.05;
                     if (seg > 0 && seg < segments) {
-                        pos = pos.add(perp1.scale((rand2.nextDouble() - 0.5) * dist * 0.05));
-                        pos = pos.add(perp2.scale((rand2.nextDouble() - 0.5) * dist * 0.05));
+                        pos = pos.add(perp1.scale((rand2.nextDouble() - 0.5) * dist * noiseScale));
+                        pos = pos.add(perp2.scale((rand2.nextDouble() - 0.5) * dist * noiseScale));
                     }
                     
                     double dX = pos.x;
                     double dY = pos.y;
                     double dZ = pos.z;
                     
-                    double dW = 0.05D + Math.max(0.0D, 0.05D - progress * 0.05);
+                    double baseW = entity.isReducedVisuals ? 0.025D : 0.05D;
+                    double dW = baseW + Math.max(0.0D, baseW - progress * baseW);
 
                     if (layer == 0) {
                         bufferbuilder.pos(dX - dW, dY, dZ - dW).color(0.6F, 0.8F, 1.0F, 0.3F).endVertex();

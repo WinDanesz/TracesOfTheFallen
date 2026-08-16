@@ -17,6 +17,7 @@ import net.minecraft.world.World;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -139,7 +140,7 @@ public class ItemModPainting extends Item {
 					painting.playPlaceSound();
 					NBTTagCompound ownerTag = itemstack.getSubCompound("Owner");
 					if (ownerTag != null && ownerTag.hasKey("UUID", 8)) {
-						painting.setOwnerId(java.util.UUID.fromString(ownerTag.getString("UUID")));
+						painting.setOwnerId(UUID.fromString(ownerTag.getString("UUID")));
 						painting.setOwnerName(ownerTag.getString("PlayerName"));
 					} else {
 						painting.setOwnerId(player.getUniqueID());

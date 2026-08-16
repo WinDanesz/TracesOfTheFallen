@@ -1,18 +1,27 @@
 package com.windanesz.tracesofthefallen.entity;
 
+import com.windanesz.tracesofthefallen.Settings;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.*;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.JsonToNBT;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTUtil;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
@@ -43,7 +52,7 @@ public class EntitySidhe extends EntityMob {
 		this.tasks.addTask(1, new EntityAISidheReward(this));
 		this.tasks.addTask(1, new EntityAISidheRetaliate(this));
 		this.tasks.addTask(2, new EntityAISidheTempt(this, 1.0D));
-		this.tasks.addTask(3, new net.minecraft.entity.ai.EntityAIWander(this, 1.0D, 120));
+		this.tasks.addTask(3, new EntityAIWander(this, 1.0D, 120));
 		this.tasks.addTask(4, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
 		this.tasks.addTask(5, new EntityAILookIdle(this));
 
@@ -108,8 +117,8 @@ public class EntitySidhe extends EntityMob {
 				boolean shouldStand = true;
 				EntityPlayer nearbyPlayer = this.world.getClosestPlayerToEntity(this, 30.0D);
 				if (nearbyPlayer != null) {
-					net.minecraft.util.math.Vec3d lookVec = nearbyPlayer.getLook(1.0F).normalize();
-					net.minecraft.util.math.Vec3d toSidhe = new net.minecraft.util.math.Vec3d(
+					Vec3d lookVec = nearbyPlayer.getLook(1.0F).normalize();
+					Vec3d toSidhe = new Vec3d(
 							this.posX - nearbyPlayer.posX, 
 							this.posY + (double)this.getEyeHeight() - (nearbyPlayer.posY + (double)nearbyPlayer.getEyeHeight()), 
 							this.posZ - nearbyPlayer.posZ);
@@ -171,12 +180,12 @@ public class EntitySidhe extends EntityMob {
 	public static String getInteractAction(ItemStack stack) {
 		if (stack.isEmpty()) return null;
 		
-		net.minecraft.util.ResourceLocation regName = stack.getItem().getRegistryName();
+		ResourceLocation regName = stack.getItem().getRegistryName();
 		if (regName == null) return null;
 		String id = regName.toString();
 		int meta = stack.getMetadata();
 		
-		for (String entry : com.windanesz.tracesofthefallen.Settings.miscSettings.sidheInteractItems) {
+		for (String entry : Settings.miscSettings.sidheInteractItems) {
 			String[] parts = entry.split("\\|");
 			if (parts.length < 2) continue;
 			
@@ -199,8 +208,8 @@ public class EntitySidhe extends EntityMob {
 						if (itemParts.length >= 4) {
 							String nbtString = itemParts[3];
 							try {
-								net.minecraft.nbt.NBTTagCompound tag = net.minecraft.nbt.JsonToNBT.getTagFromJson(nbtString);
-								if (stack.hasTagCompound() && net.minecraft.nbt.NBTUtil.areNBTEquals(tag, stack.getTagCompound(), true)) {
+								NBTTagCompound tag = JsonToNBT.getTagFromJson(nbtString);
+								if (stack.hasTagCompound() && NBTUtil.areNBTEquals(tag, stack.getTagCompound(), true)) {
 									return parts[1];
 								}
 							} catch (Exception e) {
@@ -226,7 +235,7 @@ public class EntitySidhe extends EntityMob {
 		
 		String[] itemParts = qtyParts[0].split(":", 4);
 		if (itemParts.length >= 2) {
-			net.minecraft.item.Item item = net.minecraft.item.Item.REGISTRY.getObject(new net.minecraft.util.ResourceLocation(itemParts[0], itemParts[1]));
+			Item item = Item.REGISTRY.getObject(new ResourceLocation(itemParts[0], itemParts[1]));
 			if (item != null) {
 				int meta = 0;
 				if (itemParts.length >= 3) {
@@ -235,7 +244,7 @@ public class EntitySidhe extends EntityMob {
 				ItemStack stack = new ItemStack(item, count, meta);
 				if (itemParts.length >= 4) {
 					try {
-						stack.setTagCompound(net.minecraft.nbt.JsonToNBT.getTagFromJson(itemParts[3]));
+						stack.setTagCompound(JsonToNBT.getTagFromJson(itemParts[3]));
 					} catch (Exception e) {}
 				}
 				return stack;
@@ -282,7 +291,7 @@ public class EntitySidhe extends EntityMob {
 				this.sidhe.getLookHelper().setLookPositionWithEntity(target, 360.0F, 360.0F);
 				double d0 = target.posX - this.sidhe.posX;
 				double d1 = target.posZ - this.sidhe.posZ;
-				float yaw = (float)(net.minecraft.util.math.MathHelper.atan2(d1, d0) * (180D / Math.PI)) - 90.0F;
+				float yaw = (float)(MathHelper.atan2(d1, d0) * (180D / Math.PI)) - 90.0F;
 				this.sidhe.rotationYaw = yaw;
 				this.sidhe.rotationYawHead = yaw;
 				this.sidhe.renderYawOffset = yaw;
@@ -293,12 +302,12 @@ public class EntitySidhe extends EntityMob {
 				if (this.attackTimer == 6) {
 					this.sidhe.motionY = 0.42D;
 					if (target != null) {
-						net.minecraft.util.math.Vec3d away = new net.minecraft.util.math.Vec3d(this.sidhe.posX - target.posX, 0.0D, this.sidhe.posZ - target.posZ).normalize();
+						Vec3d away = new Vec3d(this.sidhe.posX - target.posX, 0.0D, this.sidhe.posZ - target.posZ).normalize();
 						this.sidhe.motionX += away.x * 0.37D;
 						this.sidhe.motionZ += away.z * 0.37D;
 					}
 					this.sidhe.isAirBorne = true;
-					this.sidhe.swingArm(net.minecraft.util.EnumHand.MAIN_HAND);
+					this.sidhe.swingArm(EnumHand.MAIN_HAND);
 				}
 				if (this.attackTimer == 0 && target != null) {
 					if (!this.sidhe.world.isRemote) {
@@ -350,10 +359,10 @@ public class EntitySidhe extends EntityMob {
 					if (!this.sidhe.world.isRemote && this.sidhe.pendingRewardAction != null) {
 						ItemStack reward = parseRewardItem(this.sidhe.pendingRewardAction);
 						if (!reward.isEmpty()) {
-							net.minecraft.entity.item.EntityItem entityItem = new net.minecraft.entity.item.EntityItem(this.sidhe.world, this.sidhe.posX, this.sidhe.posY + 0.5D, this.sidhe.posZ, reward);
+							EntityItem entityItem = new EntityItem(this.sidhe.world, this.sidhe.posX, this.sidhe.posY + 0.5D, this.sidhe.posZ, reward);
 							this.sidhe.world.spawnEntity(entityItem);
 						}
-						this.sidhe.world.playSound(null, this.sidhe.posX, this.sidhe.posY, this.sidhe.posZ, net.minecraft.init.SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, SoundCategory.NEUTRAL, 1.0F, 1.0F);
+						this.sidhe.world.playSound(null, this.sidhe.posX, this.sidhe.posY, this.sidhe.posZ, SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, SoundCategory.NEUTRAL, 1.0F, 1.0F);
 					}
 					this.sidhe.despawnPoof();
 				}

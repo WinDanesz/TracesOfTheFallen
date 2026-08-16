@@ -1,16 +1,31 @@
 package com.windanesz.tracesofthefallen.item;
 
+import com.windanesz.tracesofthefallen.block.TileEntityDanCoil;
+import com.windanesz.tracesofthefallen.block.TileEntityWroughtCagedLamp;
+import com.windanesz.tracesofthefallen.client.ClientProxy;
 import com.windanesz.tracesofthefallen.entity.EntityZapLightning;
 import com.windanesz.tracesofthefallen.init.ModItems;
+import com.windanesz.tracesofthefallen.init.ModPotions;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.potion.PotionEffect;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+
+import javax.annotation.Nullable;
+import java.util.List;
 
 public class ItemZapCharge extends Item {
     public ItemZapCharge() {
@@ -21,7 +36,7 @@ public class ItemZapCharge extends Item {
     public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn) {
         ItemStack itemstack = playerIn.getHeldItem(handIn);
         
-        if (playerIn.isPotionActive(com.windanesz.tracesofthefallen.init.ModPotions.static_vulnerability)) {
+        if (playerIn.isPotionActive(ModPotions.static_vulnerability)) {
             return new ActionResult<>(EnumActionResult.FAIL, itemstack);
         }
         
@@ -37,11 +52,11 @@ public class ItemZapCharge extends Item {
             }
             
             double maxDot = -1.0;
-            net.minecraft.util.math.BlockPos targetCoil = null;
+            BlockPos targetCoil = null;
 
-            for (net.minecraft.tileentity.TileEntity te : worldIn.loadedTileEntityList) {
-                if (te instanceof com.windanesz.tracesofthefallen.block.TileEntityDanCoil) {
-                    net.minecraft.util.math.BlockPos pos = te.getPos();
+            for (TileEntity te : worldIn.loadedTileEntityList) {
+                if (te instanceof TileEntityDanCoil || te instanceof TileEntityWroughtCagedLamp) {
+                    BlockPos pos = te.getPos();
                     Vec3d coilVec = new Vec3d(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
                     double dist = start.distanceTo(coilVec);
                     if (dist <= 20.0D) {
@@ -60,13 +75,20 @@ public class ItemZapCharge extends Item {
             
             if (targetCoil != null) {
                 hitVec = new Vec3d(targetCoil.getX() + 0.5, targetCoil.getY() + 0.5, targetCoil.getZ() + 0.5);
+                TileEntity te = worldIn.getTileEntity(targetCoil);
+                if (te instanceof TileEntityDanCoil) {
+                    ((TileEntityDanCoil) te).trigger();
+                }
             }
             
             EntityZapLightning lightning = new EntityZapLightning(worldIn, start.x, start.y, start.z, hitVec.x, hitVec.y, hitVec.z, playerIn);
             lightning.singleDamageInstance = true;
+            lightning.setDamage(7.0F);
+            lightning.setReducedVisuals(true);
+            lightning.setMaxAge(30);
             worldIn.spawnEntity(lightning);
             
-            playerIn.addPotionEffect(new net.minecraft.potion.PotionEffect(com.windanesz.tracesofthefallen.init.ModPotions.static_vulnerability, 60, 0));
+            playerIn.addPotionEffect(new PotionEffect(ModPotions.static_vulnerability, 60, 0));
         }
         
         playerIn.getCooldownTracker().setCooldown(this, 60);
@@ -85,11 +107,11 @@ public class ItemZapCharge extends Item {
         return new ActionResult<>(EnumActionResult.SUCCESS, itemstack);
     }
 
-    @net.minecraftforge.fml.relauncher.SideOnly(net.minecraftforge.fml.relauncher.Side.CLIENT)
+    @SideOnly(Side.CLIENT)
     @Override
-    public void addInformation(ItemStack stack, @javax.annotation.Nullable World worldIn, java.util.List<String> tooltip, net.minecraft.client.util.ITooltipFlag flagIn) {
+    public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
         super.addInformation(stack, worldIn, tooltip, flagIn);
-        com.windanesz.tracesofthefallen.client.ClientProxy.addMultiLineDescription(tooltip, net.minecraft.util.text.TextFormatting.BOLD + "" + net.minecraft.util.text.TextFormatting.GRAY + net.minecraft.client.resources.I18n.format("item.totf:zap_charge.desc"));
-        com.windanesz.tracesofthefallen.client.ClientProxy.addMultiLineDescription(tooltip, net.minecraft.util.text.TextFormatting.DARK_GRAY + net.minecraft.client.resources.I18n.format("item.totf:zap_charge.desc2"));
+        ClientProxy.addMultiLineDescription(tooltip, TextFormatting.BOLD + "" + TextFormatting.GRAY + I18n.format("item.totf:zap_charge.desc"));
+        ClientProxy.addMultiLineDescription(tooltip, TextFormatting.DARK_GRAY + I18n.format("item.totf:zap_charge.desc2"));
     }
 }

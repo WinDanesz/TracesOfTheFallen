@@ -1,6 +1,7 @@
 package com.windanesz.tracesofthefallen.entity;
 
 import com.windanesz.tracesofthefallen.Settings;
+import com.windanesz.tracesofthefallen.entity.shaman.ShamanSpells;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockBush;
 import net.minecraft.block.BlockVine;
@@ -63,38 +64,17 @@ public class EntityVoidSlash extends EntityThrowable {
 
 	@Override
 	protected float getGravityVelocity() {
-		return 0.0F; // Zero gravity so slow projectile travels straight
+		return 0.0F;
 	}
 
 	@Override
 	public void onUpdate() {
 		super.onUpdate();
 
-		if (!this.world.isRemote && this.ticksExisted > 1200) {
+		if (!this.world.isRemote && this.ticksExisted > 60) {
 			this.setDead();
 			return;
 		}
-
-//		if (this.world.isRemote) {
-//			for (int i = 0; i < 3; i++) {
-//				this.world.spawnParticle(EnumParticleTypes.SPELL_WITCH,
-//						this.posX + (this.rand.nextDouble() - 0.5D) * 0.8D,
-//						this.posY + (this.rand.nextDouble() - 0.5D) * 0.8D,
-//						this.posZ + (this.rand.nextDouble() - 0.5D) * 0.8D,
-//						(this.rand.nextDouble() - 0.5D) * 0.05D,
-//						0.02D,
-//						(this.rand.nextDouble() - 0.5D) * 0.05D);
-//				if (this.rand.nextBoolean()) {
-//					this.world.spawnParticle(EnumParticleTypes.PORTAL,
-//							this.posX + (this.rand.nextDouble() - 0.5D) * 0.6D,
-//							this.posY + (this.rand.nextDouble() - 0.5D) * 0.6D,
-//							this.posZ + (this.rand.nextDouble() - 0.5D) * 0.6D,
-//							(this.rand.nextDouble() - 0.5D) * 0.1D,
-//							(this.rand.nextDouble() - 0.5D) * 0.1D,
-//							(this.rand.nextDouble() - 0.5D) * 0.1D);
-//				}
-//			}
-//		}
 	}
 
 	@Override
@@ -116,7 +96,7 @@ public class EntityVoidSlash extends EntityThrowable {
 			return;
 		}
 
-		if (result.entityHit != null && result.entityHit instanceof EntityLivingBase) {
+		if (result.entityHit instanceof EntityLivingBase) {
 			if (result.entityHit == this.getThrower() || this.isOwner(result.entityHit) || result.entityHit instanceof EntityGoblin) {
 				return;
 			}
@@ -150,8 +130,8 @@ public class EntityVoidSlash extends EntityThrowable {
 		if (entityIn == null) return false;
 		if (entityIn == this.getThrower()) return true;
 		if (this.dataManager.get(THROWER_ID) == entityIn.getEntityId()) return true;
-		if (this.getThrower() instanceof com.windanesz.tracesofthefallen.entity.EntityGoblinShaman) {
-			return com.windanesz.tracesofthefallen.entity.shaman.ShamanSpells.isAlly((com.windanesz.tracesofthefallen.entity.EntityGoblinShaman) this.getThrower(), entityIn);
+		if (this.getThrower() instanceof EntityGoblinShaman) {
+			return ShamanSpells.isAlly((EntityGoblinShaman) this.getThrower(), entityIn);
 		}
 		if (this.getThrower() instanceof EntityGoblin && entityIn instanceof EntityGoblin) {
 			return ((EntityGoblin) this.getThrower()).isOwner(entityIn);

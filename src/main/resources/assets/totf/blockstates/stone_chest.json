@@ -1,8 +1,12 @@
 {
   "variants": {
-    "facing=north": { "model": "totf:stone_chest" },
-    "facing=east":  { "model": "totf:stone_chest", "y": 90 },
-    "facing=south": { "model": "totf:stone_chest", "y": 180 },
-    "facing=west":  { "model": "totf:stone_chest", "y": 270 }
+    "facing=north,open=false": { "model": "totf:stone_chest_base" },
+    "facing=east,open=false":  { "model": "totf:stone_chest_base", "y": 90 },
+    "facing=south,open=false": { "model": "totf:stone_chest_base", "y": 180 },
+    "facing=west,open=false":  { "model": "totf:stone_chest_base", "y": 270 },
+    "facing=north,open=true": { "model": "totf:stone_chest_base" },
+    "facing=east,open=true":  { "model": "totf:stone_chest_base", "y": 90 },
+    "facing=south,open=true": { "model": "totf:stone_chest_base", "y": 180 },
+    "facing=west,open=true":  { "model": "totf:stone_chest_base", "y": 270 }
   }
 }
