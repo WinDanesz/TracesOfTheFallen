@@ -1,9 +1,16 @@
 package com.windanesz.tracesofthefallen.client.model;
 
+import com.windanesz.tracesofthefallen.entity.EntityLost;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelBox;
 import net.minecraft.client.model.ModelRenderer;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.math.MathHelper;
+import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.GL11;
+
+import java.nio.DoubleBuffer;
 
 public class ModelLost extends ModelBase {
 	private final ModelRenderer body;
@@ -38,27 +45,23 @@ public class ModelLost extends ModelBase {
 		// Eyes Closed variant (contains closed face UVs and closed mouth)
 		eyes_closed = new ModelRenderer(this);
 		eyes_closed.setRotationPoint(0.0F, -1.0F, 0.0F);
-		head_body.addChild(eyes_closed);
 		eyes_closed.cubeList.add(new ModelBox(eyes_closed, 21, 40, -3.0F, -20.0F, -3.1F, 6, 2, 6, 0.0F, false));
 		eyes_closed.cubeList.add(new ModelBox(eyes_closed, 20, 16, -4.0F, -24.0F, -3.1F, 8, 4, 6, 0.0F, false));
 
 		// Eyes Open variant (contains open face UVs and closed mouth)
 		eyes_open = new ModelRenderer(this);
 		eyes_open.setRotationPoint(0.0F, -1.0F, 0.0F);
-		head_body.addChild(eyes_open);
 		eyes_open.cubeList.add(new ModelBox(eyes_open, 21, 40, -3.0F, -20.0F, -3.1F, 6, 2, 6, 0.0F, false));
 		eyes_open.cubeList.add(new ModelBox(eyes_open, 20, 28, -4.0F, -24.0F, -3.1F, 8, 4, 6, 0.0F, false));
 
 		// Mouth Closed variant (the small 4-pixel tall mouth)
 		mouth_closed = new ModelRenderer(this);
 		mouth_closed.setRotationPoint(0.0F, 0.0F, 0.0F);
-		head_body.addChild(mouth_closed);
 		mouth_closed.cubeList.add(new ModelBox(mouth_closed, 0, 9, -4.0F, -19.0F, -3.1F, 8, 4, 0, 0.0F, false));
 
 		// Mouth Open variant (the elongated 9-pixel tall mouth)
 		mouth_open = new ModelRenderer(this);
 		mouth_open.setRotationPoint(0.0F, -19.0F, -3.1F); // Pivot at the top of the mouth
-		head_body.addChild(mouth_open);
 		mouth_open.cubeList.add(new ModelBox(mouth_open, 0, 0, -4.0F, 0.0F, 0.0F, 8, 9, 0, 0.0F, false));
 
 		arm_right = new ModelRenderer(this);
@@ -99,9 +102,64 @@ public class ModelLost extends ModelBase {
 		leg_left.cubeList.add(new ModelBox(leg_left, 0, 30, -1.5F, 0.0F, -1.5F, 3, 5, 3, 0.0F, false));
 	}
 
+	private float transitionProgress;
+
 	@Override
 	public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
 		body.render(f5);
+		
+		GlStateManager.pushMatrix();
+		
+		// Replicate the exact transform of the body and head_body
+		this.body.postRender(f5);
+		this.head_body.postRender(f5);
+		
+		// Always render the closed face as a solid base so the head never becomes transparent!
+		GlStateManager.pushMatrix();
+		this.eyes_closed.render(f5);
+		this.mouth_closed.render(f5);
+		GlStateManager.popMatrix();
+		
+		// Render open face wiping down over the top
+		if (this.transitionProgress > 0.0F) {
+			GlStateManager.pushMatrix();
+			
+			// Slightly scale up to completely engulf the closed face without any Z-fighting on the sides
+			GlStateManager.scale(1.001F, 1.001F, 1.001F);
+			// Minor translation to offset the scale pivot
+			GlStateManager.translate(0.0F, -0.001F, 0.0F);
+			
+			// Bottom-up wipe for the eyes (reveals from Y = -18 UP to Y = -24)
+			float eyesBottomY = -18.0F * f5;
+			float eyesTopY = -24.0F * f5;
+			float eyesD = eyesBottomY + (eyesTopY - eyesBottomY) * this.transitionProgress;
+			
+			// Plane equation: Y - D > 0 => B=1, D=-eyesD
+			DoubleBuffer bufferEyes = BufferUtils.createDoubleBuffer(4);
+			bufferEyes.put(0.0D).put(1.0D).put(0.0D).put((double) -eyesD).flip();
+			
+			GL11.glEnable(GL11.GL_CLIP_PLANE1);
+			GL11.glClipPlane(GL11.GL_CLIP_PLANE1, bufferEyes);
+			this.eyes_open.render(f5);
+			
+			// Top-down wipe for the mouth (reveals from Y = -19 DOWN to Y = -10)
+			float mouthTopY = -19.0F * f5;
+			float mouthBottomY = -10.0F * f5;
+			float mouthD = mouthTopY + (mouthBottomY - mouthTopY) * this.transitionProgress;
+			
+			// Plane equation: -Y + D > 0 => B=-1, D=mouthD
+			DoubleBuffer bufferMouth = BufferUtils.createDoubleBuffer(4);
+			bufferMouth.put(0.0D).put(-1.0D).put(0.0D).put((double) mouthD).flip();
+			
+			GL11.glClipPlane(GL11.GL_CLIP_PLANE1, bufferMouth);
+			this.mouth_open.render(f5);
+			
+			GL11.glDisable(GL11.GL_CLIP_PLANE1);
+			
+			GlStateManager.popMatrix();
+		}
+		
+		GlStateManager.popMatrix();
 	}
 
 	@Override
@@ -113,29 +171,23 @@ public class ModelLost extends ModelBase {
 		this.head_body.rotateAngleY = netHeadYaw * 0.017453292F;
 		this.head_body.rotateAngleX = 0.0F;
 
-		if (entityIn instanceof com.windanesz.tracesofthefallen.entity.EntityLost) {
-			com.windanesz.tracesofthefallen.entity.EntityLost lost = (com.windanesz.tracesofthefallen.entity.EntityLost) entityIn;
+		if (entityIn instanceof EntityLost) {
+			EntityLost lost = (EntityLost) entityIn;
 			
-			// Show idle face for 1 second if hit
+			// For arms: use raw attacking state
 			boolean isAttacking = lost.isAttacking() && lost.hurtFaceTicks == 0;
 			
-			// Toggle visibility
-			this.eyes_closed.showModel = !isAttacking;
-			this.eyes_open.showModel = isAttacking;
-			this.mouth_closed.showModel = !isAttacking;
-			this.mouth_open.showModel = isAttacking;
-
-			// Jaw animation is just an instant swap based on the attack state, without any hinging rotation.
+			// Calculate smooth face transition progress
 			float partialTicks = ageInTicks - entityIn.ticksExisted;
-			float mouthOpenProgress = lost.prevMouthOpenProgress + (lost.mouthOpenProgress - lost.prevMouthOpenProgress) * partialTicks;
+			this.transitionProgress = lost.prevMouthOpenProgress + (lost.mouthOpenProgress - lost.prevMouthOpenProgress) * partialTicks;
 			
-			// We only use the progress variable if we need a transition, but since hinging is removed, we keep it static.
-			this.mouth_open.rotateAngleX = 0.0F;
-
+			// We no longer toggle visibility here since we handle it smoothly in render()
+			// (The parts were removed from the head_body children list so they won't automatically render)
+			
 			// Arm animation
 			if (isAttacking) {
-				if (entityIn instanceof com.windanesz.tracesofthefallen.entity.EntityLost && !entityIn.getPassengers().isEmpty()) {
-					int grabTicks = ((com.windanesz.tracesofthefallen.entity.EntityLost) entityIn).grabTicks;
+				if (entityIn instanceof EntityLost && !entityIn.getPassengers().isEmpty()) {
+					int grabTicks = ((EntityLost) entityIn).grabTicks;
 					float progress;
 					if (grabTicks <= 30) {
 						progress = 0.0F;
@@ -155,7 +207,7 @@ public class ModelLost extends ModelBase {
 					
 					// Apply melee slash animation (double-handed downward strike)
 					if (this.swingProgress > 0.0F) {
-						float swingMath = net.minecraft.util.math.MathHelper.sin(this.swingProgress * (float)Math.PI);
+						float swingMath = MathHelper.sin(this.swingProgress * (float)Math.PI);
 						this.arm_right.rotateAngleX += swingMath * 1.8F;
 						this.arm_left.rotateAngleX += swingMath * 1.8F;
 						
@@ -164,7 +216,7 @@ public class ModelLost extends ModelBase {
 						this.arm_left.rotateAngleY = (0.2F * swingMath);
 					} else if (lost.isExcited()) {
 						// Faster variant of the inward arm motion to show excitement for a meal
-						float exciteProgress = (net.minecraft.util.math.MathHelper.sin(ageInTicks * 0.4F) + 1.0F) / 2.0F; // 0.0 to 1.0
+						float exciteProgress = (MathHelper.sin(ageInTicks * 0.4F) + 1.0F) / 2.0F; // 0.0 to 1.0
 						this.arm_right.rotateAngleY = -(0.3F * exciteProgress);
 						this.arm_left.rotateAngleY = (0.3F * exciteProgress);
 					} else {
@@ -181,8 +233,8 @@ public class ModelLost extends ModelBase {
 			}
 
 			// Leg animation (standard walking)
-			this.leg_right.rotateAngleX = net.minecraft.util.math.MathHelper.cos(limbSwing * 0.6662F) * 1.4F * limbSwingAmount;
-			this.leg_left.rotateAngleX = net.minecraft.util.math.MathHelper.cos(limbSwing * 0.6662F + (float)Math.PI) * 1.4F * limbSwingAmount;
+			this.leg_right.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F) * 1.4F * limbSwingAmount;
+			this.leg_left.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F + (float)Math.PI) * 1.4F * limbSwingAmount;
 		}
 	}
 

@@ -1,16 +1,26 @@
 package com.windanesz.tracesofthefallen.block;
 
+import com.windanesz.tracesofthefallen.TracesOfTheFallen;
+import com.windanesz.tracesofthefallen.init.ModSounds;
+import com.windanesz.tracesofthefallen.network.ModGuiHandler;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ContainerChest;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntityLockableLoot;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +38,7 @@ public class TileEntityStoneChest extends TileEntityLockableLoot implements ITic
 	public boolean isForcedOpen = false;
 
 	@Override
-	public boolean shouldRefresh(net.minecraft.world.World world, net.minecraft.util.math.BlockPos pos, net.minecraft.block.state.IBlockState oldState, net.minecraft.block.state.IBlockState newSate) {
+	public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newSate) {
 		return oldState.getBlock() != newSate.getBlock();
 	}
 
@@ -115,7 +125,7 @@ public class TileEntityStoneChest extends TileEntityLockableLoot implements ITic
 
 		if (isUsed && this.openTimer == 0) {
 			if (!this.world.isRemote) {
-				this.world.playSound(null, this.pos, net.minecraft.init.SoundEvents.BLOCK_CHEST_OPEN, net.minecraft.util.SoundCategory.BLOCKS, 0.5F, this.world.rand.nextFloat() * 0.1F + 0.9F);
+				this.world.playSound(null, this.pos, ModSounds.STONE_SLIDE, SoundCategory.BLOCKS, 0.5F, this.world.rand.nextFloat() * 0.1F + 0.9F);
 				this.world.setBlockState(this.pos, this.world.getBlockState(this.pos).withProperty(BlockStoneChest.OPEN, true), 3);
 			}
 		}
@@ -126,7 +136,7 @@ public class TileEntityStoneChest extends TileEntityLockableLoot implements ITic
 				if (!this.world.isRemote) {
 					for (EntityPlayer player : this.playersWaiting) {
 						if (!player.isDead) {
-							player.openGui(com.windanesz.tracesofthefallen.TracesOfTheFallen.instance, com.windanesz.tracesofthefallen.network.ModGuiHandler.GUI_STONE_CHEST, this.world, this.pos.getX(), this.pos.getY(), this.pos.getZ());
+							player.openGui(TracesOfTheFallen.instance, ModGuiHandler.GUI_STONE_CHEST, this.world, this.pos.getX(), this.pos.getY(), this.pos.getZ());
 						}
 					}
 				} else {
@@ -141,7 +151,7 @@ public class TileEntityStoneChest extends TileEntityLockableLoot implements ITic
 			this.openTimer--;
 			if (this.openTimer == 0) {
 				if (!this.world.isRemote) {
-					this.world.playSound(null, this.pos, net.minecraft.init.SoundEvents.BLOCK_CHEST_CLOSE, net.minecraft.util.SoundCategory.BLOCKS, 0.5F, this.world.rand.nextFloat() * 0.1F + 0.9F);
+					this.world.playSound(null, this.pos, ModSounds.STONE_SLIDE, SoundCategory.BLOCKS, 0.5F, this.world.rand.nextFloat() * 0.1F + 0.9F);
 					this.world.setBlockState(this.pos, this.world.getBlockState(this.pos).withProperty(BlockStoneChest.OPEN, false), 3);
 				}
 			}
@@ -155,7 +165,7 @@ public class TileEntityStoneChest extends TileEntityLockableLoot implements ITic
 			this.numPlayersUsing = 0;
 			for (EntityPlayer entityplayer : this.world.getEntitiesWithinAABB(EntityPlayer.class, new AxisAlignedBB(pos).grow(5.0D))) {
 				if (entityplayer.openContainer instanceof ContainerChest) {
-					net.minecraft.inventory.IInventory iinventory = ((ContainerChest)entityplayer.openContainer).getLowerChestInventory();
+					IInventory iinventory = ((ContainerChest)entityplayer.openContainer).getLowerChestInventory();
 					if (iinventory == this) {
 						++this.numPlayersUsing;
 					}
@@ -170,7 +180,7 @@ public class TileEntityStoneChest extends TileEntityLockableLoot implements ITic
 	public void requestOpen(EntityPlayer player) {
 		if (!player.isSpectator()) {
 			if (this.openTimer >= 40) {
-				player.openGui(com.windanesz.tracesofthefallen.TracesOfTheFallen.instance, com.windanesz.tracesofthefallen.network.ModGuiHandler.GUI_STONE_CHEST, this.world, this.pos.getX(), this.pos.getY(), this.pos.getZ());
+				player.openGui(TracesOfTheFallen.instance, ModGuiHandler.GUI_STONE_CHEST, this.world, this.pos.getX(), this.pos.getY(), this.pos.getZ());
 			} else if (!this.playersWaiting.contains(player)) {
 				this.playersWaiting.add(player);
 			}
@@ -213,7 +223,7 @@ public class TileEntityStoneChest extends TileEntityLockableLoot implements ITic
 		this.isForcedOpen = forcedOpen;
 		this.markDirty();
 		if (this.world != null) {
-			net.minecraft.block.state.IBlockState state = this.world.getBlockState(this.pos);
+			IBlockState state = this.world.getBlockState(this.pos);
 			this.world.notifyBlockUpdate(this.pos, state, state, 3);
 		}
 	}
@@ -232,14 +242,14 @@ public class TileEntityStoneChest extends TileEntityLockableLoot implements ITic
 	}
 
 	@Override
-	public net.minecraft.network.play.server.SPacketUpdateTileEntity getUpdatePacket() {
+	public SPacketUpdateTileEntity getUpdatePacket() {
 		NBTTagCompound nbt = new NBTTagCompound();
 		nbt.setBoolean("ForcedOpen", this.isForcedOpen);
-		return new net.minecraft.network.play.server.SPacketUpdateTileEntity(this.pos, 1, nbt);
+		return new SPacketUpdateTileEntity(this.pos, 1, nbt);
 	}
 
 	@Override
-	public void onDataPacket(net.minecraft.network.NetworkManager net, net.minecraft.network.play.server.SPacketUpdateTileEntity pkt) {
+	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
 		this.isForcedOpen = pkt.getNbtCompound().getBoolean("ForcedOpen");
 	}
 }

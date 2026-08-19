@@ -22,7 +22,12 @@ public class ModSounds {
 	public static final SoundEvent DIOPTRA = createSound("dioptra");
 	public static final SoundEvent BONE_PILE = createSound("bone_pile");
 	public static final SoundEvent LIGHTNING_ZAP = createSound("lightning_zap");
-
+	public static final SoundEvent RECORD_GNOSSIENE_1 = createSound("record.gnossiene_1");
+	public static final SoundEvent FABRICATOR_WORKING = createSound("fabricator_working");
+	public static final SoundEvent LOST_AMBIENT = createSound("entity.lost_ambient");
+	public static final SoundEvent LOST_HURT = createSound("entity.lost_hurt");
+	public static final SoundEvent LOST_DEATH = createSound("entity.lost_death");
+	public static final SoundEvent STONE_SLIDE = createSound("stone_slide");
 	public static SoundEvent createSound(String name) {
 		return createSound(TracesOfTheFallen.MODID, name);
 	}
@@ -45,5 +50,11 @@ public class ModSounds {
 		event.getRegistry().register(DIOPTRA);
 		event.getRegistry().register(BONE_PILE);
 		event.getRegistry().register(LIGHTNING_ZAP);
+		event.getRegistry().register(RECORD_GNOSSIENE_1);
+		event.getRegistry().register(FABRICATOR_WORKING);
+		event.getRegistry().register(LOST_AMBIENT);
+		event.getRegistry().register(LOST_HURT);
+		event.getRegistry().register(LOST_DEATH);
+		event.getRegistry().register(STONE_SLIDE);
 	}
 }

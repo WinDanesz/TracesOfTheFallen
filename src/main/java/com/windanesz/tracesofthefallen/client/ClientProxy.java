@@ -21,6 +21,7 @@ import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.entity.RenderSnowball;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -28,6 +29,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeColorHelper;
 import net.minecraftforge.client.event.ModelRegistryEvent;
+import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.model.obj.OBJLoader;
@@ -37,7 +39,10 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
+import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.GL11;
 
+import java.nio.DoubleBuffer;
 import java.util.List;
 
 @Mod.EventBusSubscriber(Side.CLIENT)
@@ -110,8 +115,8 @@ public class ClientProxy extends CommonProxy {
 	}
 
 	@SubscribeEvent
-	public static void onRenderLivingPre(net.minecraftforge.client.event.RenderLivingEvent.Pre event) {
-		net.minecraft.entity.EntityLivingBase entity = event.getEntity();
+	public static void onRenderLivingPre(RenderLivingEvent.Pre event) {
+		EntityLivingBase entity = event.getEntity();
 		if (entity.getRidingEntity() instanceof EntityLost) {
 			EntityLost lost = (EntityLost) entity.getRidingEntity();
 			if (lost.grabTicks > 20) {
@@ -127,11 +132,11 @@ public class ClientProxy extends CommonProxy {
 				double dz = vz - lz;
 				double actualDist = Math.sqrt(dx * dx + dz * dz);
 				
-				org.lwjgl.opengl.GL11.glEnable(org.lwjgl.opengl.GL11.GL_CLIP_PLANE0);
+				GL11.glEnable(GL11.GL_CLIP_PLANE0);
 				
 				// Translate to entity feet to lock the plane to world space
-				org.lwjgl.opengl.GL11.glPushMatrix();
-				org.lwjgl.opengl.GL11.glTranslated(event.getX(), event.getY(), event.getZ());
+				GL11.glPushMatrix();
+				GL11.glTranslated(event.getX(), event.getY(), event.getZ());
 				
 				// Compute normal vector pointing from the Lost to the victim
 				float f = lost.prevRenderYawOffset + (lost.renderYawOffset - lost.prevRenderYawOffset) * pt;
@@ -142,24 +147,24 @@ public class ClientProxy extends CommonProxy {
 				// Offset the slice slightly into the chest to prevent a visible gap
 				double clipDist = actualDist - 0.15D; 
 				
-				java.nio.DoubleBuffer buffer = org.lwjgl.BufferUtils.createDoubleBuffer(4);
+				DoubleBuffer buffer = BufferUtils.createDoubleBuffer(4);
 				buffer.put(nx).put(0.0D).put(nz).put(clipDist).flip();
-				org.lwjgl.opengl.GL11.glClipPlane(org.lwjgl.opengl.GL11.GL_CLIP_PLANE0, buffer);
+				GL11.glClipPlane(GL11.GL_CLIP_PLANE0, buffer);
 				
 				// Disable culling to render the inside faces of the sliced geometry
-				org.lwjgl.opengl.GL11.glDisable(org.lwjgl.opengl.GL11.GL_CULL_FACE);
+				GL11.glDisable(GL11.GL_CULL_FACE);
 				
-				org.lwjgl.opengl.GL11.glPopMatrix();
+				GL11.glPopMatrix();
 			}
 		}
 	}
 
 	@SubscribeEvent
-	public static void onRenderLivingPost(net.minecraftforge.client.event.RenderLivingEvent.Post event) {
-		net.minecraft.entity.EntityLivingBase entity = event.getEntity();
+	public static void onRenderLivingPost(RenderLivingEvent.Post event) {
+		EntityLivingBase entity = event.getEntity();
 		if (entity.getRidingEntity() instanceof EntityLost) {
-			org.lwjgl.opengl.GL11.glDisable(org.lwjgl.opengl.GL11.GL_CLIP_PLANE0);
-			org.lwjgl.opengl.GL11.glEnable(org.lwjgl.opengl.GL11.GL_CULL_FACE);
+			GL11.glDisable(GL11.GL_CLIP_PLANE0);
+			GL11.glEnable(GL11.GL_CULL_FACE);
 		}
 	}
 

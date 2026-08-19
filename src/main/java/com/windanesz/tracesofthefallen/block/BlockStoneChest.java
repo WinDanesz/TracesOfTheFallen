@@ -8,19 +8,26 @@ import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.InventoryHelper;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
 public class BlockStoneChest extends BlockContainer {
 
@@ -92,7 +99,7 @@ public class BlockStoneChest extends BlockContainer {
 	}
 
 	@Override
-	public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, net.minecraft.item.ItemStack stack) {
+	public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
 		TileEntity te = worldIn.getTileEntity(pos);
 		if (te instanceof TileEntityStoneChest) {
 			if (placer instanceof EntityPlayer && ((EntityPlayer) placer).isCreative() && placer.isSneaking()) {
@@ -144,11 +151,11 @@ public class BlockStoneChest extends BlockContainer {
 	}
 
 	@Override
-	@net.minecraftforge.fml.relauncher.SideOnly(net.minecraftforge.fml.relauncher.Side.CLIENT)
-	public void addInformation(net.minecraft.item.ItemStack stack, @Nullable World worldIn, java.util.List<String> tooltip, net.minecraft.client.util.ITooltipFlag flagIn) {
+	@SideOnly(Side.CLIENT)
+	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
 		super.addInformation(stack, worldIn, tooltip, flagIn);
-		if (net.minecraft.client.Minecraft.getMinecraft().player != null && net.minecraft.client.Minecraft.getMinecraft().player.isCreative()) {
-			tooltip.add(net.minecraft.util.text.TextFormatting.GRAY + "Placing the chest while sneaking keeps it open until first used");
+		if (Minecraft.getMinecraft().player != null && Minecraft.getMinecraft().player.isCreative()) {
+			tooltip.add(TextFormatting.GRAY + "Placing the chest while sneaking keeps it open until first used");
 		}
 	}
 }

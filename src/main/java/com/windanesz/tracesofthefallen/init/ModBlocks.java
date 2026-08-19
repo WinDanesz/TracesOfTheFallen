@@ -220,7 +220,7 @@ public class ModBlocks {
 
 		// Stone-related blocks
 		registerBlock(registry, "stone_chest", new BlockStoneChest());
-		registerBlockNoTab(registry, "stone_chest_lid", new net.minecraft.block.Block(net.minecraft.block.material.Material.ROCK));
+		registerBlockNoTab(registry, "stone_chest_lid", new Block(Material.ROCK));
 		registerBlock(registry, "stone_compartment", new BlockStoneCompartment());
 		registerBlock(registry, "stone_pressure_plate", new BlockStonePressurePlate());
 		registerBlock(registry, "stone_receiver", new BlockStoneReceiver());

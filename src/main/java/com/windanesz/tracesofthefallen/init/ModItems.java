@@ -59,6 +59,7 @@ public class ModItems {
 	public static final Item zap_charge_empty = placeholder();
 	public static final Item living_silver_speck = placeholder();
 	public static final Item living_silver_nugget = placeholder();
+	public static final Item record_gnossiene_1 = placeholder();
 
 	public static final Item painting_in_the_woods = placeholder();
 	public static final Item painting_portrait = placeholder();
@@ -137,6 +138,8 @@ public class ModItems {
 		if (Settings.miscSettings.enableWhiteFloater) {
 			registerItem(registry, "floater_white", new ItemFloater(ModBlocks.floater_white, "floater_white").setCreativeTab(ModCreativeTab.TOTF_TAB));
 		}
+		
+		registerItem(registry, "record_gnossiene_1", new ItemModRecord("gnossiene_1", ModSounds.RECORD_GNOSSIENE_1).setCreativeTab(ModCreativeTab.TOTF_TAB));
 
 		// Register ItemBlocks
 		registerItemBlock(registry, ModBlocks.lost_cargo);

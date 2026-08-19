@@ -2,12 +2,15 @@ package com.windanesz.tracesofthefallen.network;
 
 import com.windanesz.tracesofthefallen.block.TileEntityBrassFabricator;
 import com.windanesz.tracesofthefallen.block.TileEntitySpinningWheel;
+import com.windanesz.tracesofthefallen.block.TileEntityStoneChest;
 import com.windanesz.tracesofthefallen.block.TileEntityStoneCompartment;
 import com.windanesz.tracesofthefallen.client.gui.GuiBrassFabricator;
 import com.windanesz.tracesofthefallen.client.gui.GuiSpinningWheel;
+import com.windanesz.tracesofthefallen.client.gui.GuiStoneChest;
 import com.windanesz.tracesofthefallen.client.gui.GuiStoneCompartment;
 import com.windanesz.tracesofthefallen.inventory.ContainerBrassFabricator;
 import com.windanesz.tracesofthefallen.inventory.ContainerSpinningWheel;
+import com.windanesz.tracesofthefallen.inventory.ContainerStoneChest;
 import com.windanesz.tracesofthefallen.inventory.ContainerStoneCompartment;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
@@ -41,8 +44,8 @@ public class ModGuiHandler implements IGuiHandler {
             }
         } else if (ID == GUI_STONE_CHEST) {
             TileEntity te = world.getTileEntity(new BlockPos(x, y, z));
-            if (te instanceof com.windanesz.tracesofthefallen.block.TileEntityStoneChest) {
-                return new com.windanesz.tracesofthefallen.inventory.ContainerStoneChest(player, (com.windanesz.tracesofthefallen.block.TileEntityStoneChest) te);
+            if (te instanceof TileEntityStoneChest) {
+                return new ContainerStoneChest(player, (TileEntityStoneChest) te);
             }
         }
         return null;
@@ -67,8 +70,8 @@ public class ModGuiHandler implements IGuiHandler {
             }
         } else if (ID == GUI_STONE_CHEST) {
             TileEntity te = world.getTileEntity(new BlockPos(x, y, z));
-            if (te instanceof com.windanesz.tracesofthefallen.block.TileEntityStoneChest) {
-                return new com.windanesz.tracesofthefallen.client.gui.GuiStoneChest(player, (com.windanesz.tracesofthefallen.block.TileEntityStoneChest) te);
+            if (te instanceof TileEntityStoneChest) {
+                return new GuiStoneChest(player, (TileEntityStoneChest) te);
             }
         }
         return null;

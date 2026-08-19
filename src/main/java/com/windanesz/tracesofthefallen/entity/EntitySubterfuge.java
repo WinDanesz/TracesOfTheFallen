@@ -3,7 +3,9 @@ package com.windanesz.tracesofthefallen.entity;
 import com.windanesz.tracesofthefallen.Settings;
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
 import com.windanesz.tracesofthefallen.entity.ai.EntityAISubterfugeGodslap;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIHurtByTarget;
 import net.minecraft.entity.ai.EntityAILookIdle;
@@ -122,7 +124,7 @@ public class EntitySubterfuge extends EntityCreature {
         return this.dataManager.get(ATTACKING_STATE);
     }
 
-    public void incrementAggression(EntityPlayer attacker) {
+    public void incrementAggression(EntityLivingBase attacker) {
         if (!this.world.isRemote && !this.isAggressive()) {
             this.aggressionHits++;
             this.aggressionTimer = 200; // 10 seconds timeout
@@ -130,10 +132,12 @@ public class EntitySubterfuge extends EntityCreature {
             // Comment on being hit
             String key = HIT_DIALOGUE_LINES[this.rand.nextInt(HIT_DIALOGUE_LINES.length)];
             TextComponentTranslation line = new TextComponentTranslation(key);
-            line.getStyle().setColor(net.minecraft.util.text.TextFormatting.WHITE);
+            line.getStyle().setColor(TextFormatting.WHITE);
             TextComponentString prefix = new TextComponentString("[Subterfuge] ");
-            prefix.getStyle().setColor(net.minecraft.util.text.TextFormatting.DARK_PURPLE);
-            attacker.sendMessage(prefix.appendSibling(line));
+            prefix.getStyle().setColor(TextFormatting.DARK_PURPLE);
+            if (attacker instanceof EntityPlayer) {
+                attacker.sendMessage(prefix.appendSibling(line));
+            }
 
             if (this.aggressionHits >= 3) {
                 this.dataManager.set(AGGRESSION_STATE, true);
@@ -150,8 +154,8 @@ public class EntitySubterfuge extends EntityCreature {
         if (this.isHiddenState()) return false;
         
         if (!this.world.isRemote) {
-            if (source.getTrueSource() instanceof EntityPlayer) {
-                this.incrementAggression((EntityPlayer) source.getTrueSource());
+            if (source.getTrueSource() instanceof EntityLivingBase) {
+                this.incrementAggression((EntityLivingBase) source.getTrueSource());
             }
         }
         return super.attackEntityFrom(source, amount);
@@ -206,7 +210,7 @@ public class EntitySubterfuge extends EntityCreature {
             }
 
             if (this.isAggressive()) {
-                EntityPlayer target = (EntityPlayer) this.getAttackTarget();
+                EntityLivingBase target = this.getAttackTarget();
                 if (target == null || target.isDead || this.getDistance(target) > 40.0D) {
                     this.dataManager.set(AGGRESSION_STATE, false);
                     this.aggressionHits = 0;
@@ -248,7 +252,7 @@ public class EntitySubterfuge extends EntityCreature {
     }
     
     @Override
-    public void applyEntityCollision(net.minecraft.entity.Entity entityIn) {
+    public void applyEntityCollision(Entity entityIn) {
         if (!this.isHiddenState()) {
             super.applyEntityCollision(entityIn);
         }

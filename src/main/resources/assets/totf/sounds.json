@@ -7,5 +7,11 @@
   "idol_activate":                    {"category": "blocks",    "sounds": ["totf:dhvara_tone"]},
   "dioptra":                          {"category": "blocks",    "sounds": ["totf:dioptra"]},
   "bone_pile":                        {"category": "blocks",    "sounds": ["totf:bone_pile1", "totf:bone_pile2", "totf:bone_pile3"]},
-  "lightning_zap":                    {"category": "weather",   "sounds": ["totf:lightning_zap"]}
+  "lightning_zap":                    {"category": "weather",   "sounds": ["totf:lightning_zap"]},
+  "record.gnossiene_1":               {"category": "record",    "sounds": [{"name": "totf:records/gnossiene_1", "stream": true}]},
+  "fabricator_working":               {"category": "blocks",    "sounds": ["totf:grinding_gears"]},
+  "entity.lost_ambient":              {"category": "hostiles",  "sounds": ["totf:lost_idle1", "totf:lost_idle2"]},
+  "entity.lost_hurt":                 {"category": "hostiles",  "sounds": ["totf:lost_hurt1"]},
+  "entity.lost_death":                {"category": "hostiles",  "sounds": ["totf:lost_death"]},
+  "stone_slide":                      {"category": "blocks",    "sounds": ["totf:stone_slide"]}
 }

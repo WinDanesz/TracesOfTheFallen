@@ -1,8 +1,10 @@
 package com.windanesz.tracesofthefallen.entity;
 
+import com.google.common.base.Predicate;
 import com.windanesz.tracesofthefallen.Settings;
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
 import com.windanesz.tracesofthefallen.entity.shaman.ShamanSpells;
+import com.windanesz.tracesofthefallen.init.ModPotions;
 import com.windanesz.tracesofthefallen.init.ModSounds;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.*;
@@ -370,10 +372,10 @@ public class EntitySpecter extends EntityMob implements IEntityOwnable {
 
     static class AIFindPlayerToAttack extends EntityAINearestAttackableTarget<EntityPlayer> {
         public AIFindPlayerToAttack(EntityCreature mob) {
-            super(mob, EntityPlayer.class, 10, true, false, new com.google.common.base.Predicate<EntityPlayer>() {
+            super(mob, EntityPlayer.class, 10, true, false, new Predicate<EntityPlayer>() {
                 @Override
                 public boolean apply(@Nullable EntityPlayer player) {
-                    return player != null && !player.isPotionActive(com.windanesz.tracesofthefallen.init.ModPotions.serenity);
+                    return player != null && !player.isPotionActive(ModPotions.serenity);
                 }
             });
         }

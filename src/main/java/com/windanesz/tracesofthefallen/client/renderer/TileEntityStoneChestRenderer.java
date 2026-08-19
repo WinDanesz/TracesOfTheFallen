@@ -6,8 +6,10 @@ import com.windanesz.tracesofthefallen.block.TileEntityStoneChest;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockRendererDispatcher;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.util.EnumFacing;
 
@@ -70,11 +72,11 @@ public class TileEntityStoneChestRenderer extends TileEntitySpecialRenderer<Tile
 		int light = te.getWorld().getCombinedLight(te.getPos(), 0);
 		int lightX = light % 65536;
 		int lightY = light / 65536;
-		net.minecraft.client.renderer.OpenGlHelper.setLightmapTextureCoords(net.minecraft.client.renderer.OpenGlHelper.lightmapTexUnit, (float)lightX, (float)lightY);
+		OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float)lightX, (float)lightY);
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 
 		// Render the baked model using immediate mode so it respects GlStateManager
-		Minecraft.getMinecraft().renderEngine.bindTexture(net.minecraft.client.renderer.texture.TextureMap.LOCATION_BLOCKS_TEXTURE);
+		Minecraft.getMinecraft().renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
 		BlockRendererDispatcher blockRendererDispatcher = Minecraft.getMinecraft().getBlockRendererDispatcher();
 		blockRendererDispatcher.getBlockModelRenderer().renderModelBrightnessColor(
 				this.lidModel, 

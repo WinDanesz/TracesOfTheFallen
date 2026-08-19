@@ -14,6 +14,7 @@ import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.*;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.storage.loot.LootContext;
@@ -62,12 +63,12 @@ public class EntityGoblinNest extends Entity {
 	}
 
 	@Override
-	public net.minecraft.util.math.AxisAlignedBB getCollisionBoundingBox() {
+	public AxisAlignedBB getCollisionBoundingBox() {
 		return this.getEntityBoundingBox();
 	}
 
 	@Override
-	public net.minecraft.util.math.AxisAlignedBB getCollisionBox(Entity entityIn) {
+	public AxisAlignedBB getCollisionBox(Entity entityIn) {
 		return entityIn.getEntityBoundingBox();
 	}
 

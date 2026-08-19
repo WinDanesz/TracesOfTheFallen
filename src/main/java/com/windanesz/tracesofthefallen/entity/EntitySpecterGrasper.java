@@ -1,11 +1,13 @@
 package com.windanesz.tracesofthefallen.entity;
 
 import com.windanesz.tracesofthefallen.Settings;
+import com.windanesz.tracesofthefallen.TracesOfTheFallen;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.*;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
 import java.util.Random;
@@ -189,7 +191,7 @@ public class EntitySpecterGrasper extends EntitySpecter {
     }
 
     @Override
-    protected net.minecraft.util.ResourceLocation getLootTable() {
-        return new net.minecraft.util.ResourceLocation(com.windanesz.tracesofthefallen.TracesOfTheFallen.MODID, "entities/specter_grasper");
+    protected ResourceLocation getLootTable() {
+        return new ResourceLocation(TracesOfTheFallen.MODID, "entities/specter_grasper");
     }
 }

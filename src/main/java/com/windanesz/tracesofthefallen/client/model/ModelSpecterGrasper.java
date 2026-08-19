@@ -7,6 +7,8 @@ import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelBox;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.MathHelper;
 
 public class ModelSpecterGrasper extends ModelBase {
@@ -248,9 +250,9 @@ public class ModelSpecterGrasper extends ModelBase {
 		this.right_forearm.rotateAngleX = baseForearmX;
 		this.left_forearm.rotateAngleX = baseForearmX;
 
-		if (this.swingProgress > 0.0F && entityIn instanceof net.minecraft.entity.EntityLivingBase) {
-			net.minecraft.entity.EntityLivingBase living = (net.minecraft.entity.EntityLivingBase) entityIn;
-			boolean isLeftHand = living.swingingHand == net.minecraft.util.EnumHand.OFF_HAND;
+		if (this.swingProgress > 0.0F && entityIn instanceof EntityLivingBase) {
+			EntityLivingBase living = (EntityLivingBase) entityIn;
+			boolean isLeftHand = living.swingingHand == EnumHand.OFF_HAND;
 			
 			float f = this.swingProgress;
 			float raise = MathHelper.sin(MathHelper.sqrt(f) * (float)Math.PI);

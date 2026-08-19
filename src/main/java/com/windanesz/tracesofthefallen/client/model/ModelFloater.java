@@ -35,12 +35,11 @@ public class ModelFloater extends ModelBiped {
 
 		this.bipedBody.postRender(scale);
 
-		// RenderItem automatically translates the model by (-0.5, -0.5, -0.5) to center it.
-		// We only need to translate it vertically.
-		// Player waist is around 10-12 pixels down from the neck.
-		// Since RenderItem shifts Y by -8 pixels, we translate down by 18 pixels (1.125F)
-		// so that the model (which goes from 0 to 3 pixels in Y) ends up at Y=10 to 13.
-		GlStateManager.translate(0.0F, 1.125F, 0.0F);
+		// We need a final position of Y=10 to 13 pixels down from the neck.
+		// Before rotation, the block was at Y=-8 to -5, so a translation of 18 pixels (1.125F) worked.
+		// After 180-degree rotation around X, the block is at Y=5 to 8 pixels.
+		// So we only need to translate it down by 5 pixels (0.3125F).
+		GlStateManager.translate(0.0F, 0.3125F, 0.0F);
 		GlStateManager.rotate(180.0F, 1.0F, 0.0F, 0.0F);
 
 		Minecraft.getMinecraft().getRenderItem().renderItem(this.stack, ItemCameraTransforms.TransformType.NONE);

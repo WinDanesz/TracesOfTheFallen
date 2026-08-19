@@ -4,6 +4,7 @@ import com.windanesz.tracesofthefallen.entity.EntitySubterfuge;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelBox;
 import net.minecraft.client.model.ModelRenderer;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 
@@ -123,11 +124,11 @@ public class ModelSubterfuge extends ModelBase {
 		}
 		setRotationAngles(f, f1, f2, f3, f4, f5, entity);
 		
-		net.minecraft.client.renderer.GlStateManager.pushMatrix();
-		net.minecraft.client.renderer.GlStateManager.translate(0.0F, 1.5F, 0.0F);
-		net.minecraft.client.renderer.GlStateManager.scale(-1.0F, -1.0F, 1.0F);
+		GlStateManager.pushMatrix();
+		GlStateManager.translate(0.0F, 1.5F, 0.0F);
+		GlStateManager.scale(-1.0F, -1.0F, 1.0F);
 		body.render(f5);
-		net.minecraft.client.renderer.GlStateManager.popMatrix();
+		GlStateManager.popMatrix();
 	}
 
 	@Override

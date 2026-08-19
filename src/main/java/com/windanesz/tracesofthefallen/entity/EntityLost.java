@@ -1,17 +1,33 @@
 package com.windanesz.tracesofthefallen.entity;
 
+import com.google.common.base.Predicate;
+import com.windanesz.tracesofthefallen.Settings;
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
+import net.minecraft.block.Block;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityList;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.*;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.MobEffects;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+
+import java.util.List;
 
 public class EntityLost extends EntityMob {
 
@@ -44,9 +60,9 @@ public class EntityLost extends EntityMob {
         this.tasks.addTask(8, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
         this.tasks.addTask(8, new EntityAILookIdle(this));
         this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, true));
-        this.targetTasks.addTask(2, new EntityAINearestAttackableTarget<>(this, net.minecraft.entity.EntityLivingBase.class, 10, true, false, new com.google.common.base.Predicate<net.minecraft.entity.EntityLivingBase>() {
+        this.targetTasks.addTask(2, new EntityAINearestAttackableTarget<>(this, EntityLivingBase.class, 10, true, false, new Predicate<EntityLivingBase>() {
             @Override
-            public boolean apply(net.minecraft.entity.EntityLivingBase input) {
+            public boolean apply(EntityLivingBase input) {
                 return EntityLost.isEdible(input);
             }
         }));
@@ -72,6 +88,21 @@ public class EntityLost extends EntityMob {
         }
         
         return super.getCanSpawnHere();
+    }
+
+    @Override
+    protected net.minecraft.util.SoundEvent getAmbientSound() {
+        return com.windanesz.tracesofthefallen.init.ModSounds.LOST_AMBIENT;
+    }
+
+    @Override
+    protected net.minecraft.util.SoundEvent getHurtSound(net.minecraft.util.DamageSource damageSourceIn) {
+        return com.windanesz.tracesofthefallen.init.ModSounds.LOST_HURT;
+    }
+
+    @Override
+    protected net.minecraft.util.SoundEvent getDeathSound() {
+        return com.windanesz.tracesofthefallen.init.ModSounds.LOST_DEATH;
     }
 
     @Override
@@ -102,19 +133,19 @@ public class EntityLost extends EntityMob {
         return this.dataManager.get(EXCITED);
     }
 
-    public static boolean isEdible(net.minecraft.entity.Entity entity) {
+    public static boolean isEdible(Entity entity) {
         if (entity == null || entity instanceof EntityLost) return false;
-        net.minecraft.util.ResourceLocation res = net.minecraft.entity.EntityList.getKey(entity);
+        ResourceLocation res = EntityList.getKey(entity);
         if (res == null) return false;
         String name = res.toString();
-        for (String s : com.windanesz.tracesofthefallen.Settings.goblinSettings.lostEdibleEntities) {
+        for (String s : Settings.goblinSettings.lostEdibleEntities) {
             if (s.equals(name)) return true;
         }
         return false;
     }
 
     @Override
-    public boolean isOnSameTeam(net.minecraft.entity.Entity entityIn) {
+    public boolean isOnSameTeam(Entity entityIn) {
         if (entityIn instanceof EntityLost) {
             return true;
         }
@@ -136,7 +167,7 @@ public class EntityLost extends EntityMob {
     }
 
     @Override
-    public boolean attackEntityAsMob(net.minecraft.entity.Entity entityIn) {
+    public boolean attackEntityAsMob(Entity entityIn) {
         if (this.getLungeState() != 0) {
             return false;
         }
@@ -144,7 +175,7 @@ public class EntityLost extends EntityMob {
         if (isEdible(entityIn) && this.getPassengers().isEmpty()) {
             if (entityIn.startRiding(this, true)) {
                 this.grabTicks = 0;
-                this.world.playSound(null, this.posX, this.posY, this.posZ, net.minecraft.init.SoundEvents.ENTITY_ZOMBIE_ATTACK_DOOR_WOOD, this.getSoundCategory(), 1.0F, 0.8F);
+                this.world.playSound(null, this.posX, this.posY, this.posZ, SoundEvents.ENTITY_ZOMBIE_ATTACK_DOOR_WOOD, this.getSoundCategory(), 1.0F, 0.8F);
                 return true;
             }
         }
@@ -153,7 +184,7 @@ public class EntityLost extends EntityMob {
     }
 
     @Override
-    public void updatePassenger(net.minecraft.entity.Entity passenger) {
+    public void updatePassenger(Entity passenger) {
         if (this.isPassenger(passenger)) {
             double forwardOffset;
             double verticalOffset;
@@ -184,20 +215,20 @@ public class EntityLost extends EntityMob {
             float targetYaw = this.renderYawOffset + 180.0F;
             passenger.rotationYaw = targetYaw;
             passenger.prevRotationYaw = targetYaw;
-            if (passenger instanceof net.minecraft.entity.EntityLivingBase) {
-                ((net.minecraft.entity.EntityLivingBase) passenger).renderYawOffset = targetYaw;
-                ((net.minecraft.entity.EntityLivingBase) passenger).prevRenderYawOffset = targetYaw;
-                ((net.minecraft.entity.EntityLivingBase) passenger).rotationYawHead = targetYaw;
-                ((net.minecraft.entity.EntityLivingBase) passenger).prevRotationYawHead = targetYaw;
+            if (passenger instanceof EntityLivingBase) {
+                ((EntityLivingBase) passenger).renderYawOffset = targetYaw;
+                ((EntityLivingBase) passenger).prevRenderYawOffset = targetYaw;
+                ((EntityLivingBase) passenger).rotationYawHead = targetYaw;
+                ((EntityLivingBase) passenger).prevRotationYawHead = targetYaw;
             }
         }
     }
 
-    @net.minecraftforge.fml.relauncher.SideOnly(net.minecraftforge.fml.relauncher.Side.CLIENT)
+    @SideOnly(Side.CLIENT)
     public int hurtFaceTicks;
 
     @Override
-    @net.minecraftforge.fml.relauncher.SideOnly(net.minecraftforge.fml.relauncher.Side.CLIENT)
+    @SideOnly(Side.CLIENT)
     public void handleStatusUpdate(byte id) {
         if (id == 2) {
             this.hurtFaceTicks = 20; // 1 second of idle face
@@ -218,22 +249,22 @@ public class EntityLost extends EntityMob {
             
             // Spawn blood and flesh particles during the final chewing/swallowing phase
             if (this.world.isRemote && this.grabTicks > 50) {
-                net.minecraft.entity.Entity passenger = this.getPassengers().get(0);
+                Entity passenger = this.getPassengers().get(0);
                 for (int i = 0; i < 5; i++) {
                     double px = passenger.posX + (this.rand.nextDouble() - 0.5D) * passenger.width;
                     double py = passenger.posY + (this.rand.nextDouble() * passenger.height);
                     double pz = passenger.posZ + (this.rand.nextDouble() - 0.5D) * passenger.width;
                     
                     // Blood drops
-                    this.world.spawnParticle(net.minecraft.util.EnumParticleTypes.REDSTONE, px, py, pz, 0, 0, 0);
+                    this.world.spawnParticle(EnumParticleTypes.REDSTONE, px, py, pz, 0, 0, 0);
                     
                     if (this.rand.nextBoolean()) {
                         // Chunks of flesh (Nether Wart Block)
-                        this.world.spawnParticle(net.minecraft.util.EnumParticleTypes.BLOCK_CRACK, px, py, pz, 
+                        this.world.spawnParticle(EnumParticleTypes.BLOCK_CRACK, px, py, pz,
                             (this.rand.nextDouble() - 0.5D) * 0.2D, 
                             (this.rand.nextDouble() * 0.2D), 
                             (this.rand.nextDouble() - 0.5D) * 0.2D, 
-                            net.minecraft.block.Block.getStateId(net.minecraft.init.Blocks.NETHER_WART_BLOCK.getDefaultState()));
+                            Block.getStateId(Blocks.NETHER_WART_BLOCK.getDefaultState()));
                     }
                 }
             }
@@ -254,7 +285,7 @@ public class EntityLost extends EntityMob {
                 this.updateMobCombat();
             } else {
                 // We are holding something!
-                net.minecraft.entity.Entity passenger = this.getPassengers().get(0);
+                Entity passenger = this.getPassengers().get(0);
                 
                 // Stop moving while eating
                 this.motionX = 0;
@@ -265,7 +296,7 @@ public class EntityLost extends EntityMob {
                 
                 // Play crunch sound occasionally
                 if (this.grabTicks % 10 == 0) {
-                    this.world.playSound(null, this.posX, this.posY, this.posZ, net.minecraft.init.SoundEvents.ENTITY_GENERIC_EAT, this.getSoundCategory(), 1.0F, 0.8F + this.rand.nextFloat() * 0.4F);
+                    this.world.playSound(null, this.posX, this.posY, this.posZ, SoundEvents.ENTITY_GENERIC_EAT, this.getSoundCategory(), 1.0F, 0.8F + this.rand.nextFloat() * 0.4F);
                 }
                 
                 // Swallow
@@ -274,12 +305,12 @@ public class EntityLost extends EntityMob {
                     this.setHealth(this.getMaxHealth());
                     
                     // Gain Slowness II for 3 seconds
-                    this.addPotionEffect(new net.minecraft.potion.PotionEffect(net.minecraft.init.MobEffects.SLOWNESS, 60, 1));
+                    this.addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, 60, 1));
                     
                     // Instantly remove the entity without playing a death animation
                     passenger.setDead();
                     
-                    this.world.playSound(null, this.posX, this.posY, this.posZ, net.minecraft.init.SoundEvents.ENTITY_PLAYER_BURP, this.getSoundCategory(), 1.0F, 0.8F + this.rand.nextFloat() * 0.4F);
+                    this.world.playSound(null, this.posX, this.posY, this.posZ, SoundEvents.ENTITY_PLAYER_BURP, this.getSoundCategory(), 1.0F, 0.8F + this.rand.nextFloat() * 0.4F);
                 }
             }
         } else {
@@ -288,10 +319,10 @@ public class EntityLost extends EntityMob {
 
         this.prevMouthOpenProgress = this.mouthOpenProgress;
         
-        if (this.isAttacking()) {
-            this.mouthOpenProgress += (1.0F - this.mouthOpenProgress) * 0.2F;
+        if (this.isAttacking() && this.hurtFaceTicks == 0) {
+            this.mouthOpenProgress += (1.0F - this.mouthOpenProgress) * 0.6F;
         } else {
-            this.mouthOpenProgress += (0.0F - this.mouthOpenProgress) * 0.2F;
+            this.mouthOpenProgress += (0.0F - this.mouthOpenProgress) * 0.6F;
         }
     }
 
@@ -310,21 +341,21 @@ public class EntityLost extends EntityMob {
                 this.motionZ = 0.0D;
             }
             if (!this.hasHitInCurrentLunge) {
-                java.util.List<net.minecraft.entity.EntityLivingBase> targets = this.world.getEntitiesWithinAABB(net.minecraft.entity.EntityLivingBase.class, this.getEntityBoundingBox().grow(0.2D, 0.3D, 0.2D));
-                for (net.minecraft.entity.EntityLivingBase target : targets) {
+                List<EntityLivingBase> targets = this.world.getEntitiesWithinAABB(EntityLivingBase.class, this.getEntityBoundingBox().grow(0.2D, 0.3D, 0.2D));
+                for (EntityLivingBase target : targets) {
                     if (target != this && !this.isOnSameTeam(target) && target.isEntityAlive()) {
                         if (isEdible(target) && this.getPassengers().isEmpty()) {
                             if (target.startRiding(this, true)) {
                                 this.grabTicks = 0;
                                 this.setLungeState(0);
                                 this.lungeTicks = 0;
-                                this.world.playSound(null, this.posX, this.posY, this.posZ, net.minecraft.init.SoundEvents.ENTITY_ZOMBIE_ATTACK_DOOR_WOOD, this.getSoundCategory(), 1.0F, 0.8F);
+                                this.world.playSound(null, this.posX, this.posY, this.posZ, SoundEvents.ENTITY_ZOMBIE_ATTACK_DOOR_WOOD, this.getSoundCategory(), 1.0F, 0.8F);
                                 break;
                             }
                         }
                         
                         target.attackEntityFrom(DamageSource.causeMobDamage(this), (float)this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).getAttributeValue());
-                        this.world.playSound(null, this.posX, this.posY, this.posZ, net.minecraft.init.SoundEvents.ENTITY_PLAYER_ATTACK_SWEEP, this.getSoundCategory(), 1.0F, 1.1F);
+                        this.world.playSound(null, this.posX, this.posY, this.posZ, SoundEvents.ENTITY_PLAYER_ATTACK_SWEEP, this.getSoundCategory(), 1.0F, 1.1F);
                         this.hasHitInCurrentLunge = true;
                         this.motionX *= 0.3D;
                         this.motionZ *= 0.3D;
@@ -337,7 +368,7 @@ public class EntityLost extends EntityMob {
                 this.lungeTicks = 0;
                 this.motionX = 0.0D;
                 this.motionZ = 0.0D;
-                this.world.playSound(null, this.posX, this.posY, this.posZ, net.minecraft.init.SoundEvents.ENTITY_GENERIC_SMALL_FALL, this.getSoundCategory(), 1.0F, 0.8F);
+                this.world.playSound(null, this.posX, this.posY, this.posZ, SoundEvents.ENTITY_GENERIC_SMALL_FALL, this.getSoundCategory(), 1.0F, 0.8F);
             }
         } else if (state == 2) {
             this.lungeTicks++;
@@ -351,7 +382,7 @@ public class EntityLost extends EntityMob {
                 this.lungeCooldown = 400 + this.rand.nextInt(200); // 20-30 seconds cooldown for Lost
             }
         } else if (state == 0 && this.lungeCooldown == 0 && this.onGround && this.getPassengers().isEmpty()) {
-            net.minecraft.entity.EntityLivingBase target = this.getAttackTarget();
+            EntityLivingBase target = this.getAttackTarget();
             if (target != null && target.isEntityAlive() && this.getEntitySenses().canSee(target)) {
                 double distSq = this.getDistanceSq(target);
                 if (distSq >= 2.25D && distSq <= 25.0D) {
@@ -364,9 +395,9 @@ public class EntityLost extends EntityMob {
                     this.motionX = (dx / dist) * 1.15D;
                     this.motionZ = (dz / dist) * 1.15D;
                     this.motionY = 0.32D;
-                    this.rotationYaw = (float)(net.minecraft.util.math.MathHelper.atan2(dz, dx) * (180D / Math.PI)) - 90.0F;
+                    this.rotationYaw = (float)(MathHelper.atan2(dz, dx) * (180D / Math.PI)) - 90.0F;
                     this.renderYawOffset = this.rotationYaw;
-                    this.world.playSound(null, this.posX, this.posY, this.posZ, net.minecraft.init.SoundEvents.ENTITY_ZOMBIE_STEP, this.getSoundCategory(), 1.2F, 1.4F);
+                    this.world.playSound(null, this.posX, this.posY, this.posZ, SoundEvents.ENTITY_ZOMBIE_STEP, this.getSoundCategory(), 1.2F, 1.4F);
                 }
             }
         }

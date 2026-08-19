@@ -4,6 +4,7 @@ import com.windanesz.tracesofthefallen.Settings;
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
 import com.windanesz.tracesofthefallen.Utils;
 import com.windanesz.tracesofthefallen.entity.EntitySpecter;
+import com.windanesz.tracesofthefallen.entity.EntitySpecterGrasper;
 import com.windanesz.tracesofthefallen.network.PacketHandler;
 import com.windanesz.tracesofthefallen.packet.PacketPlayerSync;
 import net.minecraft.advancements.Advancement;
@@ -274,9 +275,9 @@ public class HauntingCapability implements INBTSerializable<NBTTagCompound> {
 								if (pos != null) {
 									EntitySpecter specter;
 									if (hauntingProg >= 85 && player.world.rand.nextBoolean()) {
-										specter = new com.windanesz.tracesofthefallen.entity.EntitySpecterGrasper(player.world);
+										specter = new EntitySpecterGrasper(player.world);
 									} else if (hauntingProg >= 95) {
-										specter = new com.windanesz.tracesofthefallen.entity.EntitySpecterGrasper(player.world);
+										specter = new EntitySpecterGrasper(player.world);
 									} else {
 										specter = new EntitySpecter(player.world);
 									}
@@ -286,7 +287,7 @@ public class HauntingCapability implements INBTSerializable<NBTTagCompound> {
 									specter.setAttackTarget(player);
 									
 									// 5 minute cooldown if a Grasper spawns
-									if (specter instanceof com.windanesz.tracesofthefallen.entity.EntitySpecterGrasper) {
+									if (specter instanceof EntitySpecterGrasper) {
 										cap.hauntingSpawnCooldown = 6000;
 									}
 								}
@@ -354,7 +355,7 @@ public class HauntingCapability implements INBTSerializable<NBTTagCompound> {
 			if (source != null && source.getTrueSource() instanceof EntityPlayer) {
 				EntityPlayer player = (EntityPlayer) source.getTrueSource();
 				
-				if (event.getEntityLiving() instanceof com.windanesz.tracesofthefallen.entity.EntitySpecterGrasper) {
+				if (event.getEntityLiving() instanceof EntitySpecterGrasper) {
 					HauntingCapability cap = HauntingCapability.get(player);
 					if (cap != null) {
 						cap.hauntingSpawnCooldown = Math.max(cap.hauntingSpawnCooldown, 12000); // 10 mins

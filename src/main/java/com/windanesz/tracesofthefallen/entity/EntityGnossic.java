@@ -2,6 +2,7 @@ package com.windanesz.tracesofthefallen.entity;
 
 import com.windanesz.tracesofthefallen.Settings;
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
+import com.windanesz.tracesofthefallen.init.ModItems;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -13,6 +14,7 @@ import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 import net.minecraft.entity.ai.EntityAIWander;
 import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.monster.EntityMob;
+import net.minecraft.entity.monster.EntitySkeleton;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
@@ -153,6 +155,17 @@ public class EntityGnossic extends EntityMob {
                         this.posZ + (double)(this.rand.nextFloat() * this.width), 
                         mx, my, mz);
                 }
+            }
+        }
+    }
+
+    @Override
+    public void onDeath(DamageSource cause) {
+        super.onDeath(cause);
+        
+        if (!this.world.isRemote && this.world.getGameRules().getBoolean("doMobLoot")) {
+            if (cause.getTrueSource() instanceof EntitySkeleton) {
+                this.dropItem(ModItems.record_gnossiene_1, 1);
             }
         }
     }

@@ -1,9 +1,17 @@
 package com.windanesz.tracesofthefallen.init;
 
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
+import com.windanesz.tracesofthefallen.entity.EntitySpecter;
+import com.windanesz.tracesofthefallen.entity.EntitySpecterGrasper;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.storage.loot.LootTableList;
+import net.minecraftforge.event.entity.living.LivingDropsEvent;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 @Mod.EventBusSubscriber
 public class ModLootTables {
@@ -33,22 +41,22 @@ public class ModLootTables {
 		LootTableList.register(new ResourceLocation(TracesOfTheFallen.MODID, "entities/lost"));
 	}
 
-	@net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-	public static void onLivingDrops(net.minecraftforge.event.entity.living.LivingDropsEvent event) {
-		if (net.minecraftforge.fml.common.Loader.isModLoaded("mod_lavacow")) {
-			if (event.getEntityLiving() instanceof com.windanesz.tracesofthefallen.entity.EntitySpecter) {
-				float chance = event.getEntityLiving() instanceof com.windanesz.tracesofthefallen.entity.EntitySpecterGrasper ? 0.3F : 0.1F;
+	@SubscribeEvent
+	public static void onLivingDrops(LivingDropsEvent event) {
+		if (Loader.isModLoaded("mod_lavacow")) {
+			if (event.getEntityLiving() instanceof EntitySpecter) {
+				float chance = event.getEntityLiving() instanceof EntitySpecterGrasper ? 0.3F : 0.1F;
 				chance += event.getLootingLevel() * 0.05F;
 				
 				if (event.getEntityLiving().world.rand.nextFloat() < chance) {
-					net.minecraft.item.Item ectoplasm = net.minecraft.item.Item.REGISTRY.getObject(new ResourceLocation("mod_lavacow", "ectoplasm"));
+					Item ectoplasm = Item.REGISTRY.getObject(new ResourceLocation("mod_lavacow", "ectoplasm"));
 					if (ectoplasm != null) {
-						event.getDrops().add(new net.minecraft.entity.item.EntityItem(
+						event.getDrops().add(new EntityItem(
 								event.getEntityLiving().world, 
 								event.getEntityLiving().posX, 
 								event.getEntityLiving().posY, 
 								event.getEntityLiving().posZ, 
-								new net.minecraft.item.ItemStack(ectoplasm)
+								new ItemStack(ectoplasm)
 						));
 					}
 				}

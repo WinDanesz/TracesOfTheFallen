@@ -1,10 +1,14 @@
 package com.windanesz.tracesofthefallen.entity.ai;
 
 import com.windanesz.tracesofthefallen.entity.EntitySubterfuge;
+import com.windanesz.tracesofthefallen.network.PacketHandler;
+import com.windanesz.tracesofthefallen.packet.PacketSpawnGodSlapParticle;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.Vec3d;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
 
 public class EntityAISubterfugeGodslap extends EntityAIBase {
     private final EntitySubterfuge subterfuge;
@@ -61,15 +65,15 @@ public class EntityAISubterfugeGodslap extends EntityAIBase {
             if (distanceSq <= 256.0D && this.subterfuge.getEntitySenses().canSee(target)) {
                 // Spawn god_slap particle from the Subterfuge's hand area
                 // Approx 1.0 blocks forward (closer to her) and 1.8 blocks high
-                net.minecraft.util.math.Vec3d lookDir = this.subterfuge.getLookVec();
+                Vec3d lookDir = this.subterfuge.getLookVec();
                 double px = this.subterfuge.posX + lookDir.x * 1.0D;
                 double py = this.subterfuge.posY + 1.8D;
                 double pz = this.subterfuge.posZ + lookDir.z * 1.0D;
 
-                net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint point = new net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint(
+                NetworkRegistry.TargetPoint point = new NetworkRegistry.TargetPoint(
                         this.subterfuge.dimension, px, py, pz, 64.0D);
-                com.windanesz.tracesofthefallen.network.PacketHandler.net.sendToAllAround(
-                        new com.windanesz.tracesofthefallen.packet.PacketSpawnGodSlapParticle(px, py, pz), point);
+                PacketHandler.net.sendToAllAround(
+                        new PacketSpawnGodSlapParticle(px, py, pz), point);
             }
         }
 
@@ -77,7 +81,7 @@ public class EntityAISubterfugeGodslap extends EntityAIBase {
         if (this.attackTick == 30 && target != null) {
             double distanceSq = this.subterfuge.getDistanceSq(target);
             if (distanceSq <= 256.0D && this.subterfuge.getEntitySenses().canSee(target)) {
-                float damage = (float) this.subterfuge.getEntityAttribute(net.minecraft.entity.SharedMonsterAttributes.ATTACK_DAMAGE).getAttributeValue();
+                float damage = (float) this.subterfuge.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).getAttributeValue();
                 target.attackEntityFrom(DamageSource.causeMobDamage(this.subterfuge), damage);
 
                 // Massive knockback

@@ -325,3 +325,6 @@ tile.totf:subtorch.name=Subtorch
 item.totf:living_silver_speck.name=Living-silver Speck
 item.totf:living_silver_nugget.name=Living-silver Nugget
 item.totf:porcelain_liquid.living_silver_tea=Living-silver Tea
+
+item.record.gnossiene_1.desc=Erik Satie - Gnossienne No. 1
+item.totf:record_gnossiene_1.name=Music Disc

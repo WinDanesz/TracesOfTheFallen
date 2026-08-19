@@ -3,6 +3,7 @@ package com.windanesz.tracesofthefallen.block;
 import com.windanesz.tracesofthefallen.Settings;
 import com.windanesz.tracesofthefallen.api.ILampheadInteractable;
 import com.windanesz.tracesofthefallen.entity.EntityLamphead;
+import com.windanesz.tracesofthefallen.init.ModSounds;
 import com.windanesz.tracesofthefallen.inventory.ContainerBrassFabricator;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
@@ -15,6 +16,7 @@ import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -118,6 +120,9 @@ public class TileEntityBrassFabricator extends TileEntity implements ITickable, 
             
             if (burnTime > 0) {
                 craftProgress++;
+                if (craftProgress % 23 == 1) {
+                    world.playSound(null, pos, ModSounds.FABRICATOR_WORKING, SoundCategory.BLOCKS, 1.0F, 1.0F);
+                }
                 int targetTicks = 180 - (speedLevel * 20); // 1 fuel = 160 ticks (8s), 6 fuels = 60 ticks (3s)
                 if (craftProgress >= targetTicks) {
                     craftItem(recipeOutput);
