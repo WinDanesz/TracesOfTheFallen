@@ -52,6 +52,7 @@ public class TileEntityWoodenItemFrameRenderer extends TileEntitySpecialRenderer
 				break;
 			case UP:
 				GlStateManager.rotate(90.0F, 1.0F, 0.0F, 0.0F);
+				GlStateManager.rotate(180.0F, 0.0F, 0.0F, 1.0F);
 				break;
 			case DOWN:
 				GlStateManager.rotate(-90.0F, 1.0F, 0.0F, 0.0F);

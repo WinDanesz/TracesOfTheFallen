@@ -58,5 +58,7 @@ public class CommonProxy {
 
 	public void spawnGodSlapParticle(World world, double x, double y, double z) {
 	}
-}
 
+	public void spawnSubtorchParticle(World world, double x, double y, double z, double motionX, double motionY, double motionZ) {
+	}
+}

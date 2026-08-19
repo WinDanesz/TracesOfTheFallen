@@ -37,6 +37,9 @@ public class EntitySpecter extends EntityMob implements IEntityOwnable {
     public static final ResourceLocation LOOT_TABLE = new ResourceLocation(TracesOfTheFallen.MODID, "entities/specter");
     private EntityLivingBase cachedOwner;
     private int lifespan = 3600;
+    private int ambientSoundCooldown = 800;
+    private int hostileSoundCooldown = 0;
+    public boolean useLeftHand = false;
 
     public EntitySpecter(World worldIn) {
         super(worldIn);
@@ -142,6 +145,10 @@ public class EntitySpecter extends EntityMob implements IEntityOwnable {
             super.setAttackTarget(null);
             return;
         }
+        if (entitylivingbaseIn instanceof EntitySpecter || entitylivingbaseIn instanceof EntityFamiliarSpecter) {
+            super.setAttackTarget(null);
+            return;
+        }
         super.setAttackTarget(entitylivingbaseIn);
     }
 
@@ -151,6 +158,9 @@ public class EntitySpecter extends EntityMob implements IEntityOwnable {
             return false;
         }
         if (source.getTrueSource() != null) {
+            if (source.getTrueSource() instanceof EntitySpecter || source.getTrueSource() instanceof EntityFamiliarSpecter) {
+                return false;
+            }
             if (this.isOwner(source.getTrueSource())) {
                 return false;
             }
@@ -180,6 +190,39 @@ public class EntitySpecter extends EntityMob implements IEntityOwnable {
     public void onLivingUpdate() {
         super.onLivingUpdate();
         this.noClip = true;
+
+        if (this.isSwingInProgress && this.ticksExisted % 3 != 0) {
+            this.swingProgressInt--;
+        }
+
+        if (!this.world.isRemote) {
+            if (this.ambientSoundCooldown > 0) {
+                this.ambientSoundCooldown--;
+            } else {
+                double offsetX = (this.rand.nextDouble() - 0.5) * 16.0;
+                double offsetY = (this.rand.nextDouble() - 0.5) * 4.0;
+                double offsetZ = (this.rand.nextDouble() - 0.5) * 16.0;
+                this.world.playSound(null, this.posX + offsetX, this.posY + offsetY, this.posZ + offsetZ, ModSounds.SPECTER_AMBIENT, this.getSoundCategory(), 1.0F, 1.0F);
+                this.ambientSoundCooldown = 800 + this.rand.nextInt(200);
+            }
+
+            if (this.getAttackTarget() != null) {
+                if (this.hostileSoundCooldown > 0) {
+                    this.hostileSoundCooldown--;
+                } else {
+                    double offsetX = (this.rand.nextDouble() - 0.5) * 16.0;
+                    double offsetY = (this.rand.nextDouble() - 0.5) * 4.0;
+                    double offsetZ = (this.rand.nextDouble() - 0.5) * 16.0;
+                    this.world.playSound(null, this.posX + offsetX, this.posY + offsetY, this.posZ + offsetZ, ModSounds.SPECTER_HOSTILE, this.getSoundCategory(), 1.0F, 1.0F);
+                    this.hostileSoundCooldown = 400 + this.rand.nextInt(200);
+                }
+            } else {
+                if (this.hostileSoundCooldown <= 0) {
+                    this.hostileSoundCooldown = 20;
+                }
+            }
+        }
+
         if (!this.world.isRemote && this.getOwnerId() != null) {
             if (--this.lifespan <= 0 || (this.getOwner() == null && this.ticksExisted > 600)) {
                 if (this.world instanceof WorldServer) {
@@ -236,7 +279,7 @@ public class EntitySpecter extends EntityMob implements IEntityOwnable {
 
     @Override
     protected SoundEvent getAmbientSound() {
-        return SoundEvents.ENTITY_VEX_AMBIENT;
+        return null;
     }
 
     @Override
@@ -274,6 +317,7 @@ public class EntitySpecter extends EntityMob implements IEntityOwnable {
             private final EntitySpecter parentEntity;
             private int attackCooldown;
             private int dashCooldown;
+            private int windupTicks;
 
             public AIAttack(EntitySpecter specter) {
                 this.parentEntity = specter;
@@ -295,6 +339,7 @@ public class EntitySpecter extends EntityMob implements IEntityOwnable {
                 this.parentEntity.setAttacking(true);
                 this.attackCooldown = 0;
                 this.dashCooldown = 0;
+                this.windupTicks = 0;
             }
 
             @Override
@@ -321,50 +366,60 @@ public class EntitySpecter extends EntityMob implements IEntityOwnable {
                     }
 
                     double distanceSq = this.parentEntity.getDistanceSq(target);
-                    if (distanceSq < 2.25D && this.attackCooldown <= 0) {
-                        this.parentEntity.attackEntityAsMob(target);
-                        this.attackCooldown = 20;
-                        this.dashCooldown = 20;
+                    
+                    if (this.windupTicks > 0) {
+                        --this.windupTicks;
+                        if (this.windupTicks == 0) {
+                            if (this.parentEntity.getDistanceSq(target) < 4.0D) {
+                                this.parentEntity.attackEntityAsMob(target);
+                                this.dashCooldown = 20;
 
-                        if (target instanceof EntityPlayer) {
-                            Random random = this.parentEntity.getRNG();
-                            EntityPlayer player = (EntityPlayer) target;
-                            Vec3d playerLook = player.getLookVec();
+                                if (target instanceof EntityPlayer) {
+                                    Random random = this.parentEntity.getRNG();
+                                    EntityPlayer player = (EntityPlayer) target;
+                                    Vec3d playerLook = player.getLookVec();
 
-                            Vec3d forward = new Vec3d(playerLook.x, 0, playerLook.z).normalize();
-                            Vec3d right = new Vec3d(-playerLook.z, 0, playerLook.x).normalize();
+                                    Vec3d forward = new Vec3d(playerLook.x, 0, playerLook.z).normalize();
+                                    Vec3d right = new Vec3d(-playerLook.z, 0, playerLook.x).normalize();
 
-                            Vec3d[] directions = {
-                                forward,
-                                forward.scale(-1),
-                                right,
-                                right.scale(-1)
-                            };
+                                    Vec3d[] directions = {
+                                        forward,
+                                        forward.scale(-1),
+                                        right,
+                                        right.scale(-1)
+                                    };
 
-                            Vec3d chosenDir = directions[random.nextInt(directions.length)];
+                                    Vec3d chosenDir = directions[random.nextInt(directions.length)];
 
-                            double distance = 2.0; //+ random.nextDouble() * 1.0; // 2-3 blocks from player
+                                    double distance = 2.0;
 
-                            double destX = player.posX + chosenDir.x * distance;
-                            double destY = player.posY + 1.0;
-                            double destZ = player.posZ + chosenDir.z * distance;
+                                    double destX = player.posX + chosenDir.x * distance;
+                                    double destY = player.posY + 1.0;
+                                    double destZ = player.posZ + chosenDir.z * distance;
 
-                            double moveVecX = destX - this.parentEntity.posX;
-                            double moveVecY = destY - this.parentEntity.posY;
-                            double moveVecZ = destZ - this.parentEntity.posZ;
-                            double moveLen = MathHelper.sqrt(moveVecX*moveVecX + moveVecY*moveVecY + moveVecZ*moveVecZ);
+                                    double moveVecX = destX - this.parentEntity.posX;
+                                    double moveVecY = destY - this.parentEntity.posY;
+                                    double moveVecZ = destZ - this.parentEntity.posZ;
+                                    double moveLen = MathHelper.sqrt(moveVecX*moveVecX + moveVecY*moveVecY + moveVecZ*moveVecZ);
 
-                            if (moveLen > 0) {
-                                double dashSpeed = 1.8;
-                                this.parentEntity.motionX = (moveVecX / moveLen) * dashSpeed;
-                                this.parentEntity.motionY = (moveVecY / moveLen) * dashSpeed * 0.1;
-                                this.parentEntity.motionZ = (moveVecZ / moveLen) * dashSpeed;
+                                    if (moveLen > 0) {
+                                        double dashSpeed = 1.8;
+                                        this.parentEntity.motionX = (moveVecX / moveLen) * dashSpeed;
+                                        this.parentEntity.motionY = (moveVecY / moveLen) * dashSpeed * 0.1;
+                                        this.parentEntity.motionZ = (moveVecZ / moveLen) * dashSpeed;
 
-                                if (this.parentEntity.getMoveHelper() instanceof SpecterMoveHelper) {
-                                    ((SpecterMoveHelper) this.parentEntity.getMoveHelper()).startCooldown(10);
+                                        if (this.parentEntity.getMoveHelper() instanceof SpecterMoveHelper) {
+                                            ((SpecterMoveHelper) this.parentEntity.getMoveHelper()).startCooldown(10);
+                                        }
+                                    }
                                 }
                             }
+                            this.attackCooldown = 20;
                         }
+                    } else if (distanceSq < 2.25D && this.attackCooldown <= 0) {
+                        this.parentEntity.useLeftHand = !this.parentEntity.useLeftHand;
+                        this.parentEntity.swingArm(this.parentEntity.useLeftHand ? net.minecraft.util.EnumHand.OFF_HAND : net.minecraft.util.EnumHand.MAIN_HAND);
+                        this.windupTicks = 10;
                     }
                 }
             }
@@ -385,7 +440,8 @@ public class EntitySpecter extends EntityMob implements IEntityOwnable {
             if (((EntitySpecter)this.taskOwner).getOwnerId() != null) {
                 return false;
             }
-            return super.shouldExecute() && this.target != null;
+            this.shouldCheckSight = !this.taskOwner.getEntityData().getBoolean("HauntingSpawned");
+            return super.shouldExecute();
         }
     }
 
@@ -399,7 +455,7 @@ public class EntitySpecter extends EntityMob implements IEntityOwnable {
 
         @Override
         public boolean shouldExecute() {
-            if (this.parentEntity.getOwnerId() != null && this.parentEntity.getRNG().nextInt(30) != 0) {
+            if (this.parentEntity.getRNG().nextInt(60) != 0) {
                 return false;
             }
             if (this.parentEntity.getOwnerId() != null && this.parentEntity.getAttackTarget() == null && this.parentEntity.getOwner() != null && this.parentEntity.getDistanceSq(this.parentEntity.getOwner()) > 64.0D) {
@@ -428,14 +484,13 @@ public class EntitySpecter extends EntityMob implements IEntityOwnable {
             double d0 = this.parentEntity.posX + (double) ((random.nextFloat() * 2.0F - 1.0F) * 4.0F);
             double d1 = this.parentEntity.posY + (double) ((random.nextFloat() * 2.0F - 1.0F) * 4.0F);
             double d2 = this.parentEntity.posZ + (double) ((random.nextFloat() * 2.0F - 1.0F) * 4.0F);
-            this.parentEntity.getMoveHelper().setMoveTo(d0, d1, d2, 1.0D);
+            this.parentEntity.getMoveHelper().setMoveTo(d0, d1, d2, 0.4D);
         }
     }
 
     static class AISpecterFollowOwner extends EntityAIBase {
         private final EntitySpecter specter;
         private EntityLivingBase owner;
-        private final World world;
         private final double followSpeed;
         private final float minDist;
         private final float maxDist;
@@ -443,7 +498,7 @@ public class EntitySpecter extends EntityMob implements IEntityOwnable {
 
         public AISpecterFollowOwner(EntitySpecter specter, double speed, float min, float max) {
             this.specter = specter;
-            this.world = specter.world;
+            World world = specter.world;
             this.followSpeed = speed;
             this.minDist = min;
             this.maxDist = max;

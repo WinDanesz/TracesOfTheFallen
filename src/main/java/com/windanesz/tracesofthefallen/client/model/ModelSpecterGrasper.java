@@ -14,35 +14,23 @@ import net.minecraft.util.math.MathHelper;
 public class ModelSpecterGrasper extends ModelBase {
 	private final ModelRenderer base;
 	private final ModelRenderer head;
-	private final ModelRenderer body;
-	private final ModelRenderer right_cloth_r1;
+    private final ModelRenderer right_cloth_r1;
 	private final ModelRenderer left_cloth_r1;
 	private final ModelRenderer left_cloth_r2;
 	private final ModelRenderer right_cloth_r2;
-	private final ModelRenderer body_r1;
-	private final ModelRenderer chain;
+    private final ModelRenderer chain;
 	private final ModelRenderer bone2;
-	private final ModelRenderer chain_r1;
-	private final ModelRenderer bone3;
-	private final ModelRenderer chain_r2;
-	private final ModelRenderer bone4;
-	private final ModelRenderer chain_r3;
-	private final ModelRenderer bone6;
-	private final ModelRenderer chain_r4;
-	private final ModelRenderer bone5;
-	private final ModelRenderer chain_r5;
-	private final ModelRenderer bone7;
-	private final ModelRenderer chain_r6;
-	private final ModelRenderer right_arm;
-	private final ModelRenderer right_arm_r1;
-	private final ModelRenderer right_forearm;
-	private final ModelRenderer right_arm_r2;
-	private final ModelRenderer left_arm;
-	private final ModelRenderer left_arm_r1;
-	private final ModelRenderer left_forearm;
-	private final ModelRenderer left_arm_r2;
+    private final ModelRenderer bone3;
+    private final ModelRenderer bone4;
+    private final ModelRenderer bone6;
+    private final ModelRenderer bone5;
+    private final ModelRenderer bone7;
+    private final ModelRenderer right_arm;
+    private final ModelRenderer right_forearm;
+    private final ModelRenderer left_arm;
+    private final ModelRenderer left_forearm;
 
-	public ModelSpecterGrasper() {
+    public ModelSpecterGrasper() {
 		textureWidth = 64;
 		textureHeight = 64;
 
@@ -55,7 +43,7 @@ public class ModelSpecterGrasper extends ModelBase {
 		base.addChild(head);
 		head.cubeList.add(new ModelBox(head, 0, 0, -5.0F, -10.0F, -4.5F, 10, 10, 9, 0.0F, false));
 
-		body = new ModelRenderer(this);
+        ModelRenderer body = new ModelRenderer(this);
 		body.setRotationPoint(0.0F, -22.0F, 0.0F);
 		base.addChild(body);
 		body.cubeList.add(new ModelBox(body, 12, 44, -5.0F, 0.0F, -2.0F, 10, 5, 4, 0.0F, false));
@@ -84,7 +72,7 @@ public class ModelSpecterGrasper extends ModelBase {
 		setRotationAngle(right_cloth_r2, -0.7582F, 0.147F, 0.7582F);
 		right_cloth_r2.cubeList.add(new ModelBox(right_cloth_r2, 15, 19, 0.0F, -2.0F, 1.0F, 6, 17, 6, 0.0F, true));
 
-		body_r1 = new ModelRenderer(this);
+        ModelRenderer body_r1 = new ModelRenderer(this);
 		body_r1.setRotationPoint(4.0F, 8.1827F, 2.3529F);
 		body.addChild(body_r1);
 		setRotationAngle(body_r1, 0.7854F, 0.0F, 0.0F);
@@ -100,9 +88,9 @@ public class ModelSpecterGrasper extends ModelBase {
 		bone2.setRotationPoint(0.25F, 3.0F, 0.0F);
 		chain.addChild(bone2);
 		setRotationAngle(bone2, -0.1309F, 0.0F, 0.0F);
-		
 
-		chain_r1 = new ModelRenderer(this);
+
+        ModelRenderer chain_r1 = new ModelRenderer(this);
 		chain_r1.setRotationPoint(0.0F, 1.0F, 0.0F);
 		bone2.addChild(chain_r1);
 		setRotationAngle(chain_r1, 0.0F, -1.309F, 0.0F);
@@ -112,9 +100,9 @@ public class ModelSpecterGrasper extends ModelBase {
 		bone3.setRotationPoint(0.0F, 2.0F, 0.0F);
 		bone2.addChild(bone3);
 		setRotationAngle(bone3, 0.3054F, 0.0F, 0.0F);
-		
 
-		chain_r2 = new ModelRenderer(this);
+
+        ModelRenderer chain_r2 = new ModelRenderer(this);
 		chain_r2.setRotationPoint(0.0F, 1.0F, 0.0F);
 		bone3.addChild(chain_r2);
 		setRotationAngle(chain_r2, 0.0F, -0.2618F, 0.0F);
@@ -124,9 +112,9 @@ public class ModelSpecterGrasper extends ModelBase {
 		bone4.setRotationPoint(0.0F, 2.0F, 0.0F);
 		bone3.addChild(bone4);
 		setRotationAngle(bone4, 0.3054F, 0.0F, 0.0F);
-		
 
-		chain_r3 = new ModelRenderer(this);
+
+        ModelRenderer chain_r3 = new ModelRenderer(this);
 		chain_r3.setRotationPoint(0.0F, 1.0F, 0.0F);
 		bone4.addChild(chain_r3);
 		setRotationAngle(chain_r3, 0.0F, -1.8326F, 0.0F);
@@ -136,9 +124,9 @@ public class ModelSpecterGrasper extends ModelBase {
 		bone6.setRotationPoint(0.0F, 2.0F, 0.0F);
 		bone4.addChild(bone6);
 		setRotationAngle(bone6, 0.3054F, 0.0F, 0.0F);
-		
 
-		chain_r4 = new ModelRenderer(this);
+
+        ModelRenderer chain_r4 = new ModelRenderer(this);
 		chain_r4.setRotationPoint(0.0F, 1.0F, 0.0F);
 		bone6.addChild(chain_r4);
 		setRotationAngle(chain_r4, 0.0F, 0.2618F, 0.0F);
@@ -148,9 +136,9 @@ public class ModelSpecterGrasper extends ModelBase {
 		bone5.setRotationPoint(0.0F, 1.9924F, -0.1743F);
 		bone6.addChild(bone5);
 		setRotationAngle(bone5, 0.2696F, -0.7816F, 0.0869F);
-		
 
-		chain_r5 = new ModelRenderer(this);
+
+        ModelRenderer chain_r5 = new ModelRenderer(this);
 		chain_r5.setRotationPoint(0.0F, 1.0F, 0.0F);
 		bone5.addChild(chain_r5);
 		setRotationAngle(chain_r5, 0.0F, 0.2618F, 0.0F);
@@ -160,9 +148,9 @@ public class ModelSpecterGrasper extends ModelBase {
 		bone7.setRotationPoint(-0.0158F, 2.0118F, 0.0479F);
 		bone5.addChild(bone7);
 		setRotationAngle(bone7, 0.2983F, 0.3911F, -0.0361F);
-		
 
-		chain_r6 = new ModelRenderer(this);
+
+        ModelRenderer chain_r6 = new ModelRenderer(this);
 		chain_r6.setRotationPoint(0.0F, 1.0F, 0.0F);
 		bone7.addChild(chain_r6);
 		setRotationAngle(chain_r6, 0.0F, 0.2618F, 0.0F);
@@ -172,9 +160,9 @@ public class ModelSpecterGrasper extends ModelBase {
 		right_arm.setRotationPoint(-5.0F, -21.5245F, -0.6913F);
 		base.addChild(right_arm);
 		setRotationAngle(right_arm, -0.3927F, 0.0F, 0.0F);
-		
 
-		right_arm_r1 = new ModelRenderer(this);
+
+        ModelRenderer right_arm_r1 = new ModelRenderer(this);
 		right_arm_r1.setRotationPoint(-1.0F, 0.8889F, 0.9417F);
 		right_arm.addChild(right_arm_r1);
 		setRotationAngle(right_arm_r1, -0.3927F, 1.1781F, 0.0F);
@@ -184,9 +172,9 @@ public class ModelSpecterGrasper extends ModelBase {
 		right_forearm.setRotationPoint(-8.521F, 15.8186F, -1.0912F);
 		right_arm.addChild(right_forearm);
 		setRotationAngle(right_forearm, -0.9426F, -0.3614F, 0.4215F);
-		
 
-		right_arm_r2 = new ModelRenderer(this);
+
+        ModelRenderer right_arm_r2 = new ModelRenderer(this);
 		right_arm_r2.setRotationPoint(0.0542F, 0.0F, -0.0042F);
 		right_forearm.addChild(right_arm_r2);
 		setRotationAngle(right_arm_r2, 0.0F, 0.0F, 0.0F);
@@ -196,9 +184,9 @@ public class ModelSpecterGrasper extends ModelBase {
 		left_arm.setRotationPoint(5.0F, -21.5245F, -0.6913F);
 		base.addChild(left_arm);
 		setRotationAngle(left_arm, -0.3927F, 0.0F, 0.0F);
-		
 
-		left_arm_r1 = new ModelRenderer(this);
+
+        ModelRenderer left_arm_r1 = new ModelRenderer(this);
 		left_arm_r1.setRotationPoint(1.0F, 0.8889F, 0.9417F);
 		left_arm.addChild(left_arm_r1);
 		setRotationAngle(left_arm_r1, -0.3927F, -1.1781F, 0.0F);
@@ -208,9 +196,9 @@ public class ModelSpecterGrasper extends ModelBase {
 		left_forearm.setRotationPoint(8.521F, 15.8186F, -1.0912F);
 		left_arm.addChild(left_forearm);
 		setRotationAngle(left_forearm, -0.9426F, 0.3614F, -0.4215F);
-		
 
-		left_arm_r2 = new ModelRenderer(this);
+
+        ModelRenderer left_arm_r2 = new ModelRenderer(this);
 		left_arm_r2.setRotationPoint(-0.0542F, 0.0F, -0.0042F);
 		left_forearm.addChild(left_arm_r2);
 		setRotationAngle(left_arm_r2, 0.0F, 0.0F, 0.0F);

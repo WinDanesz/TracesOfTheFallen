@@ -14,22 +14,13 @@ import net.minecraft.util.math.MathHelper;
 public class ModelMinecrawler extends ModelBase {
     private final ModelRenderer abdomen;
     private final ModelRenderer leg_right_1;
-    private final ModelRenderer cube_r1;
     private final ModelRenderer leg_left_1;
-    private final ModelRenderer cube_r2;
     private final ModelRenderer leg_right_2;
-    private final ModelRenderer cube_r3;
     private final ModelRenderer leg_left_2;
-    private final ModelRenderer cube_r4;
     private final ModelRenderer torax;
     private final ModelRenderer arm_left;
-    private final ModelRenderer cube_r5;
     private final ModelRenderer arm_right;
-    private final ModelRenderer cube_r6;
     private final ModelRenderer head;
-    private final ModelRenderer cube_r7;
-    private final ModelRenderer cube_r8;
-    private final ModelRenderer cube_r9;
     private final ModelRenderer madible_left;
     private final ModelRenderer madible_right;
 
@@ -48,7 +39,7 @@ public class ModelMinecrawler extends ModelBase {
         setRotationAngle(leg_right_1, 0.0F, -0.3927F, -0.3927F);
         leg_right_1.cubeList.add(new ModelBox(leg_right_1, 38, 36, -10.0F, -1.0F, -1.6F, 12, 3, 3, 0.0F, true));
 
-        cube_r1 = new ModelRenderer(this);
+        ModelRenderer cube_r1 = new ModelRenderer(this);
         cube_r1.setRotationPoint(-10.7071F, 1.1213F, 7.9F);
         leg_right_1.addChild(cube_r1);
         setRotationAngle(cube_r1, 0.0F, 0.0F, 0.7854F);
@@ -60,7 +51,7 @@ public class ModelMinecrawler extends ModelBase {
         setRotationAngle(leg_left_1, 0.0F, 0.3927F, 0.3927F);
         leg_left_1.cubeList.add(new ModelBox(leg_left_1, 38, 36, -2.0F, -1.0F, -1.6F, 12, 3, 3, 0.0F, false));
 
-        cube_r2 = new ModelRenderer(this);
+        ModelRenderer cube_r2 = new ModelRenderer(this);
         cube_r2.setRotationPoint(10.7071F, 1.1213F, 7.9F);
         leg_left_1.addChild(cube_r2);
         setRotationAngle(cube_r2, 0.0F, 0.0F, -0.7854F);
@@ -72,7 +63,7 @@ public class ModelMinecrawler extends ModelBase {
         setRotationAngle(leg_right_2, 0.0F, 0.3927F, -0.3927F);
         leg_right_2.cubeList.add(new ModelBox(leg_right_2, 38, 36, -10.0F, -1.0F, -1.5F, 12, 3, 3, 0.0F, true));
 
-        cube_r3 = new ModelRenderer(this);
+        ModelRenderer cube_r3 = new ModelRenderer(this);
         cube_r3.setRotationPoint(-10.7071F, 1.1213F, 8.0F);
         leg_right_2.addChild(cube_r3);
         setRotationAngle(cube_r3, 0.0F, 0.0F, 0.7854F);
@@ -84,7 +75,7 @@ public class ModelMinecrawler extends ModelBase {
         setRotationAngle(leg_left_2, 0.0F, -0.3927F, 0.3927F);
         leg_left_2.cubeList.add(new ModelBox(leg_left_2, 38, 36, -2.0F, -1.0F, -1.5F, 12, 3, 3, 0.0F, false));
 
-        cube_r4 = new ModelRenderer(this);
+        ModelRenderer cube_r4 = new ModelRenderer(this);
         cube_r4.setRotationPoint(10.7071F, 1.1213F, 8.0F);
         leg_left_2.addChild(cube_r4);
         setRotationAngle(cube_r4, 0.0F, 0.0F, -0.7854F);
@@ -102,7 +93,7 @@ public class ModelMinecrawler extends ModelBase {
         setRotationAngle(arm_left, -0.5002F, 0.8584F, -0.2327F);
         arm_left.cubeList.add(new ModelBox(arm_left, 38, 36, 0.2894F, -2.1534F, -1.4333F, 12, 3, 3, 0.0F, false));
 
-        cube_r5 = new ModelRenderer(this);
+        ModelRenderer cube_r5 = new ModelRenderer(this);
         cube_r5.setRotationPoint(7.8646F, -5.2193F, 2.4463F);
         arm_left.addChild(cube_r5);
         setRotationAngle(cube_r5, 0.0F, 0.0F, -0.7854F);
@@ -115,7 +106,7 @@ public class ModelMinecrawler extends ModelBase {
         setRotationAngle(arm_right, -0.5002F, -0.8584F, 0.2327F);
         arm_right.cubeList.add(new ModelBox(arm_right, 38, 36, -12.2894F, -2.1534F, -1.4333F, 12, 3, 3, 0.0F, true));
 
-        cube_r6 = new ModelRenderer(this);
+        ModelRenderer cube_r6 = new ModelRenderer(this);
         cube_r6.setRotationPoint(-7.8646F, -5.2193F, 2.4463F);
         arm_right.addChild(cube_r6);
         setRotationAngle(cube_r6, 0.0F, 0.0F, 0.7854F);
@@ -128,19 +119,19 @@ public class ModelMinecrawler extends ModelBase {
         setRotationAngle(head, -0.6109F, 0.0F, 0.0F);
 
 
-        cube_r7 = new ModelRenderer(this);
+        ModelRenderer cube_r7 = new ModelRenderer(this);
         cube_r7.setRotationPoint(0.0F, 0.1819F, 1.6206F);
         head.addChild(cube_r7);
         setRotationAngle(cube_r7, -0.1309F, 0.0F, 0.0F);
         cube_r7.cubeList.add(new ModelBox(cube_r7, 46, 13, -2.0F, 1.7274F, -4.0706F, 4, 4, 3, 0.0F, false));
 
-        cube_r8 = new ModelRenderer(this);
+        ModelRenderer cube_r8 = new ModelRenderer(this);
         cube_r8.setRotationPoint(0.0F, -11.0994F, 3.5172F);
         head.addChild(cube_r8);
         setRotationAngle(cube_r8, 0.2618F, 0.0F, 0.0F);
         cube_r8.cubeList.add(new ModelBox(cube_r8, 67, 11, -2.0F, 0.3468F, -10.8701F, 4, 5, 5, 0.0F, false));
 
-        cube_r9 = new ModelRenderer(this);
+        ModelRenderer cube_r9 = new ModelRenderer(this);
         cube_r9.setRotationPoint(0.0F, -6.7181F, 2.6206F);
         head.addChild(cube_r9);
         setRotationAngle(cube_r9, 0.2618F, 0.0F, 0.0F);

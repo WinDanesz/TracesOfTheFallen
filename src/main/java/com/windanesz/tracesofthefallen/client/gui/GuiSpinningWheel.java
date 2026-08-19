@@ -10,12 +10,10 @@ import net.minecraft.util.ResourceLocation;
 public class GuiSpinningWheel extends GuiContainer {
 
     private static final ResourceLocation GUI_TEXTURE = new ResourceLocation("totf", "textures/gui/gui_spinning_wheel.png");
-    private final TileEntitySpinningWheel tileEntity;
     private final EntityPlayer player;
 
     public GuiSpinningWheel(EntityPlayer player, TileEntitySpinningWheel tileEntity) {
         super(new ContainerSpinningWheel(player, tileEntity));
-        this.tileEntity = tileEntity;
         this.player = player;
         this.xSize = 212;
         this.ySize = 133;

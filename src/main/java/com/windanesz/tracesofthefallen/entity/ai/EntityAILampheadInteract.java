@@ -84,15 +84,14 @@ public class EntityAILampheadInteract extends EntityAIBase {
     }
 
     private int pathingTimer = 0;
-    private boolean wasSitting = false;
 
     @Override
     public void startExecuting() {
         this.interactTimer = 0;
         this.pathingTimer = 0;
-        
-        this.wasSitting = this.lamphead.isSitting();
-        if (this.wasSitting) {
+
+        boolean wasSitting = this.lamphead.isSitting();
+        if (wasSitting) {
             this.lamphead.setSitting(false);
         }
         

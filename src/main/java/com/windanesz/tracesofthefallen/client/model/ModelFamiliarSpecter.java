@@ -12,9 +12,7 @@ public class ModelFamiliarSpecter extends ModelBase {
 	private final ModelRenderer head;
 	private final ModelRenderer headwear;
 	private final ModelRenderer body;
-	private final ModelRenderer cube_r1;
-	private final ModelRenderer cube_r2;
-	private final ModelRenderer left_arm;
+    private final ModelRenderer left_arm;
 	private final ModelRenderer right_arm;
 	private final ModelRenderer legs;
 
@@ -34,13 +32,13 @@ public class ModelFamiliarSpecter extends ModelBase {
 		body.setRotationPoint(0.0F, 0.0F, 0.0F);
 		body.cubeList.add(new ModelBox(body, 16, 16, -4.0F, 0.0F, -2.0F, 8, 10, 4, 0.0F, false));
 
-		cube_r1 = new ModelRenderer(this);
+        ModelRenderer cube_r1 = new ModelRenderer(this);
 		cube_r1.setRotationPoint(0.0F, 0.0F, 2.0F);
 		body.addChild(cube_r1);
 		setRotationAngle(cube_r1, 3.0107F, 0.0F, 3.1416F);
 		cube_r1.cubeList.add(new ModelBox(cube_r1, 24, 0, -4.0F, 0.0F, 0.0F, 8, 8, 0, 0.0F, false));
 
-		cube_r2 = new ModelRenderer(this);
+        ModelRenderer cube_r2 = new ModelRenderer(this);
 		cube_r2.setRotationPoint(0.0F, 0.0F, -2.0F);
 		body.addChild(cube_r2);
 		setRotationAngle(cube_r2, -0.1309F, 0.0F, 0.0F);

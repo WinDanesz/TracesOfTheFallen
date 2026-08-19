@@ -1,4 +1,6 @@
 { 
+  "entity.specter_ambient":           {"category": "hostiles", "sounds": ["totf:specter_ambient1", "totf:specter_ambient2", "totf:specter_ambient3"]},
+  "entity.specter_hostile":           {"category": "hostiles", "sounds": ["totf:specter_hostile1"]},
   "entity.specter_hurt":              {"category": "hostiles", "sounds": ["totf:specter_hurt_1", "totf:specter_hurt_2"]},
   "entity.goblin_hurt":               {"category": "hostiles", "sounds": ["totf:goblin_hurt1", "totf:goblin_hurt2"]},
   "entity.goblin_idle":               {"category": "hostiles", "sounds": ["totf:goblin_idle1", "totf:goblin_idle2"]},

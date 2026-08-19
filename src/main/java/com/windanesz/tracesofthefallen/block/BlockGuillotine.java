@@ -2,15 +2,17 @@ package com.windanesz.tracesofthefallen.block;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
-import net.minecraft.block.BlockDirectional;
+import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyDirection;
+import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
@@ -19,10 +21,22 @@ import net.minecraft.world.World;
 import javax.annotation.Nullable;
 
 public class BlockGuillotine extends BlockContainer {
-    public static final PropertyDirection FACING = BlockDirectional.FACING;
-    // Base AABB unrotated (placed on ceiling, pointing DOWN)
-    private static final AxisAlignedBB AABB_DOWN = new AxisAlignedBB(0.0D, 1.0D, 0.375D, 1.0D, 1.125D, 0.625D);
-    private static final AxisAlignedBB AABB_UP = new AxisAlignedBB(0.0D, -0.125D, 0.375D, 1.0D, 0.0D, 0.625D);
+    public enum EnumAttachFace implements IStringSerializable {
+        FLOOR("floor"),
+        WALL("wall"),
+        CEILING("ceiling");
+        private final String name;
+        EnumAttachFace(String name) { this.name = name; }
+        @Override public String getName() { return name; }
+    }
+
+    public static final PropertyDirection FACING = BlockHorizontal.FACING;
+    public static final PropertyEnum<EnumAttachFace> FACE = PropertyEnum.create("face", EnumAttachFace.class);
+
+    private static final AxisAlignedBB AABB_CEILING_Z = new AxisAlignedBB(0.0D, 1.0D, 0.375D, 1.0D, 1.125D, 0.625D);
+    private static final AxisAlignedBB AABB_CEILING_X = new AxisAlignedBB(0.375D, 1.0D, 0.0D, 0.625D, 1.125D, 1.0D);
+    private static final AxisAlignedBB AABB_FLOOR_Z = new AxisAlignedBB(0.0D, -0.125D, 0.375D, 1.0D, 0.0D, 0.625D);
+    private static final AxisAlignedBB AABB_FLOOR_X = new AxisAlignedBB(0.375D, -0.125D, 0.0D, 0.625D, 0.0D, 1.0D);
     private static final AxisAlignedBB AABB_NORTH = new AxisAlignedBB(0.0D, 0.375D, 1.0D, 1.0D, 0.625D, 1.125D);
     private static final AxisAlignedBB AABB_SOUTH = new AxisAlignedBB(0.0D, 0.375D, -0.125D, 1.0D, 0.625D, 0.0D);
     private static final AxisAlignedBB AABB_WEST = new AxisAlignedBB(1.0D, 0.375D, 0.0D, 1.125D, 0.625D, 1.0D);
@@ -30,28 +44,29 @@ public class BlockGuillotine extends BlockContainer {
 
     public BlockGuillotine(Material materialIn) {
         super(materialIn);
-        this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.DOWN));
+        this.setDefaultState(this.blockState.getBaseState().withProperty(FACE, EnumAttachFace.CEILING).withProperty(FACING, EnumFacing.NORTH));
         this.setHardness(2.0F);
         this.setResistance(10.0F);
     }
 
     @Override
     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-        switch (state.getValue(FACING)) {
-            case UP:
-                return AABB_UP;
-            case NORTH:
-                return AABB_NORTH;
-            case SOUTH:
-                return AABB_SOUTH;
-            case WEST:
-                return AABB_WEST;
-            case EAST:
-                return AABB_EAST;
-            case DOWN:
-            default:
-                return AABB_DOWN;
+        EnumAttachFace face = state.getValue(FACE);
+        EnumFacing facing = state.getValue(FACING);
+
+        if (face == EnumAttachFace.WALL) {
+            switch (facing) {
+                case NORTH: return AABB_NORTH;
+                case SOUTH: return AABB_SOUTH;
+                case WEST: return AABB_WEST;
+                case EAST: return AABB_EAST;
+            }
+        } else if (face == EnumAttachFace.CEILING) {
+            return (facing.getAxis() == EnumFacing.Axis.Z) ? AABB_CEILING_Z : AABB_CEILING_X;
+        } else {
+            return (facing.getAxis() == EnumFacing.Axis.Z) ? AABB_FLOOR_Z : AABB_FLOOR_X;
         }
+        return AABB_CEILING_Z;
     }
 
     @Override
@@ -66,22 +81,41 @@ public class BlockGuillotine extends BlockContainer {
 
     @Override
     public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
-        return this.getDefaultState().withProperty(FACING, facing);
+        EnumAttachFace attachFace = EnumAttachFace.WALL;
+        if (facing == EnumFacing.UP) attachFace = EnumAttachFace.FLOOR;
+        else if (facing == EnumFacing.DOWN) attachFace = EnumAttachFace.CEILING;
+        
+        EnumFacing horizontalFacing = placer.getHorizontalFacing().getOpposite();
+        if (attachFace == EnumAttachFace.WALL) {
+            horizontalFacing = facing;
+        }
+        
+        return this.getDefaultState().withProperty(FACE, attachFace).withProperty(FACING, horizontalFacing);
     }
 
     @Override
     public int getMetaFromState(IBlockState state) {
-        return state.getValue(FACING).getIndex();
+        int faceIndex = state.getValue(FACE).ordinal();
+        int facingIndex = state.getValue(FACING).getHorizontalIndex();
+        return (faceIndex * 4) + facingIndex;
     }
 
     @Override
     public IBlockState getStateFromMeta(int meta) {
-        return this.getDefaultState().withProperty(FACING, EnumFacing.values()[meta % 6]);
+        int faceIndex = meta / 4;
+        int facingIndex = meta % 4;
+        EnumAttachFace face = EnumAttachFace.WALL;
+        if (faceIndex == 0) face = EnumAttachFace.FLOOR;
+        else if (faceIndex == 2) face = EnumAttachFace.CEILING;
+        
+        return this.getDefaultState()
+                .withProperty(FACE, face)
+                .withProperty(FACING, EnumFacing.byHorizontalIndex(facingIndex));
     }
 
     @Override
     protected BlockStateContainer createBlockState() {
-        return new BlockStateContainer(this, FACING);
+        return new BlockStateContainer(this, FACE, FACING);
     }
 
     @Override
@@ -101,8 +135,7 @@ public class BlockGuillotine extends BlockContainer {
         if (!worldIn.isRemote) {
             boolean isPowered = worldIn.isBlockPowered(pos);
             TileEntity te = worldIn.getTileEntity(pos);
-            if (te instanceof TileEntityGuillotine) {
-                TileEntityGuillotine guillotine = (TileEntityGuillotine) te;
+            if (te instanceof TileEntityGuillotine guillotine) {
                 if (isPowered && !guillotine.isPoweredLastTick()) {
                     guillotine.activate();
                 }

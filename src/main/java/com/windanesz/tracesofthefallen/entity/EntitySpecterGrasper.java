@@ -62,10 +62,9 @@ public class EntitySpecterGrasper extends EntitySpecter {
         
         // Add robust targeting AI
         this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, false, new Class[0]));
-        this.targetTasks.addTask(2, new EntityAINearestAttackableTarget<>(this, EntityPlayer.class, true));
+        this.targetTasks.addTask(2, new AIFindPlayerToAttack(this));
     }
 
-    public boolean useLeftHand = false;
 
     static class AIGrasperAttack extends EntityAIBase {
         private final EntitySpecterGrasper parentEntity;
@@ -141,14 +140,7 @@ public class EntitySpecterGrasper extends EntitySpecter {
         }
     }
 
-    @Override
-    public void onLivingUpdate() {
-        super.onLivingUpdate();
-        // Slow down the swing animation to take ~15 ticks instead of 6
-        if (this.isSwingInProgress && this.ticksExisted % 3 != 0) {
-            this.swingProgressInt--;
-        }
-    }
+
 
     static class AIGrasperWander extends EntityAIBase {
         private final EntitySpecterGrasper parentEntity;

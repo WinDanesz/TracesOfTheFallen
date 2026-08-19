@@ -10,11 +10,8 @@ import net.minecraft.util.EnumHandSide;
 import net.minecraft.util.math.MathHelper;
 
 public class ModelGoblin extends ModelBiped {
-	private ModelRenderer rightEar;
-	private ModelRenderer leftEar;
-	private ModelRenderer nose;
 
-	public ModelGoblin() {
+    public ModelGoblin() {
 		this.textureWidth = 48;
 		this.textureHeight = 48;
 		this.bipedRightArm = new ModelRenderer(this, 0, 12);
@@ -24,18 +21,18 @@ public class ModelGoblin extends ModelBiped {
 		this.bipedRightLeg = new ModelRenderer(this, 0, 21);
 		this.bipedRightLeg.setRotationPoint(-1.5F, 19.0F, 0.1F);
 		this.bipedRightLeg.addBox(-1.5F, 0.0F, -1.6F, 3, 5, 3, 0.0F);
-		this.rightEar = new ModelRenderer(this, 18, -6);
-		this.rightEar.mirror = true;
-		this.rightEar.setRotationPoint(-3.0F, -5.0F, -2.0F);
-		this.rightEar.addBox(0.0F, 0.0F, 0.0F, 0, 4, 6, 0.0F);
+        ModelRenderer rightEar = new ModelRenderer(this, 18, -6);
+		rightEar.mirror = true;
+		rightEar.setRotationPoint(-3.0F, -5.0F, -2.0F);
+		rightEar.addBox(0.0F, 0.0F, 0.0F, 0, 4, 6, 0.0F);
 		this.setRotateAngle(rightEar, 0.0F, -0.4799655442984406F, -0.023038346126325153F);
 		this.bipedHeadwear = new ModelRenderer(this, 0, 0);
 		this.bipedHeadwear.setRotationPoint(0.0F, 6.0F, 0.0F);
 		this.bipedHeadwear.addBox(0.0F, 0.0F, 0.0F, 0, 0, 0, 0.0F);
 		this.setRotateAngle(bipedHeadwear, -0.7117670774459839F, 0.0F, 0.0F);
-		this.nose = new ModelRenderer(this, 22, 26);
-		this.nose.setRotationPoint(0.0F, -3.0F, 0.0F);
-		this.nose.addBox(-1.0F, 0.0F, -6.0F, 2, 3, 3, 0.0F);
+        ModelRenderer nose = new ModelRenderer(this, 22, 26);
+		nose.setRotationPoint(0.0F, -3.0F, 0.0F);
+		nose.addBox(-1.0F, 0.0F, -6.0F, 2, 3, 3, 0.0F);
 		this.setRotateAngle(nose, 0.0F, -0.03769911184307752F, 0.0F);
 		this.bipedBody = new ModelRenderer(this, 27, 12);
 		this.bipedBody.setRotationPoint(0.0F, 13.0F, 0.0F);
@@ -51,13 +48,13 @@ public class ModelGoblin extends ModelBiped {
 		this.bipedHead = new ModelRenderer(this, 0, 0);
 		this.bipedHead.setRotationPoint(0.0F, 12.8F, 0.0F);
 		this.bipedHead.addBox(-3.0F, -5.9F, -3.0F, 6, 6, 6, 0.0F);
-		this.leftEar = new ModelRenderer(this, 18, -6);
-		this.leftEar.setRotationPoint(3.0F, -5.0F, -2.0F);
-		this.leftEar.addBox(0.0F, 0.0F, 0.0F, 0, 4, 6, 0.0F);
+        ModelRenderer leftEar = new ModelRenderer(this, 18, -6);
+		leftEar.setRotationPoint(3.0F, -5.0F, -2.0F);
+		leftEar.addBox(0.0F, 0.0F, 0.0F, 0, 4, 6, 0.0F);
 		this.setRotateAngle(leftEar, 0.0F, 0.4799655442984406F, 0.023038346126325153F);
-		this.bipedHead.addChild(this.rightEar);
-		this.bipedHead.addChild(this.nose);
-		this.bipedHead.addChild(this.leftEar);
+		this.bipedHead.addChild(rightEar);
+		this.bipedHead.addChild(nose);
+		this.bipedHead.addChild(leftEar);
 	}
 
 	/**

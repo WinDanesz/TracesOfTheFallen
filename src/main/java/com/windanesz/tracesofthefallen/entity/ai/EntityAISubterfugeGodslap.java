@@ -59,12 +59,11 @@ public class EntityAISubterfugeGodslap extends EntityAIBase {
             this.subterfuge.getLookHelper().setLookPositionWithEntity(target, 30.0F, 30.0F);
         }
 
-        // Spawn particle at the climax of the arm raise (tick 10)
-        if (this.attackTick == 10 && target != null) {
+        // Spawn particle and deal damage simultaneously at the climax of the arm raise (tick 15)
+        if (this.attackTick == 15 && target != null) {
             double distanceSq = this.subterfuge.getDistanceSq(target);
             if (distanceSq <= 256.0D && this.subterfuge.getEntitySenses().canSee(target)) {
                 // Spawn god_slap particle from the Subterfuge's hand area
-                // Approx 1.0 blocks forward (closer to her) and 1.8 blocks high
                 Vec3d lookDir = this.subterfuge.getLookVec();
                 double px = this.subterfuge.posX + lookDir.x * 1.0D;
                 double py = this.subterfuge.posY + 1.8D;
@@ -74,13 +73,8 @@ public class EntityAISubterfugeGodslap extends EntityAIBase {
                         this.subterfuge.dimension, px, py, pz, 64.0D);
                 PacketHandler.net.sendToAllAround(
                         new PacketSpawnGodSlapParticle(px, py, pz), point);
-            }
-        }
 
-        // Deal damage 1.0s (20 ticks) after the particle (tick 30)
-        if (this.attackTick == 30 && target != null) {
-            double distanceSq = this.subterfuge.getDistanceSq(target);
-            if (distanceSq <= 256.0D && this.subterfuge.getEntitySenses().canSee(target)) {
+                // Deal damage
                 float damage = (float) this.subterfuge.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).getAttributeValue();
                 target.attackEntityFrom(DamageSource.causeMobDamage(this.subterfuge), damage);
 

@@ -2,6 +2,7 @@ package com.windanesz.tracesofthefallen.entity;
 
 import com.windanesz.tracesofthefallen.Settings;
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
+import com.windanesz.tracesofthefallen.init.ModSounds;
 import com.windanesz.tracesofthefallen.item.ItemGraveRose;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.*;
@@ -30,6 +31,9 @@ public class EntityFamiliarSpecter extends EntityCreature implements IEntityOwna
 	protected static final DataParameter<String> OWNER_UNIQUE_ID = EntityDataManager.createKey(EntityFamiliarSpecter.class, DataSerializers.STRING);
 	protected static final DataParameter<String> OWNER_NAME = EntityDataManager.createKey(EntityFamiliarSpecter.class, DataSerializers.STRING);
 	public static final ResourceLocation LOOT_TABLE = new ResourceLocation(TracesOfTheFallen.MODID, "entities/familiar_specter");
+	private int ambientSoundCooldown = 800;
+	private int hostileSoundCooldown = 0;
+	public boolean useLeftHand = false;
 
 	public EntityFamiliarSpecter(World worldIn) {
 		super(worldIn);
@@ -121,12 +125,19 @@ public class EntityFamiliarSpecter extends EntityCreature implements IEntityOwna
 			super.setAttackTarget(null);
 			return;
 		}
+		if (entitylivingbaseIn instanceof EntitySpecter || entitylivingbaseIn instanceof EntityFamiliarSpecter) {
+			super.setAttackTarget(null);
+			return;
+		}
 		super.setAttackTarget(entitylivingbaseIn);
 	}
 
 
 	@Override
 	public boolean attackEntityFrom(DamageSource source, float amount) {
+		if (source.getTrueSource() instanceof EntitySpecter || source.getTrueSource() instanceof EntityFamiliarSpecter) {
+			return false;
+		}
 		if (this.isOwner(source.getTrueSource())) {
 			return false;
 		}
@@ -146,6 +157,38 @@ public class EntityFamiliarSpecter extends EntityCreature implements IEntityOwna
 	public void onLivingUpdate() {
 		super.onLivingUpdate();
 		this.noClip = true;
+
+		if (this.isSwingInProgress && this.ticksExisted % 3 != 0) {
+			this.swingProgressInt--;
+		}
+
+		if (!this.world.isRemote) {
+			if (this.ambientSoundCooldown > 0) {
+				this.ambientSoundCooldown--;
+			} else {
+				double offsetX = (this.rand.nextDouble() - 0.5) * 16.0;
+				double offsetY = (this.rand.nextDouble() - 0.5) * 4.0;
+				double offsetZ = (this.rand.nextDouble() - 0.5) * 16.0;
+				this.world.playSound(null, this.posX + offsetX, this.posY + offsetY, this.posZ + offsetZ, ModSounds.SPECTER_AMBIENT, this.getSoundCategory(), 1.0F, 1.0F);
+				this.ambientSoundCooldown = 800 + this.rand.nextInt(200);
+			}
+
+			if (this.getAttackTarget() != null) {
+				if (this.hostileSoundCooldown > 0) {
+					this.hostileSoundCooldown--;
+				} else {
+					double offsetX = (this.rand.nextDouble() - 0.5) * 16.0;
+					double offsetY = (this.rand.nextDouble() - 0.5) * 4.0;
+					double offsetZ = (this.rand.nextDouble() - 0.5) * 16.0;
+					this.world.playSound(null, this.posX + offsetX, this.posY + offsetY, this.posZ + offsetZ, ModSounds.SPECTER_HOSTILE, this.getSoundCategory(), 1.0F, 1.0F);
+					this.hostileSoundCooldown = 400 + this.rand.nextInt(200);
+				}
+			} else {
+				if (this.hostileSoundCooldown <= 0) {
+					this.hostileSoundCooldown = 20;
+				}
+			}
+		}
 
 		// Despawn if owner no longer holds the rose with this specter's UUID in main or offhand
 		EntityLivingBase owner = getOwner();
@@ -197,7 +240,7 @@ public class EntityFamiliarSpecter extends EntityCreature implements IEntityOwna
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return SoundEvents.ENTITY_VEX_AMBIENT;
+		return null;
 	}
 
 	@Override
@@ -232,6 +275,7 @@ public class EntityFamiliarSpecter extends EntityCreature implements IEntityOwna
 		private final EntityFamiliarSpecter parentEntity;
 		private int attackCooldown;
 		private int dashCooldown;
+		private int windupTicks;
 
 		public AIAttack(EntityFamiliarSpecter specter) {
 			this.parentEntity = specter;
@@ -253,6 +297,7 @@ public class EntityFamiliarSpecter extends EntityCreature implements IEntityOwna
 			this.parentEntity.setAttacking(true);
 			this.attackCooldown = 0;
 			this.dashCooldown = 0;
+			this.windupTicks = 0;
 		}
 
 		@Override
@@ -279,47 +324,57 @@ public class EntityFamiliarSpecter extends EntityCreature implements IEntityOwna
 				}
 
 				double distanceSq = this.parentEntity.getDistanceSq(target);
-				if (distanceSq < 4.0D && this.attackCooldown <= 0) {
-					this.parentEntity.attackEntityAsMob(target);
-					this.attackCooldown = 20;
-					this.dashCooldown = 20;
+				
+				if (this.windupTicks > 0) {
+					--this.windupTicks;
+					if (this.windupTicks == 0) {
+						if (this.parentEntity.getDistanceSq(target) < 4.0D) {
+							this.parentEntity.attackEntityAsMob(target);
+							this.dashCooldown = 20;
 
-					Random random = this.parentEntity.getRNG();
-					Vec3d targetLook = target.getLookVec();
+							Random random = this.parentEntity.getRNG();
+							Vec3d targetLook = target.getLookVec();
 
-					Vec3d forward = new Vec3d(targetLook.x, 0, targetLook.z).normalize();
-					Vec3d right = new Vec3d(-targetLook.z, 0, targetLook.x).normalize();
+							Vec3d forward = new Vec3d(targetLook.x, 0, targetLook.z).normalize();
+							Vec3d right = new Vec3d(-targetLook.z, 0, targetLook.x).normalize();
 
-					Vec3d[] directions = {
-							forward,
-							forward.scale(-1),
-							right,
-							right.scale(-1)
-					};
+							Vec3d[] directions = {
+									forward,
+									forward.scale(-1),
+									right,
+									right.scale(-1)
+							};
 
-					Vec3d chosenDir = directions[random.nextInt(directions.length)];
+							Vec3d chosenDir = directions[random.nextInt(directions.length)];
 
-					double distance = 3.0; //+ random.nextDouble() * 1.0; // 2-3 blocks from player
+							double distance = 3.0; //+ random.nextDouble() * 1.0; // 2-3 blocks from player
 
-					double destX = target.posX + chosenDir.x * distance;
-					double destY = target.posY + 1.0;
-					double destZ = target.posZ + chosenDir.z * distance;
+							double destX = target.posX + chosenDir.x * distance;
+							double destY = target.posY + 1.0;
+							double destZ = target.posZ + chosenDir.z * distance;
 
-					double moveVecX = destX - this.parentEntity.posX;
-					double moveVecY = destY - this.parentEntity.posY;
-					double moveVecZ = destZ - this.parentEntity.posZ;
-					double moveLen = MathHelper.sqrt(moveVecX * moveVecX + moveVecY * moveVecY + moveVecZ * moveVecZ);
+							double moveVecX = destX - this.parentEntity.posX;
+							double moveVecY = destY - this.parentEntity.posY;
+							double moveVecZ = destZ - this.parentEntity.posZ;
+							double moveLen = MathHelper.sqrt(moveVecX * moveVecX + moveVecY * moveVecY + moveVecZ * moveVecZ);
 
-					if (moveLen > 0) {
-						double dashSpeed = 1.8;
-						this.parentEntity.motionX = (moveVecX / moveLen) * dashSpeed;
-						this.parentEntity.motionY = (moveVecY / moveLen) * dashSpeed * 0.1;
-						this.parentEntity.motionZ = (moveVecZ / moveLen) * dashSpeed;
+							if (moveLen > 0) {
+								double dashSpeed = 1.8;
+								this.parentEntity.motionX = (moveVecX / moveLen) * dashSpeed;
+								this.parentEntity.motionY = (moveVecY / moveLen) * dashSpeed * 0.1;
+								this.parentEntity.motionZ = (moveVecZ / moveLen) * dashSpeed;
 
-						if (this.parentEntity.getMoveHelper() instanceof SpecterMoveHelper) {
-							((SpecterMoveHelper) this.parentEntity.getMoveHelper()).startCooldown(20);
+								if (this.parentEntity.getMoveHelper() instanceof SpecterMoveHelper) {
+									((SpecterMoveHelper) this.parentEntity.getMoveHelper()).startCooldown(20);
+								}
+							}
 						}
+						this.attackCooldown = 20;
 					}
+				} else if (distanceSq < 4.0D && this.attackCooldown <= 0) {
+					this.parentEntity.useLeftHand = !this.parentEntity.useLeftHand;
+					this.parentEntity.swingArm(this.parentEntity.useLeftHand ? net.minecraft.util.EnumHand.OFF_HAND : net.minecraft.util.EnumHand.MAIN_HAND);
+					this.windupTicks = 10;
 				}
 			}
 		}
@@ -363,7 +418,7 @@ public class EntityFamiliarSpecter extends EntityCreature implements IEntityOwna
 			double d0 = this.parentEntity.posX + (double) ((random.nextFloat() * 2.0F - 1.0F) * 4.0F);
 			double d1 = this.parentEntity.posY + (double) ((random.nextFloat() * 2.0F - 1.0F) * 4.0F);
 			double d2 = this.parentEntity.posZ + (double) ((random.nextFloat() * 2.0F - 1.0F) * 4.0F);
-			this.parentEntity.getMoveHelper().setMoveTo(d0, d1, d2, 1.0D);
+			this.parentEntity.getMoveHelper().setMoveTo(d0, d1, d2, 0.4D);
 		}
 	}
 
@@ -428,15 +483,14 @@ public class EntityFamiliarSpecter extends EntityCreature implements IEntityOwna
 	static class AIFollowOwner extends EntityAIBase {
 		private final EntityFamiliarSpecter specter;
 		private EntityLivingBase owner;
-		private final World world;
-		private final double followSpeed;
+        private final double followSpeed;
 		private final float minDist;
 		private final float maxDist;
 		private int timeToRecalcPath;
 
 		public AIFollowOwner(EntityFamiliarSpecter specter, double speed, float min, float max) {
 			this.specter = specter;
-			this.world = specter.world;
+            World world = specter.world;
 			this.followSpeed = speed;
 			this.minDist = min;
 			this.maxDist = max;

@@ -43,9 +43,7 @@ public class GoblinAITunnelerDig extends EntityAIBase {
 	private final EntityGoblinTunneler tunneler;
 	private final World world;
 
-	private EntityPlayer targetPlayer;
-
-	private BlockPos targetDigPos;
+    private BlockPos targetDigPos;
 	private EnumFacing digFacing;
 	private int digTimer;
 	private int maxBreakTime;
@@ -105,14 +103,14 @@ public class GoblinAITunnelerDig extends EntityAIBase {
 			return false;
 		}
 
-		this.targetPlayer = this.findTargetPlayer();
-		if (this.targetPlayer == null || this.targetPlayer.isDead || this.targetPlayer.isSpectator()) {
+        EntityPlayer targetPlayer = this.findTargetPlayer();
+		if (targetPlayer == null || targetPlayer.isDead || targetPlayer.isSpectator()) {
 			this.playerStationaryTicks = 0;
 			this.lastPlayerPos = null;
 			return false;
 		}
 
-		BlockPos currentPlayerPos = new BlockPos(this.targetPlayer);
+		BlockPos currentPlayerPos = new BlockPos(targetPlayer);
 		if (this.lastPlayerPos == null || !this.lastPlayerPos.equals(currentPlayerPos)) {
 			this.lastPlayerPos = currentPlayerPos;
 			this.playerStationaryTicks = 0;

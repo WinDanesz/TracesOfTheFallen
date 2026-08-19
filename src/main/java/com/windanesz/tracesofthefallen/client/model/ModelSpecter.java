@@ -11,16 +11,7 @@ public class ModelSpecter extends ModelBase {
 	private final ModelRenderer head;
 	private final ModelRenderer headwear;
 	private final ModelRenderer body;
-	private final ModelRenderer chain;
-	private final ModelRenderer bone2;
-	private final ModelRenderer chain_r1;
-	private final ModelRenderer bone3;
-	private final ModelRenderer chain_r2;
-	private final ModelRenderer bone4;
-	private final ModelRenderer chain_r3;
-	private final ModelRenderer bone6;
-	private final ModelRenderer chain_r4;
-	private final ModelRenderer left_arm;
+    private final ModelRenderer left_arm;
 	private final ModelRenderer right_arm;
 	private final ModelRenderer legs;
 
@@ -40,55 +31,55 @@ public class ModelSpecter extends ModelBase {
 		body.setRotationPoint(0.0F, 0.0F, 0.0F);
 		body.cubeList.add(new ModelBox(body, 16, 16, -4.0F, 0.0F, -2.0F, 8, 10, 4, 0.0F, false));
 
-		chain = new ModelRenderer(this);
+        ModelRenderer chain = new ModelRenderer(this);
 		chain.setRotationPoint(0.25F, 2.9263F, -2.0314F);
 		body.addChild(chain);
 		setRotationAngle(chain, -0.4363F, 0.0F, 0.0F);
 		chain.cubeList.add(new ModelBox(chain, 40, 28, -1.25F, 0.0F, 0.0F, 3, 4, 0, 0.0F, false));
 
-		bone2 = new ModelRenderer(this);
+        ModelRenderer bone2 = new ModelRenderer(this);
 		bone2.setRotationPoint(0.25F, 3.0F, 0.0F);
 		chain.addChild(bone2);
 		setRotationAngle(bone2, -0.1309F, 0.0F, 0.0F);
 
 
-		chain_r1 = new ModelRenderer(this);
+        ModelRenderer chain_r1 = new ModelRenderer(this);
 		chain_r1.setRotationPoint(0.0F, 1.0F, 0.0F);
 		bone2.addChild(chain_r1);
 		setRotationAngle(chain_r1, 0.0F, -1.309F, 0.0F);
 		chain_r1.cubeList.add(new ModelBox(chain_r1, 40, 28, -1.5F, -2.0F, 0.0F, 3, 4, 0, 0.0F, false));
 
-		bone3 = new ModelRenderer(this);
+        ModelRenderer bone3 = new ModelRenderer(this);
 		bone3.setRotationPoint(0.0F, 2.0F, 0.0F);
 		bone2.addChild(bone3);
 		setRotationAngle(bone3, -0.0873F, 0.0F, 0.0F);
 
 
-		chain_r2 = new ModelRenderer(this);
+        ModelRenderer chain_r2 = new ModelRenderer(this);
 		chain_r2.setRotationPoint(0.0F, 1.0F, 0.0F);
 		bone3.addChild(chain_r2);
 		setRotationAngle(chain_r2, 0.0F, -0.2618F, 0.0F);
 		chain_r2.cubeList.add(new ModelBox(chain_r2, 40, 28, -1.5F, -2.0F, 0.0F, 3, 4, 0, 0.0F, false));
 
-		bone4 = new ModelRenderer(this);
+        ModelRenderer bone4 = new ModelRenderer(this);
 		bone4.setRotationPoint(0.0F, 2.0F, 0.0F);
 		bone3.addChild(bone4);
 		setRotationAngle(bone4, -0.0873F, 0.0F, 0.0F);
 
 
-		chain_r3 = new ModelRenderer(this);
+        ModelRenderer chain_r3 = new ModelRenderer(this);
 		chain_r3.setRotationPoint(0.0F, 1.0F, 0.0F);
 		bone4.addChild(chain_r3);
 		setRotationAngle(chain_r3, 0.0F, -1.8326F, 0.0F);
 		chain_r3.cubeList.add(new ModelBox(chain_r3, 40, 28, -1.5F, -2.0F, 0.0F, 3, 4, 0, 0.0F, false));
 
-		bone6 = new ModelRenderer(this);
+        ModelRenderer bone6 = new ModelRenderer(this);
 		bone6.setRotationPoint(0.0F, 2.0F, 0.0F);
 		bone4.addChild(bone6);
 		setRotationAngle(bone6, -0.0873F, 0.0F, 0.0F);
 
 
-		chain_r4 = new ModelRenderer(this);
+        ModelRenderer chain_r4 = new ModelRenderer(this);
 		chain_r4.setRotationPoint(0.0F, 1.0F, 0.0F);
 		bone6.addChild(chain_r4);
 		setRotationAngle(chain_r4, 0.0F, 0.2618F, 0.0F);

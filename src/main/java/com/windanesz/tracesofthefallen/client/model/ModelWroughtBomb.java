@@ -7,9 +7,8 @@ import net.minecraft.entity.Entity;
 
 public class ModelWroughtBomb extends ModelBase {
 	private final ModelRenderer bb_main;
-	private final ModelRenderer fuse_r1;
 
-	public ModelWroughtBomb() {
+    public ModelWroughtBomb() {
 		textureWidth = 32;
 		textureHeight = 32;
 
@@ -18,7 +17,7 @@ public class ModelWroughtBomb extends ModelBase {
 		bb_main.cubeList.add(new ModelBox(bb_main, 0, 0, -4.0766F, -8.0F, -3.95F, 8, 8, 8, 0.0F, false));
 		bb_main.cubeList.add(new ModelBox(bb_main, 0, 16, -2.0766F, -9.0F, -1.95F, 4, 1, 4, 0.0F, false));
 
-		fuse_r1 = new ModelRenderer(this);
+        ModelRenderer fuse_r1 = new ModelRenderer(this);
 		fuse_r1.setRotationPoint(-1.0766F, -9.0F, 0.05F);
 		bb_main.addChild(fuse_r1);
 		setRotationAngle(fuse_r1, 0.0F, 0.0F, 0.3927F);

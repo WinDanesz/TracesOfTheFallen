@@ -62,9 +62,8 @@ public class GoblinAISapperBuildPath extends EntityAIBase {
 	private EntityPlayer targetPlayer;
 	private BlockPos slopeStartPos;
 	private BlockPos lastPlacedPos;
-	private BlockPos plannedTargetPos;
 
-	private int buildTimer;
+    private int buildTimer;
 	private int stuckTicks;
 	private BlockPos lastPlayerPos;
 	private int playerStationaryTicks;
@@ -259,9 +258,8 @@ public class GoblinAISapperBuildPath extends EntityAIBase {
 		);
 
 		this.slopeStartPos = startWalkPos;
-		this.plannedTargetPos = goalWalkPos;
 
-		int verticalDifference = Math.abs(goalWalkPos.getY() - startWalkPos.getY());
+        int verticalDifference = Math.abs(goalWalkPos.getY() - startWalkPos.getY());
 		List<List<BlockPos>> horizontalCandidates = createHorizontalCandidates(
 				startWalkPos,
 				goalWalkPos,

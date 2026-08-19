@@ -9,7 +9,6 @@ public class ModelSeekingOrb extends ModelBase {
     private final ModelRenderer layer1;
     private final ModelRenderer nucleus;
     private final ModelRenderer trail1;
-    private final ModelRenderer cube_r1;
     private final ModelRenderer trail2;
 
     public ModelSeekingOrb() {
@@ -29,7 +28,7 @@ public class ModelSeekingOrb extends ModelBase {
         trail1.setRotationPoint(0.0F, 24.0F, 0.0F);
 
 
-        cube_r1 = new ModelRenderer(this);
+        ModelRenderer cube_r1 = new ModelRenderer(this);
         cube_r1.setRotationPoint(0.0F, 0.0F, 0.0F);
         trail1.addChild(cube_r1);
         setRotationAngle(cube_r1, 3.1416F, 0.0F, 0.0F);

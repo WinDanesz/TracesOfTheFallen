@@ -22,44 +22,61 @@ public class TileEntityGuillotineRenderer extends TileEntitySpecialRenderer<Tile
         IBlockState state = te.getWorld().getBlockState(te.getPos());
         if (!(state.getBlock() instanceof BlockGuillotine)) return;
 
+        BlockGuillotine.EnumAttachFace face = state.getValue(BlockGuillotine.FACE);
         EnumFacing facing = state.getValue(BlockGuillotine.FACING);
-        
-        // Calculate smooth drop animation. Total animation lasts e.g. 5 ticks.
-        float ticksElapsed = (600 - te.getActiveTicks()) + partialTicks;
+
+        // Calculate smooth drop and retract animation. Total animation lasts 30 seconds (600 ticks).
+        float ticksLeft = te.getActiveTicks() - partialTicks;
+        float ticksElapsed = 600 - ticksLeft;
         float dropSpeed = 1.0f; // blocks per tick
         float targetDistance = te.getExtensionLength();
-        float currentDistance = Math.min(targetDistance, ticksElapsed * dropSpeed);
+        float currentDistance;
         
-        // If it's retracting (last few ticks of the 30 seconds), snap back instantly or animate retraction? 
-        // For now, it stays fully extended until 0, then disappears.
-        
+        if (ticksElapsed * dropSpeed < targetDistance) {
+            // Extending phase
+            currentDistance = ticksElapsed * dropSpeed;
+        } else if (ticksLeft <= 60) {
+            // Retracting phase (last 3 seconds / 60 ticks)
+            currentDistance = targetDistance * (Math.max(0, ticksLeft) / 60.0f);
+        } else {
+            // Fully extended phase
+            currentDistance = targetDistance;
+        }
+
         GlStateManager.pushMatrix();
         GlStateManager.translate(x + 0.5, y + 0.5, z + 0.5);
 
-        // Apply rotation based on facing to match the blockstate rotations
-        switch (facing) {
-            case UP:
-                GlStateManager.rotate(180, 1, 0, 0);
-                break;
-            case NORTH:
-                GlStateManager.rotate(90, 1, 0, 0);
-                break;
-            case SOUTH:
-                GlStateManager.rotate(180, 0, 1, 0);
-                GlStateManager.rotate(90, 1, 0, 0);
-                break;
-            case WEST:
-                GlStateManager.rotate(270, 0, 1, 0);
-                GlStateManager.rotate(90, 1, 0, 0);
-                break;
-            case EAST:
-                GlStateManager.rotate(90, 0, 1, 0);
-                GlStateManager.rotate(90, 1, 0, 0);
-                break;
-            case DOWN:
-            default:
-                break; // No rotation needed for DOWN (unrotated model)
+        float rotY = 0;
+        float rotX = 0;
+
+        if (face == BlockGuillotine.EnumAttachFace.WALL) {
+            rotX = 270;
+            switch (facing) {
+                case NORTH: rotY = 180; break;
+                case SOUTH: rotY = 0; break;
+                case WEST: rotY = 270; break;
+                case EAST: rotY = 90; break;
+            }
+        } else if (face == BlockGuillotine.EnumAttachFace.CEILING) {
+            rotX = 0;
+            switch (facing) {
+                case NORTH: rotY = 180; break;
+                case SOUTH: rotY = 0; break;
+                case WEST: rotY = 270; break;
+                case EAST: rotY = 90; break;
+            }
+        } else if (face == BlockGuillotine.EnumAttachFace.FLOOR) {
+            rotX = 180;
+            switch (facing) {
+                case NORTH: rotY = 0; break;
+                case SOUTH: rotY = 180; break;
+                case WEST: rotY = 90; break;
+                case EAST: rotY = 270; break;
+            }
         }
+
+        if (rotY != 0) GlStateManager.rotate(rotY, 0, 1, 0);
+        if (rotX != 0) GlStateManager.rotate(rotX, 1, 0, 0);
         
         // Translate back to origin after center-rotation
         GlStateManager.translate(-0.5, -0.5, -0.5);

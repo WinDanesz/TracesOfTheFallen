@@ -11,15 +11,12 @@ import net.minecraft.util.math.MathHelper;
 public class ModelSidhe extends ModelBase {
 	private final ModelRenderer bone;
 	private final ModelRenderer head;
-	private final ModelRenderer body;
-	private final ModelRenderer fur;
-	private final ModelRenderer front_left_leg;
+    private final ModelRenderer front_left_leg;
 	private final ModelRenderer front_right_leg;
 	private final ModelRenderer back_left_leg;
 	private final ModelRenderer back_right_leg;
-	private final ModelRenderer tail;
 
-	public ModelSidhe() {
+    public ModelSidhe() {
 		textureWidth = 64;
 		textureHeight = 32;
 
@@ -35,13 +32,13 @@ public class ModelSidhe extends ModelBase {
 		head.cubeList.add(new ModelBox(head, 51, 14, -4.5F, -6.995F, 0.375F, 4, 6, 0, 0.001F, false));
 		head.cubeList.add(new ModelBox(head, 51, 14, 0.5F, -6.995F, 0.375F, 4, 6, 0, 0.001F, true));
 
-		body = new ModelRenderer(this);
+        ModelRenderer body = new ModelRenderer(this);
 		body.setRotationPoint(-0.0143F, 2.2578F, 0.1107F);
 		bone.addChild(body);
 		setRotationAngle(body, 1.5708F, 0.0F, 0.0F);
 		body.cubeList.add(new ModelBox(body, 21, 2, -2.0F, -7.0F, -2.0F, 4, 11, 4, 0.0F, false));
 
-		fur = new ModelRenderer(this);
+        ModelRenderer fur = new ModelRenderer(this);
 		fur.setRotationPoint(0.0F, -5.0F, -2.01F);
 		body.addChild(fur);
 		setRotationAngle(fur, -0.3927F, 0.0F, 0.0F);
@@ -69,7 +66,7 @@ public class ModelSidhe extends ModelBase {
 		back_right_leg.cubeList.add(new ModelBox(back_right_leg, 8, 13, -1.1F, 3.0F, -1.0F, 2, 5, 2, 0.0F, false));
 		back_right_leg.cubeList.add(new ModelBox(back_right_leg, 47, 4, -1.6F, -1.0F, -1.4F, 3, 5, 3, 0.0F, true));
 
-		tail = new ModelRenderer(this);
+        ModelRenderer tail = new ModelRenderer(this);
 		tail.setRotationPoint(-0.01F, 0.2578F, 3.2107F);
 		bone.addChild(tail);
 		setRotationAngle(tail, 1.5708F, 0.0F, -3.1416F);

@@ -1,6 +1,5 @@
 package com.windanesz.tracesofthefallen.entity;
 
-import com.google.common.base.Predicate;
 import com.windanesz.tracesofthefallen.Settings;
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
 import net.minecraft.block.Block;
@@ -21,7 +20,6 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
@@ -34,6 +32,7 @@ public class EntityLost extends EntityMob {
     protected static final DataParameter<Boolean> ATTACKING = EntityDataManager.createKey(EntityLost.class, DataSerializers.BOOLEAN);
     protected static final DataParameter<Integer> LUNGE_STATE = EntityDataManager.createKey(EntityLost.class, DataSerializers.VARINT);
     protected static final DataParameter<Boolean> EXCITED = EntityDataManager.createKey(EntityLost.class, DataSerializers.BOOLEAN);
+    protected static final DataParameter<Boolean> LAYING_DOWN = EntityDataManager.createKey(EntityLost.class, DataSerializers.BOOLEAN);
     public static final ResourceLocation LOOT_TABLE = new ResourceLocation(TracesOfTheFallen.MODID, "entities/lost");
     
     public float mouthOpenProgress;
@@ -45,10 +44,19 @@ public class EntityLost extends EntityMob {
     private int clientPrevLungeState = 0;
     
     public int grabTicks = 0;
+    
+    // Timer for how long to lay down
+    public int layDownTimer = 0;
+    
+    public float layDownProgress = 0.0F;
+    public float prevLayDownProgress = 0.0F;
+    
+    public int digCooldown = 0;
+    public boolean hasRolledForBoneThisDig = false;
 
     public EntityLost(World worldIn) {
         super(worldIn);
-        this.setSize(0.6F, 1.95F);
+        this.setSize(0.6F, 1.55F);
     }
 
     @Override
@@ -59,14 +67,15 @@ public class EntityLost extends EntityMob {
         this.tasks.addTask(7, new EntityAIWanderAvoidWater(this, 1.0D));
         this.tasks.addTask(8, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
         this.tasks.addTask(8, new EntityAILookIdle(this));
+        
         this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, true));
-        this.targetTasks.addTask(2, new EntityAINearestAttackableTarget<>(this, EntityLivingBase.class, 10, true, false, new Predicate<EntityLivingBase>() {
+        this.targetTasks.addTask(2, new EntityAINearestAttackableTarget<>(this, net.minecraft.entity.EntityLivingBase.class, 10, true, false, new com.google.common.base.Predicate<net.minecraft.entity.EntityLivingBase>() {
             @Override
-            public boolean apply(EntityLivingBase input) {
+            public boolean apply(net.minecraft.entity.EntityLivingBase input) {
                 return EntityLost.isEdible(input);
             }
         }));
-        this.targetTasks.addTask(3, new EntityAINearestAttackableTarget<>(this, EntityPlayer.class, true));
+        this.targetTasks.addTask(3, new EntityAINearestAttackableTarget<>(this, net.minecraft.entity.player.EntityPlayer.class, true));
     }
 
     @Override
@@ -80,7 +89,7 @@ public class EntityLost extends EntityMob {
 
     @Override
     public boolean getCanSpawnHere() {
-        BlockPos pos = new BlockPos(this.posX, this.getEntityBoundingBox().minY, this.posZ);
+        net.minecraft.util.math.BlockPos pos = new net.minecraft.util.math.BlockPos(this.posX, this.getEntityBoundingBox().minY, this.posZ);
         
         // Only spawn deep underground and away from sky access
         if (pos.getY() >= 60 || this.world.canBlockSeeSky(pos)) {
@@ -111,6 +120,7 @@ public class EntityLost extends EntityMob {
         this.dataManager.register(ATTACKING, false);
         this.dataManager.register(LUNGE_STATE, Integer.valueOf(0));
         this.dataManager.register(EXCITED, false);
+        this.dataManager.register(LAYING_DOWN, false);
     }
 
     public void setAttacking(boolean attacking) {
@@ -119,6 +129,14 @@ public class EntityLost extends EntityMob {
 
     public boolean isAttacking() {
         return this.dataManager.get(ATTACKING);
+    }
+    
+    public void setLayingDown(boolean laying) {
+        this.dataManager.set(LAYING_DOWN, laying);
+    }
+    
+    public boolean isLayingDown() {
+        return this.dataManager.get(LAYING_DOWN);
     }
 
     public int getLungeState() {
@@ -240,8 +258,79 @@ public class EntityLost extends EntityMob {
     public void onLivingUpdate() {
         super.onLivingUpdate();
         
+        if (this.digCooldown > 0) {
+            this.digCooldown--;
+        }
+        
+        if (this.isLayingDown()) {
+            // Freeze all rotation while laying down so they don't spin around like a record
+            this.rotationYaw = this.prevRotationYaw;
+            this.rotationYawHead = this.prevRotationYawHead;
+            this.renderYawOffset = this.prevRenderYawOffset;
+            this.rotationPitch = this.prevRotationPitch;
+        }
+        
         if (this.world.isRemote && this.hurtFaceTicks > 0) {
             this.hurtFaceTicks--;
+        }
+        
+        boolean isDiggingPhase = false;
+        
+        // Procedural digging particles (mirrors the ModelLost animation)
+        if (!this.isLayingDown() && !this.isAttacking() && this.getPassengers().isEmpty()) {
+            float investigateDelt = net.minecraft.util.math.MathHelper.sin(this.ticksExisted * 0.015F) * net.minecraft.util.math.MathHelper.sin(this.ticksExisted * 0.04F);
+            float digCycle = net.minecraft.util.math.MathHelper.sin(this.ticksExisted * 0.005F);
+            
+            if (investigateDelt > 0.3F && digCycle > 0.0F) {
+                isDiggingPhase = true;
+                float scratchAnim = net.minecraft.util.math.MathHelper.sin(this.ticksExisted * 1.5F);
+                // When scratchAnim strikes near the lowest point (-1.0), spawn particles
+                if (scratchAnim < -0.8F) {
+                    if (this.world.isRemote) {
+                        if (this.rand.nextInt(2) == 0) {
+                            net.minecraft.block.state.IBlockState state = this.world.getBlockState(this.getPosition().down());
+                            if (state.getMaterial() != net.minecraft.block.material.Material.AIR) {
+                                for (int i = 0; i < 4; i++) {
+                                    // Calculate hand position roughly (in front of entity)
+                                    double px = this.posX + (this.rand.nextDouble() - 0.5D) * 0.6D + this.getLookVec().x * 0.5D;
+                                    double pz = this.posZ + (this.rand.nextDouble() - 0.5D) * 0.6D + this.getLookVec().z * 0.5D;
+                                    this.world.spawnParticle(net.minecraft.util.EnumParticleTypes.BLOCK_CRACK, px, this.posY + 0.1D, pz, 
+                                        (this.rand.nextDouble() - 0.5D) * 0.15D, 
+                                        this.rand.nextDouble() * 0.2D, 
+                                        (this.rand.nextDouble() - 0.5D) * 0.15D, 
+                                        Block.getStateId(state));
+                                }
+                            }
+                        }
+                    } else {
+                        if (!this.hasRolledForBoneThisDig) {
+                            this.hasRolledForBoneThisDig = true;
+                            if (this.digCooldown <= 0 && this.rand.nextFloat() < 0.05F) {
+                                net.minecraft.entity.item.EntityItem bone = new net.minecraft.entity.item.EntityItem(this.world, this.posX + this.getLookVec().x * 0.5D, this.posY + 0.1D, this.posZ + this.getLookVec().z * 0.5D, new net.minecraft.item.ItemStack(net.minecraft.init.Items.BONE));
+                                this.world.spawnEntity(bone);
+                                this.digCooldown = 2400; // 2 minutes cooldown
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        if (!isDiggingPhase) {
+            this.hasRolledForBoneThisDig = false;
+        }
+        
+        this.prevLayDownProgress = this.layDownProgress;
+        if (this.isLayingDown()) {
+            if (this.layDownProgress < 1.0F) {
+                this.layDownProgress += 0.05F; // 1 second to lay down
+            }
+            if (this.layDownProgress > 1.0F) this.layDownProgress = 1.0F;
+        } else {
+            if (this.layDownProgress > 0.0F) {
+                this.layDownProgress -= 0.1F; // 0.5 seconds to stand up
+            }
+            if (this.layDownProgress < 0.0F) this.layDownProgress = 0.0F;
         }
         
         if (!this.getPassengers().isEmpty()) {
@@ -283,6 +372,28 @@ public class EntityLost extends EntityMob {
             
             if (this.getPassengers().isEmpty()) {
                 this.updateMobCombat();
+                
+                // Laying down logic
+                if (!hasTarget) {
+                    if (this.layDownTimer > 0) {
+                        this.layDownTimer--;
+                        this.setLayingDown(true);
+                        // Stop moving
+                        this.motionX = 0;
+                        this.motionZ = 0;
+                        if (this.getNavigator() != null) {
+                            this.getNavigator().clearPath();
+                        }
+                    } else {
+                        this.setLayingDown(false);
+                        if (this.rand.nextInt(600) == 0) { // roughly every 30 seconds
+                            this.layDownTimer = 300 + this.rand.nextInt(600); // Lay down for 15-45 seconds
+                        }
+                    }
+                } else {
+                    this.setLayingDown(false);
+                    this.layDownTimer = 0;
+                }
             } else {
                 // We are holding something!
                 Entity passenger = this.getPassengers().get(0);
@@ -292,6 +403,11 @@ public class EntityLost extends EntityMob {
                 this.motionZ = 0;
                 if (this.getNavigator() != null) {
                     this.getNavigator().clearPath();
+                }
+                
+                // Deal 1 damage every 40 ticks, starting at tick 1
+                if (this.grabTicks % 40 == 1) {
+                    passenger.attackEntityFrom(DamageSource.causeMobDamage(this), 1.0F);
                 }
                 
                 // Play crunch sound occasionally

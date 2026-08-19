@@ -9,53 +9,41 @@ import net.minecraft.util.math.MathHelper;
 
 public class ModelSubterFuge2 extends ModelBase {
 	private final ModelRenderer body;
-	private final ModelRenderer torso;
-	private final ModelRenderer chest_r1;
-	private final ModelRenderer head;
-	private final ModelRenderer mask_right_r1;
-	private final ModelRenderer mask_left_r1;
-	private final ModelRenderer rightArm;
+    private final ModelRenderer head;
+    private final ModelRenderer rightArm;
 	private final ModelRenderer rightForearm;
-	private final ModelRenderer leftArm;
-	private final ModelRenderer leftForearm;
-	private final ModelRenderer leftLeg;
-	private final ModelRenderer leftPuff_r1;
-	private final ModelRenderer leftKnee;
-	private final ModelRenderer rightLeg;
-	private final ModelRenderer rightPuff_r1;
-	private final ModelRenderer rightKnee;
 
-	public ModelSubterFuge2() {
+    public ModelSubterFuge2() {
 		textureWidth = 64;
 		textureHeight = 64;
 
 		body = new ModelRenderer(this);
 		body.setRotationPoint(0.0F, 24.0F, 0.0F);
-		
 
-		torso = new ModelRenderer(this);
+
+        ModelRenderer torso = new ModelRenderer(this);
 		torso.setRotationPoint(0.0F, -14.0F, 2.0F);
 		body.addChild(torso);
 		torso.cubeList.add(new ModelBox(torso, 8, 16, -4.0F, -11.0F, -4.0F, 8, 11, 4, 0.0F, false));
 
-		chest_r1 = new ModelRenderer(this);
-		chest_r1.setRotationPoint(0.575F, -6.2824F, -4.2071F);
+        ModelRenderer chest_r1 = new ModelRenderer(this);
+		chest_r1.setRotationPoint(0.145F, -6.2824F, -4.2071F);
 		torso.addChild(chest_r1);
 		setRotationAngle(chest_r1, 0.0F, -0.7854F, 1.5708F);
-		chest_r1.cubeList.add(new ModelBox(chest_r1, 31, 53, -2.15F, -3.4F, -0.5F, 3, 7, 4, 0.0F, false));
+		chest_r1.cubeList.add(new ModelBox(chest_r1, 31, 53, -2.15F, -3.4F, -0.5F, 3, 8, 4, 0.0F, false));
 
 		head = new ModelRenderer(this);
 		head.setRotationPoint(0.0F, -11.0F, -3.0F);
 		torso.addChild(head);
-		
 
-		mask_right_r1 = new ModelRenderer(this);
+
+        ModelRenderer mask_right_r1 = new ModelRenderer(this);
 		mask_right_r1.setRotationPoint(0.0263F, -1.0F, 1.0F);
 		head.addChild(mask_right_r1);
 		setRotationAngle(mask_right_r1, 0.0F, 0.3927F, 0.0F);
-		mask_right_r1.cubeList.add(new ModelBox(mask_right_r1, 31, 42, -3.6F, -8.0F, -1.0F, 4, 8, 0, 0.0F, true));
+		mask_right_r1.cubeList.add(new ModelBox(mask_right_r1, 32, 42, -3.6243F, -8.0F, -1.0101F, 4, 8, 0, 0.0F, true));
 
-		mask_left_r1 = new ModelRenderer(this);
+        ModelRenderer mask_left_r1 = new ModelRenderer(this);
 		mask_left_r1.setRotationPoint(-0.0263F, -1.0F, 1.0F);
 		head.addChild(mask_left_r1);
 		setRotationAngle(mask_left_r1, 0.0F, -0.3927F, 0.0F);
@@ -72,45 +60,45 @@ public class ModelSubterFuge2 extends ModelBase {
 		rightArm.addChild(rightForearm);
 		rightForearm.cubeList.add(new ModelBox(rightForearm, 19, 45, -3.0F, 0.0F, -3.0F, 3, 7, 3, 0.01F, true));
 
-		leftArm = new ModelRenderer(this);
+        ModelRenderer leftArm = new ModelRenderer(this);
 		leftArm.setRotationPoint(-5.0F, -10.0F, -2.0F);
 		torso.addChild(leftArm);
 		setRotationAngle(leftArm, -0.3655F, -0.147F, -0.3655F);
 		leftArm.cubeList.add(new ModelBox(leftArm, 19, 35, -2.0F, -1.0F, -1.0F, 3, 5, 3, 0.0F, false));
 
-		leftForearm = new ModelRenderer(this);
+        ModelRenderer leftForearm = new ModelRenderer(this);
 		leftForearm.setRotationPoint(-2.0F, 4.0F, 2.0F);
 		leftArm.addChild(leftForearm);
 		leftForearm.cubeList.add(new ModelBox(leftForearm, 19, 45, 0.0F, 0.0F, -3.0F, 3, 7, 3, 0.01F, false));
 
-		leftLeg = new ModelRenderer(this);
+        ModelRenderer leftLeg = new ModelRenderer(this);
 		leftLeg.setRotationPoint(-1.9F, -14.0F, 0.0F);
 		body.addChild(leftLeg);
 		leftLeg.cubeList.add(new ModelBox(leftLeg, 42, 20, -2.1F, 0.0F, -2.0F, 4, 7, 4, 0.0F, false));
 
-		leftPuff_r1 = new ModelRenderer(this);
+        ModelRenderer leftPuff_r1 = new ModelRenderer(this);
 		leftPuff_r1.setRotationPoint(-1.847F, 4.1746F, 0.0F);
 		leftLeg.addChild(leftPuff_r1);
 		setRotationAngle(leftPuff_r1, 0.0F, 0.0F, -0.3927F);
 		leftPuff_r1.cubeList.add(new ModelBox(leftPuff_r1, 42, 20, -1.0F, -3.0F, -2.0F, 2, 5, 4, -0.01F, false));
 
-		leftKnee = new ModelRenderer(this);
+        ModelRenderer leftKnee = new ModelRenderer(this);
 		leftKnee.setRotationPoint(0.0F, 7.0F, -1.5F);
 		leftLeg.addChild(leftKnee);
 		leftKnee.cubeList.add(new ModelBox(leftKnee, 50, 10, -1.6F, 0.0F, 0.0F, 3, 7, 3, 0.0F, false));
 
-		rightLeg = new ModelRenderer(this);
+        ModelRenderer rightLeg = new ModelRenderer(this);
 		rightLeg.setRotationPoint(1.9F, -14.0F, 0.0F);
 		body.addChild(rightLeg);
 		rightLeg.cubeList.add(new ModelBox(rightLeg, 42, 20, -1.9F, 0.0F, -2.0F, 4, 7, 4, 0.0F, true));
 
-		rightPuff_r1 = new ModelRenderer(this);
+        ModelRenderer rightPuff_r1 = new ModelRenderer(this);
 		rightPuff_r1.setRotationPoint(1.847F, 4.1746F, 0.0F);
 		rightLeg.addChild(rightPuff_r1);
 		setRotationAngle(rightPuff_r1, 0.0F, 0.0F, 0.3927F);
 		rightPuff_r1.cubeList.add(new ModelBox(rightPuff_r1, 42, 20, -1.0F, -3.0F, -2.0F, 2, 5, 4, -0.01F, true));
 
-		rightKnee = new ModelRenderer(this);
+        ModelRenderer rightKnee = new ModelRenderer(this);
 		rightKnee.setRotationPoint(0.0F, 7.0F, -1.5F);
 		rightLeg.addChild(rightKnee);
 		rightKnee.cubeList.add(new ModelBox(rightKnee, 50, 10, -1.4F, 0.0F, 0.0F, 3, 7, 3, 0.0F, true));
@@ -159,6 +147,13 @@ public class ModelSubterFuge2 extends ModelBase {
 				rightArm.rotateAngleX = -((float) Math.PI / 2F); // Straight forward/up
 				rightArm.rotateAngleY = 0.1F;
 				rightArm.rotateAngleZ = 0.0F;
+				rightForearm.rotateAngleX = 0.0F;
+				rightForearm.rotateAngleY = 0.0F;
+				rightForearm.rotateAngleZ = 0.0F;
+			} else {
+				rightArm.rotateAngleX = -0.3655F;
+				rightArm.rotateAngleY = 0.147F;
+				rightArm.rotateAngleZ = 0.3655F;
 				rightForearm.rotateAngleX = 0.0F;
 				rightForearm.rotateAngleY = 0.0F;
 				rightForearm.rotateAngleZ = 0.0F;

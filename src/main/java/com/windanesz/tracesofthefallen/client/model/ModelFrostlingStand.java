@@ -14,21 +14,15 @@ public class ModelFrostlingStand extends ModelBase {
 	private final ModelRenderer bone;
 	private final ModelRenderer neck;
 	private final ModelRenderer head_upper;
-	private final ModelRenderer eye_r_r1;
-	private final ModelRenderer eye_l_r1;
-	private final ModelRenderer mask;
+    private final ModelRenderer mask;
 	private final ModelRenderer craneum;
 	private final ModelRenderer lower_jaw;
-	private final ModelRenderer tusks_r1;
-	private final ModelRenderer body;
-	private final ModelRenderer leg_right;
+    private final ModelRenderer leg_right;
 	private final ModelRenderer leg_left;
 	private final ModelRenderer arm_right;
-	private final ModelRenderer shield_right;
-	private final ModelRenderer arm_left;
-	private final ModelRenderer shield_left;
+    private final ModelRenderer arm_left;
 
-	public ModelFrostlingStand() {
+    public ModelFrostlingStand() {
 		textureWidth = 64;
 		textureHeight = 64;
 
@@ -49,13 +43,13 @@ public class ModelFrostlingStand extends ModelBase {
 		setRotationAngle(head_upper, 1.1781F, 0.0F, 0.0F);
 		head_upper.cubeList.add(new ModelBox(head_upper, 0, 46, -6.0F, -3.9245F, -11.5222F, 12, 4, 13, -0.1F, false));
 
-		eye_r_r1 = new ModelRenderer(this);
+        ModelRenderer eye_r_r1 = new ModelRenderer(this);
 		eye_r_r1.setRotationPoint(-5.9747F, -4.5809F, -11.095F);
 		head_upper.addChild(eye_r_r1);
 		setRotationAngle(eye_r_r1, 0.2618F, -0.3491F, 0.0F);
 		eye_r_r1.cubeList.add(new ModelBox(eye_r_r1, 37, 26, 0.138F, 2.3934F, -0.1724F, 2, 2, 5, 0.0F, true));
 
-		eye_l_r1 = new ModelRenderer(this);
+        ModelRenderer eye_l_r1 = new ModelRenderer(this);
 		eye_l_r1.setRotationPoint(5.9747F, -4.5809F, -11.095F);
 		head_upper.addChild(eye_l_r1);
 		setRotationAngle(eye_l_r1, 0.2618F, 0.3491F, 0.0F);
@@ -76,14 +70,14 @@ public class ModelFrostlingStand extends ModelBase {
 		head_upper.addChild(lower_jaw);
 		lower_jaw.cubeList.add(new ModelBox(lower_jaw, 26, 17, -6.0F, -0.0304F, -4.9188F, 12, 2, 5, 0.0F, false));
 
-		tusks_r1 = new ModelRenderer(this);
+        ModelRenderer tusks_r1 = new ModelRenderer(this);
 		tusks_r1.setRotationPoint(0.5821F, 1.977F, -4.867F);
 		lower_jaw.addChild(tusks_r1);
 		setRotationAngle(tusks_r1, 0.1745F, 0.0F, 0.0F);
 		tusks_r1.cubeList.add(new ModelBox(tusks_r1, 11, 33, -4.4821F, -5.0859F, -0.8023F, 2, 3, 1, 0.1F, true));
 		tusks_r1.cubeList.add(new ModelBox(tusks_r1, 11, 33, 1.3178F, -5.0859F, -0.8023F, 2, 3, 1, 0.1F, false));
 
-		body = new ModelRenderer(this);
+        ModelRenderer body = new ModelRenderer(this);
 		body.setRotationPoint(0.0F, 9.0F, 8.5F);
 		bone.addChild(body);
 		body.cubeList.add(new ModelBox(body, 0, 17, -4.0F, -4.0F, -4.0F, 8, 6, 10, 0.0F, false));
@@ -104,7 +98,7 @@ public class ModelFrostlingStand extends ModelBase {
 		setRotationAngle(arm_right, 0.0F, 0.0F, 0.3927F);
 		arm_right.cubeList.add(new ModelBox(arm_right, 1, 0, -2.0F, 0.0F, -1.5F, 2, 7, 3, 0.0F, true));
 
-		shield_right = new ModelRenderer(this);
+        ModelRenderer shield_right = new ModelRenderer(this);
 		shield_right.setRotationPoint(-1.0F, 7.0F, 0.5F);
 		arm_right.addChild(shield_right);
 		shield_right.cubeList.add(new ModelBox(shield_right, 44, 27, 0.0F, 0.0F, -4.0F, 0, 5, 7, 0.0F, true));
@@ -115,7 +109,7 @@ public class ModelFrostlingStand extends ModelBase {
 		setRotationAngle(arm_left, 0.0F, 0.0F, -0.3927F);
 		arm_left.cubeList.add(new ModelBox(arm_left, 1, 0, 0.0F, 0.0F, -1.5F, 2, 7, 3, 0.0F, false));
 
-		shield_left = new ModelRenderer(this);
+        ModelRenderer shield_left = new ModelRenderer(this);
 		shield_left.setRotationPoint(1.0F, 7.0F, 1.5F);
 		arm_left.addChild(shield_left);
 		shield_left.cubeList.add(new ModelBox(shield_left, 44, 27, 0.0F, 0.0F, -5.0F, 0, 5, 7, 0.0F, false));

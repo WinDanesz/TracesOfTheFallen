@@ -71,11 +71,13 @@ public class ModItems {
 	public static final Item stone_chest = placeholder();
 	public static final Item floater_brown = placeholder();
 	public static final Item floater_white = placeholder();
-	public static final Item item_frame_wooden = placeholder();
+	public static final Item plaque = placeholder();
 	public static final Item bonepile = placeholder();
 	public static final Item hay_bed = placeholder();
 	public static final Item subtorch = placeholder();
 	public static final Item goblin_nest = placeholder();
+	public static final Item bone_mound_0 = placeholder();
+	public static final Item bone_mound_1 = placeholder();
 	@Nonnull
 	@SuppressWarnings("ConstantConditions")
 	private static <T> T placeholder() {
@@ -154,6 +156,8 @@ public class ModItems {
 		registerItemBlock(registry, ModBlocks.tent_abandoned);
 		registerItemBlock(registry, ModBlocks.tent_abandoned_idol);
 		registerItemBlock(registry, ModBlocks.salvaged_scaffold);
+		registerItemBlock(registry, ModBlocks.bone_mound_0);
+		registerItemBlock(registry, ModBlocks.bone_mound_1);
 		
 		// Register armillary with custom ItemBlock for tooltip
 		ItemBlock armillaryItem = new ItemBlockArmillary(ModBlocks.armillary);
@@ -204,7 +208,7 @@ public class ModItems {
 		registerItemBlock(registry, ModBlocks.stained_glass);
 		registerItemBlock(registry, ModBlocks.stained_glass_pane);
 		registerItemBlock(registry, ModBlocks.dreamcatcher);
-		registerItemBlock(registry, ModBlocks.item_frame_wooden);
+		registerItemBlock(registry, ModBlocks.plaque);
 		ItemBlock bonepileItem = new ItemBlockBonepile(ModBlocks.bonepile);
 		bonepileItem.setRegistryName(ModBlocks.bonepile.getRegistryName());
 		ModBlocks.bonepile.setCreativeTab(ModCreativeTab.TOTF_TAB);

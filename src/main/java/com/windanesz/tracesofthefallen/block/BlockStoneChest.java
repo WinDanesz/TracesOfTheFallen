@@ -20,6 +20,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -103,7 +104,7 @@ public class BlockStoneChest extends BlockContainer {
 		TileEntity te = worldIn.getTileEntity(pos);
 		if (te instanceof TileEntityStoneChest) {
 			if (placer instanceof EntityPlayer && ((EntityPlayer) placer).isCreative() && placer.isSneaking()) {
-				((TileEntityStoneChest) te).setForcedOpen(true);
+				((TileEntityStoneChest) te).setLidOpen(true);
 			}
 		}
 	}
@@ -133,9 +134,21 @@ public class BlockStoneChest extends BlockContainer {
 
 	@Override
 	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+		if (worldIn.isRemote) {
+			return true;
+		}
 		TileEntity te = worldIn.getTileEntity(pos);
 		if (te instanceof TileEntityStoneChest) {
-			((TileEntityStoneChest) te).requestOpen(playerIn);
+			TileEntityStoneChest chest = (TileEntityStoneChest) te;
+			if (playerIn.isSneaking()) {
+				chest.setLidOpen(!chest.isLidOpen());
+			} else {
+				if (chest.isLidOpen()) {
+					chest.requestOpen(playerIn);
+				} else {
+					playerIn.sendStatusMessage(new TextComponentString("You need to open the chest first (Sneak-right click)"), true);
+				}
+			}
 		}
 		return true;
 	}
@@ -155,7 +168,7 @@ public class BlockStoneChest extends BlockContainer {
 	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
 		super.addInformation(stack, worldIn, tooltip, flagIn);
 		if (Minecraft.getMinecraft().player != null && Minecraft.getMinecraft().player.isCreative()) {
-			tooltip.add(TextFormatting.GRAY + "Placing the chest while sneaking keeps it open until first used");
+			tooltip.add(TextFormatting.GRAY + "Placing the chest while sneaking keeps it open");
 		}
 	}
 }

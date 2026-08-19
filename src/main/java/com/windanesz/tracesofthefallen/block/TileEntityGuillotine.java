@@ -42,7 +42,7 @@ public class TileEntityGuillotine extends TileEntity implements ITickable {
     }
 
     public void activate() {
-        if (!world.isRemote) {
+        if (!world.isRemote && !active) {
             active = true;
             activeTicks = 600; // 30 seconds
             calculateExtensionAndDamage();
@@ -56,7 +56,11 @@ public class TileEntityGuillotine extends TileEntity implements ITickable {
         IBlockState state = world.getBlockState(pos);
         if (!(state.getBlock() instanceof BlockGuillotine)) return;
         
+        BlockGuillotine.EnumAttachFace face = state.getValue(BlockGuillotine.FACE);
         EnumFacing facing = state.getValue(BlockGuillotine.FACING);
+        if (face == BlockGuillotine.EnumAttachFace.FLOOR) facing = EnumFacing.UP;
+        else if (face == BlockGuillotine.EnumAttachFace.CEILING) facing = EnumFacing.DOWN;
+
         extensionLength = 0;
 
         for (int i = 1; i <= 5; i++) {
@@ -112,7 +116,10 @@ public class TileEntityGuillotine extends TileEntity implements ITickable {
         IBlockState state = world.getBlockState(pos);
         if (!(state.getBlock() instanceof BlockGuillotine)) return super.getRenderBoundingBox();
         
+        BlockGuillotine.EnumAttachFace face = state.getValue(BlockGuillotine.FACE);
         EnumFacing facing = state.getValue(BlockGuillotine.FACING);
+        if (face == BlockGuillotine.EnumAttachFace.FLOOR) facing = EnumFacing.UP;
+        else if (face == BlockGuillotine.EnumAttachFace.CEILING) facing = EnumFacing.DOWN;
         AxisAlignedBB box = new AxisAlignedBB(pos);
         AxisAlignedBB endBox = new AxisAlignedBB(pos).offset(facing.getDirectionVec().getX() * extensionLength, 
                                                              facing.getDirectionVec().getY() * extensionLength, 

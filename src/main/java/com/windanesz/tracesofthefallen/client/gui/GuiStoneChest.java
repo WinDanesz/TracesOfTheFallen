@@ -10,11 +10,9 @@ import net.minecraft.util.ResourceLocation;
 
 public class GuiStoneChest extends GuiContainer {
     private static final ResourceLocation TEXTURE = new ResourceLocation(TracesOfTheFallen.MODID, "textures/gui/gui_stone_chest.png");
-    private final TileEntityStoneChest te;
 
     public GuiStoneChest(EntityPlayer player, TileEntityStoneChest te) {
         super(new ContainerStoneChest(player, te));
-        this.te = te;
         this.xSize = 182;
         this.ySize = 182;
     }

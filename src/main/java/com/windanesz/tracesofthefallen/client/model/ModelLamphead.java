@@ -10,24 +10,15 @@ import net.minecraft.util.math.MathHelper;
 public class ModelLamphead extends ModelBase {
 	private final ModelRenderer base;
 	private final ModelRenderer body;
-	private final ModelRenderer cube_r1;
-	private final ModelRenderer windup_key_pivot;
-	private final ModelRenderer windup_key;
+    private final ModelRenderer windup_key;
 	private final ModelRenderer neck;
 	private final ModelRenderer head;
-	private final ModelRenderer cube_r2;
-	private final ModelRenderer cube_r3;
-	private final ModelRenderer cube_r4;
-	private final ModelRenderer cube_r5;
-	private final ModelRenderer cube_r6;
-	private final ModelRenderer arm_left;
+    private final ModelRenderer arm_left;
 	private final ModelRenderer arm_right;
 	private final ModelRenderer leg_left;
-	private final ModelRenderer cube_r7;
-	private final ModelRenderer leg_right;
-	private final ModelRenderer cube_r8;
+    private final ModelRenderer leg_right;
 
-	public ModelLamphead() {
+    public ModelLamphead() {
 		textureWidth = 64;
 		textureHeight = 64;
 
@@ -38,13 +29,13 @@ public class ModelLamphead extends ModelBase {
 		body.setRotationPoint(0.0F, 0.0F, 0.0F);
 		base.addChild(body);
 
-		cube_r1 = new ModelRenderer(this);
+        ModelRenderer cube_r1 = new ModelRenderer(this);
 		cube_r1.setRotationPoint(0.0F, -1.0F, -3.0F);
 		body.addChild(cube_r1);
 		setRotationAngle(cube_r1, -0.7854F, 0.0F, 0.0F);
 		cube_r1.cubeList.add(new ModelBox(cube_r1, 0, 22, -4.0F, -6.0F, -5.0F, 8, 6, 10, 0.0F, false));
 
-		windup_key_pivot = new ModelRenderer(this);
+        ModelRenderer windup_key_pivot = new ModelRenderer(this);
 		windup_key_pivot.setRotationPoint(0.0F, -4.5355F, 4.7782F);
 		setRotationAngle(windup_key_pivot, -0.7854F, 0.0F, 0.0F);
 		body.addChild(windup_key_pivot);
@@ -68,31 +59,31 @@ public class ModelLamphead extends ModelBase {
 		head.cubeList.add(new ModelBox(head, 0, 0, -2.0F, -10.0F, -2.0F, 4, 2, 4, 0.0F, false));
 		head.cubeList.add(new ModelBox(head, 12, 0, -5.0F, -8.0F, -5.0F, 10, 2, 10, 0.0F, false));
 
-		cube_r2 = new ModelRenderer(this);
+        ModelRenderer cube_r2 = new ModelRenderer(this);
 		cube_r2.setRotationPoint(1.1522F, -4.2346F, 0.0F);
 		head.addChild(cube_r2);
 		setRotationAngle(cube_r2, 0.0F, 0.0F, -1.5708F);
 		cube_r2.cubeList.add(new ModelBox(cube_r2, 36, 30, -3.2346F, -5.1522F, -4.0F, 5, 8, 8, -0.1F, false));
 
-		cube_r3 = new ModelRenderer(this);
+        ModelRenderer cube_r3 = new ModelRenderer(this);
 		cube_r3.setRotationPoint(-5.0F, -7.0F, 0.0F);
 		head.addChild(cube_r3);
 		setRotationAngle(cube_r3, 0.0F, 1.5708F, 0.7854F);
 		cube_r3.cubeList.add(new ModelBox(cube_r3, -3, 6, -3.0F, 0.0F, -3.0F, 6, 0, 3, 0.0F, true));
 
-		cube_r4 = new ModelRenderer(this);
+        ModelRenderer cube_r4 = new ModelRenderer(this);
 		cube_r4.setRotationPoint(5.0F, -7.0F, 0.0F);
 		head.addChild(cube_r4);
 		setRotationAngle(cube_r4, 0.0F, -1.5708F, -0.7854F);
 		cube_r4.cubeList.add(new ModelBox(cube_r4, -3, 6, -3.0F, 0.0F, -3.0F, 6, 0, 3, 0.0F, true));
 
-		cube_r5 = new ModelRenderer(this);
+        ModelRenderer cube_r5 = new ModelRenderer(this);
 		cube_r5.setRotationPoint(0.0F, -6.9993F, 5.0007F);
 		head.addChild(cube_r5);
 		setRotationAngle(cube_r5, 2.3562F, 0.0F, -3.1416F);
 		cube_r5.cubeList.add(new ModelBox(cube_r5, -3, 6, -3.0F, 0.0F, -3.0F, 6, 0, 3, 0.0F, true));
 
-		cube_r6 = new ModelRenderer(this);
+        ModelRenderer cube_r6 = new ModelRenderer(this);
 		cube_r6.setRotationPoint(0.0F, -7.0F, -5.0F);
 		head.addChild(cube_r6);
 		setRotationAngle(cube_r6, -0.7854F, 0.0F, 0.0F);
@@ -113,7 +104,7 @@ public class ModelLamphead extends ModelBase {
 		base.addChild(leg_left);
 		leg_left.cubeList.add(new ModelBox(leg_left, 0, 47, 0.0F, 2.0F, 0.0F, 3, 10, 3, 0.0F, false));
 
-		cube_r7 = new ModelRenderer(this);
+        ModelRenderer cube_r7 = new ModelRenderer(this);
 		cube_r7.setRotationPoint(0.0F, -2.0F, -4.0F);
 		leg_left.addChild(cube_r7);
 		setRotationAngle(cube_r7, 0.3927F, 0.0F, 0.0F);
@@ -124,7 +115,7 @@ public class ModelLamphead extends ModelBase {
 		base.addChild(leg_right);
 		leg_right.cubeList.add(new ModelBox(leg_right, 0, 47, -3.0F, 2.0F, 0.0F, 3, 10, 3, 0.0F, true));
 
-		cube_r8 = new ModelRenderer(this);
+        ModelRenderer cube_r8 = new ModelRenderer(this);
 		cube_r8.setRotationPoint(0.0F, -2.0F, -4.0F);
 		leg_right.addChild(cube_r8);
 		setRotationAngle(cube_r8, 0.3927F, 0.0F, 0.0F);

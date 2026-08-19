@@ -6,7 +6,6 @@ import net.minecraft.client.model.ModelBox;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.math.MathHelper;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 
@@ -36,36 +35,36 @@ public class ModelLost extends ModelBase {
 
 		// head_body acts as the torso. It holds the torso box, eyes/head, arms.
 		head_body = new ModelRenderer(this);
-		head_body.setRotationPoint(0.0F, 0.0F, 0.0F);
+		head_body.setRotationPoint(0.0F, -7.0F, 0.0F); // Pivot at the hips (Y = -7)
 		body.addChild(head_body);
 		
 		// Torso box
-		head_body.cubeList.add(new ModelBox(head_body, 28, 0, -3.0F, -19.0F, -3.0F, 6, 12, 4, 0.0F, false));
+		head_body.cubeList.add(new ModelBox(head_body, 28, 0, -3.0F, -12.0F, -3.0F, 6, 12, 4, 0.0F, false));
 
 		// Eyes Closed variant (contains closed face UVs and closed mouth)
 		eyes_closed = new ModelRenderer(this);
-		eyes_closed.setRotationPoint(0.0F, -1.0F, 0.0F);
+		eyes_closed.setRotationPoint(0.0F, 6.0F, 0.0F);
 		eyes_closed.cubeList.add(new ModelBox(eyes_closed, 21, 40, -3.0F, -20.0F, -3.1F, 6, 2, 6, 0.0F, false));
 		eyes_closed.cubeList.add(new ModelBox(eyes_closed, 20, 16, -4.0F, -24.0F, -3.1F, 8, 4, 6, 0.0F, false));
 
 		// Eyes Open variant (contains open face UVs and closed mouth)
 		eyes_open = new ModelRenderer(this);
-		eyes_open.setRotationPoint(0.0F, -1.0F, 0.0F);
+		eyes_open.setRotationPoint(0.0F, 6.0F, 0.0F);
 		eyes_open.cubeList.add(new ModelBox(eyes_open, 21, 40, -3.0F, -20.0F, -3.1F, 6, 2, 6, 0.0F, false));
 		eyes_open.cubeList.add(new ModelBox(eyes_open, 20, 28, -4.0F, -24.0F, -3.1F, 8, 4, 6, 0.0F, false));
 
 		// Mouth Closed variant (the small 4-pixel tall mouth)
 		mouth_closed = new ModelRenderer(this);
-		mouth_closed.setRotationPoint(0.0F, 0.0F, 0.0F);
+		mouth_closed.setRotationPoint(0.0F, 7.0F, 0.0F);
 		mouth_closed.cubeList.add(new ModelBox(mouth_closed, 0, 9, -4.0F, -19.0F, -3.1F, 8, 4, 0, 0.0F, false));
 
 		// Mouth Open variant (the elongated 9-pixel tall mouth)
 		mouth_open = new ModelRenderer(this);
-		mouth_open.setRotationPoint(0.0F, -19.0F, -3.1F); // Pivot at the top of the mouth
+		mouth_open.setRotationPoint(0.0F, -12.0F, -3.1F); // Pivot at the top of the mouth
 		mouth_open.cubeList.add(new ModelBox(mouth_open, 0, 0, -4.0F, 0.0F, 0.0F, 8, 9, 0, 0.0F, false));
 
 		arm_right = new ModelRenderer(this);
-		arm_right.setRotationPoint(-4.0F, -14.0F, -0.5F);
+		arm_right.setRotationPoint(-4.0F, -7.0F, -0.5F);
 		head_body.addChild(arm_right);
 		setRotationAngle(arm_right, 0.7854F, 0.0F, 0.0F);
 		arm_right.cubeList.add(new ModelBox(arm_right, 0, 38, -2.0F, -1.0F, -1.5F, 3, 7, 3, 0.0F, true));
@@ -78,7 +77,7 @@ public class ModelLost extends ModelBase {
 		forearm_right.cubeList.add(new ModelBox(forearm_right, 0, 24, -2.0F, 5.0F, -3.0F, 3, 3, 3, 0.0F, true));
 
 		arm_left = new ModelRenderer(this);
-		arm_left.setRotationPoint(4.0F, -14.0F, -0.5F);
+		arm_left.setRotationPoint(4.0F, -7.0F, -0.5F);
 		head_body.addChild(arm_left);
 		setRotationAngle(arm_left, 0.7854F, 0.0F, 0.0F);
 		arm_left.cubeList.add(new ModelBox(arm_left, 0, 38, -1.0F, -1.0F, -1.5F, 3, 7, 3, 0.0F, false));
@@ -132,7 +131,12 @@ public class ModelLost extends ModelBase {
 			// Bottom-up wipe for the eyes (reveals from Y = -18 UP to Y = -24)
 			float eyesBottomY = -18.0F * f5;
 			float eyesTopY = -24.0F * f5;
-			float eyesD = eyesBottomY + (eyesTopY - eyesBottomY) * this.transitionProgress;
+			
+			// The actual mouth opening is only in the lower box (-8 to -3), not the full -12 to -3 range.
+			// Because of this, the mouth visually finishes closing at ~44% transition progress (4/9).
+			// We map the eye progress to finish exactly at this 44% mark so they close in perfect unison.
+			float eyeProgress = Math.max(0.0F, (this.transitionProgress * 9.0F - 4.0F) / 5.0F);
+			float eyesD = eyesBottomY + (eyesTopY - eyesBottomY) * eyeProgress;
 			
 			// Plane equation: Y - D > 0 => B=1, D=-eyesD
 			DoubleBuffer bufferEyes = BufferUtils.createDoubleBuffer(4);
@@ -142,9 +146,9 @@ public class ModelLost extends ModelBase {
 			GL11.glClipPlane(GL11.GL_CLIP_PLANE1, bufferEyes);
 			this.eyes_open.render(f5);
 			
-			// Top-down wipe for the mouth (reveals from Y = -19 DOWN to Y = -10)
-			float mouthTopY = -19.0F * f5;
-			float mouthBottomY = -10.0F * f5;
+			// Top-down wipe for the mouth (reveals from Y = -12 DOWN to Y = -3)
+			float mouthTopY = -12.0F * f5;
+			float mouthBottomY = -3.0F * f5;
 			float mouthD = mouthTopY + (mouthBottomY - mouthTopY) * this.transitionProgress;
 			
 			// Plane equation: -Y + D > 0 => B=-1, D=mouthD
@@ -167,8 +171,8 @@ public class ModelLost extends ModelBase {
 		super.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scaleFactor, entityIn);
 		
 		// Rotate the entire upper body (torso + head + arms) horizontally based on look direction.
-		// (Vertical pitch bending is removed so the Lost stays upright)
-		this.head_body.rotateAngleY = netHeadYaw * 0.017453292F;
+		// Dampen the twist by 0.4F so the heavy torso doesn't detach/shear too far from the legs
+		this.head_body.rotateAngleY = (netHeadYaw * 0.017453292F) * 0.4F;
 		this.head_body.rotateAngleX = 0.0F;
 
 		if (entityIn instanceof EntityLost) {
@@ -186,6 +190,9 @@ public class ModelLost extends ModelBase {
 			
 			// Arm animation
 			if (isAttacking) {
+				this.arm_right.rotateAngleZ = 0.0F;
+				this.arm_left.rotateAngleZ = 0.0F;
+				
 				if (entityIn instanceof EntityLost && !entityIn.getPassengers().isEmpty()) {
 					int grabTicks = ((EntityLost) entityIn).grabTicks;
 					float progress;
@@ -207,7 +214,7 @@ public class ModelLost extends ModelBase {
 					
 					// Apply melee slash animation (double-handed downward strike)
 					if (this.swingProgress > 0.0F) {
-						float swingMath = MathHelper.sin(this.swingProgress * (float)Math.PI);
+						float swingMath = net.minecraft.util.math.MathHelper.sin(this.swingProgress * (float)Math.PI);
 						this.arm_right.rotateAngleX += swingMath * 1.8F;
 						this.arm_left.rotateAngleX += swingMath * 1.8F;
 						
@@ -216,7 +223,7 @@ public class ModelLost extends ModelBase {
 						this.arm_left.rotateAngleY = (0.2F * swingMath);
 					} else if (lost.isExcited()) {
 						// Faster variant of the inward arm motion to show excitement for a meal
-						float exciteProgress = (MathHelper.sin(ageInTicks * 0.4F) + 1.0F) / 2.0F; // 0.0 to 1.0
+						float exciteProgress = (net.minecraft.util.math.MathHelper.sin(ageInTicks * 0.4F) + 1.0F) / 2.0F; // 0.0 to 1.0
 						this.arm_right.rotateAngleY = -(0.3F * exciteProgress);
 						this.arm_left.rotateAngleY = (0.3F * exciteProgress);
 					} else {
@@ -225,16 +232,80 @@ public class ModelLost extends ModelBase {
 					}
 				}
 			} else {
-				// Resting lowered position
-				this.arm_right.rotateAngleX = 0.7854F;
-				this.arm_left.rotateAngleX = 0.7854F;
+				// Resting lowered position with subtle ambient breathing/swaying
+				float idleSway = net.minecraft.util.math.MathHelper.sin(ageInTicks * 0.06F) * 0.05F;
+				float idleSwaySlow = net.minecraft.util.math.MathHelper.cos(ageInTicks * 0.03F) * 0.05F;
+				
+				this.arm_right.rotateAngleX = 0.7854F + idleSway;
+				this.arm_left.rotateAngleX = 0.7854F - idleSway;
+				
 				this.arm_right.rotateAngleY = 0.0F;
 				this.arm_left.rotateAngleY = 0.0F;
+				
+				this.arm_right.rotateAngleZ = 0.05F + idleSwaySlow;
+				this.arm_left.rotateAngleZ = -0.05F - idleSwaySlow;
+				
+				float investigateDelt = net.minecraft.util.math.MathHelper.sin(ageInTicks * 0.015F) * net.minecraft.util.math.MathHelper.sin(ageInTicks * 0.04F);
+				float investigateTilt = Math.max(0.0F, investigateDelt) * 0.6F;
+				
+				float investigateYaw = net.minecraft.util.math.MathHelper.cos(ageInTicks * 0.025F) * net.minecraft.util.math.MathHelper.sin(ageInTicks * 0.01F) * investigateTilt * 1.2F;
+				
+				this.head_body.rotateAngleX = (headPitch * 0.017453292F) * 0.6F + (idleSwaySlow * 0.5F) + investigateTilt;
+				this.head_body.rotateAngleY += investigateYaw;
+				
+				float digCycle = net.minecraft.util.math.MathHelper.sin(ageInTicks * 0.005F);
+				if (investigateDelt > 0.3F && digCycle > 0.0F) {
+					float scratchAnim = net.minecraft.util.math.MathHelper.sin(ageInTicks * 1.5F);
+					// Right arm reaches down and scratches
+					this.arm_right.rotateAngleX = scratchAnim * 0.5F;
+					// Unbend the forearm slightly so it reaches the ground during the scratch
+					this.forearm_right.rotateAngleX = -1.0F - Math.abs(scratchAnim) * 0.3F;
+				}
 			}
 
 			// Leg animation (standard walking)
-			this.leg_right.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F) * 1.4F * limbSwingAmount;
-			this.leg_left.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F + (float)Math.PI) * 1.4F * limbSwingAmount;
+			this.leg_right.rotateAngleX = net.minecraft.util.math.MathHelper.cos(limbSwing * 0.6662F) * 1.4F * limbSwingAmount;
+			this.leg_left.rotateAngleX = net.minecraft.util.math.MathHelper.cos(limbSwing * 0.6662F + (float)Math.PI) * 1.4F * limbSwingAmount;
+
+			// Reset forearms so interpolation works from a stable base frame
+			this.forearm_right.rotateAngleX = -1.5708F;
+			this.forearm_left.rotateAngleX = -1.5708F;
+			this.forearm_right.rotationPointZ = -1.5F;
+			this.forearm_left.rotationPointZ = 0.5F;
+			this.forearm_left.rotationPointY = 6.0F; // Reset Y pivot
+
+			float layProgress = lost.prevLayDownProgress + (lost.layDownProgress - lost.prevLayDownProgress) * partialTicks;
+			
+			if (lost.deathTime > 0) {
+				layProgress = ((float)lost.deathTime + partialTicks - 1.0F) / 20.0F * 1.6F;
+				layProgress = net.minecraft.util.math.MathHelper.sqrt(layProgress);
+				if (layProgress > 1.0F) layProgress = 1.0F;
+			}
+			
+			if (layProgress > 0.0F) {
+				// Dead still, laying down on back
+				this.arm_right.rotateAngleX = this.arm_right.rotateAngleX * (1.0F - layProgress) + (0.0F) * layProgress;
+				this.arm_left.rotateAngleX = this.arm_left.rotateAngleX * (1.0F - layProgress) + (0.0F) * layProgress;
+				
+				this.arm_right.rotateAngleZ = this.arm_right.rotateAngleZ * (1.0F - layProgress) + (0.2F) * layProgress;
+				this.arm_left.rotateAngleZ = this.arm_left.rotateAngleZ * (1.0F - layProgress) + (-0.2F) * layProgress;
+				
+				this.head_body.rotateAngleX = this.head_body.rotateAngleX * (1.0F - layProgress) + (0.0F) * layProgress;
+				
+				this.leg_right.rotateAngleX = this.leg_right.rotateAngleX * (1.0F - layProgress) + (0.0F) * layProgress;
+				this.leg_left.rotateAngleX = this.leg_left.rotateAngleX * (1.0F - layProgress) + (0.0F) * layProgress;
+				
+				// Straighten forearms but leave a slight bend (-0.2F) so they aren't perfectly straight
+				this.forearm_right.rotateAngleX = this.forearm_right.rotateAngleX * (1.0F - layProgress) + (-0.2F) * layProgress;
+				this.forearm_left.rotateAngleX = this.forearm_left.rotateAngleX * (1.0F - layProgress) + (-0.2F) * layProgress;
+				
+				// Slide Z pivot to align with upper arm
+				this.forearm_right.rotationPointZ = this.forearm_right.rotationPointZ * (1.0F - layProgress) + (1.5F) * layProgress;
+				this.forearm_left.rotationPointZ = this.forearm_left.rotationPointZ * (1.0F - layProgress) + (1.5F) * layProgress;
+				
+				// The left forearm box actually starts 2 pixels lower (Y=2) than the right (Y=0), so we must slide its pivot UP by 2 pixels to connect it
+				this.forearm_left.rotationPointY = this.forearm_left.rotationPointY * (1.0F - layProgress) + (4.0F) * layProgress;
+			}
 		}
 	}
 

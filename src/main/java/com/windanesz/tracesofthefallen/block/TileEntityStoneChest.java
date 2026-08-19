@@ -35,7 +35,7 @@ public class TileEntityStoneChest extends TileEntityLockableLoot implements ITic
 	public float lidAngle;
 	public float prevLidAngle;
 	
-	public boolean isForcedOpen = false;
+	private boolean isLidOpen = false;
 
 	@Override
 	public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newSate) {
@@ -73,8 +73,8 @@ public class TileEntityStoneChest extends TileEntityLockableLoot implements ITic
 			this.customName = compound.getString("CustomName");
 		}
 		if (compound.hasKey("ForcedOpen")) {
-			this.isForcedOpen = compound.getBoolean("ForcedOpen");
-			if (this.isForcedOpen) {
+			this.isLidOpen = compound.getBoolean("ForcedOpen");
+			if (this.isLidOpen) {
 				this.openTimer = 40;
 				this.lidAngle = 1.0F;
 				this.prevLidAngle = 1.0F;
@@ -91,7 +91,7 @@ public class TileEntityStoneChest extends TileEntityLockableLoot implements ITic
 		if (this.hasCustomName()) {
 			compound.setString("CustomName", this.customName);
 		}
-		compound.setBoolean("ForcedOpen", this.isForcedOpen);
+		compound.setBoolean("ForcedOpen", this.isLidOpen);
 		return compound;
 	}
 
@@ -121,7 +121,7 @@ public class TileEntityStoneChest extends TileEntityLockableLoot implements ITic
 		this.prevLidAngle = this.lidAngle;
 		this.lidAngle = this.openTimer / 40.0F;
 
-		boolean isUsed = this.numPlayersUsing > 0 || !this.playersWaiting.isEmpty() || this.isForcedOpen;
+		boolean isUsed = this.isLidOpen;
 
 		if (isUsed && this.openTimer == 0) {
 			if (!this.world.isRemote) {
@@ -139,19 +139,18 @@ public class TileEntityStoneChest extends TileEntityLockableLoot implements ITic
 							player.openGui(TracesOfTheFallen.instance, ModGuiHandler.GUI_STONE_CHEST, this.world, this.pos.getX(), this.pos.getY(), this.pos.getZ());
 						}
 					}
-				} else {
-					// Optimistically set use count on client to prevent stutter while waiting for server sync
-					if (!this.playersWaiting.isEmpty()) {
-						this.numPlayersUsing++;
-					}
 				}
 				this.playersWaiting.clear();
 			}
 		} else if (!isUsed && this.openTimer > 0) {
 			this.openTimer--;
-			if (this.openTimer == 0) {
+			if (this.openTimer == 5) {
 				if (!this.world.isRemote) {
 					this.world.playSound(null, this.pos, ModSounds.STONE_SLIDE, SoundCategory.BLOCKS, 0.5F, this.world.rand.nextFloat() * 0.1F + 0.9F);
+				}
+			}
+			if (this.openTimer == 0) {
+				if (!this.world.isRemote) {
 					this.world.setBlockState(this.pos, this.world.getBlockState(this.pos).withProperty(BlockStoneChest.OPEN, false), 3);
 				}
 			}
@@ -200,9 +199,6 @@ public class TileEntityStoneChest extends TileEntityLockableLoot implements ITic
 
 	@Override
 	public void closeInventory(EntityPlayer player) {
-		if (this.isForcedOpen) {
-			this.setForcedOpen(false);
-		}
 		if (!player.isSpectator()) {
 			--this.numPlayersUsing;
 			this.world.addBlockEvent(this.pos, this.getBlockType(), 1, this.numPlayersUsing);
@@ -219,8 +215,12 @@ public class TileEntityStoneChest extends TileEntityLockableLoot implements ITic
 		return super.receiveClientEvent(id, type);
 	}
 
-	public void setForcedOpen(boolean forcedOpen) {
-		this.isForcedOpen = forcedOpen;
+	public boolean isLidOpen() {
+		return this.isLidOpen;
+	}
+
+	public void setLidOpen(boolean lidOpen) {
+		this.isLidOpen = lidOpen;
 		this.markDirty();
 		if (this.world != null) {
 			IBlockState state = this.world.getBlockState(this.pos);
@@ -231,25 +231,25 @@ public class TileEntityStoneChest extends TileEntityLockableLoot implements ITic
 	@Override
 	public NBTTagCompound getUpdateTag() {
 		NBTTagCompound nbt = super.getUpdateTag();
-		nbt.setBoolean("ForcedOpen", this.isForcedOpen);
+		nbt.setBoolean("ForcedOpen", this.isLidOpen);
 		return nbt;
 	}
 
 	@Override
 	public void handleUpdateTag(NBTTagCompound tag) {
 		super.handleUpdateTag(tag);
-		this.isForcedOpen = tag.getBoolean("ForcedOpen");
+		this.isLidOpen = tag.getBoolean("ForcedOpen");
 	}
 
 	@Override
 	public SPacketUpdateTileEntity getUpdatePacket() {
 		NBTTagCompound nbt = new NBTTagCompound();
-		nbt.setBoolean("ForcedOpen", this.isForcedOpen);
+		nbt.setBoolean("ForcedOpen", this.isLidOpen);
 		return new SPacketUpdateTileEntity(this.pos, 1, nbt);
 	}
 
 	@Override
 	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
-		this.isForcedOpen = pkt.getNbtCompound().getBoolean("ForcedOpen");
+		this.isLidOpen = pkt.getNbtCompound().getBoolean("ForcedOpen");
 	}
 }

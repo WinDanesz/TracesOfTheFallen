@@ -31,7 +31,6 @@ public class TileEntityStoneCompartment extends TileEntity implements ITickable,
 
     private EntityLamphead connectedLamphead = null;
     private int interactProgress = 0;
-    private final int MAX_PROGRESS = 120; // 6 seconds
     private BlockPos interactionPos = null;
     private float interactionFacing = 0;
 
@@ -45,7 +44,9 @@ public class TileEntityStoneCompartment extends TileEntity implements ITickable,
             if (connectedLamphead != null && connectedLamphead.isEntityAlive() && connectedLamphead.isFabricating()) {
                 if (currentState < 3) {
                     interactProgress++;
-                    
+
+                    // 6 seconds
+                    int MAX_PROGRESS = 120;
                     int targetState = (interactProgress * 3) / MAX_PROGRESS; // 3 steps: 1, 2, 3
                     if (targetState > 3) targetState = 3;
                     

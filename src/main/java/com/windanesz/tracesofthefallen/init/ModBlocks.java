@@ -49,6 +49,8 @@ public class ModBlocks {
 
 	public static final Block armillary = placeholder();
 	public static final Block salvaged_scaffold = placeholder();
+	public static final Block bone_mound_0 = placeholder();
+	public static final Block bone_mound_1 = placeholder();
 
 	// New decorative blocks
 	public static final Block ancestral_sifter_golden = placeholder();
@@ -91,7 +93,7 @@ public class ModBlocks {
 	public static final Block dreamcatcher = placeholder();
 	public static final Block stone_chest = placeholder();
 	public static final Block stone_chest_lid = placeholder();
-	public static final Block item_frame_wooden = placeholder();
+	public static final Block plaque = placeholder();
 	public static final Block bonepile = placeholder();
 	public static final Block hay_bed = placeholder();
 	public static final Block mozaic_pink = placeholder();
@@ -144,6 +146,8 @@ public class ModBlocks {
 		registerBlock(registry, "tent_abandoned_idol", new BlockTent(false).setLootTable(new ResourceLocation(TracesOfTheFallen.MODID, "blocks/tent_with_idol")));
 		registerBlock(registry, "armillary", new BlockArmillary());
 		registerBlock(registry, "salvaged_scaffold", new BlockSalvagedScaffold());
+		registerBlock(registry, "bone_mound_0", new BlockBoneMound());
+		registerBlock(registry, "bone_mound_1", new BlockBoneMound());
 		registerBlock(registry, "floater_brown", new BlockFloater(Material.CLOTH));
 		if (Settings.miscSettings.enableWhiteFloater) {
 			registerBlock(registry, "floater_white", new BlockFloater(Material.CLOTH));
@@ -188,7 +192,7 @@ public class ModBlocks {
 		registerBlock(registry, "stained_glass", new BlockTOTFGlass());
 		registerBlock(registry, "stained_glass_pane", new BlockTOTFGlassPane());
 		registerBlock(registry, "dreamcatcher", new BlockDreamcatcher(Material.WOOD));
-		registerBlock(registry, "item_frame_wooden", new BlockWoodenItemFrame());
+		registerBlock(registry, "plaque", new BlockWoodenItemFrame());
 		registerBlock(registry, "bonepile", new BlockBonepile());
 		registerBlock(registry, "hay_bed", new BlockHayBed(Material.WOOD).setLootTable(new ResourceLocation(TracesOfTheFallen.MODID, "blocks/hay_bed")));
 
@@ -292,7 +296,7 @@ public class ModBlocks {
 		GameRegistry.registerTileEntity(TileEntityIdolVessel.class, new ResourceLocation(TracesOfTheFallen.MODID, "idol_vessel"));
 		GameRegistry.registerTileEntity(TileEntityStoneChest.class, new ResourceLocation(TracesOfTheFallen.MODID, "stone_chest"));
 		GameRegistry.registerTileEntity(TileEntityDreamcatcher.class, new ResourceLocation(TracesOfTheFallen.MODID, "dreamcatcher"));
-		GameRegistry.registerTileEntity(TileEntityWoodenItemFrame.class, new ResourceLocation(TracesOfTheFallen.MODID, "item_frame_wooden"));
+		GameRegistry.registerTileEntity(TileEntityWoodenItemFrame.class, new ResourceLocation(TracesOfTheFallen.MODID, "plaque"));
 		GameRegistry.registerTileEntity(TileEntityBrassGasLamp.class, new ResourceLocation(TracesOfTheFallen.MODID, "brass_gas_lamp"));
 		GameRegistry.registerTileEntity(TileEntityWroughtCagedLamp.class, new ResourceLocation(TracesOfTheFallen.MODID, "wrought_caged_lamp"));
 		GameRegistry.registerTileEntity(TileEntityBrassFabricator.class, new ResourceLocation(TracesOfTheFallen.MODID, "brass_fabricator"));

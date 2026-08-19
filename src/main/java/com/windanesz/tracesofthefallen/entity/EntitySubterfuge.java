@@ -223,14 +223,7 @@ public class EntitySubterfuge extends EntityCreature {
                 this.speechCooldown--;
             }
 
-            if (!this.isAggressive() && this.speechCooldown <= 0 && this.ticksExisted % 40 == 0) {
-                EntityPlayer closest = this.world.getClosestPlayerToEntity(this, 5.0D);
-                if (closest != null && !closest.isSneaking()) {
-                    this.speak(closest);
-                    this.speechCooldown = 300; 
-                    this.setExpressionState(1, 40); // Welcome
-                }
-            }
+
 
             if (this.expressionTimer > 0) {
                 this.expressionTimer--;

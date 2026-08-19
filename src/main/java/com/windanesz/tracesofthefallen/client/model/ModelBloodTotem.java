@@ -7,9 +7,8 @@ import net.minecraft.entity.Entity;
 
 public class ModelBloodTotem extends ModelBase {
 	private final ModelRenderer blood_goblin;
-	private final ModelRenderer cube_r1;
 
-	public ModelBloodTotem() {
+    public ModelBloodTotem() {
 		textureWidth = 32;
 		textureHeight = 32;
 
@@ -20,7 +19,7 @@ public class ModelBloodTotem extends ModelBase {
 		blood_goblin.cubeList.add(new ModelBox(blood_goblin, 9, 0, -1.0F, -7.0F, -3.0F, 1, 2, 1, 0.0F, false));
 		blood_goblin.cubeList.add(new ModelBox(blood_goblin, 17, 12, -1.0F, -3.0F, -4.0F, 2, 3, 2, 0.0F, false));
 
-		cube_r1 = new ModelRenderer(this);
+        ModelRenderer cube_r1 = new ModelRenderer(this);
 		cube_r1.setRotationPoint(2.0F, -5.0F, 0.0F);
 		blood_goblin.addChild(cube_r1);
 		setRotationAngle(cube_r1, -1.5708F, 0.0F, 0.0F);

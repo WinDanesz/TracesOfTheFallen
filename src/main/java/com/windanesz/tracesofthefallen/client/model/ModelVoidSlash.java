@@ -6,11 +6,9 @@ import net.minecraft.entity.Entity;
 
 public class ModelVoidSlash extends ModelBase {
 	private final ModelRenderer quad1Parent;
-	private final ModelRenderer quad1Child;
-	private final ModelRenderer quad2Parent;
-	private final ModelRenderer quad2Child;
+    private final ModelRenderer quad2Parent;
 
-	public ModelVoidSlash() {
+    public ModelVoidSlash() {
 		textureWidth = 32;
 		textureHeight = 192;
 
@@ -18,7 +16,7 @@ public class ModelVoidSlash extends ModelBase {
 		quad1Parent.setRotationPoint(0.0F, -3.0F, -10.0F);
 		setRotationAngle(quad1Parent, 0.0F, -0.7854F, 0.0F);
 
-		quad1Child = new ModelRenderer(this);
+        ModelRenderer quad1Child = new ModelRenderer(this);
 		quad1Child.setRotationPoint(0.0F, 0.0F, 0.0F);
 		setRotationAngle(quad1Child, 0.0F, 0.0F, 0.0F);
 		quad1Child.cubeList.add(new QuadBox(quad1Child));
@@ -28,7 +26,7 @@ public class ModelVoidSlash extends ModelBase {
 		quad2Parent.setRotationPoint(0.0F, -3.0F, -10.0F);
 		setRotationAngle(quad2Parent, 0.0F, 0.7854F, 0.0F);
 
-		quad2Child = new ModelRenderer(this);
+        ModelRenderer quad2Child = new ModelRenderer(this);
 		quad2Child.setRotationPoint(0.0F, 0.0F, 0.0F);
 		setRotationAngle(quad2Child, 0.0F, 0.0F, 0.0F);
 		quad2Child.cubeList.add(new QuadBox(quad2Child));

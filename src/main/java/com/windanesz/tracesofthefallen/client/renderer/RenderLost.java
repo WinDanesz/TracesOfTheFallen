@@ -22,4 +22,26 @@ public class RenderLost extends RenderLiving<EntityLost> {
     protected ResourceLocation getEntityTexture(EntityLost entity) {
         return LOST_TEXTURES;
     }
+
+    @Override
+    protected void applyRotations(EntityLost entityLiving, float p_77043_2_, float rotationYaw, float partialTicks) {
+        super.applyRotations(entityLiving, p_77043_2_, rotationYaw, partialTicks);
+        float layProgress = entityLiving.prevLayDownProgress + (entityLiving.layDownProgress - entityLiving.prevLayDownProgress) * partialTicks;
+        
+        if (entityLiving.deathTime > 0) {
+            layProgress = ((float)entityLiving.deathTime + partialTicks - 1.0F) / 20.0F * 1.6F;
+            layProgress = net.minecraft.util.math.MathHelper.sqrt(layProgress);
+            if (layProgress > 1.0F) layProgress = 1.0F;
+        }
+
+        if (layProgress > 0.0F) {
+            net.minecraft.client.renderer.GlStateManager.translate(0.0F, layProgress * 0.1425F, layProgress * -0.95F); 
+            net.minecraft.client.renderer.GlStateManager.rotate(layProgress * 90.0F, 1.0F, 0.0F, 0.0F);
+        }
+    }
+
+    @Override
+    protected float getDeathMaxRotation(EntityLost entityLivingBaseIn) {
+        return 0.0F;
+    }
 }

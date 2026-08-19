@@ -41,8 +41,6 @@ public class RenderModPainting extends Render<EntityModPainting> {
         GlStateManager.rotate(180.0F - painting.getRotation(), 0.0F, 1.0F, 0.0F);
         GlStateManager.enableRescaleNormal();
         this.bindEntityTexture(painting);
-        //	GlStateManager.rotate(180.0F, 0.0F, 0.0F, 1.0F);
-        //	GlStateManager.translate(0, -2, 0);
         float f = 0.0625F;
         GlStateManager.scale(0.0625F, 0.0625F, 0.0625F);
 
@@ -163,26 +161,35 @@ public class RenderModPainting extends Render<EntityModPainting> {
                 bufferbuilder.pos((double) f16, (double) f18, -0.5D).tex((double) f19, (double) f21).normal(0.0F, 0.0F, -1.0F).endVertex();
                 bufferbuilder.pos((double) f16, (double) f17, -0.5D).tex((double) f19, (double) f22).normal(0.0F, 0.0F, -1.0F).endVertex();
                 bufferbuilder.pos((double) f15, (double) f17, -0.5D).tex((double) f20, (double) f22).normal(0.0F, 0.0F, -1.0F).endVertex();
-                bufferbuilder.pos((double) f15, (double) f17, 0.5D).tex(0.75D, 0.0D).normal(0.0F, 0.0F, 1.0F).endVertex();
-                bufferbuilder.pos((double) f16, (double) f17, 0.5D).tex(0.8125D, 0.0D).normal(0.0F, 0.0F, 1.0F).endVertex();
-                bufferbuilder.pos((double) f16, (double) f18, 0.5D).tex(0.8125D, 0.0625D).normal(0.0F, 0.0F, 1.0F).endVertex();
-                bufferbuilder.pos((double) f15, (double) f18, 0.5D).tex(0.75D, 0.0625D).normal(0.0F, 0.0F, 1.0F).endVertex();
-                bufferbuilder.pos((double) f15, (double) f17, -0.5D).tex(0.75D, 0.001953125D).normal(0.0F, 1.0F, 0.0F).endVertex();
-                bufferbuilder.pos((double) f16, (double) f17, -0.5D).tex(0.8125D, 0.001953125D).normal(0.0F, 1.0F, 0.0F).endVertex();
-                bufferbuilder.pos((double) f16, (double) f17, 0.5D).tex(0.8125D, 0.001953125D).normal(0.0F, 1.0F, 0.0F).endVertex();
-                bufferbuilder.pos((double) f15, (double) f17, 0.5D).tex(0.75D, 0.001953125D).normal(0.0F, 1.0F, 0.0F).endVertex();
-                bufferbuilder.pos((double) f15, (double) f18, 0.5D).tex(0.75D, 0.001953125D).normal(0.0F, -1.0F, 0.0F).endVertex();
-                bufferbuilder.pos((double) f16, (double) f18, 0.5D).tex(0.8125D, 0.001953125D).normal(0.0F, -1.0F, 0.0F).endVertex();
-                bufferbuilder.pos((double) f16, (double) f18, -0.5D).tex(0.8125D, 0.001953125D).normal(0.0F, -1.0F, 0.0F).endVertex();
-                bufferbuilder.pos((double) f15, (double) f18, -0.5D).tex(0.75D, 0.001953125D).normal(0.0F, -1.0F, 0.0F).endVertex();
-                bufferbuilder.pos((double) f15, (double) f17, 0.5D).tex(0.751953125D, 0.0D).normal(-1.0F, 0.0F, 0.0F).endVertex();
-                bufferbuilder.pos((double) f15, (double) f18, 0.5D).tex(0.751953125D, 0.0625D).normal(-1.0F, 0.0F, 0.0F).endVertex();
-                bufferbuilder.pos((double) f15, (double) f18, -0.5D).tex(0.751953125D, 0.0625D).normal(-1.0F, 0.0F, 0.0F).endVertex();
-                bufferbuilder.pos((double) f15, (double) f17, -0.5D).tex(0.751953125D, 0.0D).normal(-1.0F, 0.0F, 0.0F).endVertex();
-                bufferbuilder.pos((double) f16, (double) f17, -0.5D).tex(0.751953125D, 0.0D).normal(1.0F, 0.0F, 0.0F).endVertex();
-                bufferbuilder.pos((double) f16, (double) f18, -0.5D).tex(0.751953125D, 0.0625D).normal(1.0F, 0.0F, 0.0F).endVertex();
-                bufferbuilder.pos((double) f16, (double) f18, 0.5D).tex(0.751953125D, 0.0625D).normal(1.0F, 0.0F, 0.0F).endVertex();
-                bufferbuilder.pos((double) f16, (double) f17, 0.5D).tex(0.751953125D, 0.0D).normal(1.0F, 0.0F, 0.0F).endVertex();
+                
+                bufferbuilder.pos((double) f15, (double) f17, 0.5D).tex((double) f20, (double) f22).normal(0.0F, 0.0F, 1.0F).endVertex();
+                bufferbuilder.pos((double) f16, (double) f17, 0.5D).tex((double) f19, (double) f22).normal(0.0F, 0.0F, 1.0F).endVertex();
+                bufferbuilder.pos((double) f16, (double) f18, 0.5D).tex((double) f19, (double) f21).normal(0.0F, 0.0F, 1.0F).endVertex();
+                bufferbuilder.pos((double) f15, (double) f18, 0.5D).tex((double) f20, (double) f21).normal(0.0F, 0.0F, 1.0F).endVertex();
+                
+                float topV = f22 + f10;
+                bufferbuilder.pos((double) f15, (double) f17, -0.5D).tex((double) f20, (double) topV).normal(0.0F, 1.0F, 0.0F).endVertex();
+                bufferbuilder.pos((double) f16, (double) f17, -0.5D).tex((double) f19, (double) topV).normal(0.0F, 1.0F, 0.0F).endVertex();
+                bufferbuilder.pos((double) f16, (double) f17, 0.5D).tex((double) f19, (double) topV).normal(0.0F, 1.0F, 0.0F).endVertex();
+                bufferbuilder.pos((double) f15, (double) f17, 0.5D).tex((double) f20, (double) topV).normal(0.0F, 1.0F, 0.0F).endVertex();
+                
+                float bottomV = f21 - f10;
+                bufferbuilder.pos((double) f15, (double) f18, 0.5D).tex((double) f20, (double) bottomV).normal(0.0F, -1.0F, 0.0F).endVertex();
+                bufferbuilder.pos((double) f16, (double) f18, 0.5D).tex((double) f19, (double) bottomV).normal(0.0F, -1.0F, 0.0F).endVertex();
+                bufferbuilder.pos((double) f16, (double) f18, -0.5D).tex((double) f19, (double) bottomV).normal(0.0F, -1.0F, 0.0F).endVertex();
+                bufferbuilder.pos((double) f15, (double) f18, -0.5D).tex((double) f20, (double) bottomV).normal(0.0F, -1.0F, 0.0F).endVertex();
+                
+                float leftU = f20 + f10;
+                bufferbuilder.pos((double) f15, (double) f17, 0.5D).tex((double) leftU, (double) f22).normal(-1.0F, 0.0F, 0.0F).endVertex();
+                bufferbuilder.pos((double) f15, (double) f18, 0.5D).tex((double) leftU, (double) f21).normal(-1.0F, 0.0F, 0.0F).endVertex();
+                bufferbuilder.pos((double) f15, (double) f18, -0.5D).tex((double) leftU, (double) f21).normal(-1.0F, 0.0F, 0.0F).endVertex();
+                bufferbuilder.pos((double) f15, (double) f17, -0.5D).tex((double) leftU, (double) f22).normal(-1.0F, 0.0F, 0.0F).endVertex();
+                
+                float rightU = f19 - f10;
+                bufferbuilder.pos((double) f16, (double) f17, -0.5D).tex((double) rightU, (double) f22).normal(1.0F, 0.0F, 0.0F).endVertex();
+                bufferbuilder.pos((double) f16, (double) f18, -0.5D).tex((double) rightU, (double) f21).normal(1.0F, 0.0F, 0.0F).endVertex();
+                bufferbuilder.pos((double) f16, (double) f18, 0.5D).tex((double) rightU, (double) f21).normal(1.0F, 0.0F, 0.0F).endVertex();
+                bufferbuilder.pos((double) f16, (double) f17, 0.5D).tex((double) rightU, (double) f22).normal(1.0F, 0.0F, 0.0F).endVertex();
                 tessellator.draw();
             }
         }

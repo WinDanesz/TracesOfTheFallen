@@ -165,6 +165,31 @@ public class BlockBonepile extends Block {
 			drops.add(new ItemStack(Items.SKULL, 1, 0));
 		}
 
+		if (layer == 8) {
+			if (rand.nextDouble() < 0.005D) { // 0.5% chance
+				ItemStack[] possibleEquipment = new ItemStack[] {
+						new ItemStack(Items.IRON_HELMET),
+						new ItemStack(Items.IRON_CHESTPLATE),
+						new ItemStack(Items.IRON_LEGGINGS),
+						new ItemStack(Items.IRON_BOOTS),
+						new ItemStack(Items.IRON_SWORD),
+						new ItemStack(Items.IRON_AXE)
+				};
+				ItemStack drop = possibleEquipment[rand.nextInt(possibleEquipment.length)];
+				drop.setItemDamage(rand.nextInt((int) (drop.getMaxDamage() * 0.9)) + (int) (drop.getMaxDamage() * 0.1));
+				if (rand.nextBoolean()) {
+					drop.addEnchantment(net.minecraft.init.Enchantments.BINDING_CURSE, 1);
+				} else {
+					drop.addEnchantment(net.minecraft.init.Enchantments.VANISHING_CURSE, 1);
+				}
+				drops.add(drop);
+			}
+
+			if (rand.nextDouble() < 0.02D) { // 2% chance
+				drops.add(new ItemStack(Items.ARROW, rand.nextInt(2) + 1));
+			}
+		}
+
 		return drops;
 	}
 

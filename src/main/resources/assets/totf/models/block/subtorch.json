@@ -1,4 +1,5 @@
 {
+	"format_version": "1.9.0",
 	"credit": "Made by Foreck with Blockbench",
 	"textures": {
 		"0": "totf:blocks/subtorch",
@@ -18,8 +19,9 @@
 			}
 		},
 		{
-			"from": [6.8, 8, 6.8],
-			"to": [9.2, 10.1, 9.2],
+			"from": [9.05, 10.05, 9.05],
+			"to": [6.95, 8, 6.95],
+			"rotation": {"angle": 0, "axis": "y", "origin": [0, 0.15, 0]},
 			"faces": {
 				"north": {"uv": [7, 2, 9, 4], "rotation": 180, "texture": "#0"},
 				"east": {"uv": [7, 2, 9, 4], "rotation": 180, "texture": "#0"},

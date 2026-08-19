@@ -19,14 +19,10 @@ public class ModelGnossic extends ModelBase {
 	private final ModelRenderer cube_r2;
 	private final ModelRenderer draperyLeft;
 	private final ModelRenderer draperyLeft2;
-	private final ModelRenderer draperyLeft3;
-	private final ModelRenderer draperyLeft4;
-	private final ModelRenderer draperyRight;
+    private final ModelRenderer draperyRight;
 	private final ModelRenderer draperyRight2;
-	private final ModelRenderer draperyRight3;
-	private final ModelRenderer draperyRight4;
 
-	public ModelGnossic() {
+    public ModelGnossic() {
 		textureWidth = 128;
 		textureHeight = 128;
 
@@ -76,12 +72,12 @@ public class ModelGnossic extends ModelBase {
 		body2.addChild(draperyLeft2);
 		draperyLeft2.cubeList.add(new ModelBox(draperyLeft2, 16, 41, 0.0F, 0.0F, 0.0F, 0, 8, 8, 0.0F, false));
 
-		draperyLeft3 = new ModelRenderer(this);
+        ModelRenderer draperyLeft3 = new ModelRenderer(this);
 		draperyLeft3.setRotationPoint(5.0F, -0.5F, 8.02F);
 		body3.addChild(draperyLeft3);
 		draperyLeft3.cubeList.add(new ModelBox(draperyLeft3, 16, 48, 0.0F, 0.0F, 0.0F, 0, 8, 8, 0.0F, false));
 
-		draperyLeft4 = new ModelRenderer(this);
+        ModelRenderer draperyLeft4 = new ModelRenderer(this);
 		draperyLeft4.setRotationPoint(5.0F, -0.5F, 8.03F);
 		body4.addChild(draperyLeft4);
 		draperyLeft4.cubeList.add(new ModelBox(draperyLeft4, 16, 55, 0.0F, 0.0F, 0.0F, 0, 8, 8, 0.0F, false));
@@ -96,12 +92,12 @@ public class ModelGnossic extends ModelBase {
 		body2.addChild(draperyRight2);
 		draperyRight2.cubeList.add(new ModelBox(draperyRight2, 0, 41, 0.0F, 0.0F, 0.0F, 0, 8, 8, 0.0F, false));
 
-		draperyRight3 = new ModelRenderer(this);
+        ModelRenderer draperyRight3 = new ModelRenderer(this);
 		draperyRight3.setRotationPoint(-6.0F, -0.5F, 8.02F);
 		body3.addChild(draperyRight3);
 		draperyRight3.cubeList.add(new ModelBox(draperyRight3, 0, 48, 0.0F, 0.0F, 0.0F, 0, 8, 8, 0.0F, false));
 
-		draperyRight4 = new ModelRenderer(this);
+        ModelRenderer draperyRight4 = new ModelRenderer(this);
 		draperyRight4.setRotationPoint(-6.0F, -0.5F, 8.03F);
 		body4.addChild(draperyRight4);
 		draperyRight4.cubeList.add(new ModelBox(draperyRight4, 0, 55, 0.0F, 0.0F, 0.0F, 0, 8, 8, 0.0F, false));

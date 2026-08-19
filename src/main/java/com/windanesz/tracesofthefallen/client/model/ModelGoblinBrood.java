@@ -7,12 +7,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 
 public class ModelGoblinBrood extends ModelGoblinBase {
-	private final ModelRenderer ear_left;
-	private final ModelRenderer ear_left_r1;
-	private final ModelRenderer ear_right;
-	private final ModelRenderer ear_right_r1;
 
-	public ModelGoblinBrood() {
+    public ModelGoblinBrood() {
 		textureWidth = 48;
 		textureHeight = 48;
 
@@ -27,21 +23,21 @@ public class ModelGoblinBrood extends ModelGoblinBase {
 		head.cubeList.add(new ModelBox(head, 22, 26, -1.0F, -3.0F, -6.0F, 2, 3, 3, 0.0F, false));
 		head.cubeList.add(new ModelBox(head, 24, 0, -2.9503F, -6.0F, -2.9929F, 6, 6, 6, 0.1F, false));
 
-		ear_left = new ModelRenderer(this);
+        ModelRenderer ear_left = new ModelRenderer(this);
 		ear_left.setRotationPoint(3.0497F, -3.0F, -1.9929F);
 		head.addChild(ear_left);
 
-		ear_left_r1 = new ModelRenderer(this);
+        ModelRenderer ear_left_r1 = new ModelRenderer(this);
 		ear_left_r1.setRotationPoint(-0.0497F, -1.0F, -0.0071F);
 		ear_left.addChild(ear_left_r1);
 		setRotationAngle(ear_left_r1, 0.0F, 0.48F, 0.0F);
 		ear_left_r1.cubeList.add(new ModelBox(ear_left_r1, 18, -6, 0.0F, -1.0F, 0.0F, 0, 4, 6, 0.0F, false));
 
-		ear_right = new ModelRenderer(this);
+        ModelRenderer ear_right = new ModelRenderer(this);
 		ear_right.setRotationPoint(-2.9503F, -3.0F, -1.9929F);
 		head.addChild(ear_right);
 
-		ear_right_r1 = new ModelRenderer(this);
+        ModelRenderer ear_right_r1 = new ModelRenderer(this);
 		ear_right_r1.setRotationPoint(-0.0488F, -1.0F, -0.0067F);
 		ear_right.addChild(ear_right_r1);
 		setRotationAngle(ear_right_r1, 0.0F, -0.48F, 0.0F);

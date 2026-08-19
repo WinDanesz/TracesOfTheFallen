@@ -12,7 +12,8 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 @Mod.EventBusSubscriber(modid = TracesOfTheFallen.MODID)
 public class ModSounds {
 	private ModSounds() {}
-
+	public static final SoundEvent SPECTER_AMBIENT = createSound("entity.specter_ambient");
+	public static final SoundEvent SPECTER_HOSTILE = createSound("entity.specter_hostile");
 	public static final SoundEvent SPECTER_HURT = createSound("entity.specter_hurt");
 	public static final SoundEvent GOBLIN_HURT = createSound("entity.goblin_hurt");
 	public static final SoundEvent GOBLIN_IDLE = createSound("entity.goblin_idle");
@@ -41,6 +42,8 @@ public class ModSounds {
 
 	@SubscribeEvent
 	public static void register(RegistryEvent.Register<SoundEvent> event) {
+		event.getRegistry().register(SPECTER_AMBIENT);
+		event.getRegistry().register(SPECTER_HOSTILE);
 		event.getRegistry().register(SPECTER_HURT);
 		event.getRegistry().register(GOBLIN_HURT);
 		event.getRegistry().register(GOBLIN_IDLE);

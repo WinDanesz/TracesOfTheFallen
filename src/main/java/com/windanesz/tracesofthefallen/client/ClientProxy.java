@@ -56,12 +56,14 @@ public class ClientProxy extends CommonProxy {
 	private static final ResourceLocation WIND_SPRITE = new ResourceLocation(TracesOfTheFallen.MODID, "particle/wind");
 	private static final ResourceLocation CRUMBS_SPRITE = new ResourceLocation(TracesOfTheFallen.MODID, "particle/crumbs");
 	private static final ResourceLocation GOD_SLAP_SPRITE = new ResourceLocation(TracesOfTheFallen.MODID, "particle/god_slap");
+	private static final ResourceLocation SUBTORCH_SPRITE = new ResourceLocation(TracesOfTheFallen.MODID, "particle/subtorch");
 	private static TextureAtlasSprite incenseLineSprite;
 	private static TextureAtlasSprite puddleBloodSprite;
 	private static TextureAtlasSprite frostSprite;
 	private static TextureAtlasSprite windSprite;
 	private static TextureAtlasSprite crumbsSprite;
 	private static TextureAtlasSprite godSlapSprite;
+	private static TextureAtlasSprite subtorchSprite;
 
 	@Override
 	public void preInit(FMLPreInitializationEvent event) {
@@ -176,10 +178,15 @@ public class ClientProxy extends CommonProxy {
 		windSprite = event.getMap().registerSprite(WIND_SPRITE);
 		crumbsSprite = event.getMap().registerSprite(CRUMBS_SPRITE);
 		godSlapSprite = event.getMap().registerSprite(GOD_SLAP_SPRITE);
+		subtorchSprite = event.getMap().registerSprite(SUBTORCH_SPRITE);
 	}
 
 	public static TextureAtlasSprite getGodSlapSprite() {
 		return godSlapSprite;
+	}
+
+	public static TextureAtlasSprite getSubtorchSprite() {
+		return subtorchSprite;
 	}
 
 	public static TextureAtlasSprite getIncenseLineSprite() {
@@ -414,6 +421,11 @@ public class ClientProxy extends CommonProxy {
 	@Override
 	public void spawnGodSlapParticle(World world, double x, double y, double z) {
 		Minecraft.getMinecraft().effectRenderer.addEffect(new ParticleGodSlap(world, x, y, z));
+	}
+
+	@Override
+	public void spawnSubtorchParticle(World world, double x, double y, double z, double motionX, double motionY, double motionZ) {
+		Minecraft.getMinecraft().effectRenderer.addEffect(new ParticleSubtorch(world, x, y, z, motionX, motionY, motionZ));
 	}
 
 	/**

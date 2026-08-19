@@ -1,10 +1,18 @@
 {
     "variants": {
-        "facing=down":  { "model": "totf:guillotine_base" },
-        "facing=up":    { "model": "totf:guillotine_base", "x": 180 },
-        "facing=north": { "model": "totf:guillotine_base", "x": 90 },
-        "facing=south": { "model": "totf:guillotine_base", "x": 90, "y": 180 },
-        "facing=west":  { "model": "totf:guillotine_base", "x": 90, "y": 270 },
-        "facing=east":  { "model": "totf:guillotine_base", "x": 90, "y": 90 }
+        "face=ceiling,facing=north": { "model": "totf:guillotine_base", "y": 180 },
+        "face=ceiling,facing=south": { "model": "totf:guillotine_base" },
+        "face=ceiling,facing=west":  { "model": "totf:guillotine_base", "y": 90 },
+        "face=ceiling,facing=east":  { "model": "totf:guillotine_base", "y": 270 },
+
+        "face=floor,facing=north":   { "model": "totf:guillotine_base", "x": 180 },
+        "face=floor,facing=south":   { "model": "totf:guillotine_base", "x": 180, "y": 180 },
+        "face=floor,facing=west":    { "model": "totf:guillotine_base", "x": 180, "y": 270 },
+        "face=floor,facing=east":    { "model": "totf:guillotine_base", "x": 180, "y": 90 },
+
+        "face=wall,facing=north":    { "model": "totf:guillotine_base", "x": 90, "y": 180 },
+        "face=wall,facing=south":    { "model": "totf:guillotine_base", "x": 90 },
+        "face=wall,facing=west":     { "model": "totf:guillotine_base", "x": 90, "y": 90 },
+        "face=wall,facing=east":     { "model": "totf:guillotine_base", "x": 90, "y": 270 }
     }
 }

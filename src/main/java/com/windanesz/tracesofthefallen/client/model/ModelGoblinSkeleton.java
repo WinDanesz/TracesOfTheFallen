@@ -13,9 +13,7 @@ import net.minecraft.util.math.MathHelper;
 public class ModelGoblinSkeleton extends ModelBase {
 	private final ModelRenderer body;
 	private final ModelRenderer head;
-	private final ModelRenderer cube_r1;
-	private final ModelRenderer cube_r2;
-	private final ModelRenderer leg_left;
+    private final ModelRenderer leg_left;
 	private final ModelRenderer leg_right;
 	private final ModelRenderer arm_left;
 	private final ModelRenderer arm_right;
@@ -33,13 +31,13 @@ public class ModelGoblinSkeleton extends ModelBase {
 		body.addChild(head);
 		head.cubeList.add(new ModelBox(head, 0, 0, -3.0F, -6.0F, -3.0F, 6, 6, 6, 0.0F, false));
 
-		cube_r1 = new ModelRenderer(this);
+        ModelRenderer cube_r1 = new ModelRenderer(this);
 		cube_r1.setRotationPoint(3.0F, -4.0F, -2.0F);
 		head.addChild(cube_r1);
 		setRotationAngle(cube_r1, 0.0F, 0.3927F, 0.0F);
 		cube_r1.cubeList.add(new ModelBox(cube_r1, 18, -6, 0.0F, -2.0F, 0.0F, 0, 4, 6, 0.0F, true));
 
-		cube_r2 = new ModelRenderer(this);
+        ModelRenderer cube_r2 = new ModelRenderer(this);
 		cube_r2.setRotationPoint(-3.0F, -4.0F, -2.0F);
 		head.addChild(cube_r2);
 		setRotationAngle(cube_r2, 0.0F, -0.3927F, 0.0F);
