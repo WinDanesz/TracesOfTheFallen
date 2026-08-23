@@ -40,6 +40,8 @@ public class ModItems {
 	public static final Item chitin_chestplate = placeholder();
 	public static final Item chitin_leggings = placeholder();
 	public static final Item chitin_boots = placeholder();
+	public static final Item chitin = placeholder();
+	public static final Item minecrawler_gland = placeholder();
 	public static final Item silk_rope = placeholder();
 	public static final Item silk_spindle = placeholder();
 	public static final Item incense = placeholder();
@@ -68,6 +70,8 @@ public class ModItems {
 	public static final Item painting_wizardry = placeholder();
 	public static final Item painting_subterfuge = placeholder();
 	public static final Item painting_resting_mischief = placeholder();
+	public static final Item painting_idyillic_steppes = placeholder();
+	public static final Item painting_sifting_winds = placeholder();
 	public static final Item stone_chest = placeholder();
 	public static final Item floater_brown = placeholder();
 	public static final Item floater_white = placeholder();
@@ -76,8 +80,7 @@ public class ModItems {
 	public static final Item hay_bed = placeholder();
 	public static final Item subtorch = placeholder();
 	public static final Item goblin_nest = placeholder();
-	public static final Item bone_mound_0 = placeholder();
-	public static final Item bone_mound_1 = placeholder();
+	public static final Item bone_mound = placeholder();
 	@Nonnull
 	@SuppressWarnings("ConstantConditions")
 	private static <T> T placeholder() {
@@ -103,6 +106,8 @@ public class ModItems {
 		registerItem(registry, "painting_wizardry", new ItemModPainting(ItemModPainting.EnumPainting.PAINTING_WIZARDRY).setCreativeTab(ModCreativeTab.TOTF_TAB));
 		registerItem(registry, "painting_subterfuge", new ItemModPainting(ItemModPainting.EnumPainting.PAINTING_SUBTERFUGE).setCreativeTab(ModCreativeTab.TOTF_TAB));
 		registerItem(registry, "painting_resting_mischief", new ItemModPainting(ItemModPainting.EnumPainting.PAINTING_RESTING_MISCHIEF).setCreativeTab(ModCreativeTab.TOTF_TAB));
+		registerItem(registry, "painting_idyillic_steppes", new ItemModPainting(ItemModPainting.EnumPainting.PAINTING_IDYLLIC_STEPPES).setCreativeTab(ModCreativeTab.TOTF_TAB));
+		registerItem(registry, "painting_sifting_winds", new ItemModPainting(ItemModPainting.EnumPainting.PAINTING_SIFTING_WINDS).setCreativeTab(ModCreativeTab.TOTF_TAB));
 
 		registerItem(registry, "mysterious_fur", new ItemMysteriousFur().setCreativeTab(ModCreativeTab.TOTF_TAB));
 		registerItem(registry, "silk_rope", new Item().setCreativeTab(ModCreativeTab.TOTF_TAB));
@@ -116,6 +121,7 @@ public class ModItems {
 		registerItem(registry, "bundle_of_lost_letters", new ItemBundleOfLostLetters().setCreativeTab(ModCreativeTab.TOTF_TAB));
 		registerItem(registry, "veiled_mask", new ItemVeiledMask().setCreativeTab(ModCreativeTab.TOTF_TAB));
 		registerItem(registry, "chitin", new Item().setCreativeTab(ModCreativeTab.TOTF_TAB));
+		registerItem(registry, "minecrawler_gland", new Item().setCreativeTab(ModCreativeTab.TOTF_TAB));
 		registerItem(registry, "chitin_helmet", new ChitinArmor(EntityEquipmentSlot.HEAD).setCreativeTab(ModCreativeTab.TOTF_TAB));
 		registerItem(registry, "chitin_chestplate", new ChitinArmor(EntityEquipmentSlot.CHEST).setCreativeTab(ModCreativeTab.TOTF_TAB));
 		registerItem(registry, "chitin_leggings", new ChitinArmor(EntityEquipmentSlot.LEGS).setCreativeTab(ModCreativeTab.TOTF_TAB));
@@ -156,8 +162,7 @@ public class ModItems {
 		registerItemBlock(registry, ModBlocks.tent_abandoned);
 		registerItemBlock(registry, ModBlocks.tent_abandoned_idol);
 		registerItemBlock(registry, ModBlocks.salvaged_scaffold);
-		registerItemBlock(registry, ModBlocks.bone_mound_0);
-		registerItemBlock(registry, ModBlocks.bone_mound_1);
+		registerItemBlock(registry, ModBlocks.bone_mound);
 		
 		// Register armillary with custom ItemBlock for tooltip
 		ItemBlock armillaryItem = new ItemBlockArmillary(ModBlocks.armillary);
@@ -252,6 +257,9 @@ public class ModItems {
 		registerItemBlock(registry, ModBlocks.dancoil);
 		registerItemBlock(registry, ModBlocks.spinning_wheel);
 		registerItemBlock(registry, ModBlocks.subtorch);
+
+		registerItemBlock(registry, ModBlocks.crawler_wax_wet);
+		registerItemBlock(registry, ModBlocks.crawler_wax_block);
 	}
 
 	public static void registerOreDictionary() {

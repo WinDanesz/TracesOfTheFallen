@@ -95,6 +95,7 @@ public class EntityGnossic extends EntityMob {
 
     @Override
     protected void initEntityAI() {
+        this.tasks.addTask(0, new net.minecraft.entity.ai.EntityAISwimming(this));
         this.tasks.addTask(1, new AIGnossicDrain(this));
         this.tasks.addTask(2, new AIGnossicApproach(this));
         this.tasks.addTask(3, new AIGnossicStalk(this));
@@ -278,8 +279,8 @@ public class EntityGnossic extends EntityMob {
 
     @Override
     public boolean attackEntityFrom(DamageSource source, float amount) {
-        if (source == DamageSource.IN_WALL) {
-            return false; // Immune to suffocation while noclipping
+        if (source == DamageSource.IN_WALL || source == DamageSource.DROWN) {
+            return false; 
         }
         return super.attackEntityFrom(source, amount);
     }

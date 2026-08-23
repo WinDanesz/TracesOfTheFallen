@@ -31,7 +31,9 @@ public class ItemModPainting extends Item {
 		PAINTING_WHEEL("painting_wheel", 16, 32, 48, 0, true),
 		PAINTING_WIZARDRY("painting_wizardry", 32, 48, 32, 80, true),
 		PAINTING_SUBTERFUGE("painting_subterfuge", 16, 32, 64, 64, true),
-		PAINTING_RESTING_MISCHIEF("painting_resting_mischief", 48, 32, 0, 128, false);
+		PAINTING_RESTING_MISCHIEF("painting_resting_mischief", 48, 32, 0, 128, false),
+		PAINTING_IDYLLIC_STEPPES("painting_idyillic_steppes", 64, 32, 0, 224, false),
+		PAINTING_SIFTING_WINDS("painting_sifting_winds", 96, 48, 128, 0, false);
 
 		public final String name;
 		public final int sizeX;
@@ -76,6 +78,10 @@ public class ItemModPainting extends Item {
 					return ModItems.painting_subterfuge;
 				case PAINTING_RESTING_MISCHIEF:
 					return ModItems.painting_resting_mischief;
+				case PAINTING_IDYLLIC_STEPPES:
+					return ModItems.painting_idyillic_steppes;
+				case PAINTING_SIFTING_WINDS:
+					return ModItems.painting_sifting_winds;
 				default:
 					return null;
 			}

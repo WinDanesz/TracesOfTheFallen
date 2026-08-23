@@ -49,8 +49,7 @@ public class ModBlocks {
 
 	public static final Block armillary = placeholder();
 	public static final Block salvaged_scaffold = placeholder();
-	public static final Block bone_mound_0 = placeholder();
-	public static final Block bone_mound_1 = placeholder();
+	public static final Block bone_mound = placeholder();
 
 	// New decorative blocks
 	public static final Block ancestral_sifter_golden = placeholder();
@@ -122,6 +121,9 @@ public class ModBlocks {
 	public static final Block spinning_wheel = placeholder();
 	public static final Block subtorch = placeholder();
 
+	public static final Block crawler_wax_wet = placeholder();
+	public static final Block crawler_wax_block = placeholder();
+
 	@Nonnull
 	@SuppressWarnings("ConstantConditions")
 	private static <T> T placeholder() {
@@ -146,8 +148,7 @@ public class ModBlocks {
 		registerBlock(registry, "tent_abandoned_idol", new BlockTent(false).setLootTable(new ResourceLocation(TracesOfTheFallen.MODID, "blocks/tent_with_idol")));
 		registerBlock(registry, "armillary", new BlockArmillary());
 		registerBlock(registry, "salvaged_scaffold", new BlockSalvagedScaffold());
-		registerBlock(registry, "bone_mound_0", new BlockBoneMound());
-		registerBlock(registry, "bone_mound_1", new BlockBoneMound());
+		registerBlock(registry, "bone_mound", new BlockBoneMound());
 		registerBlock(registry, "floater_brown", new BlockFloater(Material.CLOTH));
 		if (Settings.miscSettings.enableWhiteFloater) {
 			registerBlock(registry, "floater_white", new BlockFloater(Material.CLOTH));
@@ -239,6 +240,9 @@ public class ModBlocks {
 		registerBlock(registry, "dancoil", new BlockDanCoil(Material.IRON));
 		registerBlock(registry, "spinning_wheel", new BlockSpinningWheel(Material.WOOD));
 		registerBlock(registry, "subtorch", new BlockSubtorch());
+
+		registerBlock(registry, "crawler_wax_wet", new BlockCrawlerWaxWet());
+		registerBlock(registry, "crawler_wax_block", new BlockCrawlerWaxBlock());
 	}
 
 	public static void registerBlock(IForgeRegistry<Block> registry, String name, Block block) {

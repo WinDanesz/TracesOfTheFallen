@@ -26,7 +26,8 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 public class ChitinArmor extends ItemArmor {
-	private static final ModelBiped CHITIN_MODEL = new ModelChitinArmor();
+	@SideOnly(Side.CLIENT)
+	private ModelBiped model;
 
 	private static final ArmorMaterial CHITIN_MATERIAL = EnumHelper.addArmorMaterial(
 			"CHITIN",
@@ -63,22 +64,26 @@ public class ChitinArmor extends ItemArmor {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public ModelBiped getArmorModel(EntityLivingBase entityLiving, ItemStack itemStack, EntityEquipmentSlot armorSlot, ModelBiped original) {
-		CHITIN_MODEL.setModelAttributes(original);
-		CHITIN_MODEL.setLivingAnimations(entityLiving, 0.0F, 0.0F, 0.0F);
+		if (model == null) {
+			model = new ModelChitinArmor();
+		}
 
-		CHITIN_MODEL.setVisible(false);
-		CHITIN_MODEL.bipedHead.showModel = armorSlot == EntityEquipmentSlot.HEAD;
-		CHITIN_MODEL.bipedHeadwear.showModel = false;
-		CHITIN_MODEL.bipedBody.showModel = armorSlot == EntityEquipmentSlot.CHEST || armorSlot == EntityEquipmentSlot.LEGS;
-		CHITIN_MODEL.bipedRightArm.showModel = armorSlot == EntityEquipmentSlot.CHEST;
-		CHITIN_MODEL.bipedLeftArm.showModel = armorSlot == EntityEquipmentSlot.CHEST;
-		CHITIN_MODEL.bipedRightLeg.showModel = armorSlot == EntityEquipmentSlot.LEGS || armorSlot == EntityEquipmentSlot.FEET;
-		CHITIN_MODEL.bipedLeftLeg.showModel = armorSlot == EntityEquipmentSlot.LEGS || armorSlot == EntityEquipmentSlot.FEET;
-		CHITIN_MODEL.isSneak = entityLiving.isSneaking();
-		CHITIN_MODEL.isRiding = entityLiving.isRiding();
-		CHITIN_MODEL.isChild = entityLiving.isChild();
+		model.setModelAttributes(original);
+		model.setLivingAnimations(entityLiving, 0.0F, 0.0F, 0.0F);
 
-		return CHITIN_MODEL;
+		model.setVisible(false);
+		model.bipedHead.showModel = armorSlot == EntityEquipmentSlot.HEAD;
+		model.bipedHeadwear.showModel = false;
+		model.bipedBody.showModel = armorSlot == EntityEquipmentSlot.CHEST || armorSlot == EntityEquipmentSlot.LEGS;
+		model.bipedRightArm.showModel = armorSlot == EntityEquipmentSlot.CHEST;
+		model.bipedLeftArm.showModel = armorSlot == EntityEquipmentSlot.CHEST;
+		model.bipedRightLeg.showModel = armorSlot == EntityEquipmentSlot.LEGS || armorSlot == EntityEquipmentSlot.FEET;
+		model.bipedLeftLeg.showModel = armorSlot == EntityEquipmentSlot.LEGS || armorSlot == EntityEquipmentSlot.FEET;
+		model.isSneak = entityLiving.isSneaking();
+		model.isRiding = entityLiving.isRiding();
+		model.isChild = entityLiving.isChild();
+
+		return model;
 	}
 
 	@Override

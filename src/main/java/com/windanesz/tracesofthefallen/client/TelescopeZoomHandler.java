@@ -10,6 +10,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.event.DrawBlockHighlightEvent;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
@@ -100,6 +101,13 @@ public final class TelescopeZoomHandler {
 		}
 
 		currentZoom += (targetZoom - currentZoom) * ZOOM_INTERPOLATION;
+	}
+
+	@SubscribeEvent
+	public static void onDrawBlockHighlight(DrawBlockHighlightEvent event) {
+		if (isMountedInFirstPerson(Minecraft.getMinecraft())) {
+			event.setCanceled(true);
+		}
 	}
 
 	private static boolean isScrollZoomActive(Minecraft minecraft) {

@@ -81,6 +81,7 @@ public class EntitySubterfuge extends EntityCreature {
 
     @Override
     protected void initEntityAI() {
+        this.tasks.addTask(0, new net.minecraft.entity.ai.EntityAISwimming(this));
         this.tasks.addTask(1, new EntityAISubterfugeGodslap(this));
         this.tasks.addTask(2, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
         this.tasks.addTask(3, new EntityAILookIdle(this));
@@ -152,6 +153,7 @@ public class EntitySubterfuge extends EntityCreature {
     @Override
     public boolean attackEntityFrom(DamageSource source, float amount) {
         if (this.isHiddenState()) return false;
+        if (source == DamageSource.DROWN) return false;
         
         if (!this.world.isRemote) {
             if (source.getTrueSource() instanceof EntityLivingBase) {

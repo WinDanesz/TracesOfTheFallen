@@ -1,0 +1,6 @@
+{
+    "parent": "block/cube_all",
+    "textures": {
+        "all": "totf:blocks/crawler_wax_block"
+    }
+}

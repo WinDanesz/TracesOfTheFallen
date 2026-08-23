@@ -63,6 +63,7 @@ public class EntityGoblin extends EntityMob implements IEntityOwnable {
 
 	@Override
 	protected void initEntityAI() {
+		this.tasks.addTask(0, new EntityAISwimming(this));
 		this.tasks.addTask(0, new GoblinAIPickupIdol(this));
 		this.tasks.addTask(1, new GoblinAIFleeTickingBomb(this));
 		this.tasks.addTask(1, new GoblinAIBroodDeliverBomb(this));

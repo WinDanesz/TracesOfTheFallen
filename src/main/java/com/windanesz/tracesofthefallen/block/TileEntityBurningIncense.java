@@ -22,7 +22,7 @@ import java.util.List;
 
 public abstract class TileEntityBurningIncense extends TileEntity implements ITickable {
 
-	private static final int DEFAULT_MIST_COLOR = 0xD7E3E5;
+	private static final int DEFAULT_MIST_COLOR = 0xFFFFFF;
 	public static final String ITEM_DATA_TAG = "BurningIncenseData";
 	private int remainingBurnTime = -1;
 	private int totalBurnTime = -1;

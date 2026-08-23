@@ -53,6 +53,7 @@ public class EntityMinecrawler extends EntityMob {
 
     @Override
     protected void initEntityAI() {
+        this.tasks.addTask(0, new EntityAISwimming(this));
         this.tasks.addTask(2, new AIMinecrawlerAttack(this, 1.2D));
         this.tasks.addTask(3, new AIMinecrawlerFollowRiderOwner(this, 1.3D, 6.0F, 3.0F));
         this.tasks.addTask(5, new EntityAIWanderAvoidWater(this, 1.0D));
@@ -94,17 +95,17 @@ public class EntityMinecrawler extends EntityMob {
 
     @Override
     protected SoundEvent getAmbientSound() {
-        return SoundEvents.ENTITY_ZOMBIE_AMBIENT;
+        return SoundEvents.ENTITY_SPIDER_AMBIENT;
     }
 
     @Override
     protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
-        return SoundEvents.ENTITY_ZOMBIE_HURT;
+        return SoundEvents.ENTITY_SPIDER_HURT;
     }
 
     @Override
     protected SoundEvent getDeathSound() {
-        return SoundEvents.ENTITY_ZOMBIE_DEATH;
+        return SoundEvents.ENTITY_SPIDER_DEATH;
     }
 
     @Override
