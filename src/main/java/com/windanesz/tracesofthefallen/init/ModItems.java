@@ -199,6 +199,7 @@ public class ModItems {
 		ItemBlock porcelainPotItem = new ItemBlockPorcelainPiece(ModBlocks.porcelain_pot);
 		porcelainPotItem.setRegistryName(ModBlocks.porcelain_pot.getRegistryName());
 		registry.register(porcelainPotItem);
+		registerItemBlock(registry, ModBlocks.clay_pot);
 		registerItemBlock(registry, ModBlocks.rope_mossy);
 		registerItemBlock(registry, ModBlocks.rope_mossy_hook);
 		registerItemBlock(registry, ModBlocks.desk_bell);

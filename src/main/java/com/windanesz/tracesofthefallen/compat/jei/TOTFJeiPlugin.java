@@ -25,6 +25,10 @@ public class TOTFJeiPlugin implements IModPlugin {
         for (Block block : hiddenBlocks) {
             hideIfPresent(blacklist, block);
         }
+
+        registry.addRecipeCatalyst(new ItemStack(ModBlocks.brass_fabricator), mezz.jei.api.recipe.VanillaRecipeCategoryUid.CRAFTING);
+        registry.addRecipeClickArea(com.windanesz.tracesofthefallen.client.gui.GuiBrassFabricator.class, 89, 35, 24, 17, mezz.jei.api.recipe.VanillaRecipeCategoryUid.CRAFTING);
+        registry.getRecipeTransferRegistry().addRecipeTransferHandler(com.windanesz.tracesofthefallen.inventory.ContainerBrassFabricator.class, mezz.jei.api.recipe.VanillaRecipeCategoryUid.CRAFTING, 0, 9, 18, 36);
     }
 
     private void hideIfPresent(IIngredientBlacklist blacklist, Block block) {

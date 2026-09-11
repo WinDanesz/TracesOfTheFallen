@@ -73,6 +73,7 @@ public class ModBlocks {
 	public static final Block porcelain_set = placeholder();
 	public static final Block porcelain_cup = placeholder();
 	public static final Block porcelain_pot = placeholder();
+	public static final Block clay_pot = placeholder();
 	public static final Block rope_mossy = placeholder();
 	public static final Block rope_mossy_hook = placeholder();
 	public static final Block desk_bell = placeholder();
@@ -184,6 +185,7 @@ public class ModBlocks {
 		registerBlock(registry, "porcelain_set", new BlockPorcelainSet(Material.ROCK));
 		registerBlock(registry, "porcelain_cup", new BlockPorcelainPiece(Material.ROCK, BlockPorcelainPiece.PieceType.CUP, new AxisAlignedBB(0.375D, 0.0D, 0.375D, 0.6875D, 0.25D, 0.6875D)));
 		registerBlock(registry, "porcelain_pot", new BlockPorcelainPiece(Material.ROCK, BlockPorcelainPiece.PieceType.POT, new AxisAlignedBB(0.375D, 0.0D, 0.1875D, 0.75D, 0.4375D, 0.8125D)));
+		registerBlock(registry, "clay_pot", new BlockClayPot());
 		registerBlock(registry, "rope_mossy", new BlockDecoration(Material.WOOD).setBoundingBox(new AxisAlignedBB(0.4375D, 0.0D, 0.4375D, 0.5625D, 1.0D, 0.5625D)));
 		registerBlock(registry, "rope_mossy_hook", new BlockDecoration(Material.WOOD).setBoundingBox(new AxisAlignedBB(0.4375D, 0.0D, 0.4375D, 0.5625D, 1.0D, 0.5625D)));
 		registerBlock(registry, "desk_bell", new BlockDeskBell(Material.IRON).setBoundingBox(new AxisAlignedBB(0.3125D, 0.0D, 0.3125D, 0.6875D, 0.35625D, 0.6875D)));
@@ -310,6 +312,7 @@ public class ModBlocks {
 		GameRegistry.registerTileEntity(TileEntityDanCoil.class, new ResourceLocation(TracesOfTheFallen.MODID, "dancoil"));
 		GameRegistry.registerTileEntity(TileEntitySpinningWheel.class, new ResourceLocation(TracesOfTheFallen.MODID, "spinning_wheel"));
 		GameRegistry.registerTileEntity(TileEntityArmillary.class, new ResourceLocation(TracesOfTheFallen.MODID, "armillary"));
+		GameRegistry.registerTileEntity(TileEntityClayPot.class, new ResourceLocation(TracesOfTheFallen.MODID, "clay_pot"));
 	}
 }
 

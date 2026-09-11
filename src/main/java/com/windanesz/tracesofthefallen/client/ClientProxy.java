@@ -409,6 +409,23 @@ public class ClientProxy extends CommonProxy {
 	}
 
 	@Override
+	public void spawnCrumbsParticlesFromPacket(double x, double y, double z, int count, double spreadX, double spreadY, double spreadZ) {
+		World world = Minecraft.getMinecraft().world;
+		if (world == null) {
+			return;
+		}
+		for (int i = 0; i < count; i++) {
+			double px = x + (world.rand.nextDouble() - 0.5D) * 2.0D * spreadX;
+			double py = y + (world.rand.nextDouble() - 0.5D) * 2.0D * spreadY;
+			double pz = z + (world.rand.nextDouble() - 0.5D) * 2.0D * spreadZ;
+			double mx = (world.rand.nextDouble() - 0.5D) * 0.15D;
+			double my = 0.05D + world.rand.nextDouble() * 0.1D;
+			double mz = (world.rand.nextDouble() - 0.5D) * 0.15D;
+			spawnCrumbsParticle(world, px, py, pz, mx, my, mz);
+		}
+	}
+
+	@Override
 	public void spawnHeavyCrumbsParticle(World world, double x, double y, double z, double motionX, double motionY, double motionZ) {
 		Minecraft.getMinecraft().effectRenderer.addEffect(new ParticleCrumbs(world, x, y, z, motionX, motionY, motionZ, 1.0F));
 	}
@@ -421,6 +438,15 @@ public class ClientProxy extends CommonProxy {
 	@Override
 	public void spawnGodSlapParticle(World world, double x, double y, double z) {
 		Minecraft.getMinecraft().effectRenderer.addEffect(new ParticleGodSlap(world, x, y, z));
+	}
+
+	@Override
+	public void spawnGodSlapParticleFromPacket(double x, double y, double z) {
+		World world = Minecraft.getMinecraft().world;
+		if (world == null) {
+			return;
+		}
+		spawnGodSlapParticle(world, x, y, z);
 	}
 
 	@Override

@@ -41,6 +41,16 @@ public class BlockWoodenItemFrame extends BlockContainer {
 		this.setSoundType(SoundType.WOOD);
 	}
 
+    @Override
+    public IBlockState withRotation(IBlockState state, net.minecraft.util.Rotation rot) {
+        return state.withProperty(FACING, rot.rotate(state.getValue(FACING)));
+    }
+
+    @Override
+    public IBlockState withMirror(IBlockState state, net.minecraft.util.Mirror mirrorIn) {
+        return state.withRotation(mirrorIn.toRotation(state.getValue(FACING)));
+    }
+
 	@Override
 	public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
 		switch (state.getValue(FACING)) {

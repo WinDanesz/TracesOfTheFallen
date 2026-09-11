@@ -53,6 +53,16 @@ public class BlockDecoration extends Block implements IProxyMainBlock {
     }
 
     @Override
+    public IBlockState withRotation(IBlockState state, net.minecraft.util.Rotation rot) {
+        return state.withProperty(FACING, rot.rotate(state.getValue(FACING)));
+    }
+
+    @Override
+    public IBlockState withMirror(IBlockState state, net.minecraft.util.Mirror mirrorIn) {
+        return state.withRotation(mirrorIn.toRotation(state.getValue(FACING)));
+    }
+
+    @Override
     public boolean canPlaceBlockAt(World worldIn, BlockPos pos) {
         if (!super.canPlaceBlockAt(worldIn, pos)) {
             return false;

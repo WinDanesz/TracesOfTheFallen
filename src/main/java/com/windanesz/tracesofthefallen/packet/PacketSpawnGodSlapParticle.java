@@ -3,7 +3,6 @@ package com.windanesz.tracesofthefallen.packet;
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
-import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
@@ -36,13 +35,8 @@ public class PacketSpawnGodSlapParticle implements IMessage {
 	public static class Handler implements IMessageHandler<PacketSpawnGodSlapParticle, IMessage> {
 		@Override
 		public IMessage onMessage(PacketSpawnGodSlapParticle message, MessageContext ctx) {
-			Minecraft.getMinecraft().addScheduledTask(() -> {
-				World world = Minecraft.getMinecraft().world;
-				if (world != null) {
-                    System.out.println("[Godslap] Packet received on client! Spawning at " + message.x + ", " + message.y + ", " + message.z);
-					TracesOfTheFallen.proxy.spawnGodSlapParticle(world, message.x, message.y, message.z);
-				}
-			});
+			Minecraft.getMinecraft().addScheduledTask(() ->
+					TracesOfTheFallen.proxy.spawnGodSlapParticleFromPacket(message.x, message.y, message.z));
 			return null;
 		}
 	}

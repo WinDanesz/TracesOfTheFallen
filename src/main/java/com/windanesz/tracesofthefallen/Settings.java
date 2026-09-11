@@ -176,6 +176,21 @@ public class Settings {
         @Config.Name("Reject Liquid in 3x3 Area")
         @Config.Comment("If true, structures won't spawn if any liquid blocks are present in the 3x3 placement area. Default: true")
         public boolean rejectLiquidIn3x3 = true;
+
+		@Config.Name("Multipart Structure Min Y")
+		@Config.Comment("Lowest Y level for the multipart structure's floor. Default: 20")
+		@Config.RangeInt(min = 1, max = 245)
+		public int multipartStructureMinY = 20;
+
+		@Config.Name("Multipart Structure Max Y")
+		@Config.Comment("Highest Y level for the multipart structure's floor. Default: 45")
+		@Config.RangeInt(min = 1, max = 245)
+		public int multipartStructureMaxY = 40;
+
+		@Config.Name("Trap Room Chance")
+		@Config.Comment("Chance (0.0 - 1.0) for an eligible corridor piece in the multipart dungeon to generate a row of Guillotine traps triggered by hidden pressure plates in the floor. Default: 0.2 (20%)")
+		@Config.RangeDouble(min = 0.0, max = 1.0)
+		public double trapRoomChance = 0.2D;
     }
 
     public static class MiscSettings {

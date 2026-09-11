@@ -65,6 +65,7 @@ public class TileEntityTent extends TileEntityLostLoot implements ITickable {
 				goblin = new EntityGoblin(world);
 			}
 			goblin.setPosition(pos.getX() + 0.5, pos.getY() + 0.3, pos.getZ() + 0.5);
+			goblin.enablePersistence();
 			world.spawnEntity(goblin);
 		}
 

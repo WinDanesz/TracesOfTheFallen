@@ -48,4 +48,9 @@ public class ItemPrimitiveMace extends ItemSword {
 		super.addInformation(stack, worldIn, tooltip, flagIn);
 		ClientProxy.addMultiLineDescription(tooltip, TextFormatting.GRAY + "" + TextFormatting.ITALIC + I18n.format("item.totf:primitive_mace.desc"));
 	}
+
+	@Override
+	public int getItemBurnTime(ItemStack itemStack) {
+		return 0;
+	}
 }

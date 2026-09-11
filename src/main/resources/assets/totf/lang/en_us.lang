@@ -219,6 +219,7 @@ tile.totf:bricks_stone_wall.name=Stone Brick Wall
 tile.totf:bush_crate.name=Crate with Bush
 tile.totf:censer.name=Censer
 tile.totf:censer_1.name=Censer
+tile.totf:clay_pot.name=Clay Pot
 tile.totf:desk_bell.name=Desk Bell
 tile.totf:dioptra.name=Dioptra
 tile.totf:dreamcatcher.desc2=This effect is stronger during the night

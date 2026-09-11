@@ -50,6 +50,9 @@ public class CommonProxy {
 	public void spawnCrumbsParticle(World world, double x, double y, double z, double motionX, double motionY, double motionZ) {
 	}
 
+	public void spawnCrumbsParticlesFromPacket(double x, double y, double z, int count, double spreadX, double spreadY, double spreadZ) {
+	}
+
 	public void spawnHeavyCrumbsParticle(World world, double x, double y, double z, double motionX, double motionY, double motionZ) {
 	}
 
@@ -57,6 +60,9 @@ public class CommonProxy {
 	}
 
 	public void spawnGodSlapParticle(World world, double x, double y, double z) {
+	}
+
+	public void spawnGodSlapParticleFromPacket(double x, double y, double z) {
 	}
 
 	public void spawnSubtorchParticle(World world, double x, double y, double z, double motionX, double motionY, double motionZ) {

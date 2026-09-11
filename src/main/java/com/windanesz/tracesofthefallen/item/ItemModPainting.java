@@ -167,12 +167,14 @@ public class ItemModPainting extends Item {
 	@Override
 	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
 		super.addInformation(stack, worldIn, tooltip, flagIn);
-		NBTTagCompound nbt = stack.getTagCompound();
-		if (nbt != null && nbt.hasKey("Owner")) {
-			NBTTagCompound ownerTag = nbt.getCompoundTag("Owner");
-			if (ownerTag.hasKey("PlayerName", 8)) {
-				String ownerName = ownerTag.getString("PlayerName");
-				tooltip.add(ownerName);
+		if (this.painting.renderPlayer) {
+			NBTTagCompound nbt = stack.getTagCompound();
+			if (nbt != null && nbt.hasKey("Owner")) {
+				NBTTagCompound ownerTag = nbt.getCompoundTag("Owner");
+				if (ownerTag.hasKey("PlayerName", 8)) {
+					String ownerName = ownerTag.getString("PlayerName");
+					tooltip.add(ownerName);
+				}
 			}
 		}
 	}

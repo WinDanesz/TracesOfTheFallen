@@ -59,6 +59,7 @@ public class TracesOfTheFallen implements ForgeChunkManager.LoadingCallback {
 		ModBlocks.registerTileEntities();
 		ModLootTables.register();
 		HauntingCapability.register();
+		com.windanesz.tracesofthefallen.world.structure.StructureRegistry.registerStructures();
 	}
 
 
@@ -81,6 +82,7 @@ public class TracesOfTheFallen implements ForgeChunkManager.LoadingCallback {
 		GameRegistry.registerWorldGenerator(new WorldGenAbandonedTent(), 1);
 		GameRegistry.registerWorldGenerator(new WorldGenAbandonedTentWithTotem(), 1);
 		GameRegistry.registerWorldGenerator(new WorldGenBushCrate(), 1);
+		GameRegistry.registerWorldGenerator(new com.windanesz.tracesofthefallen.world.structure.WorldGenMultipartDelegate(), 1);
 
 		proxy.registerColorHandlers();
 		PacketHandler.initPackets();

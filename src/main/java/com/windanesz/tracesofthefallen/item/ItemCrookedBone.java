@@ -42,4 +42,9 @@ public class ItemCrookedBone extends ItemSword {
 		super.addInformation(stack, worldIn, tooltip, flagIn);
 		tooltip.add(TextFormatting.GRAY + "" + TextFormatting.ITALIC + I18n.format("item.totf:crooked_bone.desc"));
 	}
+
+	@Override
+	public int getItemBurnTime(ItemStack itemStack) {
+		return 0;
+	}
 }

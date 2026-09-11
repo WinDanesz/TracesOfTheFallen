@@ -3,7 +3,6 @@ package com.windanesz.tracesofthefallen.packet;
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
-import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
@@ -50,20 +49,8 @@ public class PacketSpawnCrumbs implements IMessage {
 	public static class Handler implements IMessageHandler<PacketSpawnCrumbs, IMessage> {
 		@Override
 		public IMessage onMessage(PacketSpawnCrumbs message, MessageContext ctx) {
-			Minecraft.getMinecraft().addScheduledTask(() -> {
-				World world = Minecraft.getMinecraft().world;
-				if (world != null) {
-					for (int i = 0; i < message.count; i++) {
-						double px = message.x + (world.rand.nextDouble() - 0.5D) * 2.0D * message.spreadX;
-						double py = message.y + (world.rand.nextDouble() - 0.5D) * 2.0D * message.spreadY;
-						double pz = message.z + (world.rand.nextDouble() - 0.5D) * 2.0D * message.spreadZ;
-						double mx = (world.rand.nextDouble() - 0.5D) * 0.15D;
-						double my = 0.05D + world.rand.nextDouble() * 0.1D;
-						double mz = (world.rand.nextDouble() - 0.5D) * 0.15D;
-						TracesOfTheFallen.proxy.spawnCrumbsParticle(world, px, py, pz, mx, my, mz);
-					}
-				}
-			});
+			Minecraft.getMinecraft().addScheduledTask(() -> TracesOfTheFallen.proxy.spawnCrumbsParticlesFromPacket(
+					message.x, message.y, message.z, message.count, message.spreadX, message.spreadY, message.spreadZ));
 			return null;
 		}
 	}

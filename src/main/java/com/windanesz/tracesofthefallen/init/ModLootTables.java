@@ -33,7 +33,6 @@ public class ModLootTables {
 		LootTableList.register(new ResourceLocation(TracesOfTheFallen.MODID, "blocks/bush_crate"));
 		LootTableList.register(new ResourceLocation(TracesOfTheFallen.MODID, "blocks/grave"));
 		LootTableList.register(new ResourceLocation(TracesOfTheFallen.MODID, "blocks/hay_bed"));
-		LootTableList.register(new ResourceLocation(TracesOfTheFallen.MODID, "blocks/goblin_nest"));
 		
 		// Entity loot tables
 		LootTableList.register(new ResourceLocation(TracesOfTheFallen.MODID, "entities/goblin"));
