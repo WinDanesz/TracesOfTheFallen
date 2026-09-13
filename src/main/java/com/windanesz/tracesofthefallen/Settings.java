@@ -191,6 +191,40 @@ public class Settings {
 		@Config.Comment("Chance (0.0 - 1.0) for an eligible corridor piece in the multipart dungeon to generate a row of Guillotine traps triggered by hidden pressure plates in the floor. Default: 0.2 (20%)")
 		@Config.RangeDouble(min = 0.0, max = 1.0)
 		public double trapRoomChance = 0.2D;
+
+		@Config.Name("Minecrawler Lair Frequency")
+		@Config.Comment("1-in-N chance per chunk for a small underground Minecrawler lair to generate. Lower is more common. Default: 120")
+		public int minecrawlerLairFrequency = 120;
+
+		@Config.Name("Minecrawler Lair Min Y")
+		@Config.Comment("Lowest Y level a Minecrawler lair's floor can generate at. Default: 15")
+		@Config.RangeInt(min = 1, max = 245)
+		public int minecrawlerLairMinY = 15;
+
+		@Config.Name("Minecrawler Lair Max Y")
+		@Config.Comment("Highest Y level a Minecrawler lair's floor can generate at. Default: 45")
+		@Config.RangeInt(min = 1, max = 245)
+		public int minecrawlerLairMaxY = 45;
+
+		@Config.Name("Minecrawler Lair Min Crawlers")
+		@Config.Comment("Minimum number of persistent Minecrawlers spawned in a lair. Default: 2")
+		@Config.RangeInt(min = 0, max = 16)
+		public int minecrawlerLairMinCrawlers = 2;
+
+		@Config.Name("Minecrawler Lair Max Crawlers")
+		@Config.Comment("Maximum number of persistent Minecrawlers spawned in a lair. Default: 3")
+		@Config.RangeInt(min = 0, max = 16)
+		public int minecrawlerLairMaxCrawlers = 3;
+
+		@Config.Name("Minecrawler Lair Min Cocoons")
+		@Config.Comment("Minimum number of Minecrawler Cocoon loot props placed in a lair. Default: 1")
+		@Config.RangeInt(min = 0, max = 16)
+		public int minecrawlerLairMinCocoons = 1;
+
+		@Config.Name("Minecrawler Lair Max Cocoons")
+		@Config.Comment("Maximum number of Minecrawler Cocoon loot props placed in a lair. Default: 3")
+		@Config.RangeInt(min = 0, max = 16)
+		public int minecrawlerLairMaxCocoons = 3;
     }
 
     public static class MiscSettings {
@@ -307,6 +341,20 @@ public class Settings {
 		@Config.Comment("Burn time in ticks added to censers and incense burners by one incense stick. Default: 12000 (10 minutes)")
 		@Config.RangeInt(min = 20, max = 72000)
 		public int incenseStickBurnDuration = 12000;
+
+		@Config.Name("Skeleton Flower Aura Effects")
+		@Config.Comment({
+				"List of potion effects applied every second to living entities within radius of a totf:skeleton_flower block.",
+				"Format per entry:",
+				"<potion_effect>|<amplifier>|<duration_ticks>",
+				"Examples:",
+				"minecraft:poison|1|120",
+				"totf:serenity|2|60"
+		})
+		public String[] skeletonFlowerAuraEffects = {
+				"minecraft:poison|1|120",
+				"totf:serenity|2|60"
+		};
 
 		@Config.Name("Incense Potion Effect Whitelist")
 		@Config.Comment("Potion registry names that can be infused into burning censers and incense burners.")
@@ -953,6 +1001,84 @@ public class Settings {
 		@Config.Comment("Max health for Subterfuge. Default: 1000.0")
 		@Config.RangeDouble(min = 1.0D, max = 10000.0D)
 		public double subterfugeMaxHealth = 1000.0D;
+
+		@Config.Name("Dungeon Slug Spawn Weight")
+		@Config.Comment("Spawn weight for the Dungeon Slug. Default: 10 (0 to disable)")
+		public int dungeonSlugSpawnWeight = 10;
+
+		@Config.Name("Dungeon Slug Spawn Min Group")
+		@Config.Comment("Minimum group size for the Dungeon Slug. Default: 1")
+		public int dungeonSlugSpawnMinGroup = 1;
+
+		@Config.Name("Dungeon Slug Spawn Max Group")
+		@Config.Comment("Maximum group size for the Dungeon Slug. Default: 2")
+		public int dungeonSlugSpawnMaxGroup = 2;
+
+		@Config.Name("Dungeon Slug Biome Whitelist")
+		@Config.Comment("Biomes where Dungeon Slug can spawn (empty = all allowed). Format: modid:biome")
+		public String[] dungeonSlugBiomeWhitelist = new String[0];
+
+		@Config.Name("Dungeon Slug Biome Blacklist")
+		@Config.Comment("Biomes where Dungeon Slug cannot spawn. Format: modid:biome")
+		public String[] dungeonSlugBiomeBlacklist = new String[0];
+
+		@Config.Name("Dungeon Slug Max Health")
+		@Config.Comment("Max health for the Dungeon Slug. Default: 16.0")
+		@Config.RangeDouble(min = 1.0D, max = 10000.0D)
+		public double dungeonSlugMaxHealth = 16.0D;
+
+		@Config.Name("Dungeon Slug Attack Damage")
+		@Config.Comment("Melee attack damage for the Dungeon Slug once revealed. Default: 4.0")
+		@Config.RangeDouble(min = 0.0D, max = 10000.0D)
+		public double dungeonSlugAttackDamage = 4.0D;
+
+		@Config.Name("Ink Slug Spawn Weight")
+		@Config.Comment("Spawn weight for the Ink Slug. Default: 8 (0 to disable)")
+		public int inkSlugSpawnWeight = 8;
+
+		@Config.Name("Ink Slug Spawn Min Group")
+		@Config.Comment("Minimum group size for the Ink Slug. Default: 1")
+		public int inkSlugSpawnMinGroup = 1;
+
+		@Config.Name("Ink Slug Spawn Max Group")
+		@Config.Comment("Maximum group size for the Ink Slug. Default: 1")
+		public int inkSlugSpawnMaxGroup = 1;
+
+		@Config.Name("Ink Slug Biome Whitelist")
+		@Config.Comment("Biomes where Ink Slug can spawn (empty = all allowed). Format: modid:biome")
+		public String[] inkSlugBiomeWhitelist = new String[0];
+
+		@Config.Name("Ink Slug Biome Blacklist")
+		@Config.Comment("Biomes where Ink Slug cannot spawn. Format: modid:biome")
+		public String[] inkSlugBiomeBlacklist = new String[0];
+
+		@Config.Name("Ink Slug Max Health")
+		@Config.Comment("Max health for the Ink Slug. Default: 20.0")
+		@Config.RangeDouble(min = 1.0D, max = 10000.0D)
+		public double inkSlugMaxHealth = 20.0D;
+
+		@Config.Name("Ink Slug Attack Damage")
+		@Config.Comment("Melee attack damage for the Ink Slug once revealed. Default: 5.0")
+		@Config.RangeDouble(min = 0.0D, max = 10000.0D)
+		public double inkSlugAttackDamage = 5.0D;
+
+		@Config.Name("Slug Attach Damage Per Tick")
+		@Config.Comment("Damage dealt to the victim on each attach-damage tick while a Slug is latched onto their back. Default: 2.0")
+		@Config.RangeDouble(min = 0.0D, max = 1000.0D)
+		public double slugAttachDamageAmount = 2.0D;
+
+		@Config.Name("Slug Attach Damage Interval")
+		@Config.Comment("Ticks between each attach-damage hit while a Slug is latched onto a victim's back. Default: 20 (1 second)")
+		public int slugAttachDamageInterval = 20;
+
+		@Config.Name("Slug Max Attach Duration")
+		@Config.Comment("Maximum ticks a Slug can stay latched onto a victim before automatically letting go and fighting normally. Default: 300 (15 seconds)")
+		public int slugMaxAttachDuration = 300;
+
+		@Config.Name("Slug Climb Speed")
+		@Config.Comment("Movement speed while a Slug is crawling on walls or ceilings. Default: 0.04")
+		@Config.RangeDouble(min = 0.01D, max = 5.0D)
+		public double slugClimbSpeed = 0.04D;
 	}
 	public static class HauntingSettings {
 		@Config.Name("Haunting Reduced by Burying Remains")

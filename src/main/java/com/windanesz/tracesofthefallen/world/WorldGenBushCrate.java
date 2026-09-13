@@ -17,7 +17,7 @@ public class WorldGenBushCrate extends WorldGenBase {
 
 	@Override
 	public int getFrequency() {
-		return Settings.worldgenSettings.remainsChance;
+		return Settings.worldgenSettings.bushWithCrateFrequency;
 	}
 
 	@Override
@@ -39,7 +39,7 @@ public class WorldGenBushCrate extends WorldGenBase {
 
 
 	@Override
-	public int getRandomSeedModifier() {
-		return 553471;
+	public long getRandomSeedModifier() {
+		return 56962401L;
 	}
 }

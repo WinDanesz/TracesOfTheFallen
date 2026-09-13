@@ -38,7 +38,7 @@ public class WorldGenAbandonedTentWithTotem extends WorldGenBase {
 	}
 
 	@Override
-	public int getRandomSeedModifier() {
-		return 271371;
+	public long getRandomSeedModifier() {
+		return 73142842L;
 	}
 }

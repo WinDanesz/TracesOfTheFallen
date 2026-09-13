@@ -3,9 +3,7 @@ package com.windanesz.tracesofthefallen;
 import com.windanesz.tracesofthefallen.capability.HauntingCapability;
 import com.windanesz.tracesofthefallen.command.CommandGetHauntingProgress;
 import com.windanesz.tracesofthefallen.command.CommandSetHauntingProgress;
-import com.windanesz.tracesofthefallen.entity.EntityFrostling;
-import com.windanesz.tracesofthefallen.entity.EntityGnossic;
-import com.windanesz.tracesofthefallen.entity.EntitySidhe;
+import com.windanesz.tracesofthefallen.entity.*;
 import com.windanesz.tracesofthefallen.init.ModBlocks;
 import com.windanesz.tracesofthefallen.init.ModItems;
 import com.windanesz.tracesofthefallen.init.ModLootTables;
@@ -82,6 +80,7 @@ public class TracesOfTheFallen implements ForgeChunkManager.LoadingCallback {
 		GameRegistry.registerWorldGenerator(new WorldGenAbandonedTent(), 1);
 		GameRegistry.registerWorldGenerator(new WorldGenAbandonedTentWithTotem(), 1);
 		GameRegistry.registerWorldGenerator(new WorldGenBushCrate(), 1);
+		GameRegistry.registerWorldGenerator(new WorldGenMinecrawlerLair(), 1);
 		GameRegistry.registerWorldGenerator(new com.windanesz.tracesofthefallen.world.structure.WorldGenMultipartDelegate(), 1);
 
 		proxy.registerColorHandlers();
@@ -94,6 +93,10 @@ public class TracesOfTheFallen implements ForgeChunkManager.LoadingCallback {
 		List<ResourceLocation> gnossicBlack = Arrays.asList(Settings.toResourceLocations(Settings.mobSettings.gnossicBiomeBlacklist));
 		List<ResourceLocation> frostlingWhite = Arrays.asList(Settings.toResourceLocations(Settings.mobSettings.frostlingBiomeWhitelist));
 		List<ResourceLocation> frostlingBlack = Arrays.asList(Settings.toResourceLocations(Settings.mobSettings.frostlingBiomeBlacklist));
+		List<ResourceLocation> dungeonSlugWhite = Arrays.asList(Settings.toResourceLocations(Settings.mobSettings.dungeonSlugBiomeWhitelist));
+		List<ResourceLocation> dungeonSlugBlack = Arrays.asList(Settings.toResourceLocations(Settings.mobSettings.dungeonSlugBiomeBlacklist));
+		List<ResourceLocation> inkSlugWhite = Arrays.asList(Settings.toResourceLocations(Settings.mobSettings.inkSlugBiomeWhitelist));
+		List<ResourceLocation> inkSlugBlack = Arrays.asList(Settings.toResourceLocations(Settings.mobSettings.inkSlugBiomeBlacklist));
 
 		for (Biome biome : ForgeRegistries.BIOMES) {
 			if (biome != null && !biome.getSpawnableList(EnumCreatureType.MONSTER).isEmpty()) {
@@ -107,6 +110,12 @@ public class TracesOfTheFallen implements ForgeChunkManager.LoadingCallback {
 				}
 				if (Settings.mobSettings.frostlingSpawnWeight > 0 && (biome.getTempCategory() == Biome.TempCategory.COLD || biome.isSnowyBiome()) && isValidBiome(biomeName, frostlingWhite, frostlingBlack)) {
 					EntityRegistry.addSpawn(EntityFrostling.class, Settings.mobSettings.frostlingSpawnWeight, Settings.mobSettings.frostlingSpawnMinGroup, Settings.mobSettings.frostlingSpawnMaxGroup, EnumCreatureType.MONSTER, biome);
+				}
+				if (Settings.mobSettings.dungeonSlugSpawnWeight > 0 && isValidBiome(biomeName, dungeonSlugWhite, dungeonSlugBlack)) {
+					EntityRegistry.addSpawn(EntityDungeonSlug.class, Settings.mobSettings.dungeonSlugSpawnWeight, Settings.mobSettings.dungeonSlugSpawnMinGroup, Settings.mobSettings.dungeonSlugSpawnMaxGroup, EnumCreatureType.MONSTER, biome);
+				}
+				if (Settings.mobSettings.inkSlugSpawnWeight > 0 && isValidBiome(biomeName, inkSlugWhite, inkSlugBlack)) {
+					EntityRegistry.addSpawn(EntityInkSlug.class, Settings.mobSettings.inkSlugSpawnWeight, Settings.mobSettings.inkSlugSpawnMinGroup, Settings.mobSettings.inkSlugSpawnMaxGroup, EnumCreatureType.MONSTER, biome);
 				}
 			}
 		}

@@ -39,7 +39,7 @@ public class WorldGenPotionCrate extends WorldGenBase {
 
 
 	@Override
-	public int getRandomSeedModifier() {
-		return 123441;
+	public long getRandomSeedModifier() {
+		return -286975692L;
 	}
 }

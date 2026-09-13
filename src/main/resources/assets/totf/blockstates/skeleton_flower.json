@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "totf:skeleton_flower" },
+    "facing=east":  { "model": "totf:skeleton_flower", "y": 90 },
+    "facing=south": { "model": "totf:skeleton_flower", "y": 180 },
+    "facing=west":  { "model": "totf:skeleton_flower", "y": 270 }
+  }
+}

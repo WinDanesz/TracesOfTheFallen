@@ -39,7 +39,7 @@ public class WorldGenLostCargo extends WorldGenBase {
 
 
 	@Override
-	public int getRandomSeedModifier() {
-		return 64371;
+	public long getRandomSeedModifier() {
+		return -537870822L;
 	}
 }

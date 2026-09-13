@@ -6,6 +6,9 @@ import com.windanesz.tracesofthefallen.entity.EntityGoblinNest;
 import com.windanesz.tracesofthefallen.init.ModBlocks;
 import net.minecraft.block.BlockStairs;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityList;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -156,11 +159,11 @@ public class ComponentNbtPiece extends StructureComponentTemplate {
             
             if (shouldSpawn) {
                 String entityName = function.replace("_chance", "").replace("_guaranteed", "").replace("spawn_", "");
-                net.minecraft.entity.Entity entity = net.minecraft.entity.EntityList.createEntityByIDFromName(new ResourceLocation("totf", entityName), worldIn);
+                Entity entity = EntityList.createEntityByIDFromName(new ResourceLocation("totf", entityName), worldIn);
                 if (entity != null) {
                     entity.setLocationAndAngles(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 0.0F, 0.0F);
-                    if (entity instanceof net.minecraft.entity.EntityLiving) {
-                        ((net.minecraft.entity.EntityLiving)entity).enablePersistence();
+                    if (entity instanceof EntityLiving) {
+                        ((EntityLiving)entity).enablePersistence();
                     }
                     worldIn.spawnEntity(entity);
                 }
@@ -173,6 +176,46 @@ public class ComponentNbtPiece extends StructureComponentTemplate {
                 String lootTable = function.replace("chest_", "");
                 ((net.minecraft.tileentity.TileEntityChest)tileentity).setLootTable(new ResourceLocation("minecraft", "chests/" + lootTable), rand.nextLong());
             }
+        } else if (function.startsWith("skeleton_corpse_")) {
+            placeSkeletonCorpse(worldIn, rand, pos, function.substring("skeleton_corpse_".length()));
+        }
+    }
+
+    /**
+     * Places a totf:skeleton_corpse from a structure data marker. The marker's suffix is either
+     * "ground" (lying flat, random fine rotation) or "sit_<north|south|east|west>" (leaning against
+     * the wall on that template-local side, converted into world space via this piece's rotation).
+     * The held-item loot pool is rolled once here and baked into the tile entity so it's deterministic
+     * and matches what's rendered on the model - it is never re-rolled when the block is later broken.
+     */
+    private void placeSkeletonCorpse(World worldIn, Random rand, BlockPos pos, String variant) {
+        if (!(ModBlocks.skeleton_corpse instanceof BlockSkeletonCorpse)) {
+            return;
+        }
+        BlockSkeletonCorpse block = (BlockSkeletonCorpse) ModBlocks.skeleton_corpse;
+
+        IBlockState state;
+        int fineRotation = 0;
+        if (variant.equals("ground")) {
+            state = block.getDefaultState().withProperty(BlockSkeletonCorpse.POSE, BlockSkeletonCorpse.Pose.GROUND);
+            fineRotation = rand.nextInt(16);
+        } else if (variant.startsWith("sit_")) {
+            EnumFacing localFacing = EnumFacing.byName(variant.substring("sit_".length()));
+            if (localFacing == null) {
+                return;
+            }
+            EnumFacing worldFacing = this.rotation.rotate(localFacing);
+            state = block.getDefaultState().withProperty(BlockSkeletonCorpse.POSE, BlockSkeletonCorpse.Pose.SIT).withProperty(BlockSkeletonCorpse.FACING, worldFacing);
+        } else {
+            return;
+        }
+
+        worldIn.setBlockState(pos, state, 2);
+        TileEntity te = worldIn.getTileEntity(pos);
+        if (te instanceof TileEntitySkeletonCorpse) {
+            TileEntitySkeletonCorpse corpse = (TileEntitySkeletonCorpse) te;
+            corpse.setRotation(fineRotation);
+            corpse.setHeldItem(block.rollHeldItem(worldIn, rand));
         }
     }
 

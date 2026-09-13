@@ -174,8 +174,10 @@ public class ModelMinecrawler extends ModelBase {
         float phase = limbSwing * gaitFrequency;
         float groupA = MathHelper.cos(phase) * legSwingAmount;
         float groupB = MathHelper.cos(phase + (float) Math.PI) * legSwingAmount;
-        float liftA = MathHelper.abs(MathHelper.sin(phase)) * legSwingAmount;
-        float liftB = MathHelper.abs(MathHelper.sin(phase + (float) Math.PI)) * legSwingAmount;
+        // Half-wave rectified: only the tripod currently in recovery swing lifts, the other
+        // stays grounded for its power stroke. liftA and liftB are never both > 0 at once.
+        float liftA = Math.max(0.0F, MathHelper.sin(phase)) * legSwingAmount;
+        float liftB = Math.max(0.0F, MathHelper.sin(phase + (float) Math.PI)) * legSwingAmount;
 
         // Tripod-like 6-leg gait: front-left/right-mid/rear-left alternate with front-right/left-mid/rear-right.
         arm_left.rotateAngleX += groupA * 0.65F - liftA * 0.15F;

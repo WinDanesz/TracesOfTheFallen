@@ -124,6 +124,9 @@ public class ModBlocks {
 
 	public static final Block crawler_wax_wet = placeholder();
 	public static final Block crawler_wax_block = placeholder();
+	public static final Block minecrawler_cocoon = placeholder();
+	public static final Block skeleton_corpse = placeholder();
+	public static final Block skeleton_flower = placeholder();
 
 	@Nonnull
 	@SuppressWarnings("ConstantConditions")
@@ -245,6 +248,13 @@ public class ModBlocks {
 
 		registerBlock(registry, "crawler_wax_wet", new BlockCrawlerWaxWet());
 		registerBlock(registry, "crawler_wax_block", new BlockCrawlerWaxBlock());
+		registerBlock(registry, "minecrawler_cocoon", new BlockTOFT(Material.WEB)
+				.setLootTable(new ResourceLocation(TracesOfTheFallen.MODID, "blocks/minecrawler_cocoon")).setHardness(0.5F));
+		registerBlock(registry, "skeleton_corpse", new BlockSkeletonCorpse(Material.CIRCUITS)
+				.setLootTable(new ResourceLocation(TracesOfTheFallen.MODID, "blocks/skeleton_corpse")));
+		registerBlock(registry, "skeleton_flower", new BlockSkeletonFlower(Material.CIRCUITS)
+				.setLootTable(new ResourceLocation(TracesOfTheFallen.MODID, "blocks/skeleton_flower"))
+				.setBoundingBox(new AxisAlignedBB(0, 0, 0, 1, 1.0 / 3.0, 1)));
 	}
 
 	public static void registerBlock(IForgeRegistry<Block> registry, String name, Block block) {
@@ -292,6 +302,7 @@ public class ModBlocks {
 		GameRegistry.registerTileEntity(TileEntityTelescope.class, new ResourceLocation(TracesOfTheFallen.MODID, "telescope"));
 		GameRegistry.registerTileEntity(TileEntityBalance.class, new ResourceLocation(TracesOfTheFallen.MODID, "balance"));
 		GameRegistry.registerTileEntity(TileEntityRemains.class, new ResourceLocation(TracesOfTheFallen.MODID, "remains"));
+		GameRegistry.registerTileEntity(TileEntitySkeletonCorpse.class, new ResourceLocation(TracesOfTheFallen.MODID, "skeleton_corpse"));
 		GameRegistry.registerTileEntity(TileEntityStoneCircle.class, new ResourceLocation(TracesOfTheFallen.MODID, "stone_circle"));
 		GameRegistry.registerTileEntity(TileEntityTent.class, new ResourceLocation(TracesOfTheFallen.MODID, "tent"));
 		GameRegistry.registerTileEntity(TileEntityIncense.class, new ResourceLocation(TracesOfTheFallen.MODID, "incense"));

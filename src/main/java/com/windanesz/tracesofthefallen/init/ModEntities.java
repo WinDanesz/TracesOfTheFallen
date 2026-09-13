@@ -90,6 +90,8 @@ public class ModEntities {
 		registry.register(createEntry(EntityGnossic.class, "gnossic", TrackingType.LIVING).egg(0x2a2a2a, 0x6e1b1b).build());
 		registry.register(createEntry(EntitySubterfuge.class, "subterfuge", TrackingType.LIVING).egg(0x4a148c, 0xe1bee7).build());
 		registry.register(createEntry(EntityLost.class, "lost", TrackingType.LIVING).egg(0xffb6c1, 0x8b4513).build());
+		registry.register(createEntry(EntityDungeonSlug.class, "dungeon_slug", TrackingType.LIVING).egg(0x4a5d3a, 0x8fa876).build());
+		registry.register(createEntry(EntityInkSlug.class, "ink_slug", TrackingType.LIVING).egg(0x1c1c24, 0x5a4a6e).build());
 	}
 
 	/**

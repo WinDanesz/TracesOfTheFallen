@@ -33,11 +33,16 @@ public class ModLootTables {
 		LootTableList.register(new ResourceLocation(TracesOfTheFallen.MODID, "blocks/bush_crate"));
 		LootTableList.register(new ResourceLocation(TracesOfTheFallen.MODID, "blocks/grave"));
 		LootTableList.register(new ResourceLocation(TracesOfTheFallen.MODID, "blocks/hay_bed"));
+		LootTableList.register(new ResourceLocation(TracesOfTheFallen.MODID, "blocks/minecrawler_cocoon"));
+		LootTableList.register(new ResourceLocation(TracesOfTheFallen.MODID, "blocks/skeleton_corpse"));
+		LootTableList.register(new ResourceLocation(TracesOfTheFallen.MODID, "blocks/skeleton_flower"));
 		
 		// Entity loot tables
 		LootTableList.register(new ResourceLocation(TracesOfTheFallen.MODID, "entities/goblin"));
 		LootTableList.register(new ResourceLocation(TracesOfTheFallen.MODID, "entities/minecrawler"));
 		LootTableList.register(new ResourceLocation(TracesOfTheFallen.MODID, "entities/lost"));
+		LootTableList.register(new ResourceLocation(TracesOfTheFallen.MODID, "entities/dungeon_slug"));
+		LootTableList.register(new ResourceLocation(TracesOfTheFallen.MODID, "entities/ink_slug"));
 	}
 
 	@SubscribeEvent

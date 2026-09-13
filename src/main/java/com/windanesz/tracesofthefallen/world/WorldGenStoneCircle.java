@@ -90,7 +90,7 @@ public class WorldGenStoneCircle extends WorldGenBase {
 
 
 	@Override
-	public int getRandomSeedModifier() {
-		return 645174;
+	public long getRandomSeedModifier() {
+		return 464844671L;
 	}
 }

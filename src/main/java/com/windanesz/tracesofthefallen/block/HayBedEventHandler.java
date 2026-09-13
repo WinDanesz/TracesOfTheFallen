@@ -32,7 +32,7 @@ public final class HayBedEventHandler {
 		}
 
 		EntityPlayer player = event.player;
-		if (player.isPlayerSleeping() && player.getSleepTimer() == 40 && player.bedLocation != null) {
+		if (player.isPlayerSleeping() && player.sleepTimer == 40 && player.bedLocation != null) {
 			World world = player.world;
 			if (!world.isBlockLoaded(player.bedLocation)) {
 				return;
@@ -134,7 +134,7 @@ public final class HayBedEventHandler {
 		}
 
 		if (block instanceof BlockHayBed) {
-			if (event.shouldSetSpawn() || player.getSleepTimer() >= 100) {
+			if (event.shouldSetSpawn() || player.sleepTimer >= 100) {
 				player.addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, 600, 0));
 				world.destroyBlock(mainPos, false);
 			}

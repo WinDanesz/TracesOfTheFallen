@@ -247,6 +247,8 @@ public class ClientProxy extends CommonProxy {
 		RenderingRegistry.registerEntityRenderingHandler(EntityGnossic.class, RenderGnossic::new);
 		RenderingRegistry.registerEntityRenderingHandler(EntitySubterfuge.class, RenderSubterfuge::new);
 		RenderingRegistry.registerEntityRenderingHandler(EntityLost.class, RenderLost::new);
+		RenderingRegistry.registerEntityRenderingHandler(EntityDungeonSlug.class, RenderDungeonSlug::new);
+		RenderingRegistry.registerEntityRenderingHandler(EntityInkSlug.class, RenderInkSlug::new);
 	}
 
 	private void registerTileEntityRenderers() {
@@ -261,6 +263,7 @@ public class ClientProxy extends CommonProxy {
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntitySpinningWheel.class, new TileEntitySpinningWheelRenderer());
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityArmillary.class, new TileEntityArmillaryRenderer());
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityStoneChest.class, new TileEntityStoneChestRenderer());
+		ClientRegistry.bindTileEntitySpecialRenderer(TileEntitySkeletonCorpse.class, new TileEntitySkeletonCorpseRenderer());
 	}
 
 	/**

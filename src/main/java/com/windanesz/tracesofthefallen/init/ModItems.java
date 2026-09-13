@@ -261,6 +261,9 @@ public class ModItems {
 
 		registerItemBlock(registry, ModBlocks.crawler_wax_wet);
 		registerItemBlock(registry, ModBlocks.crawler_wax_block);
+		registerItemBlock(registry, ModBlocks.minecrawler_cocoon);
+		registerItemBlock(registry, ModBlocks.skeleton_corpse);
+		registerItemBlock(registry, ModBlocks.skeleton_flower);
 	}
 
 	public static void registerOreDictionary() {

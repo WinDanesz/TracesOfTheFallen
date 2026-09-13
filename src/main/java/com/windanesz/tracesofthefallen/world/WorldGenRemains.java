@@ -39,7 +39,7 @@ public class WorldGenRemains extends WorldGenBase {
 
 
 	@Override
-	public int getRandomSeedModifier() {
-		return 553471;
+	public long getRandomSeedModifier() {
+		return -83364613L;
 	}
 }

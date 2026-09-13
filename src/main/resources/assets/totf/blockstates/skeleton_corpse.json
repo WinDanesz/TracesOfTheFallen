@@ -1,0 +1,12 @@
+{
+  "variants": {
+    "facing=north,pose=ground": { "model": "totf:skeleton_ground" },
+    "facing=east,pose=ground":  { "model": "totf:skeleton_ground" },
+    "facing=south,pose=ground": { "model": "totf:skeleton_ground" },
+    "facing=west,pose=ground":  { "model": "totf:skeleton_ground" },
+    "facing=north,pose=sit": { "model": "totf:skeleton_sit" },
+    "facing=east,pose=sit":  { "model": "totf:skeleton_sit" },
+    "facing=south,pose=sit": { "model": "totf:skeleton_sit" },
+    "facing=west,pose=sit":  { "model": "totf:skeleton_sit" }
+  }
+}

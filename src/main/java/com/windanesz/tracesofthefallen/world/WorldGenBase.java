@@ -197,6 +197,6 @@ public abstract class WorldGenBase implements IWorldGenerator {
 
 	public abstract IBlockState getBlockState(Random random, World world, BlockPos pos);
 
-	public abstract int getRandomSeedModifier();
+	public abstract long getRandomSeedModifier();
 
 }
