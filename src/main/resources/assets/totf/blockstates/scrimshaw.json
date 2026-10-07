@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "totf:scrimshaw" },
+    "facing=east":  { "model": "totf:scrimshaw", "y": 90 },
+    "facing=south": { "model": "totf:scrimshaw", "y": 180 },
+    "facing=west":  { "model": "totf:scrimshaw", "y": 270 }
+  }
+}

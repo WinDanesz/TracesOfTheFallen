@@ -2,6 +2,7 @@ package com.windanesz.tracesofthefallen;
 
 import com.windanesz.tracesofthefallen.packet.PacketPlayerSync;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
@@ -36,6 +37,9 @@ public class CommonProxy {
 	}
 
 	public void spawnBloodPuddleParticle(World world, double x, double y, double z) {
+	}
+
+	public void spawnSlugMucusParticle(World world, double x, double y, double z, EnumFacing facing) {
 	}
 
 	public void spawnChillParticle(World world, double x, double y, double z, double motionX, double motionY, double motionZ) {

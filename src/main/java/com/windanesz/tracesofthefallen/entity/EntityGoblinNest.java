@@ -29,6 +29,8 @@ public class EntityGoblinNest extends Entity {
     private int broodsSpawned = 0;
     private int spawnTimer = 0;
     private int shootTimer = 0;
+    // Set for nests that belong to a place goblins are meant to live in permanently (e.g. the goblin cavern).
+    private boolean persistentBroods = false;
 
     public EntityGoblinNest(World worldIn) {
         super(worldIn);
@@ -50,6 +52,11 @@ public class EntityGoblinNest extends Entity {
 
     public EnumFacing getFacing() {
         return EnumFacing.byHorizontalIndex(this.dataManager.get(FACING));
+    }
+
+    /** Goblins hatched by (or released from) this nest never despawn naturally. */
+    public void setPersistentBroods(boolean persistentBroods) {
+        this.persistentBroods = persistentBroods;
     }
 
     public void setFacing(EnumFacing facing) {
@@ -102,6 +109,9 @@ public class EntityGoblinNest extends Entity {
                 int numGoblins = 1 + this.rand.nextInt(2);
                 for (int i = 0; i < numGoblins; i++) {
                     EntityGoblin goblin = new EntityGoblin(this.world);
+                    if (this.persistentBroods) {
+                        goblin.enablePersistence();
+                    }
                     goblin.setPosition(this.posX + (this.rand.nextDouble() - 0.5D) * 1.5D, this.posY + 0.2D, this.posZ + (this.rand.nextDouble() - 0.5D) * 1.5D);
                     this.world.spawnEntity(goblin);
                 }
@@ -213,6 +223,9 @@ public class EntityGoblinNest extends Entity {
         }
 
         EntityGoblin brood = new EntityGoblin(this.world);
+        if (this.persistentBroods) {
+            brood.enablePersistence();
+        }
         brood.setPosition(this.posX, this.posY + 0.2D, this.posZ);
         this.world.spawnEntity(brood);
         this.broodsSpawned++;
@@ -239,6 +252,7 @@ public class EntityGoblinNest extends Entity {
         if (compound.hasKey("ShootTimer")) {
             this.shootTimer = compound.getInteger("ShootTimer");
         }
+        this.persistentBroods = compound.getBoolean("PersistentBroods");
     }
 
     @Override
@@ -248,5 +262,6 @@ public class EntityGoblinNest extends Entity {
         compound.setInteger("BroodsSpawned", this.broodsSpawned);
         compound.setInteger("SpawnTimer", this.spawnTimer);
         compound.setInteger("ShootTimer", this.shootTimer);
+        compound.setBoolean("PersistentBroods", this.persistentBroods);
     }
 }

@@ -14,8 +14,6 @@ import net.minecraft.world.World;
  */
 public class AISlugClimbHunt extends EntityAIBase {
 
-	private static final EnumFacing[] HORIZONTALS = {EnumFacing.NORTH, EnumFacing.SOUTH, EnumFacing.EAST, EnumFacing.WEST};
-
 	private final EntitySlug slug;
 	private final double climbSpeed;
 
@@ -55,11 +53,13 @@ public class AISlugClimbHunt extends EntityAIBase {
 		if (this.dropping) {
 			this.slug.cancelDropAttack();
 		}
-		if (this.slug.isClimbing()) {
-			this.slug.releaseSurface();
-		}
 		this.dropping = false;
 		this.perch = null;
+		// Deliberately not releasing the climbing surface here: this task can also stop simply because the
+		// target went away (creative mode, died, out of range, ...) while the slug is mid-climb, and it
+		// should keep clinging in place rather than fall - AISlugIdleClimb picks up from exactly where this
+		// leaves off. A real release only happens where it's actually warranted: on taking damage
+		// (EntitySlug#attackEntityFrom) or losing the physical surface (handleClimbing below).
 	}
 
 	@Override
@@ -85,6 +85,16 @@ public class AISlugClimbHunt extends EntityAIBase {
 	}
 
 	private void handleGroundApproach(EntityLivingBase target) {
+		// Opportunistically climb any wall immediately at hand before doing anything else - a slug spawned
+		// (or that has wandered) right next to a wall should scale it straight away, rather than only ever
+		// recognising walls that happen to also be conveniently close to the target's own position.
+		EnumFacing wall = this.slug.findAdjacentWall();
+		if (wall != null) {
+			this.slug.getNavigator().clearPath();
+			this.slug.setClimbFacing(wall);
+			return;
+		}
+
 		if (this.recalcCooldown-- <= 0) {
 			this.perch = this.findPerchPoint(target);
 			this.recalcCooldown = 20 + this.slug.getRNG().nextInt(20);
@@ -97,19 +107,11 @@ public class AISlugClimbHunt extends EntityAIBase {
 			this.slug.getNavigator().tryMoveToXYZ(moveGoal.getX() + 0.5D, moveGoal.getY(), moveGoal.getZ() + 0.5D, 1.0D);
 			this.repathCooldown = 20;
 		}
-
-		if (this.perch != null && this.perch.getY() > this.slug.posY + 1.0D) {
-			EnumFacing wall = this.findAdjacentWall();
-			if (wall != null) {
-				this.slug.getNavigator().clearPath();
-				this.slug.setClimbFacing(wall);
-			}
-		}
 	}
 
 	private void handleClimbing(EntityLivingBase target, EnumFacing facing) {
 		if (this.recalcCooldown-- <= 0) {
-			this.perch = this.findPerchPoint(target);
+			this.perch = this.findTrackingPerch(target);
 			this.recalcCooldown = 20 + this.slug.getRNG().nextInt(20);
 		}
 		BlockPos goal = this.perch != null ? this.perch : target.getPosition().up(2);
@@ -119,13 +121,17 @@ public class AISlugClimbHunt extends EntityAIBase {
 		// otherwise trap the slug pressing upward into the ceiling forever without ever letting go of the
 		// wall. Actively prefer hopping onto the ceiling once one is available overhead and we're climbing
 		// towards it.
-		if (facing.getAxis() != EnumFacing.Axis.Y && goal.getY() > this.slug.posY
-				&& EntitySlug.isClimbableSurface(this.slug.world, this.slug.getCenterPos().up())) {
+		if (facing.getAxis() != EnumFacing.Axis.Y && goal.getY() > this.slug.posY && this.slug.hasClimbableCeilingAbove()) {
 			facing = EnumFacing.DOWN;
 		}
 
 		EnumFacing support = this.slug.findSupportingFace(facing);
-		if (support == null) {
+		if (support == null || support == EnumFacing.UP) {
+			// null: genuinely lost grip. UP: corner-turned onto the flat top of whatever we were climbing,
+			// which findSupportingFace treats as a legitimate landing spot - either way, stop climbing and
+			// hand back to ordinary ground physics. tickClimbMovement has no notion of UP as a surface normal
+			// (it would force noGravity on and never turn it back off, since ground-approach logic never
+			// touches gravity), so UP must never reach it.
 			this.slug.releaseSurface();
 			return;
 		}
@@ -169,39 +175,50 @@ public class AISlugClimbHunt extends EntityAIBase {
 		}
 	}
 
-	private EnumFacing findAdjacentWall() {
-		BlockPos center = this.slug.getCenterPos();
-		for (EnumFacing dir : HORIZONTALS) {
-			if (EntitySlug.isClimbableSurface(this.slug.world, center.offset(dir))) {
-				return dir.getOpposite();
-			}
-		}
-		return null;
-	}
-
 	private BlockPos findPerchPoint(EntityLivingBase target) {
 		World world = this.slug.world;
-		BlockPos base = target.getPosition();
 
+		// Always prefer a wall right at hand over anything near the target - otherwise a ceiling somewhere
+		// over the target's head (which is common: any room, cave, or bit of overhead foliage) would keep
+		// winning and the slug would trek towards the target's general vicinity instead of using what's
+		// conveniently close, which looks just like beelining straight at them.
+		BlockPos nearSlug = EntitySlug.findNearbyWallPerch(world, this.slug.getPosition(), 1, 6);
+		if (nearSlug != null) {
+			return nearSlug;
+		}
+
+		// Otherwise, the ideal ambush spot: a ceiling directly above the target.
+		BlockPos targetBase = target.getPosition();
 		for (int dy = 2; dy <= 12; dy++) {
-			BlockPos above = base.up(dy);
+			BlockPos above = targetBase.up(dy);
 			if (EntitySlug.isClimbableSurface(world, above)) {
 				BlockPos perchPos = above.down();
 				return !EntitySlug.isClimbableSurface(world, perchPos) ? perchPos : null;
 			}
 		}
 
-		for (int r = 3; r <= 7; r++) {
-			for (EnumFacing dir : HORIZONTALS) {
-				BlockPos wallPos = base.up(2).offset(dir, r);
-				if (EntitySlug.isClimbableSurface(world, wallPos)) {
-					BlockPos perchPos = wallPos.offset(dir.getOpposite());
-					if (!EntitySlug.isClimbableSurface(world, perchPos)) {
-						return perchPos;
-					}
-				}
+		// Failing that, any wall reasonably close to the target will still do.
+		return EntitySlug.findNearbyWallPerch(world, targetBase, 3, 7);
+	}
+
+	/**
+	 * Recomputes where to be while already climbing and stalking {@code target} - always relative to the
+	 * target, unlike {@link #findPerchPoint} (used only for the initial "which wall do I climb" decision).
+	 * Once already up on a wall or ceiling, "nearest wall to myself" stops being a meaningful preference -
+	 * almost everywhere the slug can be while climbing is near <i>some</i> wall - and reusing that same
+	 * preference here just pins the goal to wherever the slug already happens to be, so it stops tracking a
+	 * moving target at all instead of continuing to stalk them.
+	 */
+	private BlockPos findTrackingPerch(EntityLivingBase target) {
+		World world = this.slug.world;
+		BlockPos targetBase = target.getPosition();
+		for (int dy = 2; dy <= 12; dy++) {
+			BlockPos above = targetBase.up(dy);
+			if (EntitySlug.isClimbableSurface(world, above)) {
+				BlockPos perchPos = above.down();
+				return !EntitySlug.isClimbableSurface(world, perchPos) ? perchPos : null;
 			}
 		}
-		return null;
+		return EntitySlug.findNearbyWallPerch(world, targetBase, 3, 7);
 	}
 }

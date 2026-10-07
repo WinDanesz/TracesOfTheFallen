@@ -192,9 +192,19 @@ public class Settings {
 		@Config.RangeDouble(min = 0.0, max = 1.0)
 		public double trapRoomChance = 0.2D;
 
+		@Config.Name("Dungeon Gnossic Spawn Chance")
+		@Config.Comment("Chance (0.0 - 1.0) for each eligible multipart dungeon room to contain one persistent Gnossic. Default: 0.1 (10%)")
+		@Config.RangeDouble(min = 0.0, max = 1.0)
+		public double dungeonGnossicSpawnChance = 0.1D;
+
+		@Config.Name("Minecrawler Mineshaft Frequency")
+		@Config.Comment("1-in-N chance for a new vanilla mineshaft to gain an infested shaft and nest room when space permits. Uses Lost Loot Dimensions. 0 disables; 1 attempts every mineshaft. Default: 4")
+		@Config.RangeInt(min = 0)
+		public int minecrawlerMineshaftFrequency = 4;
+
 		@Config.Name("Minecrawler Lair Frequency")
-		@Config.Comment("1-in-N chance per chunk for a small underground Minecrawler lair to generate. Lower is more common. Default: 120")
-		public int minecrawlerLairFrequency = 120;
+		@Config.Comment("1-in-N chance per chunk for a small underground Minecrawler lair to generate. Lower is more common. Default: 360")
+		public int minecrawlerLairFrequency = 360;
 
 		@Config.Name("Minecrawler Lair Min Y")
 		@Config.Comment("Lowest Y level a Minecrawler lair's floor can generate at. Default: 15")
@@ -217,15 +227,39 @@ public class Settings {
 		public int minecrawlerLairMaxCrawlers = 3;
 
 		@Config.Name("Minecrawler Lair Min Cocoons")
-		@Config.Comment("Minimum number of Minecrawler Cocoon loot props placed in a lair. Default: 1")
+		@Config.Comment("Minimum number of Minecrawler Cocoon loot props placed per lair room when space permits. Default: 3")
 		@Config.RangeInt(min = 0, max = 16)
-		public int minecrawlerLairMinCocoons = 1;
+		public int minecrawlerLairMinCocoons = 3;
 
 		@Config.Name("Minecrawler Lair Max Cocoons")
-		@Config.Comment("Maximum number of Minecrawler Cocoon loot props placed in a lair. Default: 3")
+		@Config.Comment("Maximum number of Minecrawler Cocoon loot props placed per lair room. Default: 5")
 		@Config.RangeInt(min = 0, max = 16)
-		public int minecrawlerLairMaxCocoons = 3;
-    }
+		public int minecrawlerLairMaxCocoons = 5;
+
+		@Config.Name("Goblin Cavern Spacing")
+		@Config.Comment("Average spacing, in chunks, between underground goblin caverns: one generates per spacing x spacing chunk cell. Higher is rarer; 0 disables. Uses Lost Loot Dimensions. Default: 24")
+		@Config.RangeInt(min = 0)
+		public int goblinCavernSpacing = 24;
+
+		@Config.Name("Goblin Cavern Min Y")
+		@Config.Comment("Lowest Y level for the bottom of a goblin cavern's stone shell. The shell is 11 blocks tall. Default: 12")
+		@Config.RangeInt(min = 1, max = 245)
+		public int goblinCavernMinY = 12;
+
+		@Config.Name("Goblin Cavern Max Y")
+		@Config.Comment("Highest Y level for the bottom of a goblin cavern's stone shell. Keep this low enough that the shell stays below the surface. Default: 32")
+		@Config.RangeInt(min = 1, max = 245)
+		public int goblinCavernMaxY = 32;
+
+		@Config.Name("Goblin Cavern Min Nests")
+		@Config.Comment("Minimum number of goblin nests placed in a goblin cavern when space permits. Default: 2")
+		@Config.RangeInt(min = 0, max = 16)
+		public int goblinCavernMinNests = 2;
+
+		@Config.Name("Goblin Cavern Max Nests")
+		@Config.Comment("Maximum number of goblin nests placed in a goblin cavern. Default: 3")
+		@Config.RangeInt(min = 0, max = 16)
+		public int goblinCavernMaxNests = 3;    }
 
     public static class MiscSettings {
 		@Config.Name("Dan Coil Trap Damage")
@@ -913,6 +947,15 @@ public class Settings {
 	}
 
 	public static class MobSettings {
+		@Config.Name("Minecrawler Spawn Weight")
+		@Config.Comment("Natural-spawn weight for Minecrawlers. They spawn freely in mineshafts and only very rarely in other underground areas. Default: 1 (0 to disable)")
+		public int minecrawlerSpawnWeight = 1;
+
+		@Config.Name("Minecrawler Underground Spawn Chance")
+		@Config.Comment("Chance for a natural Minecrawler spawn outside a mineshaft after normal monster checks succeed. 1 means every attempt; higher values are rarer. Default: 240")
+		@Config.RangeInt(min = 1, max = 100000)
+		public int minecrawlerUndergroundSpawnChance = 240;
+
 		@Config.Name("Sidhe Spawn Weight")
 		@Config.Comment("Spawn weight for the Sidhe. Default: 5 (0 to disable)")
 		public int sidheSpawnWeight = 5;
@@ -932,26 +975,6 @@ public class Settings {
 		@Config.Name("Sidhe Biome Blacklist")
 		@Config.Comment("Biomes where Sidhe cannot spawn. Format: modid:biome")
 		public String[] sidheBiomeBlacklist = new String[0];
-
-		@Config.Name("Gnossic Spawn Weight")
-		@Config.Comment("Spawn weight for the Gnossic. Default: 5 (0 to disable)")
-		public int gnossicSpawnWeight = 5;
-
-		@Config.Name("Gnossic Spawn Min Group")
-		@Config.Comment("Minimum group size for the Gnossic. Default: 1")
-		public int gnossicSpawnMinGroup = 1;
-
-		@Config.Name("Gnossic Spawn Max Group")
-		@Config.Comment("Maximum group size for the Gnossic. Default: 1")
-		public int gnossicSpawnMaxGroup = 1;
-
-		@Config.Name("Gnossic Biome Whitelist")
-		@Config.Comment("Biomes where Gnossic can spawn (empty = all allowed). Format: modid:biome")
-		public String[] gnossicBiomeWhitelist = new String[0];
-
-		@Config.Name("Gnossic Biome Blacklist")
-		@Config.Comment("Biomes where Gnossic cannot spawn. Format: modid:biome")
-		public String[] gnossicBiomeBlacklist = new String[0];
 
 		@Config.Name("Frostling Spawn Weight")
 		@Config.Comment("Spawn weight for the Frostling. Default: 15 (0 to disable)")
@@ -1003,8 +1026,8 @@ public class Settings {
 		public double subterfugeMaxHealth = 1000.0D;
 
 		@Config.Name("Dungeon Slug Spawn Weight")
-		@Config.Comment("Spawn weight for the Dungeon Slug. Default: 10 (0 to disable)")
-		public int dungeonSlugSpawnWeight = 10;
+		@Config.Comment("Spawn weight for the Dungeon Slug. Default: 2 (0 to disable)")
+		public int dungeonSlugSpawnWeight = 2;
 
 		@Config.Name("Dungeon Slug Spawn Min Group")
 		@Config.Comment("Minimum group size for the Dungeon Slug. Default: 1")
@@ -1031,26 +1054,6 @@ public class Settings {
 		@Config.Comment("Melee attack damage for the Dungeon Slug once revealed. Default: 4.0")
 		@Config.RangeDouble(min = 0.0D, max = 10000.0D)
 		public double dungeonSlugAttackDamage = 4.0D;
-
-		@Config.Name("Ink Slug Spawn Weight")
-		@Config.Comment("Spawn weight for the Ink Slug. Default: 8 (0 to disable)")
-		public int inkSlugSpawnWeight = 8;
-
-		@Config.Name("Ink Slug Spawn Min Group")
-		@Config.Comment("Minimum group size for the Ink Slug. Default: 1")
-		public int inkSlugSpawnMinGroup = 1;
-
-		@Config.Name("Ink Slug Spawn Max Group")
-		@Config.Comment("Maximum group size for the Ink Slug. Default: 1")
-		public int inkSlugSpawnMaxGroup = 1;
-
-		@Config.Name("Ink Slug Biome Whitelist")
-		@Config.Comment("Biomes where Ink Slug can spawn (empty = all allowed). Format: modid:biome")
-		public String[] inkSlugBiomeWhitelist = new String[0];
-
-		@Config.Name("Ink Slug Biome Blacklist")
-		@Config.Comment("Biomes where Ink Slug cannot spawn. Format: modid:biome")
-		public String[] inkSlugBiomeBlacklist = new String[0];
 
 		@Config.Name("Ink Slug Max Health")
 		@Config.Comment("Max health for the Ink Slug. Default: 20.0")

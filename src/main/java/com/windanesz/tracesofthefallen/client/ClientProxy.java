@@ -25,6 +25,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeColorHelper;
@@ -264,6 +265,7 @@ public class ClientProxy extends CommonProxy {
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityArmillary.class, new TileEntityArmillaryRenderer());
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityStoneChest.class, new TileEntityStoneChestRenderer());
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntitySkeletonCorpse.class, new TileEntitySkeletonCorpseRenderer());
+		ClientRegistry.bindTileEntitySpecialRenderer(TileEntitySkullDecoration.class, new TileEntitySkullDecorationRenderer());
 	}
 
 	/**
@@ -389,6 +391,11 @@ public class ClientProxy extends CommonProxy {
 	@Override
 	public void spawnBloodPuddleParticle(World world, double x, double y, double z) {
 		Minecraft.getMinecraft().effectRenderer.addEffect(new ParticleBloodPuddle(world, x, y, z));
+	}
+
+	@Override
+	public void spawnSlugMucusParticle(World world, double x, double y, double z, EnumFacing facing) {
+		Minecraft.getMinecraft().effectRenderer.addEffect(new ParticleSlugMucus(world, x, y, z, facing));
 	}
 
 	@Override

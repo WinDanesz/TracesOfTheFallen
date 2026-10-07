@@ -21,8 +21,10 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -39,7 +41,7 @@ public class EntityMinecrawler extends EntityMob {
 
     public EntityMinecrawler(World worldIn) {
         super(worldIn);
-        this.setSize(1.1F, 1.4F);
+        this.setSize(0.9F, 1.4F);
         this.experienceValue = 5;
     }
 
@@ -108,10 +110,26 @@ public class EntityMinecrawler extends EntityMob {
         return SoundEvents.ENTITY_SPIDER_DEATH;
     }
 
-    @Override
-    public EnumCreatureAttribute getCreatureAttribute() {
-        return EnumCreatureAttribute.ARTHROPOD;
-    }
+	@Override
+	public EnumCreatureAttribute getCreatureAttribute() {
+		return EnumCreatureAttribute.ARTHROPOD;
+	}
+
+
+	@Override
+	public boolean getCanSpawnHere() {
+		BlockPos pos = new BlockPos(this.posX, this.getEntityBoundingBox().minY, this.posZ);
+		if (!super.getCanSpawnHere()) {
+			return false;
+		}
+        // They can spawn in mineshafts without restrictions
+		if (this.world instanceof WorldServer
+				&& ((WorldServer) this.world).getChunkProvider().isInsideStructure(this.world, "Mineshaft", pos)) {
+			return true;
+		}
+		return pos.getY() < 55 && !this.world.canBlockSeeSky(pos)
+				&& this.rand.nextInt(Settings.mobSettings.minecrawlerUndergroundSpawnChance) == 0;
+	}
 
     @Nullable
     @Override

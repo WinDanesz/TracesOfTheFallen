@@ -2,6 +2,7 @@ package com.windanesz.tracesofthefallen.world.structure;
 
 import com.windanesz.tracesofthefallen.Settings;
 import com.windanesz.tracesofthefallen.block.*;
+import com.windanesz.tracesofthefallen.entity.EntityGnossic;
 import com.windanesz.tracesofthefallen.entity.EntityGoblinNest;
 import com.windanesz.tracesofthefallen.init.ModBlocks;
 import net.minecraft.block.BlockStairs;
@@ -32,9 +33,12 @@ public class ComponentNbtPiece extends StructureComponentTemplate {
     private Rotation rotation;
     private final Set<BlockPos> closedDoorways = new HashSet<>();
     private boolean trapGenerated = false;
+    private boolean gnossicSpawnRollMade = false;
+    private boolean gnossicSpawnPending = false;
 
     private static final String[] HALLS = {"x11_5_hall", "x11_5_cross", "x11_5_t-junction", "x11_5_corner"};
-    private static final String[] ROOMS = {"x21_7_hall_factory", "x21_9_cross_claustrophobic", "x21_10_cross_moon", "x11_9_goblin_camp", "x21_10_goblin_infestation"};
+    private static final String[] ROOMS = {"x21_7_hall_factory", "x21_9_cross_claustrophobic", "x21_9_cross_pots", "x21_10_cross_moon", "x11_9_goblin_camp", "x21_10_goblin_infestation"};
+    private static final Set<String> GNOSSIC_ROOMS = new HashSet<>(Arrays.asList(ROOMS));
     private static final String MOON_ROOM = "x21_10_cross_moon";
     private static final String[] ROOMS_WITHOUT_MOON = Arrays.stream(ROOMS)
             .filter(room -> !room.equals(MOON_ROOM))
@@ -112,6 +116,8 @@ public class ComponentNbtPiece extends StructureComponentTemplate {
         }
         tagCompound.setTag("ClosedDoorways", closedDoorwayTags);
         tagCompound.setBoolean("TrapGenerated", this.trapGenerated);
+        tagCompound.setBoolean("GnossicSpawnRollMade", this.gnossicSpawnRollMade);
+        tagCompound.setBoolean("GnossicSpawnPending", this.gnossicSpawnPending);
     }
 
     @Override
@@ -127,8 +133,51 @@ public class ComponentNbtPiece extends StructureComponentTemplate {
             this.closedDoorways.add(new BlockPos(doorwayTag.getInteger("X"), doorwayTag.getInteger("Y"), doorwayTag.getInteger("Z")));
         }
         this.trapGenerated = tagCompound.getBoolean("TrapGenerated");
+        this.gnossicSpawnRollMade = tagCompound.getBoolean("GnossicSpawnRollMade");
+        this.gnossicSpawnPending = tagCompound.getBoolean("GnossicSpawnPending");
 
         this.loadTemplate(templateManager);
+    }
+
+    @Override
+    public boolean addComponentParts(World worldIn, Random rand, StructureBoundingBox region) {
+        boolean placed = super.addComponentParts(worldIn, rand, region);
+        this.maybeSpawnDungeonGnossic(worldIn, rand, region);
+        return placed;
+    }
+
+    private void maybeSpawnDungeonGnossic(World worldIn, Random rand, StructureBoundingBox region) {
+        if (!GNOSSIC_ROOMS.contains(this.templateName)) {
+            return;
+        }
+        if (!this.gnossicSpawnRollMade) {
+            this.gnossicSpawnRollMade = true;
+            this.gnossicSpawnPending = rand.nextDouble() < Settings.worldgenSettings.dungeonGnossicSpawnChance;
+        }
+        if (!this.gnossicSpawnPending) {
+            return;
+        }
+
+        int floorY = this.boundingBox.minY;
+        for (int attempt = 0; attempt < 24; attempt++) {
+            BlockPos floorPos = new BlockPos(
+                    this.boundingBox.minX + 1 + rand.nextInt(Math.max(1, this.boundingBox.getXSize() - 2)),
+                    floorY,
+                    this.boundingBox.minZ + 1 + rand.nextInt(Math.max(1, this.boundingBox.getZSize() - 2)));
+            if (!contains(region, floorPos)
+                    || !worldIn.getBlockState(floorPos).isFullBlock()
+                    || !worldIn.isAirBlock(floorPos.up())
+                    || !worldIn.isAirBlock(floorPos.up(2))) {
+                continue;
+            }
+
+            EntityGnossic gnossic = new EntityGnossic(worldIn);
+            gnossic.setLocationAndAngles(floorPos.getX() + 0.5D, floorPos.getY() + 1, floorPos.getZ() + 0.5D, rand.nextFloat() * 360.0F, 0.0F);
+            gnossic.enablePersistence();
+            worldIn.spawnEntity(gnossic);
+            this.gnossicSpawnPending = false;
+            return;
+        }
     }
 
     @Override

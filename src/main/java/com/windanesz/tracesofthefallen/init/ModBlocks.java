@@ -77,6 +77,7 @@ public class ModBlocks {
 	public static final Block rope_mossy = placeholder();
 	public static final Block rope_mossy_hook = placeholder();
 	public static final Block desk_bell = placeholder();
+	public static final Block scrimshaw = placeholder();
 	public static final Block idol_vessel = placeholder();
 	public static final Block technical_block = placeholder();
 	public static final Block wrought_bomb = placeholder();
@@ -95,6 +96,7 @@ public class ModBlocks {
 	public static final Block stone_chest_lid = placeholder();
 	public static final Block plaque = placeholder();
 	public static final Block bonepile = placeholder();
+	public static final Block bonepile_fire_rune = placeholder();
 	public static final Block hay_bed = placeholder();
 	public static final Block mozaic_pink = placeholder();
 	public static final Block mozaic_pink_washed = placeholder();
@@ -127,6 +129,9 @@ public class ModBlocks {
 	public static final Block minecrawler_cocoon = placeholder();
 	public static final Block skeleton_corpse = placeholder();
 	public static final Block skeleton_flower = placeholder();
+
+	public static final Block crystal_skull = placeholder();
+	public static final Block crystal_skull_deformed = placeholder();
 
 	@Nonnull
 	@SuppressWarnings("ConstantConditions")
@@ -192,6 +197,7 @@ public class ModBlocks {
 		registerBlock(registry, "rope_mossy", new BlockDecoration(Material.WOOD).setBoundingBox(new AxisAlignedBB(0.4375D, 0.0D, 0.4375D, 0.5625D, 1.0D, 0.5625D)));
 		registerBlock(registry, "rope_mossy_hook", new BlockDecoration(Material.WOOD).setBoundingBox(new AxisAlignedBB(0.4375D, 0.0D, 0.4375D, 0.5625D, 1.0D, 0.5625D)));
 		registerBlock(registry, "desk_bell", new BlockDeskBell(Material.IRON).setBoundingBox(new AxisAlignedBB(0.3125D, 0.0D, 0.3125D, 0.6875D, 0.35625D, 0.6875D)));
+		registerBlock(registry, "scrimshaw", new BlockScrimshaw());
 		registerBlock(registry, "idol_vessel", new BlockIdolVessel(Material.ROCK).setBoundingBox(new AxisAlignedBB(0.0625D, 0.0D, 0.0625D, 0.9375D, 1.0D, 0.9375D)));
 		registerBlockNoTab(registry, "technical_block", new BlockTechnicalBlock());
 		registerBlock(registry, "wrought_bomb", new BlockWroughtBomb());
@@ -200,6 +206,7 @@ public class ModBlocks {
 		registerBlock(registry, "dreamcatcher", new BlockDreamcatcher(Material.WOOD));
 		registerBlock(registry, "plaque", new BlockWoodenItemFrame());
 		registerBlock(registry, "bonepile", new BlockBonepile());
+		registerBlock(registry, "bonepile_fire_rune", new BlockBonepileFireRune());
 		registerBlock(registry, "hay_bed", new BlockHayBed(Material.WOOD).setLootTable(new ResourceLocation(TracesOfTheFallen.MODID, "blocks/hay_bed")));
 
 		// Stone blocks
@@ -255,6 +262,9 @@ public class ModBlocks {
 		registerBlock(registry, "skeleton_flower", new BlockSkeletonFlower(Material.CIRCUITS)
 				.setLootTable(new ResourceLocation(TracesOfTheFallen.MODID, "blocks/skeleton_flower"))
 				.setBoundingBox(new AxisAlignedBB(0, 0, 0, 1, 1.0 / 3.0, 1)));
+
+		registerBlock(registry, "crystal_skull", new BlockSkullDecoration(Material.ROCK));
+		registerBlock(registry, "crystal_skull_deformed", new BlockSkullDecoration(Material.ROCK));
 	}
 
 	public static void registerBlock(IForgeRegistry<Block> registry, String name, Block block) {
@@ -324,6 +334,7 @@ public class ModBlocks {
 		GameRegistry.registerTileEntity(TileEntitySpinningWheel.class, new ResourceLocation(TracesOfTheFallen.MODID, "spinning_wheel"));
 		GameRegistry.registerTileEntity(TileEntityArmillary.class, new ResourceLocation(TracesOfTheFallen.MODID, "armillary"));
 		GameRegistry.registerTileEntity(TileEntityClayPot.class, new ResourceLocation(TracesOfTheFallen.MODID, "clay_pot"));
+		GameRegistry.registerTileEntity(TileEntitySkullDecoration.class, new ResourceLocation(TracesOfTheFallen.MODID, "skull_decoration"));
 	}
 }
 

@@ -36,6 +36,7 @@ public class ModItems {
 	public static final Item furred_trout = placeholder();
 	public static final Item mysterious_fur = placeholder();
 	public static final Item veiled_mask = placeholder();
+	public static final Item berserker_helmet = placeholder();
 	public static final Item chitin_helmet = placeholder();
 	public static final Item chitin_chestplate = placeholder();
 	public static final Item chitin_leggings = placeholder();
@@ -120,6 +121,7 @@ public class ModItems {
 		registerItem(registry, "silk_spindle", new ItemSilkSpindle().setCreativeTab(ModCreativeTab.TOTF_TAB));
 		registerItem(registry, "bundle_of_lost_letters", new ItemBundleOfLostLetters().setCreativeTab(ModCreativeTab.TOTF_TAB));
 		registerItem(registry, "veiled_mask", new ItemVeiledMask().setCreativeTab(ModCreativeTab.TOTF_TAB));
+		registerItem(registry, "berserker_helmet", new ItemBerserkerHelmet().setCreativeTab(ModCreativeTab.TOTF_TAB));
 		registerItem(registry, "chitin", new Item().setCreativeTab(ModCreativeTab.TOTF_TAB));
 		registerItem(registry, "minecrawler_gland", new Item().setCreativeTab(ModCreativeTab.TOTF_TAB));
 		registerItem(registry, "chitin_helmet", new ChitinArmor(EntityEquipmentSlot.HEAD).setCreativeTab(ModCreativeTab.TOTF_TAB));
@@ -203,6 +205,7 @@ public class ModItems {
 		registerItemBlock(registry, ModBlocks.rope_mossy);
 		registerItemBlock(registry, ModBlocks.rope_mossy_hook);
 		registerItemBlock(registry, ModBlocks.desk_bell);
+		registerItemBlock(registry, ModBlocks.scrimshaw);
 
 		ItemBlock idolVesselItem = new ItemBlockIdolVessel(ModBlocks.idol_vessel);
 		idolVesselItem.setRegistryName(ModBlocks.idol_vessel.getRegistryName());
@@ -219,6 +222,7 @@ public class ModItems {
 		bonepileItem.setRegistryName(ModBlocks.bonepile.getRegistryName());
 		ModBlocks.bonepile.setCreativeTab(ModCreativeTab.TOTF_TAB);
 		registry.register(bonepileItem);
+		registerItemBlock(registry, ModBlocks.bonepile_fire_rune);
 		registerItemBlock(registry, ModBlocks.hay_bed);
 
 		registerItemBlock(registry, ModBlocks.bricks_stone);
@@ -264,6 +268,8 @@ public class ModItems {
 		registerItemBlock(registry, ModBlocks.minecrawler_cocoon);
 		registerItemBlock(registry, ModBlocks.skeleton_corpse);
 		registerItemBlock(registry, ModBlocks.skeleton_flower);
+		registerItemBlock(registry, ModBlocks.crystal_skull);
+		registerItemBlock(registry, ModBlocks.crystal_skull_deformed);
 	}
 
 	public static void registerOreDictionary() {

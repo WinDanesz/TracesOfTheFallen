@@ -11,6 +11,7 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
@@ -28,6 +29,15 @@ public class EntityInkSlug extends EntitySlug {
 	@Override
 	protected double getMeleeSpeed() {
 		return 0.24D;
+	}
+
+	@Override
+	public boolean getCanSpawnHere() {
+		BlockPos pos = new BlockPos(this.posX, this.getEntityBoundingBox().minY, this.posZ);
+		if (pos.getY() >= 55 || this.world.canBlockSeeSky(pos)) {
+			return false;
+		}
+		return super.getCanSpawnHere();
 	}
 
 	@Override

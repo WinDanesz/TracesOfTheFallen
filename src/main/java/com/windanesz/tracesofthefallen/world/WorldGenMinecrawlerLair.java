@@ -12,6 +12,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.IChunkProvider;
@@ -19,7 +20,7 @@ import net.minecraft.world.gen.IChunkGenerator;
 import net.minecraftforge.fml.common.IWorldGenerator;
 import org.apache.commons.lang3.ArrayUtils;
 
-import java.util.Random;
+import java.util.*;
 
 /**
  * Hand-carved procedural underground pocket housing a small, non-despawning Minecrawler nest.
@@ -45,17 +46,18 @@ public class WorldGenMinecrawlerLair implements IWorldGenerator {
 	// breaking into a natural cave, these gate whether it leads to another (smaller) connected room
 	// instead of just dead-ending, up to a total of MAX_ROOMS.
 	private static final int MAX_ROOMS = 3;
-	private static final float SECOND_ROOM_CHANCE = 0.40F;
-	private static final float THIRD_ROOM_CHANCE = 0.20F;
+	private static final float SECOND_ROOM_CHANCE = 0.80F;
+	private static final float THIRD_ROOM_CHANCE = 0.45F;
 	private static final float EXTRA_ROOM_MIN_SCALE = 0.55F;
 	private static final float EXTRA_ROOM_MAX_SCALE = 0.85F;
 
-	// Independent decoration rolls - a lair can end up with any combination of these, or none.
+	// Independent decoration rolls per inhabited room; a room can have any combination, or none.
 	private static final float MUSHROOM_CLUSTER_CHANCE = 0.15F;
 	private static final float SKELETON_CRATE_CHANCE = 0.10F;
 	private static final float LOST_CRATE_POTIONS_CHANCE = 0.06F;
-	private static final float SKELETON_CORPSE_CHANCE = 0.15F;
-	private static final float SKELETON_CORPSE_EXTRA_CHANCE = 0.05F;
+	private static final float MAIN_ROOM_SKELETON_CHANCE = 0.60F;
+	private static final float SIDE_ROOM_SKELETON_CHANCE = 0.35F;
+	private static final float SKELETON_CORPSE_EXTRA_CHANCE = 0.15F;
 	private static final int SKELETON_CORPSE_MAX = 3;
 
 	@Override
@@ -124,23 +126,23 @@ public class WorldGenMinecrawlerLair implements IWorldGenerator {
 		return solid >= checked * 0.8D;
 	}
 
-	/** The two things a caller needs back from carving one chamber. */
+	/** Geometry and actual carved floor cells, retained for the final decoration pass. */
 	private static final class RoomResult {
 		final int boundRadius;
 		final int centerHeight;
+		final List<BlockPos> floors;
 
-		RoomResult(int boundRadius, int centerHeight) {
+		RoomResult(int boundRadius, int centerHeight, List<BlockPos> floors) {
 			this.boundRadius = boundRadius;
 			this.centerHeight = centerHeight;
+			this.floors = floors;
 		}
 	}
 
 	private void carveLair(World world, Random random, BlockPos floorPos, int radius, int domeHeight) {
 		RoomResult mainRoom = carveRoom(world, random, floorPos, radius, domeHeight);
-
-		placeCocoons(world, random, floorPos, mainRoom.boundRadius);
-		spawnCrawlers(world, random, floorPos, mainRoom.boundRadius);
-		decorateExtras(world, random, floorPos, mainRoom.boundRadius);
+		List<RoomResult> rooms = new ArrayList<>();
+		rooms.add(mainRoom);
 
 		if (mainRoom.centerHeight > 0 && random.nextFloat() < FALL_TRAP_CHANCE) {
 			carveFallTrap(world, random, floorPos, mainRoom.centerHeight);
@@ -151,11 +153,12 @@ public class WorldGenMinecrawlerLair implements IWorldGenerator {
 		// without breaking into a natural cave, roll a chance to chain another, smaller connected room
 		// off the end of it - and possibly a third off that one - instead of always stopping at one.
 		BlockPos linkAnchor = floorPos;
+		List<BlockPos> linkFloors = mainRoom.floors;
 		double linkRadius = mainRoom.boundRadius;
 		int roomsPlaced = 1;
 
 		while (roomsPlaced < MAX_ROOMS) {
-			BlockPos tunnelEnd = carveTunnel(world, random, linkAnchor, (int) Math.round(linkRadius));
+			BlockPos tunnelEnd = carveTunnel(world, random, linkAnchor, linkFloors);
 			float extraRoomChance = roomsPlaced == 1 ? SECOND_ROOM_CHANCE : THIRD_ROOM_CHANCE;
 			if (tunnelEnd == null || random.nextFloat() >= extraRoomChance) {
 				break;
@@ -164,13 +167,33 @@ public class WorldGenMinecrawlerLair implements IWorldGenerator {
 			double nextRadius = Math.max(2.5D, linkRadius * (EXTRA_ROOM_MIN_SCALE + random.nextDouble() * (EXTRA_ROOM_MAX_SCALE - EXTRA_ROOM_MIN_SCALE)));
 			int nextHeight = Math.max(2, (int) Math.round(domeHeight * (0.7D + random.nextDouble() * 0.3D)));
 			RoomResult extraRoom = carveRoom(world, random, tunnelEnd, nextRadius, nextHeight);
-
-			placeCocoons(world, random, tunnelEnd, extraRoom.boundRadius);
-			spawnCrawlers(world, random, tunnelEnd, extraRoom.boundRadius);
+			rooms.add(extraRoom);
 
 			roomsPlaced++;
 			linkAnchor = tunnelEnd;
+			linkFloors = extraRoom.floors;
 			linkRadius = extraRoom.boundRadius;
+		}
+
+		// Reserve floor space for remains before cocoons and mushrooms compete for it. The main
+		// chamber always gets a corpse when a usable floor cell remains after carving.
+		for (RoomResult room : rooms) {
+			if (ModBlocks.skeleton_corpse instanceof BlockSkeletonCorpse) {
+				placeSkeletons(world, random, room.floors, room == mainRoom, (BlockSkeletonCorpse) ModBlocks.skeleton_corpse);
+			}
+		}
+		// Finish all room/tunnel carving before placing cocoons, so later rooms cannot erase them.
+		for (RoomResult room : rooms) {
+			for (BlockPos cocoon : placeCocoons(world, random, room.floors, ModBlocks.minecrawler_cocoon)) {
+				decorateAroundCocoon(world, random, cocoon);
+			}
+		}
+		for (RoomResult room : rooms) {
+			decorateExtras(world, random, room.floors);
+		}
+		// Nothing may carve or place blocks after inhabitants have been positioned.
+		for (RoomResult room : rooms) {
+			spawnCrawlers(world, random, room.floors);
 		}
 	}
 
@@ -189,6 +212,7 @@ public class WorldGenMinecrawlerLair implements IWorldGenerator {
 		// clearance were carved above the floor there. Pre-computing this lets the decoration pass
 		// tell open cells from walls without re-deriving the room's shape.
 		int[][] carvedHeight = new int[size][size];
+		List<BlockPos> floors = new ArrayList<>();
 
 		for (int dx = -boundRadius; dx <= boundRadius; dx++) {
 			for (int dz = -boundRadius; dz <= boundRadius; dz++) {
@@ -208,6 +232,7 @@ public class WorldGenMinecrawlerLair implements IWorldGenerator {
 
 				if (isColumnCarvable(world, anchor, dx, dz, columnHeight)) {
 					carvedHeight[dx + boundRadius][dz + boundRadius] = columnHeight;
+					floors.add(anchor.add(dx, 0, dz));
 				}
 			}
 		}
@@ -232,7 +257,7 @@ public class WorldGenMinecrawlerLair implements IWorldGenerator {
 			}
 		}
 
-		return new RoomResult(boundRadius, carvedHeight[boundRadius][boundRadius]);
+		return new RoomResult(boundRadius, carvedHeight[boundRadius][boundRadius], floors);
 	}
 
 	/**
@@ -372,13 +397,13 @@ public class WorldGenMinecrawlerLair implements IWorldGenerator {
 	 * neighboring chunks mid-populate, and whatever got carved out there does not reliably survive. That
 	 * was the actual cause of nests turning up with no visible tunnel at all.
 	 *
-	 * @return the final position reached, so a caller can chain another room off of it - or null if the
-	 * tunnel broke into an existing cave/cavern (already connected, nothing more to link up).
+	 * @return the final position reached, so a caller can chain another room off of it. Reaching a
+	 * natural cave stops this tunnel but still leaves the reached position available for another chamber.
 	 */
-	private BlockPos carveTunnel(World world, Random random, BlockPos floorPos, int radius) {
+	private BlockPos carveTunnel(World world, Random random, BlockPos floorPos, List<BlockPos> roomFloors) {
 		EnumFacing dir = EnumFacing.Plane.HORIZONTAL.random(random);
 		int maxLength = 24 + random.nextInt(25); // 24-48 blocks
-		BlockPos.MutableBlockPos cursor = new BlockPos.MutableBlockPos(floorPos.add(dir.getXOffset() * radius, 0, dir.getZOffset() * radius));
+		BlockPos.MutableBlockPos cursor = new BlockPos.MutableBlockPos(findTunnelEntrance(floorPos, roomFloors, dir));
 
 		for (int i = 0; i < maxLength; i++) {
 			if (random.nextFloat() < 0.18F) {
@@ -400,11 +425,34 @@ public class WorldGenMinecrawlerLair implements IWorldGenerator {
 			}
 
 			if (brokeIntoCave) {
-				return null;
+				// Keep the reached position as a valid room anchor. Previously this returned null,
+				// which discarded the second/third-room roll whenever the tunnel met a natural cave.
+				return new BlockPos(cursor);
 			}
 		}
 
 		return new BlockPos(cursor);
+	}
+
+	/**
+	 * Select the outermost floor cell in the passage direction, rather than estimating the room edge
+	 * from its rectangular bounds. An elliptical room can be several blocks narrower along one axis;
+	 * using its bound radius placed the first tunnel slice in solid rock, disconnected from the nest.
+	 */
+	static BlockPos findTunnelEntrance(BlockPos fallback, List<BlockPos> roomFloors, EnumFacing direction) {
+		BlockPos entrance = fallback;
+		int farthest = Integer.MIN_VALUE;
+		double closestToCenter = Double.MAX_VALUE;
+		for (BlockPos floor : roomFloors) {
+			int distance = floor.getX() * direction.getXOffset() + floor.getZ() * direction.getZOffset();
+			double offsetFromCenter = floor.distanceSq(fallback);
+			if (distance > farthest || (distance == farthest && offsetFromCenter < closestToCenter)) {
+				farthest = distance;
+				closestToCenter = offsetFromCenter;
+				entrance = floor;
+			}
+		}
+		return entrance;
 	}
 
 	/** Carves one 1-wide, 3-tall vertical slice of the tunnel; returns false (carving nothing) at bedrock/liquid. */
@@ -420,57 +468,68 @@ public class WorldGenMinecrawlerLair implements IWorldGenerator {
 		return true;
 	}
 
-	private void placeCocoons(World world, Random random, BlockPos floorPos, int radius) {
+	List<BlockPos> placeCocoons(World world, Random random, List<BlockPos> floors, Block block) {
 		int min = Settings.worldgenSettings.minecrawlerLairMinCocoons;
 		int max = Math.max(min, Settings.worldgenSettings.minecrawlerLairMaxCocoons);
 		int count = min + (max > min ? random.nextInt(max - min + 1) : 0);
+		List<BlockPos> placed = new ArrayList<>();
+		int surfaceCount = (count + 1) / 2;
 
-		for (int i = 0; i < count; i++) {
-			for (int attempt = 0; attempt < 8; attempt++) {
-				BlockPos groundPos = randomFloorPos(random, floorPos, radius);
-				if (!world.getBlockState(groundPos).isTopSolid() || !world.isAirBlock(groundPos.up())) {
-					continue;
-				}
-
-				// Cocoons don't all sit out in the open - some are tucked into a little pit dug down
-				// into the floor, or a nook dug sideways into the wall, like an egg tucked out of sight.
-				BlockPos cocoonPos;
-				float roll = random.nextFloat();
-				if (roll < 0.45F) {
-					cocoonPos = groundPos.up();
-				} else if (roll < 0.72F) {
-					cocoonPos = carveDownwardNook(world, random, groundPos);
-				} else {
-					cocoonPos = carveSidewaysNook(world, random, groundPos);
-				}
-
-				if (cocoonPos == null) {
-					continue;
-				}
-
-				EnumFacing facing = EnumFacing.Plane.HORIZONTAL.random(random);
-				world.setBlockState(cocoonPos, ModBlocks.minecrawler_cocoon.getDefaultState()
-						.withProperty(BlockTOFT.FACING, facing).withProperty(BlockTOFT.SNOWY, false), 2);
-				decorateAroundCocoon(world, random, cocoonPos);
+		for (BlockPos groundPos : decorationFloors(world, random, floors)) {
+			if (placed.size() >= count) {
 				break;
 			}
+			if (!canPlaceFloorDecoration(world, groundPos)) {
+				continue;
+			}
+			// Keep at least half in plain view; remaining cocoons can occupy open pits/wall nooks.
+			// If a nook is impossible, use the known valid surface instead of losing that cocoon.
+			BlockPos cocoonPos = groundPos.up();
+			if (placed.size() >= surfaceCount) {
+				float roll = random.nextFloat();
+				BlockPos nook = roll < 0.5F ? carveDownwardNook(world, random, groundPos)
+						: roll < 0.8F ? carveSidewaysNook(world, random, groundPos) : null;
+				if (nook != null) {
+					cocoonPos = nook;
+				}
+			}
+			EnumFacing facing = EnumFacing.Plane.HORIZONTAL.random(random);
+			if (world.setBlockState(cocoonPos, block.getDefaultState()
+					.withProperty(BlockTOFT.FACING, facing).withProperty(BlockTOFT.SNOWY, false), 2)) {
+				placed.add(cocoonPos);
+			}
 		}
+		return placed;
 	}
 
-	/** Digs a small 1-2 block pit straight down from the floor for a cocoon to sit in. */
-	private BlockPos carveDownwardNook(World world, Random random, BlockPos groundPos) {
-		int depth = 1 + random.nextInt(2); // 1-2 blocks
-		BlockPos cursor = groundPos;
+	/** Digs from the floor itself, leaving a visible opening and solid support below the cocoon. */
+	BlockPos carveDownwardNook(World world, Random random, BlockPos groundPos) {
+		int depth = 1 + random.nextInt(2);
+		BlockPos bottom = null;
 		for (int i = 0; i < depth; i++) {
-			BlockPos next = cursor.down();
-			IBlockState state = world.getBlockState(next);
-			if (state.getBlock() == Blocks.BEDROCK || !state.getMaterial().isSolid() || state.getMaterial().isLiquid()) {
+			BlockPos next = groundPos.down(i);
+			if (!canCarveNookBlock(world, next) || !world.isBlockLoaded(next.down())
+					|| !world.getBlockState(next.down()).isTopSolid()) {
 				break;
 			}
-			world.setBlockToAir(next);
-			cursor = next;
+			bottom = next;
 		}
-		return cursor.equals(groundPos) ? null : cursor;
+		if (bottom != null) {
+			world.setBlockToAir(groundPos.up());
+			for (int y = groundPos.getY(); y >= bottom.getY(); y--) {
+				world.setBlockToAir(new BlockPos(groundPos.getX(), y, groundPos.getZ()));
+			}
+		}
+		return bottom;
+	}
+
+	private boolean canCarveNookBlock(World world, BlockPos pos) {
+		if (!world.isBlockLoaded(pos)) {
+			return false;
+		}
+		IBlockState state = world.getBlockState(pos);
+		return state.getBlock() != Blocks.BEDROCK && state.getMaterial().isSolid()
+				&& !state.getMaterial().isLiquid() && !state.getBlock().hasTileEntity(state);
 	}
 
 	/** Digs a small 1-2 block nook sideways into a wall for a cocoon to sit in. */
@@ -481,8 +540,7 @@ public class WorldGenMinecrawlerLair implements IWorldGenerator {
 		BlockPos lastCarved = null;
 		for (int i = 0; i < depth; i++) {
 			BlockPos next = cursor.offset(dir);
-			IBlockState state = world.getBlockState(next);
-			if (state.getBlock() == Blocks.BEDROCK || !state.getMaterial().isSolid() || state.getMaterial().isLiquid()) {
+			if (!canCarveNookBlock(world, next) || !world.isBlockLoaded(next.down())) {
 				break;
 			}
 			if (!world.getBlockState(next.down()).isTopSolid()) {
@@ -556,76 +614,118 @@ public class WorldGenMinecrawlerLair implements IWorldGenerator {
 		return state.getBlock() != Blocks.BEDROCK && state.getMaterial().isSolid() && !state.getMaterial().isLiquid();
 	}
 
-	private void spawnCrawlers(World world, Random random, BlockPos floorPos, int radius) {
+	private void spawnCrawlers(World world, Random random, List<BlockPos> floors) {
 		int min = Settings.worldgenSettings.minecrawlerLairMinCrawlers;
 		int max = Math.max(min, Settings.worldgenSettings.minecrawlerLairMaxCrawlers);
 		int count = min + (max > min ? random.nextInt(max - min + 1) : 0);
 
-		for (int i = 0; i < count; i++) {
-			BlockPos groundPos = randomFloorPos(random, floorPos, Math.max(1, radius - 1));
+		List<BlockPos> candidates = new ArrayList<>(floors);
+		Collections.shuffle(candidates, random);
+		int spawned = 0;
+		for (BlockPos groundPos : candidates) {
+			if (spawned >= count) {
+				break;
+			}
 			EntityMinecrawler minecrawler = new EntityMinecrawler(world);
 			minecrawler.setLocationAndAngles(groundPos.getX() + 0.5D, groundPos.getY() + 1, groundPos.getZ() + 0.5D, random.nextFloat() * 360F, 0F);
+			if (!canSpawnCrawler(world, groundPos, minecrawler.getEntityBoundingBox())) {
+				continue;
+			}
 			minecrawler.enablePersistence();
-			world.spawnEntity(minecrawler);
+			if (world.spawnEntity(minecrawler)) {
+				spawned++;
+			}
 		}
 	}
 
-	private BlockPos randomFloorPos(Random random, BlockPos floorPos, int radius) {
-		double angle = random.nextDouble() * Math.PI * 2;
-		double dist = random.nextDouble() * radius;
-		int dx = (int) Math.round(Math.cos(angle) * dist);
-		int dz = (int) Math.round(Math.sin(angle) * dist);
-		return floorPos.add(dx, 0, dz);
+	static boolean canSpawnCrawler(World world, BlockPos groundPos, AxisAlignedBB body) {
+		// Collision queries inspect neighboring blocks too. Do not load terrain during population.
+		if (!world.isAreaLoaded(new BlockPos(body.minX - 1, body.minY - 1, body.minZ - 1),
+				new BlockPos(body.maxX + 1, body.maxY + 1, body.maxZ + 1))) {
+			return false;
+		}
+		return world.getBlockState(groundPos).isTopSolid()
+				&& world.getCollisionBoxes(null, body).isEmpty()
+				&& !world.containsAnyLiquid(body)
+				&& world.checkNoEntityCollision(body);
 	}
 
-	/** A handful of independent, low-odds decoration rolls - a lair can end up with any mix of these, or none. */
-	private void decorateExtras(World world, Random random, BlockPos floorPos, int radius) {
+	/** Independent decoration rolls per inhabited room, using only its actual carved floor cells. */
+	private void decorateExtras(World world, Random random, List<BlockPos> floors) {
 		if (random.nextFloat() < MUSHROOM_CLUSTER_CHANCE) {
-			placeMushroomCluster(world, random, floorPos, radius);
+			placeMushroomCluster(world, random, floors);
 		}
 		if (random.nextFloat() < SKELETON_CRATE_CHANCE) {
-			placeLootProp(world, random, floorPos, radius, ModBlocks.skeleton_crate);
+			placeLootProp(world, random, floors, ModBlocks.skeleton_crate);
 		}
 		if (random.nextFloat() < LOST_CRATE_POTIONS_CHANCE) {
-			placeLootProp(world, random, floorPos, radius, ModBlocks.lost_crate_potions);
+			placeLootProp(world, random, floors, ModBlocks.lost_crate_potions);
 		}
 
-		// 15% for a first skeleton corpse, then a further 5% for each additional one (up to 3 total) -
-		// each extra roll only happens if the previous one succeeded, so it tails off fast.
-		if (random.nextFloat() < SKELETON_CORPSE_CHANCE) {
-			int corpseCount = 1;
-			while (corpseCount < SKELETON_CORPSE_MAX && random.nextFloat() < SKELETON_CORPSE_EXTRA_CHANCE) {
-				corpseCount++;
-			}
-			for (int i = 0; i < corpseCount; i++) {
-				placeSkeletonCorpse(world, random, floorPos, radius);
-			}
+	}
+
+	void placeSkeletons(World world, Random random, List<BlockPos> floors, boolean mainRoom, BlockSkeletonCorpse block) {
+		float chance = mainRoom ? MAIN_ROOM_SKELETON_CHANCE : SIDE_ROOM_SKELETON_CHANCE;
+		if (random.nextFloat() >= chance) {
+			return;
+		}
+		int corpseCount = 1;
+		while (corpseCount < SKELETON_CORPSE_MAX && random.nextFloat() < SKELETON_CORPSE_EXTRA_CHANCE) {
+			corpseCount++;
+		}
+		for (int i = 0; i < corpseCount; i++) {
+			placeSkeletonCorpse(world, random, floors, block);
 		}
 	}
 
-	private void placeMushroomCluster(World world, Random random, BlockPos floorPos, int radius) {
-		BlockPos anchor = randomFloorPos(random, floorPos, Math.max(1, radius - 1));
-		int count = 4 + random.nextInt(5); // 4-8 mushrooms
+	/** Wet wax is surface dressing and may give way to a prop; cocoons and other blocks may not. */
+	private boolean canPlaceFloorDecoration(World world, BlockPos groundPos) {
+		BlockPos placePos = groundPos.up();
+		if (!world.isBlockLoaded(groundPos) || !world.isBlockLoaded(placePos)) {
+			return false;
+		}
+		return world.getBlockState(groundPos).isTopSolid()
+				&& (world.isAirBlock(placePos) || world.getBlockState(placePos).getBlock() instanceof BlockCrawlerWaxWet);
+	}
 
-		for (int i = 0; i < count; i++) {
-			BlockPos groundPos = anchor.add(random.nextInt(3) - 1, 0, random.nextInt(3) - 1);
-			BlockPos placePos = groundPos.up();
-			if (world.isAirBlock(placePos) && world.getBlockState(groundPos).isTopSolid()) {
-				world.setBlockState(placePos, Blocks.BROWN_MUSHROOM.getDefaultState(), 2);
+	private List<BlockPos> decorationFloors(World world, Random random, List<BlockPos> floors) {
+		List<BlockPos> candidates = new ArrayList<>();
+		for (BlockPos groundPos : floors) {
+			if (canPlaceFloorDecoration(world, groundPos)) {
+				candidates.add(groundPos);
+			}
+		}
+		Collections.shuffle(candidates, random);
+		return candidates;
+	}
+
+	void placeMushroomCluster(World world, Random random, List<BlockPos> floors) {
+		List<BlockPos> candidates = decorationFloors(world, random, floors);
+		candidates.removeIf(groundPos -> !Blocks.BROWN_MUSHROOM.canBlockStay(world, groundPos.up(), Blocks.BROWN_MUSHROOM.getDefaultState()));
+		if (candidates.isEmpty()) {
+			return;
+		}
+		BlockPos anchor = candidates.get(0);
+		// Start at a known valid cell, then use distinct nearby cells. Repeated random offsets used
+		// to hit wax, walls, or the same mushroom repeatedly and could yield an entirely empty cluster.
+		candidates.sort(Comparator.comparingDouble(groundPos -> groundPos.distanceSq(anchor)));
+		int remaining = 4 + random.nextInt(5);
+		for (BlockPos groundPos : candidates) {
+			if (Math.abs(groundPos.getX() - anchor.getX()) <= 2 && Math.abs(groundPos.getZ() - anchor.getZ()) <= 2
+					&& world.setBlockState(groundPos.up(), Blocks.BROWN_MUSHROOM.getDefaultState(), 2) && --remaining == 0) {
+				break;
 			}
 		}
 	}
 
 	/** Places a single BlockTOFT-style loot prop (skeleton_crate, lost_crate_potions, ...) on the floor. */
-	private void placeLootProp(World world, Random random, BlockPos floorPos, int radius, Block block) {
-		for (int attempt = 0; attempt < 6; attempt++) {
-			BlockPos groundPos = randomFloorPos(random, floorPos, radius);
+	private void placeLootProp(World world, Random random, List<BlockPos> floors, Block block) {
+		for (BlockPos groundPos : decorationFloors(world, random, floors)) {
 			BlockPos placePos = groundPos.up();
-			if (world.isAirBlock(placePos) && world.getBlockState(groundPos).isTopSolid()) {
-				EnumFacing facing = EnumFacing.Plane.HORIZONTAL.random(random);
-				boolean isSnowy = world.getBiome(placePos).isSnowyBiome();
-				world.setBlockState(placePos, block.getDefaultState()
-						.withProperty(BlockTOFT.FACING, facing).withProperty(BlockTOFT.SNOWY, isSnowy), 2);
+			EnumFacing facing = EnumFacing.Plane.HORIZONTAL.random(random);
+			boolean isSnowy = world.getBiome(placePos).isSnowyBiome();
+			if (world.setBlockState(placePos, block.getDefaultState()
+					.withProperty(BlockTOFT.FACING, facing).withProperty(BlockTOFT.SNOWY, isSnowy), 2)) {
 				return;
 			}
 		}
@@ -636,18 +736,9 @@ public class WorldGenMinecrawlerLair implements IWorldGenerator {
 	 * immediately adjacent, or lying flat in the "ground" pose with a random fine rotation otherwise.
 	 * Mirrors ComponentNbtPiece#placeSkeletonCorpse's baked-held-item handling for worldgen placement.
 	 */
-	private void placeSkeletonCorpse(World world, Random random, BlockPos floorPos, int radius) {
-		if (!(ModBlocks.skeleton_corpse instanceof BlockSkeletonCorpse)) {
-			return;
-		}
-		BlockSkeletonCorpse block = (BlockSkeletonCorpse) ModBlocks.skeleton_corpse;
-
-		for (int attempt = 0; attempt < 6; attempt++) {
-			BlockPos groundPos = randomFloorPos(random, floorPos, radius);
+	void placeSkeletonCorpse(World world, Random random, List<BlockPos> floors, BlockSkeletonCorpse block) {
+		for (BlockPos groundPos : decorationFloors(world, random, floors)) {
 			BlockPos placePos = groundPos.up();
-			if (!world.isAirBlock(placePos) || !world.getBlockState(groundPos).isTopSolid()) {
-				continue;
-			}
 
 			// Like a torch, FACING points away from its support, so a wall found in direction `wallSide`
 			// means the corpse must face the opposite way to lean back against it.
@@ -669,7 +760,9 @@ public class WorldGenMinecrawlerLair implements IWorldGenerator {
 				fineRotation = random.nextInt(16);
 			}
 
-			world.setBlockState(placePos, state, 2);
+			if (!world.setBlockState(placePos, state, 2)) {
+				continue;
+			}
 			TileEntity te = world.getTileEntity(placePos);
 			if (te instanceof TileEntitySkeletonCorpse) {
 				TileEntitySkeletonCorpse corpse = (TileEntitySkeletonCorpse) te;

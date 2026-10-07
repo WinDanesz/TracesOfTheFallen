@@ -17,6 +17,7 @@ import net.minecraft.init.Items;
 import net.minecraft.init.MobEffects;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
@@ -72,6 +73,20 @@ public class EntityLamphead extends EntityTameable {
 
     public void setMode(int mode) {
         this.dataManager.set(LAMPHEAD_MODE, mode);
+    }
+
+    @Override
+    public void writeEntityToNBT(NBTTagCompound compound) {
+        super.writeEntityToNBT(compound);
+        compound.setInteger("LampheadMode", this.getMode());
+    }
+
+    @Override
+    public void readEntityFromNBT(NBTTagCompound compound) {
+        super.readEntityFromNBT(compound);
+        if (compound.hasKey("LampheadMode")) {
+            this.setMode(compound.getInteger("LampheadMode"));
+        }
     }
 
     @Override
