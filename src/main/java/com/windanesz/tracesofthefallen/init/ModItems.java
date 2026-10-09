@@ -270,6 +270,7 @@ public class ModItems {
 		registerItemBlock(registry, ModBlocks.skeleton_flower);
 		registerItemBlock(registry, ModBlocks.crystal_skull);
 		registerItemBlock(registry, ModBlocks.crystal_skull_deformed);
+		registerItemBlock(registry, ModBlocks.gnossic_mask);
 	}
 
 	public static void registerOreDictionary() {

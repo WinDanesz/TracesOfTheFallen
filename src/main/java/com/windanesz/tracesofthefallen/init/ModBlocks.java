@@ -132,6 +132,7 @@ public class ModBlocks {
 
 	public static final Block crystal_skull = placeholder();
 	public static final Block crystal_skull_deformed = placeholder();
+	public static final Block gnossic_mask = placeholder();
 
 	@Nonnull
 	@SuppressWarnings("ConstantConditions")
@@ -265,6 +266,7 @@ public class ModBlocks {
 
 		registerBlock(registry, "crystal_skull", new BlockSkullDecoration(Material.ROCK));
 		registerBlock(registry, "crystal_skull_deformed", new BlockSkullDecoration(Material.ROCK));
+		registerBlock(registry, "gnossic_mask", new BlockGnossicMask());
 	}
 
 	public static void registerBlock(IForgeRegistry<Block> registry, String name, Block block) {

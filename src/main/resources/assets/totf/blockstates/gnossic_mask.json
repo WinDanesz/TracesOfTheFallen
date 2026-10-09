@@ -1,0 +1,12 @@
+{
+  "variants": {
+    "facing=north,floor=false": { "model": "totf:gnossic_mask_wall" },
+    "facing=east,floor=false":  { "model": "totf:gnossic_mask_wall", "y": 90 },
+    "facing=south,floor=false": { "model": "totf:gnossic_mask_wall", "y": 180 },
+    "facing=west,floor=false":  { "model": "totf:gnossic_mask_wall", "y": 270 },
+    "facing=south,floor=true": { "model": "totf:gnossic_mask" },
+    "facing=west,floor=true":  { "model": "totf:gnossic_mask", "y": 90 },
+    "facing=north,floor=true": { "model": "totf:gnossic_mask", "y": 180 },
+    "facing=east,floor=true":  { "model": "totf:gnossic_mask", "y": 270 }
+  }
+}

@@ -28,6 +28,9 @@ public class RenderGnossic extends RenderLiving<EntityGnossic> {
 
     @Override
     protected void preRenderCallback(EntityGnossic entity, float partialTickTime) {
+        // Only the mask exists at first; the shadow grows in with the robes
+        this.shadowSize = entity.isMaterializing() ? 0.5F * entity.getRobeProgress(partialTickTime) : 0.5F;
+
         if (entity.deathTime > 0) {
             float f = ((float)entity.deathTime + partialTickTime - 1.0F) / 40.0F;
             if (f > 1.0F) f = 1.0F;

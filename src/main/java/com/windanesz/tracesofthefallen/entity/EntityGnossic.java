@@ -2,6 +2,7 @@ package com.windanesz.tracesofthefallen.entity;
 
 import com.windanesz.tracesofthefallen.Settings;
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
+import com.windanesz.tracesofthefallen.block.BlockGnossicMask;
 import com.windanesz.tracesofthefallen.init.ModItems;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
@@ -16,15 +17,15 @@ import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.EntitySkeleton;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.pathfinding.PathNodeType;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -39,6 +40,16 @@ public class EntityGnossic extends EntityMob {
     private static final DataParameter<Integer> ATTACK_STATE = EntityDataManager.createKey(EntityGnossic.class, DataSerializers.VARINT);
     private static final DataParameter<Integer> DRAIN_TARGET_ID = EntityDataManager.createKey(EntityGnossic.class, DataSerializers.VARINT);
     private static final DataParameter<Boolean> IS_SPRINTING = EntityDataManager.createKey(EntityGnossic.class, DataSerializers.BOOLEAN);
+    private static final DataParameter<Integer> MATERIALIZE_TICKS = EntityDataManager.createKey(EntityGnossic.class, DataSerializers.VARINT);
+    private static final DataParameter<BlockPos> MASK_POS = EntityDataManager.createKey(EntityGnossic.class, DataSerializers.BLOCK_POS);
+    private static final DataParameter<Integer> MASK_FACING = EntityDataManager.createKey(EntityGnossic.class, DataSerializers.VARINT);
+
+    /** Total length of the "mask turns into a Gnossic" animation, in ticks. */
+    public static final int MATERIALIZE_DURATION = 70;
+    /** The mask floats up to head height during the first part of the animation, the robes form during the rest. */
+    public static final int MATERIALIZE_RISE_TICKS = 36;
+    /** Height (in blocks above the feet) of the centre of the mask once the Gnossic is fully formed. */
+    public static final double MASK_FINAL_HEIGHT = 2.19D;
 
     public boolean isAggro = false;
     public boolean hasReachedPlayer = false;
@@ -48,6 +59,9 @@ public class EntityGnossic extends EntityMob {
     public float prevFlightPitch;
     public float rippleIntensity;
     public float prevRippleIntensity;
+    // Client-side copies of MATERIALIZE_TICKS, used to interpolate the animation (-1: not yet synced)
+    private float prevMaterializeTicks = -1.0F;
+    private float materializeTicks = -1.0F;
 
     public EntityGnossic(World worldIn) {
         super(worldIn);
@@ -65,6 +79,81 @@ public class EntityGnossic extends EntityMob {
         this.dataManager.register(ATTACK_STATE, 0); // 0: Idle, 1: Charging, 2: Draining
         this.dataManager.register(DRAIN_TARGET_ID, -1);
         this.dataManager.register(IS_SPRINTING, false);
+        this.dataManager.register(MATERIALIZE_TICKS, MATERIALIZE_DURATION); // Fully formed unless started by a mask
+        this.dataManager.register(MASK_POS, BlockPos.ORIGIN);
+        this.dataManager.register(MASK_FACING, EnumFacing.UP.getIndex());
+    }
+
+    /**
+     * Starts the animation of a Gnossic Mask turning into this mob. Call before spawning the entity.
+     *
+     * @param maskPos     position of the (already removed) mask block
+     * @param mountFacing {@link EnumFacing#UP} for a mask lying on the floor, otherwise the direction a wall mask faced
+     */
+    public void beginMaterializing(BlockPos maskPos, EnumFacing mountFacing) {
+        this.dataManager.set(MASK_POS, maskPos);
+        this.dataManager.set(MASK_FACING, mountFacing.getIndex());
+        this.dataManager.set(MATERIALIZE_TICKS, 0);
+        this.enablePersistence();
+    }
+
+    public boolean isMaterializing() {
+        return this.dataManager.get(MATERIALIZE_TICKS) < MATERIALIZE_DURATION;
+    }
+
+    public boolean isFloorMask() {
+        return EnumFacing.byIndex(this.dataManager.get(MASK_FACING)) == EnumFacing.UP;
+    }
+
+    /** Centre of the mask as it sat in the world, where the animation starts from. */
+    public Vec3d getMaskStartPos() {
+        return BlockGnossicMask.getMaskCenter(this.dataManager.get(MASK_POS), EnumFacing.byIndex(this.dataManager.get(MASK_FACING)));
+    }
+
+    public float getMaterializeTicks(float partialTicks) {
+        if (!this.isMaterializing()) {
+            return MATERIALIZE_DURATION;
+        }
+        if (this.materializeTicks < 0.0F) {
+            return this.dataManager.get(MATERIALIZE_TICKS);
+        }
+        return this.prevMaterializeTicks + (this.materializeTicks - this.prevMaterializeTicks) * partialTicks;
+    }
+
+    /** 0-1 progress of the mask floating up to head height. */
+    public float getRiseProgress(float partialTicks) {
+        return MathHelper.clamp(this.getMaterializeTicks(partialTicks) / MATERIALIZE_RISE_TICKS, 0.0F, 1.0F);
+    }
+
+    /** 0-1 progress of the robes forming out of the smoke (0 until the mask has arrived). */
+    public float getRobeProgress(float partialTicks) {
+        if (!this.isMaterializing()) {
+            return 1.0F;
+        }
+        return MathHelper.clamp((this.getMaterializeTicks(partialTicks) - MATERIALIZE_RISE_TICKS) / (MATERIALIZE_DURATION - MATERIALIZE_RISE_TICKS), 0.0F, 1.0F);
+    }
+
+    @Override
+    protected boolean isMovementBlocked() {
+        return super.isMovementBlocked() || this.isMaterializing();
+    }
+
+    @Override
+    public void writeEntityToNBT(NBTTagCompound compound) {
+        super.writeEntityToNBT(compound);
+        compound.setInteger("MaterializeTicks", this.dataManager.get(MATERIALIZE_TICKS));
+        compound.setLong("MaskPos", this.dataManager.get(MASK_POS).toLong());
+        compound.setInteger("MaskFacing", this.dataManager.get(MASK_FACING));
+    }
+
+    @Override
+    public void readEntityFromNBT(NBTTagCompound compound) {
+        super.readEntityFromNBT(compound);
+        if (compound.hasKey("MaterializeTicks")) {
+            this.dataManager.set(MATERIALIZE_TICKS, compound.getInteger("MaterializeTicks"));
+            this.dataManager.set(MASK_POS, BlockPos.fromLong(compound.getLong("MaskPos")));
+            this.dataManager.set(MASK_FACING, compound.getInteger("MaskFacing"));
+        }
     }
 
     public int getAttackState() {
@@ -245,6 +334,11 @@ public class EntityGnossic extends EntityMob {
     @Override
     public void onUpdate() {
         super.onUpdate();
+
+        if (this.isMaterializing()) {
+            this.updateMaterializing();
+        }
+
         if (this.world.isRemote) {
             int state = this.getAttackState();
             int targetId = this.getDrainTargetId();
@@ -272,6 +366,65 @@ public class EntityGnossic extends EntityMob {
         }
     }
 
+    private void updateMaterializing() {
+        int ticks = this.dataManager.get(MATERIALIZE_TICKS);
+
+        if (this.world.isRemote) {
+            this.prevMaterializeTicks = this.materializeTicks < 0.0F ? ticks : this.materializeTicks;
+            this.materializeTicks = ticks;
+            this.spawnMaterializeParticles(ticks);
+            return;
+        }
+
+        if (ticks == 0) {
+            this.world.playSound(null, this.posX, this.posY + 1.0D, this.posZ, SoundEvents.ENTITY_WITHER_AMBIENT, SoundCategory.HOSTILE, 0.6F, 0.5F);
+        } else if (ticks == MATERIALIZE_RISE_TICKS) {
+            this.world.playSound(null, this.posX, this.posY + 1.0D, this.posZ, SoundEvents.ENTITY_ENDERMEN_TELEPORT, SoundCategory.HOSTILE, 0.8F, 0.5F);
+        }
+        this.dataManager.set(MATERIALIZE_TICKS, ticks + 1);
+    }
+
+    private void spawnMaterializeParticles(int ticks) {
+        if (ticks < MATERIALIZE_RISE_TICKS) {
+            // A thin wisp of smoke trails the floating mask
+            float rise = (float) ticks / MATERIALIZE_RISE_TICKS;
+            float ease = rise * rise * (3.0F - 2.0F * rise);
+            Vec3d start = this.getMaskStartPos();
+            double x = start.x + (this.posX - start.x) * ease;
+            double y = start.y + (this.posY + MASK_FINAL_HEIGHT - start.y) * ease;
+            double z = start.z + (this.posZ - start.z) * ease;
+            for (int i = 0; i < 2; ++i) {
+                this.world.spawnParticle(EnumParticleTypes.SMOKE_NORMAL,
+                        x + this.rand.nextGaussian() * 0.12D, y + this.rand.nextGaussian() * 0.12D, z + this.rand.nextGaussian() * 0.12D,
+                        0.0D, 0.02D, 0.0D);
+            }
+            return;
+        }
+
+        // Dark smoke billows around the lower edge of the robes as they unfurl downwards from the mask
+        float robe = (float) (ticks - MATERIALIZE_RISE_TICKS) / (MATERIALIZE_DURATION - MATERIALIZE_RISE_TICKS);
+        float reveal = robe * robe * (3.0F - 2.0F * robe);
+        double edge = this.posY + 1.9D * (1.0D - reveal);
+        for (int i = 0; i < 4; ++i) {
+            this.world.spawnParticle(EnumParticleTypes.SMOKE_LARGE,
+                    this.posX + (this.rand.nextDouble() - 0.5D) * 1.0D, edge + this.rand.nextDouble() * 0.6D, this.posZ + (this.rand.nextDouble() - 0.5D) * 1.0D,
+                    this.rand.nextGaussian() * 0.01D, 0.01D + this.rand.nextDouble() * 0.02D, this.rand.nextGaussian() * 0.01D);
+        }
+        for (int i = 0; i < 6; ++i) {
+            this.world.spawnParticle(EnumParticleTypes.SMOKE_NORMAL,
+                    this.posX + (this.rand.nextDouble() - 0.5D) * 1.2D, edge + this.rand.nextDouble() * 0.8D, this.posZ + (this.rand.nextDouble() - 0.5D) * 1.2D,
+                    this.rand.nextGaussian() * 0.02D, 0.02D, this.rand.nextGaussian() * 0.02D);
+        }
+        if (ticks == MATERIALIZE_DURATION - 1) {
+            // Final puff as the figure settles
+            for (int i = 0; i < 30; ++i) {
+                this.world.spawnParticle(EnumParticleTypes.SMOKE_LARGE,
+                        this.posX + (this.rand.nextDouble() - 0.5D) * 1.0D, this.posY + this.rand.nextDouble() * 1.9D, this.posZ + (this.rand.nextDouble() - 0.5D) * 1.0D,
+                        this.rand.nextGaussian() * 0.03D, 0.02D, this.rand.nextGaussian() * 0.03D);
+            }
+        }
+    }
+
     @Override
     protected void collideWithEntity(Entity entityIn) {
         // No physical push or damage
@@ -279,6 +432,9 @@ public class EntityGnossic extends EntityMob {
 
     @Override
     public boolean attackEntityFrom(DamageSource source, float amount) {
+        if (this.isMaterializing() && source != DamageSource.OUT_OF_WORLD) {
+            return false; // Not yet fully formed
+        }
         if (source == DamageSource.IN_WALL || source == DamageSource.DROWN) {
             return false; 
         }

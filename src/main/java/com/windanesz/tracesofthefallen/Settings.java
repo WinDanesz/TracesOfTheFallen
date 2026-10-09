@@ -1000,6 +1000,11 @@ public class Settings {
 		@Config.Comment("Whether the Gnossic mob burns in sunlight. Default: false")
 		public boolean gnossicBurnsInSun = false;
 
+		@Config.Name("Gnossic Mask Trigger Radius")
+		@Config.Comment("The range in blocks within which a player wakes a Gnossic Mask, turning it into a Gnossic. Default: 6")
+		@Config.RangeDouble(min = 1.0, max = 64.0)
+		public double gnossicMaskTriggerRadius = 6.0D;
+
 		@Config.Name("Lamphead Knockback Multiplier")
 		@Config.Comment("The knockback multiplier for Lamphead's attack. Default: 0.8")
 		@Config.RangeDouble(min = 0.0D, max = 100.0D)

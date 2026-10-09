@@ -5,10 +5,19 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelBox;
 import net.minecraft.client.model.ModelRenderer;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 
 public class ModelGnossic extends ModelBase {
+	// Centre of the mask in its final pose, in model pixels relative to the model origin (see cube_r1 / head)
+	private static final float MASK_FINAL_X = 1.8F;
+	private static final float MASK_FINAL_Y = -35.15F;
+	private static final float MASK_FINAL_Z = -2.0F;
+	// The mask is tilted by cube_r1's Z rotation (0.5934 rad) when worn; the mask block models are not
+	private static final float MASK_TILT_DEGREES = 34.0F;
+
 	private final ModelRenderer main;
 	private final ModelRenderer head;
 	private final ModelRenderer cube_r1;
@@ -114,9 +123,78 @@ public class ModelGnossic extends ModelBase {
 	public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
 		if (entity instanceof EntityGnossic) {
 			EntityGnossic gnossic = (EntityGnossic) entity;
+			if (gnossic.isMaterializing()) {
+				this.renderMaterializing(gnossic, f5);
+				return;
+			}
 			this.body.showModel = gnossic.deathTime == 0;
 		}
 		main.render(f5);
+	}
+
+	/**
+	 * A Gnossic Mask turning into a Gnossic: the head starts out exactly where the mask block was, floats up to its
+	 * place on the body and tilts into its worn pose, and then the body unfurls from beneath it, fading in.
+	 */
+	private void renderMaterializing(EntityGnossic gnossic, float scale) {
+		float partialTicks = Minecraft.getMinecraft().getRenderPartialTicks();
+		float ticks = gnossic.getMaterializeTicks(partialTicks);
+		float rise = gnossic.getRiseProgress(partialTicks);
+		float robe = gnossic.getRobeProgress(partialTicks);
+		float ease = rise * rise * (3.0F - 2.0F * rise);
+
+		// Where the mask started, as an offset from the feet in this model's (flipped, pixel) space
+		Vec3d start = gnossic.getMaskStartPos();
+		double dx = start.x - (gnossic.prevPosX + (gnossic.posX - gnossic.prevPosX) * partialTicks);
+		double dy = start.y - (gnossic.prevPosY + (gnossic.posY - gnossic.prevPosY) * partialTicks);
+		double dz = start.z - (gnossic.prevPosZ + (gnossic.posZ - gnossic.prevPosZ) * partialTicks);
+		float bodyYaw = gnossic.prevRenderYawOffset + MathHelper.wrapDegrees(gnossic.renderYawOffset - gnossic.prevRenderYawOffset) * partialTicks;
+		double angle = Math.toRadians(180.0F - bodyYaw);
+		double cos = Math.cos(angle);
+		double sin = Math.sin(angle);
+		float startX = (float) -(dx * cos - dz * sin) * 16.0F;
+		float startY = (float) -dy * 16.0F;
+		float startZ = (float) (dx * sin + dz * cos) * 16.0F;
+
+		float x = startX + (MASK_FINAL_X - startX) * ease;
+		// Floats a little higher than its final spot mid-flight, then settles
+		float y = startY + (MASK_FINAL_Y - startY) * ease - MathHelper.sin(rise * (float) Math.PI) * 4.0F;
+		float z = startZ + (MASK_FINAL_Z - startZ) * ease;
+
+		// A floor mask lies face up, tipping forwards as it rises. Both kinds start untilted and settle into the worn tilt
+		float pitch = gnossic.isFloorMask() ? -90.0F * (1.0F - ease) : 0.0F;
+		float roll = -MASK_TILT_DEGREES * (1.0F - ease) + MathHelper.sin(ticks * 0.45F) * 5.0F * MathHelper.sin(rise * (float) Math.PI);
+
+		GlStateManager.pushMatrix();
+		GlStateManager.translate(main.rotationPointX * scale, main.rotationPointY * scale, main.rotationPointZ * scale);
+
+		GlStateManager.pushMatrix();
+		GlStateManager.translate(x * scale, y * scale, z * scale);
+		GlStateManager.rotate(pitch, 1.0F, 0.0F, 0.0F);
+		GlStateManager.rotate(roll, 0.0F, 0.0F, 1.0F);
+		GlStateManager.translate(-MASK_FINAL_X * scale, -MASK_FINAL_Y * scale, -MASK_FINAL_Z * scale);
+		this.head.render(scale);
+		GlStateManager.popMatrix();
+
+		if (robe > 0.0F) {
+			// The robes hang from the mask: grow them downwards while fading them in
+			float reveal = robe * robe * (3.0F - 2.0F * robe);
+			float alpha = MathHelper.clamp(robe * 1.8F, 0.0F, 1.0F);
+			GlStateManager.pushMatrix();
+			GlStateManager.translate(0.0F, this.body.rotationPointY * scale, 0.0F);
+			GlStateManager.scale(1.0F, Math.max(reveal, 0.02F), 1.0F);
+			GlStateManager.translate(0.0F, -this.body.rotationPointY * scale, 0.0F);
+			GlStateManager.enableBlend();
+			GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+			GlStateManager.color(1.0F, 1.0F, 1.0F, alpha);
+			this.body.showModel = true;
+			this.body.render(scale);
+			GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+			GlStateManager.disableBlend();
+			GlStateManager.popMatrix();
+		}
+
+		GlStateManager.popMatrix();
 	}
 
 	public void setRotationAngle(ModelRenderer modelRenderer, float x, float y, float z) {
