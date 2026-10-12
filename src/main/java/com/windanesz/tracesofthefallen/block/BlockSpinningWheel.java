@@ -2,8 +2,8 @@ package com.windanesz.tracesofthefallen.block;
 
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
 import com.windanesz.tracesofthefallen.init.ModBlocks;
-import com.windanesz.tracesofthefallen.init.ModItems;
 import com.windanesz.tracesofthefallen.network.ModGuiHandler;
+import com.windanesz.tracesofthefallen.recipe.SpinningWheelRecipes;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -153,27 +153,27 @@ public class BlockSpinningWheel extends BlockDecoration {
 		ItemStack heldItem = playerIn.getHeldItem(hand);
 
 		if (!worldIn.isRemote) {
-			if (heldItem.getItem() == Items.STICK) {
+			if (SpinningWheelRecipes.isInput(heldItem)) {
+				SpinningWheelRecipes.Recipe recipe = SpinningWheelRecipes.find(heldItem, te.getStickCount(), te.isSpinning());
+				if (recipe != null) {
+					if (!playerIn.capabilities.isCreativeMode) {
+						heldItem.shrink(recipe.inputCount);
+					}
+					te.consumeSticks(recipe.stickCount);
+					ItemStack output = recipe.getOutput();
+					if (!playerIn.addItemStackToInventory(output)) {
+						playerIn.dropItem(output, false);
+					}
+					if (!te.isSpinning()) te.startSpinning(60);
+					worldIn.playSound(null, pos, SoundEvents.ENTITY_SHEEP_SHEAR, SoundCategory.BLOCKS, 1.0F, 1.0F);
+				}
+			} else if (heldItem.getItem() == Items.STICK) {
 				ItemStack remaining = te.insertStick(heldItem.copy());
 				if (remaining.getCount() != heldItem.getCount()) {
 					if (!playerIn.capabilities.isCreativeMode) {
 						playerIn.setHeldItem(hand, remaining);
 					}
 					worldIn.playSound(null, pos, SoundEvents.BLOCK_WOOD_PLACE, SoundCategory.BLOCKS, 1.0F, 1.0F);
-				}
-			} else if (heldItem.getItem() == Items.STRING) {
-				if (te.isSpinning()) {
-					if (heldItem.getCount() >= 32 && te.hasStick()) {
-						if (!playerIn.capabilities.isCreativeMode) {
-							heldItem.shrink(32);
-						}
-						te.consumeStick();
-						ItemStack spindle = new ItemStack(ModItems.silk_spindle, 1);
-						if (!playerIn.addItemStackToInventory(spindle)) {
-							playerIn.dropItem(spindle, false);
-						}
-						worldIn.playSound(null, pos, SoundEvents.ENTITY_SHEEP_SHEAR, SoundCategory.BLOCKS, 1.0F, 1.0F);
-					}
 				}
 			} else if (heldItem.isEmpty()) {
 				if (playerIn.isSneaking()) {
@@ -190,4 +190,3 @@ public class BlockSpinningWheel extends BlockDecoration {
 		return true;
 	}
 }
-

@@ -99,6 +99,14 @@ public class TileEntitySpinningWheel extends TileEntity implements ITickable, IW
 		stickInventory.extractItem(0, 1, false);
 	}
 
+	public int getStickCount() {
+		return hasStick() ? stickInventory.getStackInSlot(0).getCount() : 0;
+	}
+
+	public void consumeSticks(int count) {
+		if (count > 0) stickInventory.extractItem(0, count, false);
+	}
+
 	public ItemStack insertStick(ItemStack stack) {
 		return stickInventory.insertItem(0, stack, false);
 	}

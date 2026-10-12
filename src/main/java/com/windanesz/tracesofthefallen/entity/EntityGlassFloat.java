@@ -224,7 +224,7 @@ public class EntityGlassFloat extends Entity {
 	}
 
 	@Override
-	protected void doWaterSplashEffect() {
+	public void doWaterSplashEffect() {
 	}
 
 	@Nullable
