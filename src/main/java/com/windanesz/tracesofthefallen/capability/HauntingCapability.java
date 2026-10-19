@@ -3,6 +3,7 @@ package com.windanesz.tracesofthefallen.capability;
 import com.windanesz.tracesofthefallen.Settings;
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
 import com.windanesz.tracesofthefallen.Utils;
+import com.windanesz.tracesofthefallen.block.BlockSubtorch;
 import com.windanesz.tracesofthefallen.entity.EntitySpecter;
 import com.windanesz.tracesofthefallen.entity.EntitySpecterGrasper;
 import com.windanesz.tracesofthefallen.network.PacketHandler;
@@ -111,8 +112,23 @@ public class HauntingCapability implements INBTSerializable<NBTTagCompound> {
 
 	private final EntityPlayer player;
 
+	/**
+	 * Returns the effective haunting progress: 0 while the player is protected by a nearby Subtorch,
+	 * the real stored value otherwise.
+	 */
 	public int getHauntingProgress() {
+		if (isSubtorchProtected()) {
+			return 0;
+		}
 		return hauntingProgress;
+	}
+
+	public boolean isSubtorchProtected() {
+		return player != null && player.world.getTotalWorldTime() < subtorchProtectedUntil;
+	}
+
+	public void setSubtorchProtectedUntil(long worldTime) {
+		this.subtorchProtectedUntil = worldTime;
 	}
 
 	public void setHauntingProgress(int hauntingProgress) {
@@ -146,6 +162,8 @@ public class HauntingCapability implements INBTSerializable<NBTTagCompound> {
 
 	public int hauntingProgress = 0;
 	public int hauntingSpawnCooldown = 0;
+	// Transient (not saved): world time until which a nearby Subtorch suppresses haunting
+	private long subtorchProtectedUntil = 0;
 
 	public HauntingCapability() {
 		this(null); // Nullary constructor for the registration method factory parameter
@@ -252,6 +270,44 @@ public class HauntingCapability implements INBTSerializable<NBTTagCompound> {
 		}
 	}
 
+	/**
+	 * Players standing within a configurable radius (default 2, i.e. a 5x5 circle) of a Subtorch are
+	 * momentarily treated as having 0 haunting. The stored value is left untouched. Radius 0 disables this.
+	 */
+	@SubscribeEvent
+	public static void onSubtorchProtectionTick(TickEvent.PlayerTickEvent event) {
+		if (event.phase != TickEvent.Phase.END || event.player.world.isRemote || event.player.ticksExisted % 10 != 0) {
+			return;
+		}
+		int radius = Settings.hauntingSettings.subtorchRadius;
+		if (radius <= 0) {
+			return;
+		}
+		EntityPlayer player = event.player;
+		HauntingCapability cap = HauntingCapability.get(player);
+		if (cap == null) {
+			return;
+		}
+
+		double maxDistSq = (radius + 0.5D) * (radius + 0.5D);
+		BlockPos center = new BlockPos(player);
+		BlockPos.MutableBlockPos check = new BlockPos.MutableBlockPos();
+		for (int dx = -radius; dx <= radius; dx++) {
+			for (int dz = -radius; dz <= radius; dz++) {
+				if (dx * dx + dz * dz > maxDistSq) continue;
+				for (int dy = -radius; dy <= radius; dy++) {
+					check.setPos(center.getX() + dx, center.getY() + dy, center.getZ() + dz);
+					if (player.world.getBlockState(check).getBlock() instanceof BlockSubtorch) {
+						cap.setSubtorchProtectedUntil(player.world.getTotalWorldTime() + SUBTORCH_PROTECTION_TICKS);
+						return;
+					}
+				}
+			}
+		}
+	}
+
+	private static final long SUBTORCH_PROTECTION_TICKS = 25L;
+
 	@SubscribeEvent
 	public static void onLivingUpdateEvent(TickEvent.PlayerTickEvent event) {
 
@@ -265,7 +321,7 @@ public class HauntingCapability implements INBTSerializable<NBTTagCompound> {
 				}
 				
 				if (!player.capabilities.isCreativeMode) {
-					int hauntingProg = cap.hauntingProgress;
+					int hauntingProg = cap.getHauntingProgress();
 					if (hauntingProg > 50 && cap.hauntingSpawnCooldown == 0) {
 						if (player.world.rand.nextInt(20) == 0) {
 							List<EntitySpecter> specters = player.world.getEntitiesWithinAABB(EntitySpecter.class, new AxisAlignedBB(player.getPosition()).grow(30));

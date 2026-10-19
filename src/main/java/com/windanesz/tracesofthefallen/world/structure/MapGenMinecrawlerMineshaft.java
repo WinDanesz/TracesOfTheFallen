@@ -23,15 +23,31 @@ public class MapGenMinecrawlerMineshaft extends MapGenMineshaft {
     @Override
     protected StructureStart getStructureStart(int chunkX, int chunkZ) {
         StructureStart start = super.getStructureStart(chunkX, chunkZ);
-        int frequency = Settings.worldgenSettings.minecrawlerMineshaftFrequency;
-        if (frequency <= 0 || !containsDimension(world.provider.getDimension())) {
+        if (!containsDimension(world.provider.getDimension())) {
+            return start;
+        }
+        int nestFrequency = Settings.worldgenSettings.minecrawlerMineshaftFrequency;
+        int shaftFrequency = Settings.worldgenSettings.minecrawlerBroodShaftFrequency;
+        if (nestFrequency <= 0 && shaftFrequency <= 0) {
             return start;
         }
         // Do not advance the vanilla generator's random stream for our extra content.
-        Random random = new Random(world.getSeed() ^ (chunkX * 341873128712L) ^ (chunkZ * 132897987541L) ^ 913174639L);
-        if (random.nextInt(frequency) == 0) {
-            boolean mesa = world.getBiome(new BlockPos((chunkX << 4) + 8, 64, (chunkZ << 4) + 8)) instanceof BiomeMesa;
-            attachNest(start, random, mesa, world.getSeaLevel() - 8);
+        long seed = world.getSeed() ^ (chunkX * 341873128712L) ^ (chunkZ * 132897987541L);
+        boolean mesa = world.getBiome(new BlockPos((chunkX << 4) + 8, 64, (chunkZ << 4) + 8)) instanceof BiomeMesa;
+        int maxFloorY = world.getSeaLevel() - 8;
+        if (nestFrequency > 0) {
+            Random random = new Random(seed ^ 913174639L);
+            // Sprawling shafts can hold a second infested branch; the rolls stay on our own random stream.
+            if (random.nextInt(nestFrequency) == 0 && attachNest(start, random, mesa, maxFloorY)
+                    && random.nextInt(3) == 0) {
+                attachNest(start, random, mesa, maxFloorY);
+            }
+        }
+        if (shaftFrequency > 0) {
+            Random random = new Random(seed ^ 0x2545F4914F6CDD1DL);
+            if (random.nextInt(shaftFrequency) == 0) {
+                attachBroodShaft(start, random, mesa, maxFloorY);
+            }
         }
         return start;
     }
@@ -44,12 +60,28 @@ public class MapGenMinecrawlerMineshaft extends MapGenMineshaft {
     }
 
     static boolean attachNest(StructureStart start, Random random, boolean mesa, int maxFloorY) {
+        return attachBranch(start, random, 8, maxFloorY, (floor, facing, seed) ->
+                new ComponentMinecrawlerNest(floor, facing, mesa, seed));
+    }
+
+    /** The shaft digs below its corridor, so the corridor must sit high enough to keep its floor above bedrock. */
+    static boolean attachBroodShaft(StructureStart start, Random random, boolean mesa, int maxFloorY) {
+        return attachBranch(start, random, 8 + ComponentMinecrawlerShaft.DROP, maxFloorY, (floor, facing, seed) ->
+                new ComponentMinecrawlerShaft(floor, facing, mesa, seed));
+    }
+
+    private interface BranchFactory {
+        StructureComponent create(BlockPos entranceFloor, EnumFacing facing, long seed);
+    }
+
+    private static boolean attachBranch(StructureStart start, Random random, int minFloorY, int maxFloorY,
+                                        BranchFactory factory) {
         List<StructureComponent> candidates = new ArrayList<>(start.getComponents());
         Collections.shuffle(candidates, random);
         for (StructureComponent candidate : candidates) {
             if (!(candidate instanceof StructureMineshaftPieces.Corridor) || candidate.getCoordBaseMode() == null) continue;
             StructureBoundingBox box = candidate.getBoundingBox();
-            if (box.minY - 1 < 8 || box.minY - 1 > maxFloorY) continue;
+            if (box.minY - 1 < minFloorY || box.minY - 1 > maxFloorY) continue;
 
             // Both ends are already open in vanilla corridors. An occupied end fails the
             // intersection check, so this naturally extends an available dead end.
@@ -61,11 +93,10 @@ public class MapGenMinecrawlerMineshaft extends MapGenMineshaft {
                 if (facing == EnumFacing.SOUTH) z = box.maxZ + 1;
                 if (facing == EnumFacing.WEST) x = box.minX - 1;
                 if (facing == EnumFacing.EAST) x = box.maxX + 1;
-                ComponentMinecrawlerNest nest = new ComponentMinecrawlerNest(
-                        new BlockPos(x, box.minY - 1, z), facing, mesa, random.nextLong());
-                if (StructureComponent.findIntersecting(start.getComponents(), nest.getBoundingBox()) == null) {
-                    start.getComponents().add(nest);
-                    start.getBoundingBox().expandTo(nest.getBoundingBox());
+                StructureComponent branch = factory.create(new BlockPos(x, box.minY - 1, z), facing, random.nextLong());
+                if (StructureComponent.findIntersecting(start.getComponents(), branch.getBoundingBox()) == null) {
+                    start.getComponents().add(branch);
+                    start.getBoundingBox().expandTo(branch.getBoundingBox());
                     return true;
                 }
             }

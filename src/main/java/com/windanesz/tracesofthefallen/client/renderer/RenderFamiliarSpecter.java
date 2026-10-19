@@ -27,6 +27,9 @@ public class RenderFamiliarSpecter extends RenderLiving<EntityFamiliarSpecter> {
 
 	@Override
 	public void doRender(EntityFamiliarSpecter entity, double x, double y, double z, float entityYaw, float partialTicks) {
+		if (entity.isDashing()) {
+			return;
+		}
 		GlStateManager.enableBlend();
 		GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 

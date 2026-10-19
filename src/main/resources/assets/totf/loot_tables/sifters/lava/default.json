@@ -38,6 +38,16 @@
           ]
         },
         {
+          "type": "item",
+          "name": "totf:incense",
+          "weight": 8
+        },
+        {
+          "type": "item",
+          "name": "totf:spirited_away_tea_leaves",
+          "weight": 8
+        },
+        {
           "type": "empty",
           "weight": 30
         }

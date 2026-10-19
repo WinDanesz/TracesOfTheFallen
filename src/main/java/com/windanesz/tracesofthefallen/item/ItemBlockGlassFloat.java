@@ -4,6 +4,7 @@ import com.windanesz.tracesofthefallen.block.BlockGlassFloat;
 import com.windanesz.tracesofthefallen.entity.EntityGlassFloat;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
+import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
@@ -25,6 +26,16 @@ public class ItemBlockGlassFloat extends ItemBlock {
 	public EnumActionResult onItemUse(EntityPlayer player, World world, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 		if (facing == EnumFacing.UP && BlockGlassFloat.isWaterSurface(world, pos)) {
 			return placeOnWater(player, world, pos, hand, facing);
+		}
+
+		// Aiming at the block below shallow water: the target position is the water itself, which the
+		// regular ItemBlock logic would treat as replaceable and overwrite.
+		BlockPos targetPos = world.getBlockState(pos).getBlock().isReplaceable(world, pos) ? pos : pos.offset(facing);
+		if (world.getBlockState(targetPos).getMaterial() == Material.WATER) {
+			if (facing == EnumFacing.UP && BlockGlassFloat.isWaterSurface(world, targetPos)) {
+				return placeOnWater(player, world, targetPos, hand, facing);
+			}
+			return EnumActionResult.FAIL;
 		}
 
 		return super.onItemUse(player, world, pos, hand, facing, hitX, hitY, hitZ);

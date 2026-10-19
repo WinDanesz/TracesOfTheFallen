@@ -1,9 +1,11 @@
 package com.windanesz.tracesofthefallen.entity.ai;
 
+import com.windanesz.tracesofthefallen.Settings;
 import com.windanesz.tracesofthefallen.entity.EntitySubterfuge;
 import com.windanesz.tracesofthefallen.network.PacketHandler;
 import com.windanesz.tracesofthefallen.packet.PacketSpawnGodSlapParticle;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.util.DamageSource;
@@ -74,13 +76,22 @@ public class EntityAISubterfugeGodslap extends EntityAIBase {
                 PacketHandler.net.sendToAllAround(
                         new PacketSpawnGodSlapParticle(px, py, pz), point);
 
-                // Deal damage
-                float damage = (float) this.subterfuge.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).getAttributeValue();
-                target.attackEntityFrom(DamageSource.causeMobDamage(this.subterfuge), damage);
+                // In hardcore a player is sent far away instead of being slapped to death.
+                boolean sparePlayer = Settings.mobSettings.subterfugeHardcoreTeleport
+                        && target instanceof EntityPlayer && target.world.getWorldInfo().isHardcoreModeEnabled();
+                boolean sentAway = sparePlayer && this.subterfuge.teleportAway((EntityPlayer) target);
 
-                // Massive knockback
-                Vec3d knockbackDir = target.getPositionVector().subtract(this.subterfuge.getPositionVector()).normalize();
-                target.knockBack(this.subterfuge, 3.0F, -knockbackDir.x, -knockbackDir.z);
+                if (!sentAway) {
+                    if (!sparePlayer) {
+                        // Deal damage
+                        float damage = (float) this.subterfuge.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).getAttributeValue();
+                        target.attackEntityFrom(DamageSource.causeMobDamage(this.subterfuge), damage);
+                    }
+
+                    // Massive knockback
+                    Vec3d knockbackDir = target.getPositionVector().subtract(this.subterfuge.getPositionVector()).normalize();
+                    target.knockBack(this.subterfuge, 3.0F, -knockbackDir.x, -knockbackDir.z);
+                }
             }
         }
     }

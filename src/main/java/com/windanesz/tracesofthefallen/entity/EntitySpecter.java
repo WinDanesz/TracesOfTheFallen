@@ -25,6 +25,8 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
 import java.util.Random;
@@ -40,6 +42,9 @@ public class EntitySpecter extends EntityMob implements IEntityOwnable {
     private int ambientSoundCooldown = 800;
     private int hostileSoundCooldown = 0;
     public boolean useLeftHand = false;
+    private static final byte DASH_TRAIL_STATUS = 61;
+    private static final int DASH_TRAIL_DURATION = 14;
+    private int dashTrailTicks;
 
     public EntitySpecter(World worldIn) {
         super(worldIn);
@@ -171,6 +176,14 @@ public class EntitySpecter extends EntityMob implements IEntityOwnable {
         if (source.getTrueSource() instanceof EntityPlayer) {
             return super.attackEntityFrom(source, amount);
         }
+        if (source.getTrueSource() instanceof IEntityOwnable) {
+            // Tamed pets (wolves, cats, ...) deal plain mob damage, which would otherwise be ignored.
+            // Never let them hurt a specter that belongs to their own owner.
+            UUID petOwnerId = ((IEntityOwnable) source.getTrueSource()).getOwnerId();
+            if (petOwnerId != null && !petOwnerId.equals(this.getOwnerId())) {
+                return super.attackEntityFrom(source, amount);
+            }
+        }
         if (source.isProjectile() || source.isMagicDamage()) {
             return super.attackEntityFrom(source, amount);
         }
@@ -186,10 +199,56 @@ public class EntitySpecter extends EntityMob implements IEntityOwnable {
         return entityIn.attackEntityFrom(DamageSource.causeIndirectMagicDamage(this, owner != null ? owner : this), (float) this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).getAttributeValue());
     }
 
+    /** Server: tells clients to leave a blue flame trail while this specter dashes away. */
+    public void triggerDashTrail() {
+        if (!this.world.isRemote) {
+            this.world.setEntityState(this, DASH_TRAIL_STATUS);
+        }
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void handleStatusUpdate(byte id) {
+        if (id == DASH_TRAIL_STATUS) {
+            this.dashTrailTicks = DASH_TRAIL_DURATION;
+        } else {
+            super.handleStatusUpdate(id);
+        }
+    }
+
+    public boolean isDashing() {
+        return this.dashTrailTicks > 0;
+    }
+
+    private void spawnDashTrail() {
+        double dx = this.posX - this.prevPosX;
+        double dy = this.posY - this.prevPosY;
+        double dz = this.posZ - this.prevPosZ;
+        double distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
+        // Distance-based sampling keeps the flame connected during fast movement.
+        int samples = Math.min(24, Math.max(3, (int) Math.ceil(distance / 0.12D)));
+        for (int i = 0; i < samples; i++) {
+            double t = distance > 8.0D ? 1.0D : (i + 1.0D) / samples;
+            double px = this.prevPosX + dx * t;
+            double py = this.prevPosY + dy * t + this.height * 0.55D;
+            double pz = this.prevPosZ + dz * t;
+            TracesOfTheFallen.proxy.spawnBlueFlameParticle(this.world,
+                    px + (this.rand.nextDouble() - 0.5D) * 0.12D,
+                    py + (this.rand.nextDouble() - 0.5D) * 0.18D,
+                    pz + (this.rand.nextDouble() - 0.5D) * 0.12D,
+                    0.0D, 0.015D, 0.0D);
+        }
+    }
+
     @Override
     public void onLivingUpdate() {
         super.onLivingUpdate();
         this.noClip = true;
+
+        if (this.world.isRemote && this.dashTrailTicks > 0) {
+            this.dashTrailTicks--;
+            this.spawnDashTrail();
+        }
 
         if (this.isSwingInProgress && this.ticksExisted % 3 != 0) {
             this.swingProgressInt--;
@@ -407,6 +466,7 @@ public class EntitySpecter extends EntityMob implements IEntityOwnable {
                                         this.parentEntity.motionX = (moveVecX / moveLen) * dashSpeed;
                                         this.parentEntity.motionY = (moveVecY / moveLen) * dashSpeed * 0.1;
                                         this.parentEntity.motionZ = (moveVecZ / moveLen) * dashSpeed;
+                                        this.parentEntity.triggerDashTrail();
 
                                         if (this.parentEntity.getMoveHelper() instanceof SpecterMoveHelper) {
                                             ((SpecterMoveHelper) this.parentEntity.getMoveHelper()).startCooldown(10);

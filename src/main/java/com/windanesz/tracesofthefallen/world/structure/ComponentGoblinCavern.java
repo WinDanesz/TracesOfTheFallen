@@ -38,11 +38,26 @@ public class ComponentGoblinCavern extends StructureComponentTemplate {
     private static final Set<String> FLOOR_BLOCKS = new HashSet<>(Arrays.asList(
             "minecraft:stone", "minecraft:dirt", "minecraft:grass"));
 
-    private static final int TUNNEL_RADIUS = 1;
-    private static final int TUNNEL_HEIGHT = 3;
-    private static final int TUNNEL_MIN_LENGTH = 14;
-    private static final int TUNNEL_EXTRA_LENGTH = 13;
-    private static final int TUNNEL_MAX_DRIFT = 3;
+    private static final String FIRE_RUNE_BLOCK = "totf:bonepile_fire_rune";
+
+    // Tunnels are carved as irregular caves. The longest one (cavern half-width + length + widest chamber)
+    // must stay well inside the 8-chunk range MapGenBase plans starts from, or distant chunks would never see it.
+    private static final int TUNNEL_MIN_LENGTH = 45;
+    private static final int TUNNEL_EXTRA_LENGTH = 36;
+    private static final int TUNNEL_MAX_DRIFT = 10;
+    private static final int TUNNEL_MIN_WORLD_Y = 6;
+    private static final float TUNNEL_MIN_RADIUS = 1.5F;
+    private static final float TUNNEL_MAX_RADIUS = 3.2F;
+    private static final float CHAMBER_MAX_RADIUS = 4.6F;
+    private static final int TUNNEL_MIN_HEIGHT = 3;
+    private static final int TUNNEL_MAX_HEIGHT = 6;
+    // Caves stay below this world Y so they never break through to the surface.
+    private static final int TUNNEL_MAX_WORLD_Y = 46;
+    // A tunnel keeps heading roughly straight out of the shell until it has cleared the cavern by this many blocks.
+    private static final int TUNNEL_MIN_CLEARANCE = 8;
+    private static final double STRAIGHT_TURN_LIMIT = Math.toRadians(25);
+    private static final double CAVE_TURN_LIMIT = Math.toRadians(80);
+    private static final int MAX_BRANCHES = 2;
 
     private String templateName;
     private Rotation rotation;
@@ -51,7 +66,7 @@ public class ComponentGoblinCavern extends StructureComponentTemplate {
 
     // Rebuilt from the template whenever the piece is created or loaded; never saved.
     private Layout layout;
-    private final List<List<BlockPos>> tunnels = new ArrayList<>();
+    private final List<List<CavePoint>> tunnels = new ArrayList<>();
 
     // Required by MapGenStructureIO when loading existing structures.
     public ComponentGoblinCavern() {
@@ -81,15 +96,17 @@ public class ComponentGoblinCavern extends StructureComponentTemplate {
 
         this.tunnels.clear();
         for (int index = 0; index < this.layout.exits.size(); index++) {
-            this.tunnels.add(buildTunnel(this.layout.exits.get(index), new Random(this.seed ^ (0x2545F4914F6CDD1DL * (index + 1)))));
+            this.tunnels.add(buildTunnel(this.layout.exits.get(index), this.templatePosition.getY(),
+                    new Random(this.seed ^ (0x2545F4914F6CDD1DL * (index + 1)))));
         }
         // The shell is only the cavern; the structure also covers every tunnel leading away from it.
-        for (List<BlockPos> tunnel : this.tunnels) {
-            for (BlockPos point : tunnel) {
-                BlockPos world = toWorld(point);
+        for (List<CavePoint> tunnel : this.tunnels) {
+            for (CavePoint point : tunnel) {
+                BlockPos world = toWorld(point.floor);
+                int reach = point.reach();
                 this.boundingBox.expandTo(new StructureBoundingBox(
-                        world.getX() - TUNNEL_RADIUS, world.getY(), world.getZ() - TUNNEL_RADIUS,
-                        world.getX() + TUNNEL_RADIUS, world.getY() + TUNNEL_HEIGHT - 1, world.getZ() + TUNNEL_RADIUS));
+                        world.getX() - reach, world.getY(), world.getZ() - reach,
+                        world.getX() + reach, world.getY() + point.height - 1, world.getZ() + reach));
             }
         }
     }
@@ -156,50 +173,105 @@ public class ComponentGoblinCavern extends StructureComponentTemplate {
     // ---------------------------------------------------------------------------------------------------
 
     /**
-     * Winds a tunnel out from an opening in the template wall, in template-local coordinates. The tunnel
-     * never turns back toward the cavern, so it can't re-enter the shell or double back on itself, and it
-     * drifts by at most one block per bend so the floor stays walkable. Each point is the floor cell of a
-     * 3x3x3 slice.
+     * Digs a long, irregular cave out from an opening in the template wall, in template-local coordinates.
+     * The path is a random walk: it holds its course out of the shell until it has cleared it, then meanders
+     * (never more than 80 degrees off the way out, so it can't double back on the cavern), rises and sinks
+     * gently, swells into chambers and narrows again, and may fork into short side branches. Each point is
+     * the floor cell of one cave slice; the floor never steps by more than a block, so it stays walkable.
      */
-    private static List<BlockPos> buildTunnel(Exit exit, Random random) {
-        List<BlockPos> path = new ArrayList<>();
-        EnumFacing outward = exit.outward;
-        EnumFacing heading = outward;
+    private static List<CavePoint> buildTunnel(Exit exit, int baseY, Random random) {
+        List<CavePoint> path = new ArrayList<>();
+        double outwardAngle = StrictMath.atan2(exit.outward.getZOffset(), exit.outward.getXOffset());
         int length = TUNNEL_MIN_LENGTH + random.nextInt(TUNNEL_EXTRA_LENGTH);
-        int untilBend = 3 + random.nextInt(3);
-        int x = exit.mouth.getX();
-        int y = exit.mouth.getY();
-        int z = exit.mouth.getZ();
 
-        for (int step = 0; step < length; step++) {
-            path.add(new BlockPos(x, y, z));
+        int mouthWorldY = exit.mouth.getY() + baseY;
+        int lowY = Math.max(TUNNEL_MIN_WORLD_Y, mouthWorldY - TUNNEL_MAX_DRIFT) - baseY;
+        int highY = Math.max(mouthWorldY, Math.min(mouthWorldY + TUNNEL_MAX_DRIFT, TUNNEL_MAX_WORLD_Y)) - baseY;
 
-            if (--untilBend <= 0) {
-                untilBend = 3 + random.nextInt(4);
-                int roll = random.nextInt(4);
-                EnumFacing next = roll == 0 ? heading.rotateY() : roll == 1 ? heading.rotateYCCW() : heading;
-                if (next.getXOffset() * outward.getXOffset() + next.getZOffset() * outward.getZOffset() < 0) {
-                    next = next.getOpposite();
-                }
-                heading = next;
-                y = Math.max(1, Math.min(exit.mouth.getY() + TUNNEL_MAX_DRIFT,
-                        Math.max(exit.mouth.getY() - TUNNEL_MAX_DRIFT, y + random.nextInt(3) - 1)));
+        // Branches fork off the main cave once it is well clear of the shell.
+        int branches = random.nextInt(MAX_BRANCHES + 1);
+        List<int[]> forks = new ArrayList<>();
+        for (int index = 0; index < branches; index++) {
+            forks.add(new int[]{TUNNEL_MIN_CLEARANCE + 6 + random.nextInt(Math.max(1, length - TUNNEL_MIN_CLEARANCE - 14)), index});
+        }
+
+        List<CavePoint> main = walkCave(exit.mouth, outwardAngle, outwardAngle, length, lowY, highY, true, random);
+        path.addAll(main);
+        for (int[] fork : forks) {
+            if (fork[0] >= main.size()) {
+                continue;
             }
-
-            x += heading.getXOffset();
-            z += heading.getZOffset();
+            CavePoint from = main.get(fork[0]);
+            double side = random.nextBoolean() ? 1.0D : -1.0D;
+            double angle = outwardAngle + side * Math.toRadians(40 + random.nextInt(30));
+            path.addAll(walkCave(from.floor, angle, outwardAngle, 12 + random.nextInt(14), lowY, highY, false, random));
         }
         return path;
     }
 
+    private static List<CavePoint> walkCave(BlockPos start, double startAngle, double outwardAngle, int length,
+                                            int lowY, int highY, boolean holdCourseAtStart, Random random) {
+        List<CavePoint> points = new ArrayList<>();
+        double x = start.getX();
+        double z = start.getZ();
+        double floorY = Math.max(lowY, Math.min(highY, start.getY()));
+        double angle = startAngle;
+        double slope = 0.0D;
+        float radius = TUNNEL_MIN_RADIUS + random.nextFloat() * (TUNNEL_MAX_RADIUS - TUNNEL_MIN_RADIUS);
+        float targetRadius = radius;
+        int untilResize = 4 + random.nextInt(8);
+        double travelled = 0.0D;
+
+        for (int step = 0; step < length; step++) {
+            int height = Math.max(TUNNEL_MIN_HEIGHT, Math.min(TUNNEL_MAX_HEIGHT, Math.round(radius * 1.6F + 0.5F)));
+            points.add(new CavePoint(new BlockPos(MathHelper.floor(x + 0.5D), (int) Math.round(floorY), MathHelper.floor(z + 0.5D)), radius, height));
+
+            if (--untilResize <= 0) {
+                untilResize = 4 + random.nextInt(9);
+                // Now and then the cave opens into a chamber; otherwise it just breathes in and out.
+                targetRadius = random.nextInt(6) == 0
+                        ? TUNNEL_MAX_RADIUS + random.nextFloat() * (CHAMBER_MAX_RADIUS - TUNNEL_MAX_RADIUS)
+                        : TUNNEL_MIN_RADIUS + random.nextFloat() * (TUNNEL_MAX_RADIUS - TUNNEL_MIN_RADIUS);
+            }
+            radius += Math.max(-0.2F, Math.min(0.2F, targetRadius - radius));
+
+            // Keep the heading within a cone around the way out of the shell; narrow until the shell is cleared.
+            double limit = holdCourseAtStart && travelled < TUNNEL_MIN_CLEARANCE ? STRAIGHT_TURN_LIMIT : CAVE_TURN_LIMIT;
+            angle += (random.nextDouble() - 0.5D) * 0.5D;
+            angle = outwardAngle + Math.max(-limit, Math.min(limit, angle - outwardAngle));
+            x += StrictMath.cos(angle);
+            z += StrictMath.sin(angle);
+            travelled += 1.0D;
+
+            // The floor wanders up and down by at most a block per step, bouncing off the depth limits.
+            slope = Math.max(-0.4D, Math.min(0.4D, slope + (random.nextDouble() - 0.5D) * 0.3D));
+            floorY += slope;
+            if (floorY < lowY || floorY > highY) {
+                floorY = Math.max(lowY, Math.min(highY, floorY));
+                slope = -slope;
+            }
+        }
+        return points;
+    }
+
     private void carveTunnels(World world, StructureBoundingBox region) {
-        for (List<BlockPos> tunnel : this.tunnels) {
-            for (BlockPos point : tunnel) {
-                for (int dx = -TUNNEL_RADIUS; dx <= TUNNEL_RADIUS; dx++) {
-                    for (int dz = -TUNNEL_RADIUS; dz <= TUNNEL_RADIUS; dz++) {
-                        for (int dy = 0; dy < TUNNEL_HEIGHT; dy++) {
-                            BlockPos local = point.add(dx, dy, dz);
-                            // The template already decides what its own footprint looks like. A tunnel slice
+        for (List<CavePoint> tunnel : this.tunnels) {
+            for (CavePoint point : tunnel) {
+                int reach = point.reach();
+                // Half an ellipsoid-ish blob standing on the floor cell: rounder than a box, never narrower at
+                // the centre column than a walkable passage.
+                double centreY = (point.height - 1) / 2.0D;
+                double verticalRadius = point.height / 2.0D;
+                for (int dx = -reach; dx <= reach; dx++) {
+                    for (int dz = -reach; dz <= reach; dz++) {
+                        for (int dy = 0; dy < point.height; dy++) {
+                            double across = (dx * dx + dz * dz) / (double) (point.radius * point.radius);
+                            double vertical = (dy - centreY) / verticalRadius;
+                            if (across + vertical * vertical > 1.0D) {
+                                continue;
+                            }
+                            BlockPos local = point.floor.add(dx, dy, dz);
+                            // The template already decides what its own footprint looks like. A cave slice
                             // beside the shell must not nibble its wall open.
                             if (this.layout.isInsideFootprint(local)) {
                                 continue;
@@ -237,17 +309,28 @@ public class ComponentGoblinCavern extends StructureComponentTemplate {
 
         int nestTarget = randomBetween(random, settings.goblinCavernMinNests, settings.goblinCavernMaxNests);
 
+        // The shaman keeps the fire: it always stands right beside the fire rune, whatever the shuffle says.
+        BlockPos shamanCell = this.layout.cellBesideFireRune();
+        List<BlockPos> reserved = new ArrayList<>();
+        if (shamanCell != null) {
+            reserved.add(shamanCell);
+        }
+
         List<BlockPos> nestCells = new ArrayList<>();
         for (BlockPos cell : candidates) {
             if (nestCells.size() >= nestTarget) {
                 break;
             }
-            if (this.layout.hasNestPatch(cell) && isFarFrom(cell, nestCells, 5)) {
+            if (this.layout.hasNestPatch(cell) && isFarFrom(cell, nestCells, 5) && isFarFrom(cell, reserved, 4)) {
                 nestCells.add(cell);
             }
         }
 
+        // GARRISON[0] is the shaman; the rest are picked from the shuffled cells as before.
         List<BlockPos> goblinCells = new ArrayList<>();
+        if (shamanCell != null) {
+            goblinCells.add(shamanCell);
+        }
         for (BlockPos cell : candidates) {
             if (goblinCells.size() >= GARRISON.length) {
                 break;
@@ -323,6 +406,24 @@ public class ComponentGoblinCavern extends StructureComponentTemplate {
     // Template geometry
     // ---------------------------------------------------------------------------------------------------
 
+    /** One slice of a cave: a blob of the given radius and height standing on a template-local floor cell. */
+    private static final class CavePoint {
+        final BlockPos floor;
+        final float radius;
+        final int height;
+
+        CavePoint(BlockPos floor, float radius, int height) {
+            this.floor = floor;
+            this.radius = radius;
+            this.height = height;
+        }
+
+        /** Whole blocks the slice reaches sideways from its floor cell. */
+        int reach() {
+            return MathHelper.ceil(this.radius);
+        }
+    }
+
     /** A gap in one of the template's four side walls, where a tunnel should leave it. */
     private static final class Exit {
         final EnumFacing outward;
@@ -346,6 +447,8 @@ public class ComponentGoblinCavern extends StructureComponentTemplate {
         final List<BlockPos> standCells = new ArrayList<>();
         final Set<BlockPos> standSet = new HashSet<>();
         final List<Exit> exits = new ArrayList<>();
+        /** The fire rune block the garrison's shaman is stationed beside; null if the template has none. */
+        BlockPos fireRune;
 
         private Layout(int sizeX, int sizeZ) {
             this.sizeX = sizeX;
@@ -357,10 +460,12 @@ public class ComponentGoblinCavern extends StructureComponentTemplate {
             NBTTagList palette = tag.getTagList("palette", 10);
             boolean[] air = new boolean[palette.tagCount()];
             boolean[] floor = new boolean[palette.tagCount()];
+            boolean[] fireRune = new boolean[palette.tagCount()];
             for (int index = 0; index < palette.tagCount(); index++) {
                 String name = palette.getCompoundTagAt(index).getString("Name");
                 air[index] = name.equals("minecraft:air");
                 floor[index] = FLOOR_BLOCKS.contains(name);
+                fireRune[index] = name.equals(FIRE_RUNE_BLOCK);
             }
 
             BlockPos size = template.getSize();
@@ -381,6 +486,14 @@ public class ComponentGoblinCavern extends StructureComponentTemplate {
             }
 
             Layout layout = new Layout(sizeX, sizeZ);
+            for (int index = 0; index < blocks.tagCount(); index++) {
+                NBTTagCompound block = blocks.getCompoundTagAt(index);
+                if (fireRune[block.getInteger("state")]) {
+                    NBTTagList pos = block.getTagList("pos", 3);
+                    layout.fireRune = new BlockPos(pos.getIntAt(0), pos.getIntAt(1), pos.getIntAt(2));
+                    break;
+                }
+            }
             for (int x = 0; x < sizeX; x++) {
                 for (int y = 1; y < sizeY; y++) {
                     for (int z = 0; z < sizeZ; z++) {
@@ -443,6 +556,21 @@ public class ComponentGoblinCavern extends StructureComponentTemplate {
 
         boolean isInsideFootprint(BlockPos cell) {
             return cell.getX() >= 0 && cell.getX() < sizeX && cell.getZ() >= 0 && cell.getZ() < sizeZ;
+        }
+
+        /** The standing cell closest to the fire the rune sustains (the cell above it), or null without a rune. */
+        BlockPos cellBesideFireRune() {
+            if (this.fireRune == null) {
+                return null;
+            }
+            BlockPos fire = this.fireRune.up();
+            BlockPos best = null;
+            for (BlockPos cell : this.standCells) {
+                if (best == null || cell.distanceSq(fire) < best.distanceSq(fire)) {
+                    best = cell;
+                }
+            }
+            return best;
         }
 
         /** A goblin nest is 2 blocks wide, so it needs a flat 2x2 patch of standing cells (cell is its min corner). */

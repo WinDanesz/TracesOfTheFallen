@@ -14,6 +14,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.gen.IChunkGenerator;
@@ -50,6 +51,21 @@ public class WorldGenMinecrawlerLair implements IWorldGenerator {
 	private static final float THIRD_ROOM_CHANCE = 0.45F;
 	private static final float EXTRA_ROOM_MIN_SCALE = 0.55F;
 	private static final float EXTRA_ROOM_MAX_SCALE = 0.85F;
+
+	// Entrance tunnels are irregular caves rather than fixed-width corridors.
+	private static final int TUNNEL_MIN_LENGTH = 50;
+	private static final int TUNNEL_EXTRA_LENGTH = 41;
+	private static final int TUNNEL_MAX_BRANCHES = 2;
+	private static final int TUNNEL_BRANCH_MIN_STEP = 8;
+	private static final int TUNNEL_MAX_DRIFT = 8;
+	private static final int TUNNEL_MIN_Y = 6;
+	// Steps ignored when watching for contact with a natural cave, since the first slices overlap the chamber.
+	private static final int TUNNEL_CONTACT_GRACE = 6;
+	private static final float TUNNEL_MIN_RADIUS = 1.3F;
+	private static final float TUNNEL_MAX_RADIUS = 2.6F;
+	private static final float TUNNEL_CHAMBER_RADIUS = 3.6F;
+	private static final double TUNNEL_TURN_LIMIT = Math.toRadians(80);
+	private static final double[] TUNNEL_STEER_OFFSETS = {Math.toRadians(35), Math.toRadians(70), Math.toRadians(110), Math.toRadians(150), Math.PI};
 
 	// Independent decoration rolls per inhabited room; a room can have any combination, or none.
 	private static final float MUSHROOM_CLUSTER_CHANCE = 0.15F;
@@ -383,55 +399,182 @@ public class WorldGenMinecrawlerLair implements IWorldGenerator {
 		}
 	}
 
+	/** One step of a cave walk: where its floor cell is and which way the walk was heading there. */
+	private static final class TunnelStep {
+		final BlockPos floor;
+		final double angle;
+
+		TunnelStep(BlockPos floor, double angle) {
+			this.floor = floor;
+			this.angle = angle;
+		}
+	}
+
 	/**
-	 * Winds a long, ~2-wide entrance tunnel out from the chamber instead of a dead-end stub, so the
-	 * lair always has a real entrance and actually leads somewhere - either it breaks into an existing
-	 * cave/cavern (detected and stopped on contact) or it simply runs its full length. Carves 3 tall
-	 * per step (not 2) so a step's vertical drift can't leave a sub-2-tall pocket between it and the
-	 * previous step.
+	 * Digs a long, irregular cave out from the chamber instead of a dead-end stub, so the lair always has a
+	 * real entrance and actually leads somewhere - either it breaks into an existing cave/cavern (detected
+	 * and stopped on contact) or it simply runs its full length. The walk heads out in a random direction,
+	 * meanders within 80 degrees of it (so it can't double back through the chamber), rises and sinks
+	 * gently, swells into chambers and narrows again, and may fork into short dead-end side branches.
 	 * <p>
-	 * Every step is gated on {@code world.isBlockLoaded} before anything is touched. Without that, a
-	 * 24-48 block tunnel routinely wanders outside the small area a chunk populate() call guarantees is
-	 * already generated (this codebase already works around exactly this "cascading worldgen" hazard
-	 * elsewhere, e.g. WorldGenBase's chunk-center offset) - reading/writing further out force-generates
-	 * neighboring chunks mid-populate, and whatever got carved out there does not reliably survive. That
-	 * was the actual cause of nests turning up with no visible tunnel at all.
+	 * Every slice is gated on {@code world.isAreaLoaded} before anything is touched. Without that, a long
+	 * tunnel routinely wanders outside the small area a chunk populate() call guarantees is already
+	 * generated (this codebase already works around exactly this "cascading worldgen" hazard elsewhere,
+	 * e.g. WorldGenBase's chunk-center offset) - reading/writing further out force-generates neighboring
+	 * chunks mid-populate, and whatever got carved out there does not reliably survive. That was the actual
+	 * cause of nests turning up with no visible tunnel at all. Rather than giving up at the first unloaded
+	 * edge, the walk steers away from it, so it uses the loaded area it does have.
 	 *
 	 * @return the final position reached, so a caller can chain another room off of it. Reaching a
 	 * natural cave stops this tunnel but still leaves the reached position available for another chamber.
 	 */
 	private BlockPos carveTunnel(World world, Random random, BlockPos floorPos, List<BlockPos> roomFloors) {
 		EnumFacing dir = EnumFacing.Plane.HORIZONTAL.random(random);
-		int maxLength = 24 + random.nextInt(25); // 24-48 blocks
-		BlockPos.MutableBlockPos cursor = new BlockPos.MutableBlockPos(findTunnelEntrance(floorPos, roomFloors, dir));
+		BlockPos entrance = findTunnelEntrance(floorPos, roomFloors, dir);
+		double angle = StrictMath.atan2(dir.getZOffset(), dir.getXOffset());
+		int length = TUNNEL_MIN_LENGTH + random.nextInt(TUNNEL_EXTRA_LENGTH);
 
-		for (int i = 0; i < maxLength; i++) {
-			if (random.nextFloat() < 0.18F) {
-				dir = random.nextBoolean() ? dir.rotateY() : dir.rotateYCCW();
+		Set<Long> carved = new HashSet<>();
+		List<TunnelStep> trail = new ArrayList<>();
+		BlockPos end = walkCave(world, random, entrance, angle, length, carved, trail, true);
+
+		int branches = random.nextInt(TUNNEL_MAX_BRANCHES + 1);
+		int mainSteps = trail.size();
+		for (int i = 0; i < branches && mainSteps > TUNNEL_BRANCH_MIN_STEP + 6; i++) {
+			TunnelStep from = trail.get(TUNNEL_BRANCH_MIN_STEP + random.nextInt(mainSteps - TUNNEL_BRANCH_MIN_STEP - 4));
+			double side = random.nextBoolean() ? 1.0D : -1.0D;
+			double branchAngle = from.angle + side * Math.toRadians(45 + random.nextInt(30));
+			walkCave(world, random, from.floor, branchAngle, 10 + random.nextInt(14), carved, new ArrayList<>(), false);
+		}
+		return end;
+	}
+
+	private BlockPos walkCave(World world, Random random, BlockPos start, double startAngle, int length,
+							  Set<Long> carved, List<TunnelStep> trail, boolean stopOnCave) {
+		double x = start.getX();
+		double z = start.getZ();
+		double floorY = start.getY();
+		int lowY = Math.max(TUNNEL_MIN_Y, start.getY() - TUNNEL_MAX_DRIFT);
+		int highY = start.getY() + TUNNEL_MAX_DRIFT;
+		double angle = startAngle;
+		double reference = startAngle;
+		double slope = 0.0D;
+		float radius = TUNNEL_MIN_RADIUS + random.nextFloat() * (TUNNEL_MAX_RADIUS - TUNNEL_MIN_RADIUS);
+		float targetRadius = radius;
+		int untilResize = 4 + random.nextInt(8);
+		BlockPos end = start;
+
+		for (int step = 0; step < length; step++) {
+			if (--untilResize <= 0) {
+				untilResize = 4 + random.nextInt(9);
+				// Now and then the cave opens into a chamber; otherwise it just breathes in and out.
+				targetRadius = random.nextInt(6) == 0
+						? TUNNEL_MAX_RADIUS + random.nextFloat() * (TUNNEL_CHAMBER_RADIUS - TUNNEL_MAX_RADIUS)
+						: TUNNEL_MIN_RADIUS + random.nextFloat() * (TUNNEL_MAX_RADIUS - TUNNEL_MIN_RADIUS);
 			}
-			int drift = random.nextFloat() < 0.25F ? (random.nextBoolean() ? 1 : -1) : 0;
+			radius += Math.max(-0.2F, Math.min(0.2F, targetRadius - radius));
+			int height = Math.max(3, Math.min(5, Math.round(radius * 1.5F + 0.5F)));
 
-			BlockPos next = new BlockPos(cursor.getX() + dir.getXOffset(), cursor.getY() + drift, cursor.getZ() + dir.getZOffset());
-			BlockPos wideSide = next.offset(dir.rotateY());
-			if (!world.isBlockLoaded(next) || !world.isBlockLoaded(wideSide)) {
-				return new BlockPos(cursor);
-			}
-			cursor.setPos(next.getX(), next.getY(), next.getZ());
-
-			boolean brokeIntoCave = world.isAirBlock(cursor.up(3)) || world.isAirBlock(wideSide.up(3));
-
-			if (!carveTunnelSlice(world, cursor) || !carveTunnelSlice(world, wideSide)) {
-				return new BlockPos(cursor);
+			angle += (random.nextDouble() - 0.5D) * 0.6D;
+			angle = reference + Math.max(-TUNNEL_TURN_LIMIT, Math.min(TUNNEL_TURN_LIMIT, angle - reference));
+			slope = Math.max(-0.4D, Math.min(0.4D, slope + (random.nextDouble() - 0.5D) * 0.3D));
+			double nextY = floorY + slope;
+			if (nextY < lowY || nextY > highY) {
+				nextY = Math.max(lowY, Math.min(highY, nextY));
+				slope = -slope;
 			}
 
-			if (brokeIntoCave) {
+			// Prefer the current heading; if the slice there would hit liquid, bedrock or unloaded terrain,
+			// swing away from it (and re-centre the heading cone on the new course).
+			double chosen = Double.NaN;
+			BlockPos next = null;
+			double sign = random.nextBoolean() ? 1.0D : -1.0D;
+			for (int attempt = 0; attempt <= TUNNEL_STEER_OFFSETS.length * 2; attempt++) {
+				double candidate = attempt == 0 ? angle
+						: angle + (attempt % 2 == 1 ? sign : -sign) * TUNNEL_STEER_OFFSETS[(attempt - 1) / 2];
+				BlockPos base = new BlockPos(MathHelper.floor(x + StrictMath.cos(candidate) + 0.5D),
+						(int) Math.round(nextY), MathHelper.floor(z + StrictMath.sin(candidate) + 0.5D));
+				if (canCarveBlob(world, base, radius, height)) {
+					chosen = candidate;
+					next = base;
+					break;
+				}
+			}
+			if (next == null) {
+				return end;
+			}
+			if (chosen != angle) {
+				angle = chosen;
+				reference = chosen;
+			}
+
+			x += StrictMath.cos(angle);
+			z += StrictMath.sin(angle);
+			floorY = nextY;
+			end = next;
+			trail.add(new TunnelStep(next, angle));
+
+			boolean touchedCave = carveBlob(world, next, radius, height, carved);
+			if (stopOnCave && touchedCave && step >= TUNNEL_CONTACT_GRACE) {
 				// Keep the reached position as a valid room anchor. Previously this returned null,
 				// which discarded the second/third-room roll whenever the tunnel met a natural cave.
-				return new BlockPos(cursor);
+				return end;
 			}
 		}
+		return end;
+	}
 
-		return new BlockPos(cursor);
+	/**
+	 * The cells of a cave slice standing on {@code base}: an ellipsoid of the given radius whose cells run from
+	 * one block above the floor up to {@code height}. A margin grows it into the shell around the slice.
+	 */
+	private static List<BlockPos> blobCells(BlockPos base, float radius, int height, int margin) {
+		List<BlockPos> cells = new ArrayList<>();
+		double horizontal = radius + margin;
+		double vertical = height / 2.0D + margin;
+		double centre = (height + 1) / 2.0D;
+		int reach = MathHelper.ceil(horizontal);
+		for (int dx = -reach; dx <= reach; dx++) {
+			for (int dz = -reach; dz <= reach; dz++) {
+				double across = (dx * dx + dz * dz) / (horizontal * horizontal);
+				for (int dy = 1 - margin; dy <= height + margin; dy++) {
+					double up = (dy - centre) / vertical;
+					if (across + up * up <= 1.0D) {
+						cells.add(base.add(dx, dy, dz));
+					}
+				}
+			}
+		}
+		return cells;
+	}
+
+	/** A slice may only be carved where the whole area is loaded and neither it nor its shell holds liquid or bedrock. */
+	private boolean canCarveBlob(World world, BlockPos base, float radius, int height) {
+		int reach = MathHelper.ceil(radius) + 1;
+		if (!world.isAreaLoaded(base.add(-reach, 0, -reach), base.add(reach, height + 1, reach))) {
+			return false;
+		}
+		for (BlockPos pos : blobCells(base, radius, height, 1)) {
+			IBlockState state = world.getBlockState(pos);
+			if (state.getBlock() == Blocks.BEDROCK || state.getMaterial().isLiquid()) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/** Clears one cave slice; returns true if it opened onto air that this tunnel hadn't carved itself. */
+	private boolean carveBlob(World world, BlockPos base, float radius, int height, Set<Long> carved) {
+		boolean touchedAir = false;
+		for (BlockPos pos : blobCells(base, radius, height, 0)) {
+			if (world.isAirBlock(pos)) {
+				touchedAir |= !carved.contains(pos.toLong());
+			} else {
+				world.setBlockToAir(pos);
+			}
+			carved.add(pos.toLong());
+		}
+		return touchedAir;
 	}
 
 	/**
@@ -453,19 +596,6 @@ public class WorldGenMinecrawlerLair implements IWorldGenerator {
 			}
 		}
 		return entrance;
-	}
-
-	/** Carves one 1-wide, 3-tall vertical slice of the tunnel; returns false (carving nothing) at bedrock/liquid. */
-	private boolean carveTunnelSlice(World world, BlockPos base) {
-		for (int dy = 1; dy <= 3; dy++) {
-			BlockPos pos = base.up(dy);
-			IBlockState state = world.getBlockState(pos);
-			if (state.getBlock() == Blocks.BEDROCK || state.getMaterial().isLiquid()) {
-				return false;
-			}
-			world.setBlockToAir(pos);
-		}
-		return true;
 	}
 
 	List<BlockPos> placeCocoons(World world, Random random, List<BlockPos> floors, Block block) {

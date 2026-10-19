@@ -1,5 +1,6 @@
 package com.windanesz.tracesofthefallen.block;
 
+import com.windanesz.tracesofthefallen.world.shop.ShopTrades;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
@@ -13,6 +14,8 @@ import javax.annotation.Nullable;
 
 public class TileEntityBalance extends TileEntity implements ITickable {
 
+	/** The name shown as the seller on a shop balance. */
+	private static final String SHOP_OWNER = "Subterfuge";
 	private static final float MAX_TILT = 18.0F;
 	private static final float TILT_INTERPOLATION = 0.25F;
 
@@ -20,11 +23,20 @@ public class TileEntityBalance extends TileEntity implements ITickable {
 	private ItemStack rightStack = ItemStack.EMPTY;
 	private BalanceMode mode = BalanceMode.DEFAULT;
 	private String ownerName = "";
+	/** A shop balance belongs to a Subterfuge's shop: only she can restock it, and it only trades while she is present. */
+	private boolean shop;
+	/** World time at which a sold-out shop balance is stocked again; 0 means never. */
+	private long restockAt;
 	private float tilt;
 	private float prevTilt;
 
 	@Override
 	public void update() {
+		if (shop && restockAt > 0L && world != null && !world.isRemote && leftStack.isEmpty()
+				&& world.getTotalWorldTime() >= restockAt && world.getTotalWorldTime() % 20L == 0L) {
+			ShopTrades.restock(this);
+		}
+
 		prevTilt = tilt;
 		float targetTilt = getTargetTilt();
 		if (Math.abs(targetTilt - tilt) < 0.05F) {
@@ -68,6 +80,39 @@ public class TileEntityBalance extends TileEntity implements ITickable {
 	public void setOwnerName(String ownerName) {
 		this.ownerName = ownerName == null ? "" : ownerName;
 		onContentsChanged();
+	}
+
+	public boolean isShop() {
+		return shop;
+	}
+
+	public void setShop(boolean shop) {
+		this.shop = shop;
+		markDirty();
+	}
+
+	public long getRestockAt() {
+		return restockAt;
+	}
+
+	public void setRestockAt(long restockAt) {
+		this.restockAt = Math.max(0L, restockAt);
+		markDirty();
+	}
+
+	/** Sets what a shop balance offers and asks for. Quiet while a structure is still being generated. */
+	public void setShopStock(ItemStack goods, ItemStack price, boolean notify) {
+		shop = true;
+		mode = BalanceMode.VENDING;
+		ownerName = SHOP_OWNER;
+		leftStack = goods.isEmpty() ? ItemStack.EMPTY : goods.copy();
+		rightStack = price.isEmpty() ? ItemStack.EMPTY : price.copy();
+		restockAt = 0L;
+		if (notify) {
+			onContentsChanged();
+		} else {
+			markDirty();
+		}
 	}
 
 	public float getInterpolatedTilt(float partialTicks) {
@@ -141,6 +186,8 @@ public class TileEntityBalance extends TileEntity implements ITickable {
 		compound.setTag("RightStack", rightStack.writeToNBT(new NBTTagCompound()));
 		compound.setString(BalanceMode.NBT_KEY, mode.getSerializedName());
 		compound.setString("OwnerName", ownerName);
+		compound.setBoolean("Shop", shop);
+		compound.setLong("RestockAt", restockAt);
 		compound.setFloat("Tilt", tilt);
 		compound.setFloat("PrevTilt", prevTilt);
 		return compound;
@@ -153,6 +200,8 @@ public class TileEntityBalance extends TileEntity implements ITickable {
 		rightStack = new ItemStack(compound.getCompoundTag("RightStack"));
 		mode = BalanceMode.fromString(compound.getString(BalanceMode.NBT_KEY));
 		ownerName = compound.getString("OwnerName");
+		shop = compound.getBoolean("Shop");
+		restockAt = compound.getLong("RestockAt");
 		tilt = compound.getFloat("Tilt");
 		prevTilt = compound.getFloat("PrevTilt");
 	}

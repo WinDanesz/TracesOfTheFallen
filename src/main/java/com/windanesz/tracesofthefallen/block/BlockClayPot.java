@@ -1,5 +1,6 @@
 package com.windanesz.tracesofthefallen.block;
 
+import com.windanesz.tracesofthefallen.TracesOfTheFallen;
 import com.windanesz.tracesofthefallen.init.ModCreativeTab;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -18,11 +19,14 @@ import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
+import net.minecraft.world.storage.loot.LootContext;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -31,11 +35,13 @@ import javax.annotation.Nullable;
 /**
  * A fired-clay pot that stores a single ItemStack. Right-clicking with an item while the pot is
  * empty places that item inside it; it has no GUI beyond that, and the only way to get the stored
- * item back out is to break the pot. Mining it without Silk Touch shatters it (spilling only the
- * stored item, never the pot itself); mining it with Silk Touch drops the pot with the stored item
+ * item back out is to break the pot. Mining it without Silk Touch shatters it (spilling the
+ * stored item or rolling loot for an empty pot, never dropping the pot itself); Silk Touch drops the pot with the stored item
  * baked into its NBT so it is restored when re-placed.
  */
 public class BlockClayPot extends Block {
+
+	public static final ResourceLocation LOOT_TABLE = new ResourceLocation(TracesOfTheFallen.MODID, "blocks/clay_pot");
 
 	// Anticipates 2-6 fired-clay texture variants selected by metadata; only variant 0 ships today.
 	public static final PropertyInteger VARIANT = PropertyInteger.create("variant", 0, 5);
@@ -45,9 +51,14 @@ public class BlockClayPot extends Block {
 	public BlockClayPot() {
 		super(Material.ROCK);
 		setDefaultState(this.blockState.getBaseState().withProperty(VARIANT, 0));
-		setHardness(1.0F);
+		setHardness(0.2F);
 		setResistance(5.0F);
 		setCreativeTab(ModCreativeTab.TOTF_TAB);
+	}
+
+	@Override
+	public boolean canHarvestBlock(IBlockAccess world, BlockPos pos, EntityPlayer player) {
+		return true;
 	}
 
 	@Override
@@ -151,14 +162,19 @@ public class BlockClayPot extends Block {
 
 	@Override
 	public void getDrops(NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
-		// Fallback for non-player removal (explosions, projectile impact): spill the contents only,
-		// the pot itself never drops here. Player breaks are handled in harvestBlock instead.
+		// Non-player removal (explosions, projectile impact) uses the same contents as player breaks.
 		TileEntity te = world.getTileEntity(pos);
-		if (te instanceof TileEntityClayPot) {
-			ItemStack stored = ((TileEntityClayPot) te).getStoredItem();
-			if (!stored.isEmpty()) {
-				drops.add(stored.copy());
-			}
+		addContents(drops, world, te instanceof TileEntityClayPot ? (TileEntityClayPot) te : null);
+	}
+
+	private void addContents(NonNullList<ItemStack> drops, IBlockAccess world, @Nullable TileEntityClayPot pot) {
+		if (pot != null && !pot.getStoredItem().isEmpty()) {
+			drops.add(pot.getStoredItem().copy());
+		} else if (world instanceof WorldServer) {
+			WorldServer server = (WorldServer) world;
+			LootContext context = new LootContext.Builder(server).withLuck(0).build();
+			drops.addAll(server.getLootTableManager().getLootTableFromLocation(LOOT_TABLE)
+					.generateLootForPools(server.rand, context));
 		}
 	}
 
@@ -171,8 +187,12 @@ public class BlockClayPot extends Block {
 		boolean silkTouch = EnchantmentHelper.getEnchantmentLevel(Enchantments.SILK_TOUCH, toolStack) > 0;
 		if (silkTouch) {
 			spawnAsEntity(worldIn, pos, createPotStack(state, pot));
-		} else if (pot != null && !pot.getStoredItem().isEmpty()) {
-			spawnAsEntity(worldIn, pos, pot.getStoredItem().copy());
+		} else {
+			NonNullList<ItemStack> drops = NonNullList.create();
+			addContents(drops, worldIn, pot);
+			for (ItemStack drop : drops) {
+				spawnAsEntity(worldIn, pos, drop);
+			}
 		}
 		// Neither branch calls super/dropBlockAsItem, so the pot never drops on a non-silk-touch break.
 	}

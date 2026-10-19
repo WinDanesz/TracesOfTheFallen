@@ -198,7 +198,7 @@ public class ComponentNbtPiece extends StructureComponentTemplate {
                 worldIn.setBlockState(pos, Blocks.AIR.getDefaultState(), 3);
             }
         } else if (function.equals("goblin_camp_decor")) {
-            decorateGoblinCamp(worldIn, pos, rand);
+            decorateGoblinCamp(worldIn, pos, rand, sbb);
             worldIn.setBlockState(pos, Blocks.AIR.getDefaultState(), 3);
         } else if (function.startsWith("spawn_")) {
             boolean shouldSpawn = true;
@@ -227,7 +227,26 @@ public class ComponentNbtPiece extends StructureComponentTemplate {
             }
         } else if (function.startsWith("skeleton_corpse_")) {
             placeSkeletonCorpse(worldIn, rand, pos, function.substring("skeleton_corpse_".length()));
+        } else if (function.startsWith("gnossic_mask_chance_")) {
+            placeGnossicMask(worldIn, rand, pos, function.substring("gnossic_mask_chance_".length()));
         }
+    }
+
+    /**
+     * Hangs a totf:gnossic_mask on a wall with the configured {@code dungeonGnossicMaskChance}. The marker's suffix is the
+     * template-local direction the mask faces (away from its wall), converted into world space via this
+     * piece's rotation. The marker is always cleared, whether or not a mask is placed.
+     */
+    private void placeGnossicMask(World worldIn, Random rand, BlockPos pos, String variant) {
+        worldIn.setBlockState(pos, Blocks.AIR.getDefaultState(), 2);
+        EnumFacing localFacing = EnumFacing.byName(variant);
+        if (localFacing == null || localFacing.getAxis() == EnumFacing.Axis.Y || rand.nextDouble() >= Settings.worldgenSettings.dungeonGnossicMaskChance) {
+            return;
+        }
+        EnumFacing worldFacing = this.rotation.rotate(localFacing);
+        worldIn.setBlockState(pos, ModBlocks.gnossic_mask.getDefaultState()
+                .withProperty(BlockGnossicMask.FLOOR, false)
+                .withProperty(BlockGnossicMask.FACING, worldFacing), 2);
     }
 
     /**
@@ -368,7 +387,64 @@ public class ComponentNbtPiece extends StructureComponentTemplate {
         }
     }
 
-    private void decorateGoblinCamp(World worldIn, BlockPos markerPos, Random rand) {
+    // A camp's inhabitants besides the guaranteed wayfarer and the 50% shaman; one or two of these.
+    private static final String[] CAMP_GUARDS = {"goblin_warrior", "goblin_trapper"};
+
+    /**
+     * The camp templates carry no spawn markers of their own (only a single decor marker), so the camp is
+     * populated from here. Only positions inside {@code region} are used: this runs once per population
+     * region, and an entity placed in a neighbouring chunk that isn't loaded yet is silently dropped.
+     */
+    private void spawnGoblinCampInhabitants(World worldIn, BlockPos markerPos, List<BlockPos> occupiedPositions, StructureBoundingBox region, Random rand) {
+        List<String> inhabitants = new ArrayList<>();
+        inhabitants.add("goblin_wayfarer");
+        if (rand.nextBoolean()) {
+            inhabitants.add("goblin_shaman");
+        }
+        int guards = 1 + rand.nextInt(2);
+        for (int index = 0; index < guards; index++) {
+            inhabitants.add(CAMP_GUARDS[rand.nextInt(CAMP_GUARDS.length)]);
+        }
+
+        for (String name : inhabitants) {
+            BlockPos spot = findPositionInRegion(worldIn, markerPos, occupiedPositions, 2, false, region, rand);
+            if (spot == null) {
+                // The marker itself is always inside the region and was left clear for this.
+                spot = markerPos;
+            }
+            Entity entity = EntityList.createEntityByIDFromName(new ResourceLocation("totf", name), worldIn);
+            if (!(entity instanceof EntityLiving)) {
+                continue;
+            }
+            entity.setLocationAndAngles(spot.getX() + 0.5D, spot.getY(), spot.getZ() + 0.5D, rand.nextFloat() * 360.0F, 0.0F);
+            if (!worldIn.getCollisionBoxes(entity, entity.getEntityBoundingBox()).isEmpty()) {
+                continue;
+            }
+            ((EntityLiving) entity).enablePersistence();
+            worldIn.spawnEntity(entity);
+            occupiedPositions.add(spot);
+        }
+    }
+
+    /** Like findClearDecorationPosition, but only returns a spot inside the region currently being placed. */
+    private BlockPos findPositionInRegion(World worldIn, BlockPos markerPos, List<BlockPos> occupiedPositions, int minimumSeparation, boolean requireNestClearance, StructureBoundingBox region, Random rand) {
+        List<BlockPos> rejected = new ArrayList<>(occupiedPositions);
+        for (int attempt = 0; attempt < 16; attempt++) {
+            BlockPos candidate = findClearDecorationPosition(worldIn, markerPos, rejected, minimumSeparation, requireNestClearance, rand);
+            if (candidate == null) {
+                return null;
+            }
+            // Nests are 3x3, so the whole footprint has to be in the region, not just its centre.
+            int margin = requireNestClearance ? 1 : 0;
+            if (region.isVecInside(candidate.add(-margin, 0, -margin)) && region.isVecInside(candidate.add(margin, 0, margin))) {
+                return candidate;
+            }
+            rejected.add(candidate);
+        }
+        return null;
+    }
+
+    private void decorateGoblinCamp(World worldIn, BlockPos markerPos, Random rand, StructureBoundingBox region) {
         List<BlockPos> occupiedPositions = new ArrayList<>();
         weatherGoblinCampFloor(worldIn, markerPos.down(), rand);
 
@@ -390,7 +466,7 @@ public class ComponentNbtPiece extends StructureComponentTemplate {
 
         int nestCount = 2 + rand.nextInt(3);
         for (int index = 0; index < nestCount; index++) {
-            BlockPos nestPos = findClearDecorationPosition(worldIn, markerPos, occupiedPositions, 4, true, rand);
+            BlockPos nestPos = findPositionInRegion(worldIn, markerPos, occupiedPositions, 4, true, region, rand);
             if (nestPos == null) {
                 continue;
             }
@@ -447,6 +523,11 @@ public class ComponentNbtPiece extends StructureComponentTemplate {
                     ((TileEntityStoneChest) tileEntity).setLidOpen(open);
                 }
             }
+        }
+
+        // The larger camp template places its own goblins through spawn_ markers; the small one has none.
+        if (!this.templateName.equals("x21_9_goblin_camp")) {
+            spawnGoblinCampInhabitants(worldIn, markerPos, occupiedPositions, region, rand);
         }
     }
 

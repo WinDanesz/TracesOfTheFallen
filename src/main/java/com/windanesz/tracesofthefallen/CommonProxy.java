@@ -71,4 +71,7 @@ public class CommonProxy {
 
 	public void spawnSubtorchParticle(World world, double x, double y, double z, double motionX, double motionY, double motionZ) {
 	}
+
+	public void spawnBlueFlameParticle(World world, double x, double y, double z, double motionX, double motionY, double motionZ) {
+	}
 }

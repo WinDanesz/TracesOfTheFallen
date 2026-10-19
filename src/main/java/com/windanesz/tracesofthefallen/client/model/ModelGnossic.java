@@ -28,8 +28,12 @@ public class ModelGnossic extends ModelBase {
 	private final ModelRenderer cube_r2;
 	private final ModelRenderer draperyLeft;
 	private final ModelRenderer draperyLeft2;
+	private final ModelRenderer draperyLeft3;
+	private final ModelRenderer draperyLeft4;
     private final ModelRenderer draperyRight;
 	private final ModelRenderer draperyRight2;
+	private final ModelRenderer draperyRight3;
+	private final ModelRenderer draperyRight4;
 
     public ModelGnossic() {
 		textureWidth = 128;
@@ -81,12 +85,12 @@ public class ModelGnossic extends ModelBase {
 		body2.addChild(draperyLeft2);
 		draperyLeft2.cubeList.add(new ModelBox(draperyLeft2, 16, 41, 0.0F, 0.0F, 0.0F, 0, 8, 8, 0.0F, false));
 
-        ModelRenderer draperyLeft3 = new ModelRenderer(this);
+		draperyLeft3 = new ModelRenderer(this);
 		draperyLeft3.setRotationPoint(5.0F, -0.5F, 8.02F);
 		body3.addChild(draperyLeft3);
 		draperyLeft3.cubeList.add(new ModelBox(draperyLeft3, 16, 48, 0.0F, 0.0F, 0.0F, 0, 8, 8, 0.0F, false));
 
-        ModelRenderer draperyLeft4 = new ModelRenderer(this);
+		draperyLeft4 = new ModelRenderer(this);
 		draperyLeft4.setRotationPoint(5.0F, -0.5F, 8.03F);
 		body4.addChild(draperyLeft4);
 		draperyLeft4.cubeList.add(new ModelBox(draperyLeft4, 16, 55, 0.0F, 0.0F, 0.0F, 0, 8, 8, 0.0F, false));
@@ -101,12 +105,12 @@ public class ModelGnossic extends ModelBase {
 		body2.addChild(draperyRight2);
 		draperyRight2.cubeList.add(new ModelBox(draperyRight2, 0, 41, 0.0F, 0.0F, 0.0F, 0, 8, 8, 0.0F, false));
 
-        ModelRenderer draperyRight3 = new ModelRenderer(this);
+		draperyRight3 = new ModelRenderer(this);
 		draperyRight3.setRotationPoint(-6.0F, -0.5F, 8.02F);
 		body3.addChild(draperyRight3);
 		draperyRight3.cubeList.add(new ModelBox(draperyRight3, 0, 48, 0.0F, 0.0F, 0.0F, 0, 8, 8, 0.0F, false));
 
-        ModelRenderer draperyRight4 = new ModelRenderer(this);
+		draperyRight4 = new ModelRenderer(this);
 		draperyRight4.setRotationPoint(-6.0F, -0.5F, 8.03F);
 		body4.addChild(draperyRight4);
 		draperyRight4.cubeList.add(new ModelBox(draperyRight4, 0, 55, 0.0F, 0.0F, 0.0F, 0, 8, 8, 0.0F, false));
@@ -211,18 +215,23 @@ public class ModelGnossic extends ModelBase {
 			
 			float partialTicks = Minecraft.getMinecraft().getRenderPartialTicks();
 			float currentDraperyYaw = gnossic.prevDraperyYaw + (gnossic.draperyYaw - gnossic.prevDraperyYaw) * partialTicks;
-			float currentBodyYaw = gnossic.prevRenderYawOffset + (gnossic.renderYawOffset - gnossic.prevRenderYawOffset) * partialTicks;
+			float currentBodyYaw = gnossic.prevRenderYawOffset + MathHelper.wrapDegrees(gnossic.renderYawOffset - gnossic.prevRenderYawOffset) * partialTicks;
 			
 			float relativeYaw = MathHelper.wrapDegrees(currentDraperyYaw - currentBodyYaw);
 			relativeYaw = MathHelper.clamp(relativeYaw, -30.0F, 30.0F); // Prevent ugly gaps from over-swinging
 			
 			float rad = (float) Math.toRadians(relativeYaw);
 			
-			// Gentle wind effect based on entity age
-			float windY = MathHelper.sin(ageInTicks * 0.1F) * 0.03F; // Reduced amplitude
-			
+			// Each pair has its own body parent, so apply turn lag to every panel.
+			// The parents still supply the existing flight lean and rippling motion.
 			this.draperyLeft.rotateAngleY = rad;
 			this.draperyRight.rotateAngleY = rad;
+			this.draperyLeft2.rotateAngleY = rad;
+			this.draperyRight2.rotateAngleY = rad;
+			this.draperyLeft3.rotateAngleY = rad;
+			this.draperyRight3.rotateAngleY = rad;
+			this.draperyLeft4.rotateAngleY = rad;
+			this.draperyRight4.rotateAngleY = rad;
 			this.draperyLeft2.rotateAngleX = 0;
 			this.draperyRight2.rotateAngleX = 0;
 

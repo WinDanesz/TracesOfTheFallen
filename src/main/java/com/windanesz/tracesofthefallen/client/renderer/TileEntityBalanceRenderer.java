@@ -4,6 +4,7 @@ import com.windanesz.tracesofthefallen.TracesOfTheFallen;
 import com.windanesz.tracesofthefallen.block.BalanceMode;
 import com.windanesz.tracesofthefallen.block.BlockBalance;
 import com.windanesz.tracesofthefallen.block.TileEntityBalance;
+import com.windanesz.tracesofthefallen.item.ItemTallieCollector;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -178,6 +179,9 @@ public class TileEntityBalanceRenderer extends TileEntitySpecialRenderer<TileEnt
 	private static String getRightText(TileEntityBalance balance) {
 		ItemStack stack = balance.getRightStack();
 		String text = stack.getCount() + " " + stack.getDisplayName();
+		if (stack.getItem() instanceof ItemTallieCollector) {
+			text = I18n.format("totf:shop.price_tallies", ItemTallieCollector.getTallieCount(stack));
+		}
 		if (balance.getMode() == BalanceMode.VENDING) {
 			return I18n.format("totf:balance.price", text);
 		}

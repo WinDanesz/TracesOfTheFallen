@@ -11,6 +11,7 @@ public class StructureRegistry {
         // Register the component pieces
         MapGenStructureIO.registerStructureComponent(ComponentNbtPiece.class, "TOTF_NbtPiece");
         MapGenStructureIO.registerStructureComponent(ComponentMinecrawlerNest.class, "TOTF_MinecrawlerNest");
+        MapGenStructureIO.registerStructureComponent(ComponentMinecrawlerShaft.class, "TOTF_MinecrawlerShaft");
         MapGenStructureIO.registerStructureComponent(ComponentGoblinCavern.class, "TOTF_GoblinCavernPiece");
     }
 }

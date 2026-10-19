@@ -464,6 +464,11 @@ public class ClientProxy extends CommonProxy {
 		Minecraft.getMinecraft().effectRenderer.addEffect(new ParticleSubtorch(world, x, y, z, motionX, motionY, motionZ));
 	}
 
+	@Override
+	public void spawnBlueFlameParticle(World world, double x, double y, double z, double motionX, double motionY, double motionZ) {
+		Minecraft.getMinecraft().effectRenderer.addEffect(new ParticleBlueFlame(world, x, y, z, motionX, motionY, motionZ));
+	}
+
 	/**
 	 * Helper method to add multi-line wrapped tooltip descriptions.
 	 */

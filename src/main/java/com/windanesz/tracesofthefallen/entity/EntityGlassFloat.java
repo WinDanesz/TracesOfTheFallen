@@ -37,7 +37,6 @@ public class EntityGlassFloat extends Entity {
 	private static final double COLLISION_Y_OFFSET = -4.0D / 16.0D;
 	private static final double WEIGHT_SINK_OFFSET = 0.5D;
 	private static final double WEIGHT_SINK_SPEED = 0.2D;
-	private static final int FISHING_ROLL_INTERVAL = 40;
 
 	private static final DataParameter<BlockPos> ANCHOR_POS = EntityDataManager.createKey(EntityGlassFloat.class, DataSerializers.BLOCK_POS);
 	private static final DataParameter<Integer> VARIANT = EntityDataManager.createKey(EntityGlassFloat.class, DataSerializers.VARINT);
@@ -52,6 +51,7 @@ public class EntityGlassFloat extends Entity {
 	private double sinkOffset;
 	private final List<ItemStack> hookLootStacks = new ArrayList<>();
 	private final List<Boolean> hookSquidSlots = new ArrayList<>();
+	private final List<Integer> hookCatchTimers = new ArrayList<>();
 	private final List<ItemStack> clientHookLootStacks = new ArrayList<>();
 	private final List<Boolean> clientHookSquidSlots = new ArrayList<>();
 	private String clientHookLootData = "";
@@ -215,7 +215,7 @@ public class EntityGlassFloat extends Entity {
 
 		if (hasStoredHookCatch()) {
 			if (!this.world.isRemote) {
-				harvestHookLoot(player, hand);
+				harvestHookLoot(player);
 			}
 			return true;
 		}
@@ -348,16 +348,42 @@ public class EntityGlassFloat extends Entity {
 		giveItemToPlayer(player, createRopeItemStack(1));
 	}
 
+	/**
+	 * Gives the stack to the player's main inventory (hotbar first), never the off-hand.
+	 * Vanilla's addItemStackToInventory merges into the off-hand stack first, which is why it is avoided here.
+	 */
 	private void giveItemToPlayer(EntityPlayer player, ItemStack stack) {
-		if (!player.inventory.addItemStackToInventory(stack)) {
+		List<ItemStack> inventory = player.inventory.mainInventory;
+
+		for (ItemStack slotStack : inventory) {
+			if (stack.isEmpty()) {
+				return;
+			}
+			if (!slotStack.isEmpty() && ItemStack.areItemsEqual(slotStack, stack) && ItemStack.areItemStackTagsEqual(slotStack, stack)) {
+				int moved = Math.min(stack.getCount(), slotStack.getMaxStackSize() - slotStack.getCount());
+				if (moved > 0) {
+					slotStack.grow(moved);
+					stack.shrink(moved);
+				}
+			}
+		}
+
+		for (int i = 0; i < inventory.size() && !stack.isEmpty(); i++) {
+			if (inventory.get(i).isEmpty()) {
+				int moved = Math.min(stack.getCount(), stack.getMaxStackSize());
+				inventory.set(i, stack.splitStack(moved));
+			}
+		}
+
+		if (!stack.isEmpty()) {
 			player.dropItem(stack, false);
 		}
 	}
 
-	private void giveItemToPlayerHandOrInventory(EntityPlayer player, EnumHand hand, ItemStack stack) {
-		ItemStack heldItem = player.getHeldItem(hand);
+	private void giveItemToPlayerMainHandOrInventory(EntityPlayer player, ItemStack stack) {
+		ItemStack heldItem = player.getHeldItem(EnumHand.MAIN_HAND);
 		if (heldItem.isEmpty()) {
-			player.setHeldItem(hand, stack);
+			player.setHeldItem(EnumHand.MAIN_HAND, stack);
 			return;
 		}
 
@@ -376,19 +402,43 @@ public class EntityGlassFloat extends Entity {
 	}
 
 	private void tryFillEmptyHooks() {
-		if (!(this.world instanceof WorldServer) || this.ticksExisted % FISHING_ROLL_INTERVAL != 0 || getHookCount() <= 0) {
+		if (!(this.world instanceof WorldServer)) {
 			return;
 		}
 
-		int emptyHookSlot = getFirstEmptyHookSlot();
-		if (emptyHookSlot < 0) {
-			return;
+		int hookCount = getHookCount();
+		while (this.hookCatchTimers.size() < hookCount) {
+			this.hookCatchTimers.add(-1);
 		}
 
-		ItemStack lootStack = rollFishingLoot((WorldServer) this.world);
-		if (!lootStack.isEmpty()) {
-			setHookLoot(emptyHookSlot, lootStack);
+		for (int i = 0; i < hookCount; i++) {
+			if (!getHookLoot(i).isEmpty() || hasHookSquid(i)) {
+				this.hookCatchTimers.set(i, -1);
+				continue;
+			}
+
+			int timer = this.hookCatchTimers.get(i);
+			if (timer < 0) {
+				timer = rollCatchDelay();
+			}
+
+			if (--timer <= 0) {
+				ItemStack lootStack = rollFishingLoot((WorldServer) this.world);
+				if (!lootStack.isEmpty()) {
+					setHookLoot(i, lootStack);
+					timer = -1;
+				} else {
+					timer = rollCatchDelay();
+				}
+			}
+			this.hookCatchTimers.set(i, timer);
 		}
+	}
+
+	private int rollCatchDelay() {
+		int minTicks = Math.max(1, Settings.miscSettings.glassFloatMinCatchSeconds) * 20;
+		int maxTicks = Math.max(minTicks, Settings.miscSettings.glassFloatMaxCatchSeconds * 20);
+		return minTicks + this.rand.nextInt(maxTicks - minTicks + 1);
 	}
 
 	private void tryCatchSquid() {
@@ -421,6 +471,10 @@ public class EntityGlassFloat extends Entity {
 	}
 
 	private ItemStack rollFishingLoot(WorldServer worldServer) {
+		if (this.rand.nextDouble() < Settings.miscSettings.glassFloatFurredTroutChance) {
+			return new ItemStack(ModItems.furred_trout);
+		}
+
 		LootTable lootTable = worldServer.getLootTableManager().getLootTableFromLocation(LootTableList.GAMEPLAY_FISHING);
 		LootContext.Builder builder = new LootContext.Builder(worldServer);
 		List<ItemStack> generatedLoot = lootTable.generateLootForPools(worldServer.rand, builder.build());
@@ -456,20 +510,20 @@ public class EntityGlassFloat extends Entity {
 		return getFirstFilledHookSlot() >= 0;
 	}
 
-	private void harvestHookLoot(EntityPlayer player, EnumHand hand) {
+	private void harvestHookLoot(EntityPlayer player) {
 		int filledHookSlot = getFirstFilledHookSlot();
 		if (filledHookSlot < 0) {
 			return;
 		}
 
 		if (removeHookSquid(filledHookSlot)) {
-			giveItemToPlayerHandOrInventory(player, hand, createInkSacStack());
+			giveItemToPlayerMainHandOrInventory(player, createInkSacStack());
 			return;
 		}
 
 		ItemStack harvestedStack = removeHookLoot(filledHookSlot);
 		if (!harvestedStack.isEmpty()) {
-			giveItemToPlayerHandOrInventory(player, hand, harvestedStack);
+			giveItemToPlayerMainHandOrInventory(player, harvestedStack);
 		}
 	}
 

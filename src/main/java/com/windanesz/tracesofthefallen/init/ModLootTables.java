@@ -1,6 +1,7 @@
 package com.windanesz.tracesofthefallen.init;
 
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
+import com.windanesz.tracesofthefallen.block.BlockClayPot;
 import com.windanesz.tracesofthefallen.entity.EntitySpecter;
 import com.windanesz.tracesofthefallen.entity.EntitySpecterGrasper;
 import net.minecraft.entity.item.EntityItem;
@@ -26,6 +27,7 @@ public class ModLootTables {
 		LootTableList.register(new ResourceLocation(TracesOfTheFallen.MODID, "blocks/lost_cargo"));
 		
 		// Block loot tables
+		LootTableList.register(BlockClayPot.LOOT_TABLE);
 		LootTableList.register(new ResourceLocation(TracesOfTheFallen.MODID, "blocks/tent"));
 		LootTableList.register(new ResourceLocation(TracesOfTheFallen.MODID, "blocks/tent_abandoned"));
 		LootTableList.register(new ResourceLocation(TracesOfTheFallen.MODID, "blocks/tent_with_idol"));

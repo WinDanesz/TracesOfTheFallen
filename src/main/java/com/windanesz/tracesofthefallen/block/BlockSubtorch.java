@@ -14,6 +14,13 @@ public class BlockSubtorch extends BlockTorch {
 
     @Override
     @net.minecraftforge.fml.relauncher.SideOnly(net.minecraftforge.fml.relauncher.Side.CLIENT)
+    public void addInformation(net.minecraft.item.ItemStack stack, @javax.annotation.Nullable net.minecraft.world.World worldIn, java.util.List<String> tooltip, net.minecraft.client.util.ITooltipFlag flagIn) {
+        super.addInformation(stack, worldIn, tooltip, flagIn);
+        tooltip.add(net.minecraft.util.text.TextFormatting.GRAY + net.minecraft.client.resources.I18n.format("tile.totf:subtorch.desc"));
+    }
+
+    @Override
+    @net.minecraftforge.fml.relauncher.SideOnly(net.minecraftforge.fml.relauncher.Side.CLIENT)
     public void randomDisplayTick(net.minecraft.block.state.IBlockState stateIn, net.minecraft.world.World worldIn, net.minecraft.util.math.BlockPos pos, java.util.Random rand) {
         net.minecraft.util.EnumFacing enumfacing = stateIn.getValue(FACING);
         double d0 = (double)pos.getX() + 0.5D;

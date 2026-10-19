@@ -144,6 +144,10 @@ public class Settings {
         @Config.Comment("Biomes where Bush With Crate cannot generate")
         public String[] bushWithCrateBiomeBlacklist = new String[0];
 
+        @Config.Name("Beached Glass Float Chance")
+        @Config.Comment("1 in N chance per chunk for a beached glass float to generate on sand/gravel in beach biomes (0 = disabled, default: 6)")
+        public int beachedGlassFloatChance = 6;
+
         @Config.Name("Abandoned Tent Frequency")
         @Config.Comment("How many Abandoned Tent blocks to generate per chunk (default: 250)")
         public int abandonedTentFrequency = 250;
@@ -197,10 +201,20 @@ public class Settings {
 		@Config.RangeDouble(min = 0.0, max = 1.0)
 		public double dungeonGnossicSpawnChance = 0.1D;
 
+		@Config.Name("Dungeon Gnossic Mask Chance")
+		@Config.Comment("Chance (0.0 - 1.0) for each gate of the pots room in the multipart dungeon to have a Gnossic Mask hanging on its outer side. Default: 0.5 (50%)")
+		@Config.RangeDouble(min = 0.0, max = 1.0)
+		public double dungeonGnossicMaskChance = 0.5D;
+
 		@Config.Name("Minecrawler Mineshaft Frequency")
-		@Config.Comment("1-in-N chance for a new vanilla mineshaft to gain an infested shaft and nest room when space permits. Uses Lost Loot Dimensions. 0 disables; 1 attempts every mineshaft. Default: 4")
+		@Config.Comment("1-in-N chance for a new vanilla mineshaft to gain an infested shaft and nest room when space permits; a successful one has a 1-in-3 chance of getting a second. Uses Lost Loot Dimensions. 0 disables; 1 attempts every mineshaft. Default: 2")
 		@Config.RangeInt(min = 0)
-		public int minecrawlerMineshaftFrequency = 4;
+		public int minecrawlerMineshaftFrequency = 2;
+
+		@Config.Name("Minecrawler Brood Shaft Frequency")
+		@Config.Comment("1-in-N chance for a new vanilla mineshaft to gain a brood shaft: a passage ending at a deep vertical shaft with a spiral ledge down to a Minecrawler brood chamber. Rolled independently of the nest. Uses Lost Loot Dimensions. 0 disables; 1 attempts every mineshaft. Default: 4")
+		@Config.RangeInt(min = 0)
+		public int minecrawlerBroodShaftFrequency = 4;
 
 		@Config.Name("Minecrawler Lair Frequency")
 		@Config.Comment("1-in-N chance per chunk for a small underground Minecrawler lair to generate. Lower is more common. Default: 360")
@@ -259,7 +273,66 @@ public class Settings {
 		@Config.Name("Goblin Cavern Max Nests")
 		@Config.Comment("Maximum number of goblin nests placed in a goblin cavern. Default: 3")
 		@Config.RangeInt(min = 0, max = 16)
-		public int goblinCavernMaxNests = 3;    }
+		public int goblinCavernMaxNests = 3;
+
+		@Config.Name("Subterfuge Shop Frequency")
+		@Config.Comment("1-in-N chance per chunk to attempt a Subterfuge's shop: a small room dug into the ground, reached by stairs. Lower is more common; 0 disables. Default: 1000")
+		@Config.RangeInt(min = 0)
+		public int subterfugeShopFrequency = 1000;
+
+		@Config.Name("Subterfuge Shop Presence Chance")
+		@Config.Comment({
+				"Chance, per presence period, that Subterfuge is in her shop. While she is away the shop is closed and unprotected,",
+				"and destroying it (breaking over half of its balances) means she never returns. Default: 0.75"
+		})
+		@Config.RangeDouble(min = 0.0, max = 1.0)
+		public double subterfugeShopPresenceChance = 0.75D;
+
+		@Config.Name("Subterfuge Shop Presence Days")
+		@Config.Comment("Length, in in-game days, of one presence period. Whether she is in her shop is decided once per period. Default: 3")
+		@Config.RangeInt(min = 1, max = 1000)
+		public int subterfugeShopPresenceDays = 3;
+
+		@Config.Name("Subterfuge Shop Protection")
+		@Config.Comment("Whether blocks inside a Subterfuge's shop can't be broken, placed or blown up while she is present. Creative players are exempt. Default: true")
+		public boolean subterfugeShopProtection = true;
+
+		@Config.Name("Subterfuge Shop Restock Days")
+		@Config.Comment("In-game days until a sold-out pedestal in her shop is stocked with a new item. 0 means sold items are never replaced. Default: 2")
+		@Config.RangeInt(min = 0, max = 1000)
+		public int subterfugeShopRestockDays = 2;
+
+		@Config.Name("Subterfuge Shop Trades")
+		@Config.Comment({
+				"Items Subterfuge can offer, paid for in Tallies (the Tallie Collector item).",
+				"Format: 'modid:item[@meta];amount;price;weight'. Price is in Tallies, weight is the relative chance of the trade being picked.",
+				"Entries naming unknown items are skipped. Example: 'minecraft:golden_apple@1;1;12;2'"
+		})
+		public String[] subterfugeShopTrades = {
+				"totf:incense;4;2;10",
+				"totf:spirited_away_tea_leaves;3;2;10",
+				"totf:pemmican;4;2;8",
+				"totf:silk_rope;4;3;8",
+				"totf:chilled_gel;2;3;6",
+				"totf:wonder_fertilizer;2;4;6",
+				"totf:subtorch;4;3;6",
+				"totf:zap_charge;1;6;4",
+				"totf:glass_float_clear_blue;1;6;4",
+				"totf:glass_float_wine_green;1;6;4",
+				"totf:glass_float_blood_red;1;8;3",
+				"totf:wrought_caged_lamp;1;8;3",
+				"totf:living_silver_nugget;2;8;4",
+				"totf:incense_burner_gold;1;12;3",
+				"totf:bone_rattle;1;10;3",
+				"totf:silk_spindle;1;10;3",
+				"totf:rune_of_skimming;1;16;3",
+				"totf:old_world_tinkers_kit;1;18;2",
+				"totf:painting_subterfuge;1;14;2",
+				"totf:record_gnossiene_1;1;20;1",
+				"totf:ward_of_blades;1;24;2",
+				"totf:veiled_mask;1;30;1"
+		};
+	}
 
     public static class MiscSettings {
 		@Config.Name("Dan Coil Trap Damage")
@@ -433,27 +506,26 @@ public class Settings {
 		};
 
 		@Config.Name("Porcelain Heat Sources Map")
-		@Config.Comment("Map entries of block registry names (or domain/path substrings) to their active boolean property state (or '*' for any). Format: 'modid:regname,state'. Examples: 'exsartagine:hearth,lit', 'exsartagine:stove,lit', 'pyrotech:campfire,burning'")
+		@Config.Comment("Map entries of block registry names (or domain/path substrings) to their active boolean property state (or '*' for any). Format: 'modid:regname,state'. Examples: 'exsartagine:hearth,heated', 'exsartagine:range,heated', 'pyrotech:campfire,burning'")
 		public String[] porcelainHeatSources = {
-				"exsartagine:hearth,lit",
-				"exsartagine:stove,lit",
-				"exsartagine:sartagine,lit",
-				"exsartagine:hearth,lit",
-				"exsartagine:stove,lit",
-				"exsartagine:campfire,lit"
+				"exsartagine:hearth,heated",
+				"exsartagine:range,heated"
 		};
 
 		@Config.Name("Wonder Fertilizer Radius")
 		@Config.Comment("The radius in blocks for the Wonder Fertilizer's bonemeal effect. Default: 3 (creates a 7x7 area)")
+		@Config.RangeInt(min = 1, max = 16)
 		public int wonderFertilizerRadius = 3;
 
 		@Config.Name("Wonder Fertilizer Durability")
 		@Config.Comment("The number of uses for the Wonder Fertilizer. Default: 2")
+		@Config.RangeInt(min = 1, max = 256)
 		@Config.RequiresMcRestart
 		public int wonderFertilizerDurability = 2;
 
 		@Config.Name("Old World Tinker's Kit Durability Restore Percent")
 		@Config.Comment("The percentage of max durability restored by the Old World Tinker's Kit (0.0 - 1.0, where 1.0 = 100%). Default: 0.10 (10%)")
+		@Config.RangeDouble(min = 0.01D, max = 1.0D)
 		public double oldWorldTinkersKitRestorePercent = 0.10D;
 
 		@Config.Name("Silk Spindle String Amount")
@@ -492,6 +564,21 @@ public class Settings {
 		@Config.Comment("Maximum number of rope segments that can be added to a glass float. Default: 6")
 		@Config.RangeInt(min = 1, max = 64)
 		public int glassFloatMaxRopeLength = 6;
+
+		@Config.Name("Glass Float Min Catch Time")
+		@Config.Comment("Minimum time in SECONDS before an empty hook on a glass float catches something. Default: 20")
+		@Config.RangeInt(min = 1, max = 3600)
+		public int glassFloatMinCatchSeconds = 20;
+
+		@Config.Name("Glass Float Max Catch Time")
+		@Config.Comment("Maximum time in SECONDS before an empty hook on a glass float catches something. Default: 40")
+		@Config.RangeInt(min = 1, max = 3600)
+		public int glassFloatMaxCatchSeconds = 40;
+
+		@Config.Name("Glass Float Furred Trout Chance")
+		@Config.Comment("Chance (0.0 - 1.0) that a glass float catch is a Furred Trout instead of regular fishing loot. This is the only way to obtain it. Default: 0.008 (about as rare as an enchanted book from fishing)")
+		@Config.RangeDouble(min = 0.0D, max = 1.0D)
+		public double glassFloatFurredTroutChance = 0.008D;
 
 		@Config.Name("Bush Crate Goblin Spawn Chance")
 		@Config.Comment("Chance (0.0 - 1.0) for bush crates to spawn goblins when a player is nearby. 0.0 = never, 1.0 = always. Default: 0.5 (50%)")
@@ -566,9 +653,9 @@ public class Settings {
 		public int sifterInventorySlots = 8;
 
 		@Config.Name("Sifter Durability")
-		@Config.Comment("How many successful sifted loot stacks an ancestral sifter can produce before it becomes broken. Default: 8")
+		@Config.Comment("How many successful sifted loot stacks an ancestral sifter can produce before it becomes broken. Default: 16")
 		@Config.RangeInt(min = 1)
-		public int sifterDurability = 8;
+		public int sifterDurability = 16;
 
 		@Config.Name("Sifter Health")
 		@Config.Comment("How many hits an ancestral sifter can take before it drops itself. Default: 3")
@@ -578,7 +665,7 @@ public class Settings {
 		@Config.Name("Sifter Loot Interval")
 		@Config.Comment("How often an ancestral sifter rolls its environment-based loot table, in ticks. Default: 600")
 		@Config.RangeInt(min = 20)
-		public int sifterLootInterval = 20;
+		public int sifterLootInterval = 600;
 
 		@Config.Name("Sifters Per Chunk")
 		@Config.Comment("Maximum number of ancestral sifters that can be placed in a single chunk. Default: 1")
@@ -1030,6 +1117,20 @@ public class Settings {
 		@Config.RangeDouble(min = 1.0D, max = 10000.0D)
 		public double subterfugeMaxHealth = 1000.0D;
 
+		@Config.Name("Subterfuge Hardcore Teleport")
+		@Config.Comment("In hardcore worlds Subterfuge randomly teleports a player away instead of slapping them to death. If false, she kills them as usual. Default: true")
+		public boolean subterfugeHardcoreTeleport = true;
+
+		@Config.Name("Subterfuge Hardcore Teleport Min Distance")
+		@Config.Comment("Minimum distance, in blocks, Subterfuge teleports a player away in hardcore worlds. At least 1000. Default: 1000")
+		@Config.RangeInt(min = 1000, max = 100000)
+		public int subterfugeHardcoreTeleportMin = 1000;
+
+		@Config.Name("Subterfuge Hardcore Teleport Max Distance")
+		@Config.Comment("Maximum distance, in blocks, Subterfuge teleports a player away in hardcore worlds. At least 1000; if lower than the minimum, the minimum is used. Default: 3000")
+		@Config.RangeInt(min = 1000, max = 100000)
+		public int subterfugeHardcoreTeleportMax = 3000;
+
 		@Config.Name("Dungeon Slug Spawn Weight")
 		@Config.Comment("Spawn weight for the Dungeon Slug. Default: 2 (0 to disable)")
 		public int dungeonSlugSpawnWeight = 2;
@@ -1115,6 +1216,11 @@ public class Settings {
 		@Config.Name("Haunting Spawn Cooldown After Death")
 		@Config.Comment("How long (in ticks) haunting mobs are prevented from spawning after they kill a player. Default: 24000 (20 minutes)")
 		public int hauntingSpawnCooldownAfterDeath = 24000;
+
+		@Config.Name("Subtorch Radius")
+		@Config.Comment("Radius (in blocks) around a Subtorch within which players are protected from haunting. 2 covers a 5x5 area. Set to 0 to disable the effect. Default: 2")
+		@Config.RangeInt(min = 0, max = 16)
+		public int subtorchRadius = 2;
 
 		@Config.Name("Haunting Kill Item Reductions")
 		@Config.Comment("List of items that reduce haunting when used to land a killing blow on a haunting mob. Format: 'modid:item_name|haunting_reduction|item_damage' or 'modid:item_name:meta|haunting_reduction|item_damage'.")

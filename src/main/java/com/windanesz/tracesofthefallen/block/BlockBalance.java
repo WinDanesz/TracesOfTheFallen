@@ -1,5 +1,6 @@
 package com.windanesz.tracesofthefallen.block;
 
+import com.windanesz.tracesofthefallen.world.shop.ShopTrades;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
@@ -74,6 +75,11 @@ public class BlockBalance extends BlockDecoration {
 		}
 
 		if (worldIn.isRemote) {
+			return true;
+		}
+
+		if (balance.isShop()) {
+			ShopTrades.handleInteraction(worldIn, pos, playerIn, balance);
 			return true;
 		}
 
