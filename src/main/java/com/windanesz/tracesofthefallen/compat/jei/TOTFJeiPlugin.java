@@ -5,13 +5,25 @@ import mezz.jei.api.IModPlugin;
 import mezz.jei.api.IModRegistry;
 import mezz.jei.api.JEIPlugin;
 import mezz.jei.api.ingredients.IIngredientBlacklist;
+import mezz.jei.api.recipe.IRecipeCategoryRegistration;
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
 
 @JEIPlugin
 public class TOTFJeiPlugin implements IModPlugin {
     @Override
+    public void registerCategories(IRecipeCategoryRegistration registry) {
+        registry.addRecipeCategories(
+                new SpinningWheelCategory(registry.getJeiHelpers().getGuiHelper()),
+                new SidheCategory(registry.getJeiHelpers().getGuiHelper()));
+    }
+
+    @Override
     public void register(IModRegistry registry) {
+        registry.addRecipes(SpinningWheelCategory.getRecipes(), SpinningWheelCategory.UID);
+        registry.addRecipeCatalyst(new ItemStack(ModBlocks.spinning_wheel), SpinningWheelCategory.UID);
+        registry.addRecipes(SidheCategory.getRecipes(), SidheCategory.UID);
+
         IIngredientBlacklist blacklist = registry.getJeiHelpers().getIngredientBlacklist();
         Block[] hiddenBlocks = {
                 ModBlocks.glass_float_clear_blue_landed,

@@ -576,9 +576,9 @@ public class Settings {
 		public int glassFloatMaxCatchSeconds = 40;
 
 		@Config.Name("Glass Float Furred Trout Chance")
-		@Config.Comment("Chance (0.0 - 1.0) that a glass float catch is a Furred Trout instead of regular fishing loot. This is the only way to obtain it. Default: 0.008 (about as rare as an enchanted book from fishing)")
+		@Config.Comment("Chance (0.0 - 1.0) that a glass float catch is a Furred Trout instead of regular fishing loot. This is the only way to obtain it. Default: 0.01 (as rare as an enchanted book from vanilla fishing: 5% treasure x 1/5)")
 		@Config.RangeDouble(min = 0.0D, max = 1.0D)
-		public double glassFloatFurredTroutChance = 0.008D;
+		public double glassFloatFurredTroutChance = 0.01D;
 
 		@Config.Name("Bush Crate Goblin Spawn Chance")
 		@Config.Comment("Chance (0.0 - 1.0) for bush crates to spawn goblins when a player is nearby. 0.0 = never, 1.0 = always. Default: 0.5 (50%)")

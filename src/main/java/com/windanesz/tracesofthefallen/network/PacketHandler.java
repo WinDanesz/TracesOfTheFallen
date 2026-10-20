@@ -2,6 +2,7 @@ package com.windanesz.tracesofthefallen.network;
 
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
 import com.windanesz.tracesofthefallen.packet.PacketPlayerSync;
+import com.windanesz.tracesofthefallen.packet.PacketSidheDiscoveries;
 import com.windanesz.tracesofthefallen.packet.PacketSpawnCrumbs;
 import com.windanesz.tracesofthefallen.packet.PacketSpawnGodSlapParticle;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
@@ -19,6 +20,7 @@ public class PacketHandler {
 		registerMessage(PacketPlayerSync.class, PacketPlayerSync.Message.class);
 		registerMessage(PacketSpawnCrumbs.Handler.class, PacketSpawnCrumbs.class);
 		registerMessage(PacketSpawnGodSlapParticle.Handler.class, PacketSpawnGodSlapParticle.class);
+		registerMessage(PacketSidheDiscoveries.Handler.class, PacketSidheDiscoveries.class);
 	}
 
 	private static int nextPacketId = 0;

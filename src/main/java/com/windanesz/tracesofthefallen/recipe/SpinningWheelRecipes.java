@@ -4,7 +4,10 @@ import com.windanesz.tracesofthefallen.init.ModItems;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
@@ -18,13 +21,19 @@ public final class SpinningWheelRecipes {
     private static void initialize() {
         if (initialized) return;
         initialized = true;
-        add("silk_spindle", stack -> stack.getItem() == Items.STRING, 32,
+        add("silk_spindle", stack -> stack.getItem() == Items.STRING, Collections.singletonList(new ItemStack(Items.STRING)), 32,
                 new ItemStack(ModItems.silk_spindle), 1, true);
-        add("silk_rope", stack -> stack.getItem() == ModItems.silk_spindle, 1,
+        add("silk_rope", stack -> stack.getItem() == ModItems.silk_spindle, Collections.singletonList(new ItemStack(ModItems.silk_spindle)), 1,
                 new ItemStack(ModItems.silk_rope, 16), 0, false);
     }
 
     public static void add(String name, Predicate<ItemStack> input, int inputCount,
+                           ItemStack output, int stickCount, boolean requiresSpinning) {
+        add(name, input, Collections.emptyList(), inputCount, output, stickCount, requiresSpinning);
+    }
+
+    /** @param displayInputs example stacks matching the input predicate, shown in recipe viewers. */
+    public static void add(String name, Predicate<ItemStack> input, List<ItemStack> displayInputs, int inputCount,
                            ItemStack output, int stickCount, boolean requiresSpinning) {
         initialize();
         if (name == null || name.trim().isEmpty() || input == null || inputCount < 1 || inputCount > 64
@@ -34,7 +43,7 @@ public final class SpinningWheelRecipes {
         }
         // Replacing a name also moves it to the highest matching priority.
         RECIPES.remove(name);
-        RECIPES.put(name, new Recipe(input, inputCount, output, stickCount, requiresSpinning));
+        RECIPES.put(name, new Recipe(input, displayInputs, inputCount, output, stickCount, requiresSpinning));
     }
 
     public static void remove(String name) {
@@ -45,6 +54,11 @@ public final class SpinningWheelRecipes {
     public static void removeAll() {
         initialize();
         RECIPES.clear();
+    }
+
+    public static List<Recipe> getRecipes() {
+        initialize();
+        return new ArrayList<>(RECIPES.values());
     }
 
     public static boolean isInput(ItemStack stack) {
@@ -68,18 +82,34 @@ public final class SpinningWheelRecipes {
 
     public static final class Recipe {
         private final Predicate<ItemStack> input;
+        private final List<ItemStack> displayInputs;
         public final int inputCount;
         public final int stickCount;
         private final ItemStack output;
         public final boolean requiresSpinning;
 
-        private Recipe(Predicate<ItemStack> input, int inputCount, ItemStack output,
+        private Recipe(Predicate<ItemStack> input, List<ItemStack> displayInputs, int inputCount, ItemStack output,
                        int stickCount, boolean requiresSpinning) {
             this.input = input;
+            this.displayInputs = new ArrayList<>();
+            for (ItemStack stack : displayInputs) {
+                if (!stack.isEmpty()) this.displayInputs.add(stack.copy());
+            }
             this.inputCount = inputCount;
             this.output = output.copy();
             this.stickCount = stickCount;
             this.requiresSpinning = requiresSpinning;
+        }
+
+        /** Example input stacks (with the required count applied); may be empty for recipes added without them. */
+        public List<ItemStack> getDisplayInputs() {
+            List<ItemStack> copies = new ArrayList<>();
+            for (ItemStack stack : displayInputs) {
+                ItemStack copy = stack.copy();
+                copy.setCount(inputCount);
+                copies.add(copy);
+            }
+            return copies;
         }
 
         public ItemStack getOutput() {

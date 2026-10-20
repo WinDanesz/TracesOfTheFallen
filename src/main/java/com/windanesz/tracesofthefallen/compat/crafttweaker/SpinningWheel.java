@@ -11,6 +11,9 @@ import net.minecraft.item.ItemStack;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenMethod;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /** Discovered by CraftTweaker only when that optional mod is installed. */
 @ZenRegister
 @ZenClass("mods.totf.SpinningWheel")
@@ -27,8 +30,12 @@ public final class SpinningWheel {
             CraftTweakerAPI.logError("Invalid spinning wheel recipe: " + name);
             return;
         }
+        List<ItemStack> displayInputs = new ArrayList<>();
+        for (IItemStack example : input.getItems()) {
+            displayInputs.add(CraftTweakerMC.getItemStack(example));
+        }
         apply("Add spinning wheel recipe " + name, () -> SpinningWheelRecipes.add(name,
-                stack -> input.matches(CraftTweakerMC.getIItemStack(stack)), inputCount,
+                stack -> input.matches(CraftTweakerMC.getIItemStack(stack)), displayInputs, inputCount,
                 result, stickCount, requiresSpinning));
     }
 

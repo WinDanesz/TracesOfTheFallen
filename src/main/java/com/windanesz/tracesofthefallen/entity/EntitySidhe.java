@@ -1,6 +1,7 @@
 package com.windanesz.tracesofthefallen.entity;
 
 import com.windanesz.tracesofthefallen.Settings;
+import com.windanesz.tracesofthefallen.SidheDiscoveries;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.*;
@@ -39,6 +40,7 @@ public class EntitySidhe extends EntityMob {
 	public int rewardTimer = 0;
 	public EntityPlayer rewardingPlayer = null;
 	public String pendingRewardAction = null;
+	public String pendingRewardKey = null;
 
 	public EntitySidhe(World worldIn) {
 		super(worldIn);
@@ -153,7 +155,8 @@ public class EntitySidhe extends EntityMob {
 	@Override
 	protected boolean processInteract(EntityPlayer player, EnumHand hand) {
 		ItemStack stack = player.getHeldItem(hand);
-		String action = getInteractAction(stack);
+		String[] entry = getInteractEntry(stack);
+		String action = entry == null ? null : entry[1];
 		if (action != null) {
 			if (!this.world.isRemote && this.tiltTimer <= 0 && this.rewardTimer <= 0 && !this.isStanding()) {
 				if (!player.capabilities.isCreativeMode) {
@@ -161,6 +164,7 @@ public class EntitySidhe extends EntityMob {
 				}
 				
 				if (action.equals("attack")) {
+					SidheDiscoveries.discover(player, entry[0]);
 					this.tiltTimer = 20;
 					this.pendingTarget = player;
 					this.dataManager.set(TILTING, true);
@@ -169,6 +173,7 @@ public class EntitySidhe extends EntityMob {
 					this.rewardTimer = 50; // 2.5 seconds to stand up before rewarding
 					this.rewardingPlayer = player;
 					this.pendingRewardAction = action;
+					this.pendingRewardKey = entry[0];
 					this.getNavigator().clearPath();
 				}
 			}
@@ -178,6 +183,12 @@ public class EntitySidhe extends EntityMob {
 	}
 
 	public static String getInteractAction(ItemStack stack) {
+		String[] entry = getInteractEntry(stack);
+		return entry == null ? null : entry[1];
+	}
+
+	/** @return {input pattern, action} of the first matching Sidhe interaction config entry, or null. */
+	public static String[] getInteractEntry(ItemStack stack) {
 		if (stack.isEmpty()) return null;
 		
 		ResourceLocation regName = stack.getItem().getRegistryName();
@@ -210,12 +221,12 @@ public class EntitySidhe extends EntityMob {
 							try {
 								NBTTagCompound tag = JsonToNBT.getTagFromJson(nbtString);
 								if (stack.hasTagCompound() && NBTUtil.areNBTEquals(tag, stack.getTagCompound(), true)) {
-									return parts[1];
+									return new String[] {parts[0], parts[1]};
 								}
 							} catch (Exception e) {
 							}
 						} else {
-							return parts[1];
+							return new String[] {parts[0], parts[1]};
 						}
 					}
 				}
@@ -361,6 +372,9 @@ public class EntitySidhe extends EntityMob {
 						if (!reward.isEmpty()) {
 							EntityItem entityItem = new EntityItem(this.sidhe.world, this.sidhe.posX, this.sidhe.posY + 0.5D, this.sidhe.posZ, reward);
 							this.sidhe.world.spawnEntity(entityItem);
+							if (this.sidhe.rewardingPlayer != null && this.sidhe.pendingRewardKey != null) {
+								SidheDiscoveries.discover(this.sidhe.rewardingPlayer, this.sidhe.pendingRewardKey);
+							}
 						}
 						this.sidhe.world.playSound(null, this.sidhe.posX, this.sidhe.posY, this.sidhe.posZ, SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, SoundCategory.NEUTRAL, 1.0F, 1.0F);
 					}
