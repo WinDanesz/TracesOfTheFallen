@@ -7,6 +7,8 @@ import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.Entity;
 
 public class ModelJawTrap extends ModelBase {
+	private static final float SNAPPED_ANGLE = 1.5F;
+
 	private final ModelRenderer jaw_trap;
 	private final ModelRenderer a;
 	private final ModelRenderer b;
@@ -16,19 +18,19 @@ public class ModelJawTrap extends ModelBase {
 		textureHeight = 32;
 
 		jaw_trap = new ModelRenderer(this);
-		jaw_trap.setRotationPoint(0.0F, 24.0F, 0.0F);
+		jaw_trap.setRotationPoint(0.0F, 23.0F, 0.0F);
 		
 
 		a = new ModelRenderer(this);
-		a.setRotationPoint(0.0F, 0.0F, -4.0F);
+		a.setRotationPoint(0.0F, 0.0F, 0.0F);
 		jaw_trap.addChild(a);
-		a.cubeList.add(new ModelBox(a, 5, 4, -2.0F, -0.9F, 0.0F, 4, 1, 4, 0.0F, false));
+		a.cubeList.add(new ModelBox(a, 5, 4, -2.0F, -0.9F, -4.0F, 4, 1, 4, 0.0F, false));
 
 		b = new ModelRenderer(this);
-		b.setRotationPoint(0.0F, 0.0F, 4.0F);
+		b.setRotationPoint(0.0F, 0.0F, 0.0F);
 		jaw_trap.addChild(b);
 		setRotationAngle(b, 3.1416F, 0.0F, 3.1416F);
-		b.cubeList.add(new ModelBox(b, 5, 4, -2.0F, -0.9F, 0.0F, 4, 1, 4, 0.01F, false));
+		b.cubeList.add(new ModelBox(b, 5, 4, -2.0F, -0.9F, -4.0F, 4, 1, 4, 0.01F, false));
 	}
 
 	@Override
@@ -39,12 +41,13 @@ public class ModelJawTrap extends ModelBase {
 
 	@Override
 	public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn) {
+		// armed: jaws lie flat (the model's base pose); snapped: both jaws hinge up around the centre and clamp shut
 		if (entityIn instanceof EntityJawTrap && ((EntityJawTrap) entityIn).isSnapped()) {
+			this.a.rotateAngleX = -SNAPPED_ANGLE;
+			this.b.rotateAngleX = 3.1416F - SNAPPED_ANGLE;
+		} else {
 			this.a.rotateAngleX = 0.0F;
 			this.b.rotateAngleX = 3.1416F;
-		} else {
-			this.a.rotateAngleX = 1.35F;
-			this.b.rotateAngleX = 3.1416F - 1.35F;
 		}
 	}
 

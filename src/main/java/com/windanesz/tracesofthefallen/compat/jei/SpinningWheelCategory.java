@@ -16,6 +16,7 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextFormatting;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,7 +36,7 @@ public class SpinningWheelCategory implements IRecipeCategory<SpinningWheelCateg
     private final IDrawableStatic arrow;
 
     public SpinningWheelCategory(IGuiHelper guiHelper) {
-        background = guiHelper.createBlankDrawable(116, 58);
+        background = guiHelper.createBlankDrawable(130, 58);
         icon = guiHelper.createDrawableIngredient(new ItemStack(ModBlocks.spinning_wheel));
         slot = guiHelper.getSlotDrawable();
         arrow = guiHelper.createDrawable(new ResourceLocation("textures/gui/container/furnace.png"), 79, 34, 24, 17);
@@ -70,8 +71,8 @@ public class SpinningWheelCategory implements IRecipeCategory<SpinningWheelCateg
     public void drawExtras(Minecraft minecraft) {
         slot.draw(minecraft, 8, 8);
         slot.draw(minecraft, 8, 30);
-        slot.draw(minecraft, 90, 19);
-        arrow.draw(minecraft, 46, 20);
+        slot.draw(minecraft, 104, 19);
+        arrow.draw(minecraft, 74, 20);
     }
 
     @Override
@@ -79,7 +80,14 @@ public class SpinningWheelCategory implements IRecipeCategory<SpinningWheelCateg
         IGuiItemStackGroup stacks = layout.getItemStacks();
         stacks.init(INPUT_SLOT, true, 8, 8);
         stacks.init(STICK_SLOT, true, 8, 30);
-        stacks.init(OUTPUT_SLOT, false, 90, 19);
+        stacks.init(OUTPUT_SLOT, false, 104, 19);
+        stacks.addTooltipCallback((slotIndex, input, ingredient, tooltip) -> {
+            if (slotIndex == INPUT_SLOT) {
+                tooltip.add(TextFormatting.GRAY + I18n.format("jei.totf:spinning_wheel.hand.tooltip"));
+            } else if (slotIndex == STICK_SLOT) {
+                tooltip.add(TextFormatting.GRAY + I18n.format("jei.totf:spinning_wheel.wheel.tooltip"));
+            }
+        });
         stacks.set(ingredients);
     }
 
@@ -115,6 +123,10 @@ public class SpinningWheelCategory implements IRecipeCategory<SpinningWheelCateg
 
         @Override
         public void drawInfo(Minecraft minecraft, int recipeWidth, int recipeHeight, int mouseX, int mouseY) {
+            minecraft.fontRenderer.drawString(I18n.format("jei.totf:spinning_wheel.hand"), 28, 13, 0x404040);
+            if (recipe.stickCount > 0) {
+                minecraft.fontRenderer.drawString(I18n.format("jei.totf:spinning_wheel.wheel"), 28, 35, 0x404040);
+            }
             if (recipe.requiresSpinning) {
                 String text = I18n.format("jei.totf:spinning_wheel.requires_spinning");
                 minecraft.fontRenderer.drawString(text, (recipeWidth - minecraft.fontRenderer.getStringWidth(text)) / 2,

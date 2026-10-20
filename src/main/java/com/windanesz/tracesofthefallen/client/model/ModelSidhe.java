@@ -161,6 +161,18 @@ public class ModelSidhe extends ModelBase {
 		this.head.rotateAngleX += headPitch * 0.017453292F;
 	}
 
+	/** Transforms the GL matrix to the head's space, so things can be rendered relative to the snout. */
+	public void postRenderHead(float scale) {
+		this.bone.postRender(scale);
+		this.head.postRender(scale);
+	}
+
+	/** Transforms the GL matrix to the end of the Sidhe's right front leg, which acts as its hand. */
+	public void postRenderRightHand(float scale) {
+		this.bone.postRender(scale);
+		this.front_right_leg.postRender(scale);
+	}
+
 	private float interpolate(float start, float end, float progress) {
 		return start + (end - start) * progress;
 	}

@@ -12,7 +12,7 @@ import javax.annotation.Nullable;
 
 public class RenderJawTrap extends Render<EntityJawTrap> {
 
-	public static final ResourceLocation TEXTURE = new ResourceLocation(TracesOfTheFallen.MODID, "textures/entity/jaw_trap.png");
+	public static final ResourceLocation TEXTURE = new ResourceLocation(TracesOfTheFallen.MODID, "textures/blocks/jaw_trap.png");
 	private final ModelJawTrap model = new ModelJawTrap();
 
 	public RenderJawTrap(RenderManager renderManager) {
@@ -35,7 +35,10 @@ public class RenderJawTrap extends Render<EntityJawTrap> {
 		this.bindEntityTexture(entity);
 		GlStateManager.translate(0.0F, 1.5F, 0.0F);
 		GlStateManager.scale(-1.0F, -1.0F, 1.0F);
+		// the jaws are 1px thick plates with transparent faces, so both sides of each face have to be drawn
+		GlStateManager.disableCull();
 		this.model.render(entity, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
+		GlStateManager.enableCull();
 		GlStateManager.popMatrix();
 		super.doRender(entity, x, y, z, entityYaw, partialTicks);
 	}

@@ -2,6 +2,7 @@ package com.windanesz.tracesofthefallen.init;
 
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
 import com.windanesz.tracesofthefallen.block.BlockClayPot;
+import com.windanesz.tracesofthefallen.block.TileEntityStoneChest;
 import com.windanesz.tracesofthefallen.entity.EntitySpecter;
 import com.windanesz.tracesofthefallen.entity.EntitySpecterGrasper;
 import net.minecraft.entity.item.EntityItem;
@@ -38,6 +39,8 @@ public class ModLootTables {
 		LootTableList.register(new ResourceLocation(TracesOfTheFallen.MODID, "blocks/minecrawler_cocoon"));
 		LootTableList.register(new ResourceLocation(TracesOfTheFallen.MODID, "blocks/skeleton_corpse"));
 		LootTableList.register(new ResourceLocation(TracesOfTheFallen.MODID, "blocks/skeleton_flower"));
+		LootTableList.register(TileEntityStoneChest.LOOT_COMMON);
+		LootTableList.register(TileEntityStoneChest.LOOT_RICH);
 		
 		// Entity loot tables
 		LootTableList.register(new ResourceLocation(TracesOfTheFallen.MODID, "entities/goblin"));

@@ -3,8 +3,11 @@ package com.windanesz.tracesofthefallen.world.structure;
 import com.windanesz.tracesofthefallen.Settings;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeMesa;
 import net.minecraft.world.gen.structure.*;
+import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
 import java.util.ArrayList;
@@ -38,15 +41,15 @@ public class MapGenMinecrawlerMineshaft extends MapGenMineshaft {
         if (nestFrequency > 0) {
             Random random = new Random(seed ^ 913174639L);
             // Sprawling shafts can hold a second infested branch; the rolls stay on our own random stream.
-            if (random.nextInt(nestFrequency) == 0 && attachNest(start, random, mesa, maxFloorY)
+            if (random.nextInt(nestFrequency) == 0 && attachNest(world, start, random, mesa, maxFloorY)
                     && random.nextInt(3) == 0) {
-                attachNest(start, random, mesa, maxFloorY);
+                attachNest(world, start, random, mesa, maxFloorY);
             }
         }
         if (shaftFrequency > 0) {
             Random random = new Random(seed ^ 0x2545F4914F6CDD1DL);
             if (random.nextInt(shaftFrequency) == 0) {
-                attachBroodShaft(start, random, mesa, maxFloorY);
+                attachBroodShaft(world, start, random, mesa, maxFloorY);
             }
         }
         return start;
@@ -59,14 +62,14 @@ public class MapGenMinecrawlerMineshaft extends MapGenMineshaft {
         return false;
     }
 
-    static boolean attachNest(StructureStart start, Random random, boolean mesa, int maxFloorY) {
-        return attachBranch(start, random, 8, maxFloorY, (floor, facing, seed) ->
+    static boolean attachNest(World world, StructureStart start, Random random, boolean mesa, int maxFloorY) {
+        return attachBranch(world, start, random, 8, maxFloorY, (floor, facing, seed) ->
                 new ComponentMinecrawlerNest(floor, facing, mesa, seed));
     }
 
     /** The shaft digs below its corridor, so the corridor must sit high enough to keep its floor above bedrock. */
-    static boolean attachBroodShaft(StructureStart start, Random random, boolean mesa, int maxFloorY) {
-        return attachBranch(start, random, 8 + ComponentMinecrawlerShaft.DROP, maxFloorY, (floor, facing, seed) ->
+    static boolean attachBroodShaft(World world, StructureStart start, Random random, boolean mesa, int maxFloorY) {
+        return attachBranch(world, start, random, 8 + ComponentMinecrawlerShaft.DROP, maxFloorY, (floor, facing, seed) ->
                 new ComponentMinecrawlerShaft(floor, facing, mesa, seed));
     }
 
@@ -74,7 +77,28 @@ public class MapGenMinecrawlerMineshaft extends MapGenMineshaft {
         StructureComponent create(BlockPos entranceFloor, EnumFacing facing, long seed);
     }
 
-    private static boolean attachBranch(StructureStart start, Random random, int minFloorY, int maxFloorY,
+    /**
+     * Vanilla only keeps a mineshaft below sea level, not below the terrain, so under deep ocean the seabed
+     * is often higher than the corridors. Our rooms are tall and carve out their own walls, so a branch whose
+     * footprint touches an ocean, river or beach biome would stick out of the seabed as a hollow tower.
+     */
+    private static boolean isExposedBiome(World world, StructureBoundingBox box) {
+        int midX = (box.minX + box.maxX) / 2;
+        int midZ = (box.minZ + box.maxZ) / 2;
+        int[][] samples = {{midX, midZ}, {box.minX, box.minZ}, {box.maxX, box.minZ}, {box.minX, box.maxZ},
+                {box.maxX, box.maxZ}, {midX, box.minZ}, {midX, box.maxZ}, {box.minX, midZ}, {box.maxX, midZ}};
+        for (int[] sample : samples) {
+            Biome biome = world.getBiome(new BlockPos(sample[0], 64, sample[1]));
+            if (BiomeDictionary.hasType(biome, BiomeDictionary.Type.OCEAN)
+                    || BiomeDictionary.hasType(biome, BiomeDictionary.Type.RIVER)
+                    || BiomeDictionary.hasType(biome, BiomeDictionary.Type.BEACH)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean attachBranch(World world, StructureStart start, Random random, int minFloorY, int maxFloorY,
                                         BranchFactory factory) {
         List<StructureComponent> candidates = new ArrayList<>(start.getComponents());
         Collections.shuffle(candidates, random);
@@ -94,6 +118,7 @@ public class MapGenMinecrawlerMineshaft extends MapGenMineshaft {
                 if (facing == EnumFacing.WEST) x = box.minX - 1;
                 if (facing == EnumFacing.EAST) x = box.maxX + 1;
                 StructureComponent branch = factory.create(new BlockPos(x, box.minY - 1, z), facing, random.nextLong());
+                if (isExposedBiome(world, branch.getBoundingBox())) continue;
                 if (StructureComponent.findIntersecting(start.getComponents(), branch.getBoundingBox()) == null) {
                     start.getComponents().add(branch);
                     start.getBoundingBox().expandTo(branch.getBoundingBox());

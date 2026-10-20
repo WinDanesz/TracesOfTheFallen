@@ -24,7 +24,7 @@ public final class SpinningWheelRecipes {
         add("silk_spindle", stack -> stack.getItem() == Items.STRING, Collections.singletonList(new ItemStack(Items.STRING)), 32,
                 new ItemStack(ModItems.silk_spindle), 1, true);
         add("silk_rope", stack -> stack.getItem() == ModItems.silk_spindle, Collections.singletonList(new ItemStack(ModItems.silk_spindle)), 1,
-                new ItemStack(ModItems.silk_rope, 16), 0, false);
+                new ItemStack(ModItems.silk_rope, 16), 0, true);
     }
 
     public static void add(String name, Predicate<ItemStack> input, int inputCount,

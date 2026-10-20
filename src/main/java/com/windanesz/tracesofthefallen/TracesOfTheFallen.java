@@ -88,6 +88,7 @@ public class TracesOfTheFallen implements ForgeChunkManager.LoadingCallback {
 		GameRegistry.registerWorldGenerator(new WorldGenMinecrawlerLair(), 1);
 		GameRegistry.registerWorldGenerator(new com.windanesz.tracesofthefallen.world.structure.WorldGenMultipartDelegate(), 1);
 		GameRegistry.registerWorldGenerator(new com.windanesz.tracesofthefallen.world.structure.WorldGenGoblinCavernDelegate(), 1);
+		GameRegistry.registerWorldGenerator(new com.windanesz.tracesofthefallen.world.structure.WorldGenGoblinWarrenDelegate(), 1);
 		GameRegistry.registerWorldGenerator(new WorldGenSubterfugeShop(), 1);
 		GameRegistry.registerWorldGenerator(new com.windanesz.tracesofthefallen.world.WorldGenBeachedGlassFloat(), 1);
 

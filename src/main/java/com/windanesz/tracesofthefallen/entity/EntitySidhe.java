@@ -14,6 +14,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.JsonToNBT;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTUtil;
+import net.minecraft.util.DamageSource;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
@@ -31,16 +32,29 @@ public class EntitySidhe extends EntityMob {
 	private static final DataParameter<Boolean> STANDING = EntityDataManager.createKey(EntitySidhe.class, DataSerializers.BOOLEAN);
 	private static final DataParameter<Boolean> TILTING = EntityDataManager.createKey(EntitySidhe.class, DataSerializers.BOOLEAN);
 	private static final DataParameter<Boolean> ANGRY = EntityDataManager.createKey(EntitySidhe.class, DataSerializers.BOOLEAN);
+	private static final DataParameter<ItemStack> MOUTH_ITEM = EntityDataManager.createKey(EntitySidhe.class, DataSerializers.ITEM_STACK);
+	private static final DataParameter<ItemStack> HAND_ITEM = EntityDataManager.createKey(EntitySidhe.class, DataSerializers.ITEM_STACK);
+
+	/** How long the Sidhe holds a given item in its mouth before deciding, in ticks (2 seconds). */
+	private static final int MOUTH_HOLD_TICKS = 40;
+	/** Ticks spent pulling the reward out of its pocket, and waiting after dropping it before poofing away. */
+	private static final int POCKET_TICKS = 25;
+	private static final int AFTER_DROP_TICKS = 15;
 
 	public float standProgress = 0.0F;
 	public float prevStandProgress = 0.0F;
 	private int tiltTimer = 0;
 	private EntityPlayer pendingTarget = null;
+	/** Ticks until the disliked item is spat back at {@link #spitTarget}; -1 when nothing is pending. */
+	private int spitDelay = -1;
+	private EntityPlayer spitTarget = null;
 
 	public int rewardTimer = 0;
 	public EntityPlayer rewardingPlayer = null;
 	public String pendingRewardAction = null;
 	public String pendingRewardKey = null;
+	/** 0 = holding the offering in its mouth, 1 = taking the reward out of its pocket, 2 = reward dropped, about to poof. */
+	private int rewardStage = 0;
 
 	public EntitySidhe(World worldIn) {
 		super(worldIn);
@@ -51,6 +65,7 @@ public class EntitySidhe extends EntityMob {
 	@Override
 	protected void initEntityAI() {
 		this.tasks.addTask(0, new EntityAISwimming(this));
+		this.tasks.addTask(1, new EntityAISidheHoldMouthful(this));
 		this.tasks.addTask(1, new EntityAISidheReward(this));
 		this.tasks.addTask(1, new EntityAISidheRetaliate(this));
 		this.tasks.addTask(2, new EntityAISidheTempt(this, 1.0D));
@@ -75,6 +90,84 @@ public class EntitySidhe extends EntityMob {
 		this.dataManager.register(STANDING, false);
 		this.dataManager.register(TILTING, false);
 		this.dataManager.register(ANGRY, false);
+		this.dataManager.register(MOUTH_ITEM, ItemStack.EMPTY);
+		this.dataManager.register(HAND_ITEM, ItemStack.EMPTY);
+	}
+
+	/** The item currently held in the Sidhe's mouth (synced to the client for rendering). */
+	public ItemStack getMouthItem() {
+		return this.dataManager.get(MOUTH_ITEM);
+	}
+
+	private void setMouthItem(ItemStack stack) {
+		this.dataManager.set(MOUTH_ITEM, stack);
+	}
+
+	/** The reward currently held in the Sidhe's hand (synced to the client for rendering). */
+	public ItemStack getHandItem() {
+		return this.dataManager.get(HAND_ITEM);
+	}
+
+	private void setHandItem(ItemStack stack) {
+		this.dataManager.set(HAND_ITEM, stack);
+	}
+
+	/** A few of the void slash's purple particles around the paw the reward is held in. */
+	private void spawnHandParticles() {
+		if (!(this.world instanceof WorldServer)) return;
+		Vec3d side = Vec3d.fromPitchYaw(0.0F, this.renderYawOffset + 90.0F);
+		Vec3d front = Vec3d.fromPitchYaw(0.0F, this.renderYawOffset);
+		((WorldServer) this.world).spawnParticle(EnumParticleTypes.SPELL_WITCH,
+				this.posX + side.x * 0.25D + front.x * 0.3D, this.posY + 0.55D, this.posZ + side.z * 0.25D + front.z * 0.3D,
+				6, 0.15D, 0.15D, 0.15D, 0.05D);
+	}
+
+	/** Drops the reward held in its hand on the ground beside it. */
+	private void dropHandItem() {
+		ItemStack held = getHandItem();
+		if (held.isEmpty()) return;
+		setHandItem(ItemStack.EMPTY);
+
+		Vec3d side = Vec3d.fromPitchYaw(0.0F, this.renderYawOffset + 90.0F);
+		EntityItem dropped = new EntityItem(this.world, this.posX + side.x * 0.7D, this.posY + 0.5D, this.posZ + side.z * 0.7D, held);
+		dropped.motionX = side.x * 0.1D;
+		dropped.motionY = 0.15D;
+		dropped.motionZ = side.z * 0.1D;
+		dropped.setPickupDelay(10);
+		this.world.spawnEntity(dropped);
+		this.world.playSound(null, this.posX, this.posY, this.posZ, SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, SoundCategory.NEUTRAL, 1.0F, 1.0F);
+	}
+
+	/** Spits the held item out in front of the Sidhe's face. */
+	private void spitOutMouthItem() {
+		ItemStack held = getMouthItem();
+		if (held.isEmpty()) return;
+		setMouthItem(ItemStack.EMPTY);
+
+		// The mouth is higher up while the Sidhe stands on its hind legs
+		double mouthY = this.posY + (this.isStanding() ? 0.9D : 0.4D);
+		Vec3d dir = Vec3d.fromPitchYaw(0.0F, this.rotationYawHead);
+		if (this.spitTarget != null && this.spitTarget.isEntityAlive()) {
+			Vec3d toTarget = new Vec3d(this.spitTarget.posX - this.posX, 0.0D, this.spitTarget.posZ - this.posZ);
+			if (toTarget.lengthSquared() > 1.0E-4D) dir = toTarget.normalize();
+		}
+		EntityItem spat = new EntityItem(this.world, this.posX + dir.x * 0.6D, mouthY, this.posZ + dir.z * 0.6D, held);
+		spat.motionX = dir.x * 0.35D;
+		spat.motionY = 0.2D;
+		spat.motionZ = dir.z * 0.35D;
+		spat.setPickupDelay(40);
+		this.world.spawnEntity(spat);
+		this.world.playSound(null, this.posX, this.posY, this.posZ, SoundEvents.ENTITY_LLAMA_SPIT, SoundCategory.HOSTILE, 1.0F, 1.0F);
+	}
+
+	@Override
+	public void onDeath(DamageSource cause) {
+		if (!this.world.isRemote) {
+			// An accepted offering is consumed, so only a refused one is dropped
+			if (this.rewardStage == 0) spitOutMouthItem();
+			dropHandItem();
+		}
+		super.onDeath(cause);
 	}
 
 	public boolean isTilting() {
@@ -103,13 +196,18 @@ public class EntitySidhe extends EntityMob {
 				this.dataManager.set(ANGRY, angry);
 			}
 
+			if (this.spitDelay >= 0 && --this.spitDelay < 0) {
+				spitOutMouthItem();
+				this.spitTarget = null;
+			}
+
 			if (this.tiltTimer > 0) {
 				this.tiltTimer--;
-				if (this.pendingTarget != null) {
-					this.getLookHelper().setLookPositionWithEntity(this.pendingTarget, 30.0F, 30.0F);
-				}
 				if (this.tiltTimer <= 0) {
 					this.dataManager.set(TILTING, false);
+					// The retaliation stands the Sidhe up (0.5s); the item is spat back once it is on its hind legs
+					this.spitDelay = 10;
+					this.spitTarget = this.pendingTarget;
 					if (this.pendingTarget != null) {
 						this.setAttackTarget(this.pendingTarget);
 						this.pendingTarget = null;
@@ -159,27 +257,41 @@ public class EntitySidhe extends EntityMob {
 		String action = entry == null ? null : entry[1];
 		if (action != null) {
 			if (!this.world.isRemote && this.tiltTimer <= 0 && this.rewardTimer <= 0 && !this.isStanding()) {
+				// Capture before shrinking: a depleted stack reports as air
+				String discoveryKey = getDiscoveryKey(stack);
+				ItemStack mouthStack = stack.copy();
+				mouthStack.setCount(1);
+				setMouthItem(mouthStack);
 				if (!player.capabilities.isCreativeMode) {
 					stack.shrink(1);
 				}
 				
 				if (action.equals("attack")) {
-					SidheDiscoveries.discover(player, entry[0]);
-					this.tiltTimer = 20;
+					SidheDiscoveries.discover(player, discoveryKey);
+					this.tiltTimer = MOUTH_HOLD_TICKS; // hold the item, tilting its head, then spit it out
 					this.pendingTarget = player;
 					this.dataManager.set(TILTING, true);
 					this.getNavigator().clearPath();
 				} else {
-					this.rewardTimer = 50; // 2.5 seconds to stand up before rewarding
+					this.rewardTimer = MOUTH_HOLD_TICKS; // hold the item in its mouth before rewarding
+					this.rewardStage = 0;
 					this.rewardingPlayer = player;
 					this.pendingRewardAction = action;
-					this.pendingRewardKey = entry[0];
+					this.pendingRewardKey = discoveryKey;
 					this.getNavigator().clearPath();
 				}
 			}
 			return true;
 		}
 		return super.processInteract(player, hand);
+	}
+
+	/**
+	 * Discovery key of a concrete item ('modid:name:meta'). Config entries may use a wildcard meta, but what a player has
+	 * discovered is tracked per item variant, so feeding one variant doesn't reveal the others.
+	 */
+	public static String getDiscoveryKey(ItemStack stack) {
+		return stack.getItem().getRegistryName() + ":" + stack.getMetadata();
 	}
 
 	public static String getInteractAction(ItemStack stack) {
@@ -339,6 +451,31 @@ public class EntitySidhe extends EntityMob {
 		}
 	}
 
+	/** While it has a disliked item in its mouth the Sidhe stays put and ignores the player (no following, no watching). */
+	static class EntityAISidheHoldMouthful extends EntityAIBase {
+		private final EntitySidhe sidhe;
+
+		public EntityAISidheHoldMouthful(EntitySidhe sidhe) {
+			this.sidhe = sidhe;
+			this.setMutexBits(3); // Movement and looking
+		}
+
+		@Override
+		public boolean shouldExecute() {
+			return this.sidhe.tiltTimer > 0;
+		}
+
+		@Override
+		public boolean shouldContinueExecuting() {
+			return this.sidhe.tiltTimer > 0;
+		}
+
+		@Override
+		public void startExecuting() {
+			this.sidhe.getNavigator().clearPath();
+		}
+	}
+
 	static class EntityAISidheReward extends EntityAIBase {
 		private final EntitySidhe sidhe;
 
@@ -360,26 +497,36 @@ public class EntitySidhe extends EntityMob {
 
 		@Override
 		public void updateTask() {
-			if (this.sidhe.rewardingPlayer != null) {
-				this.sidhe.getLookHelper().setLookPositionWithEntity(this.sidhe.rewardingPlayer, 30.0F, 30.0F);
-			}
+			if (this.sidhe.rewardTimer <= 0) return;
+			this.sidhe.rewardTimer--;
+			if (this.sidhe.rewardTimer > 0) return;
 
-			if (this.sidhe.rewardTimer > 0) {
-				this.sidhe.rewardTimer--;
-				if (this.sidhe.rewardTimer <= 0) {
-					if (!this.sidhe.world.isRemote && this.sidhe.pendingRewardAction != null) {
-						ItemStack reward = parseRewardItem(this.sidhe.pendingRewardAction);
-						if (!reward.isEmpty()) {
-							EntityItem entityItem = new EntityItem(this.sidhe.world, this.sidhe.posX, this.sidhe.posY + 0.5D, this.sidhe.posZ, reward);
-							this.sidhe.world.spawnEntity(entityItem);
-							if (this.sidhe.rewardingPlayer != null && this.sidhe.pendingRewardKey != null) {
-								SidheDiscoveries.discover(this.sidhe.rewardingPlayer, this.sidhe.pendingRewardKey);
-							}
-						}
-						this.sidhe.world.playSound(null, this.sidhe.posX, this.sidhe.posY, this.sidhe.posZ, SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, SoundCategory.NEUTRAL, 1.0F, 1.0F);
+			EntitySidhe sidhe = this.sidhe;
+			switch (sidhe.rewardStage) {
+				case 0: // offering accepted (it stays in its mouth): take the reward out of its pocket
+					ItemStack reward = sidhe.pendingRewardAction == null ? ItemStack.EMPTY : parseRewardItem(sidhe.pendingRewardAction);
+					if (reward.isEmpty()) {
+						sidhe.despawnPoof();
+						return;
 					}
-					this.sidhe.despawnPoof();
-				}
+					sidhe.setHandItem(reward);
+					sidhe.spawnHandParticles();
+					sidhe.world.playSound(null, sidhe.posX, sidhe.posY, sidhe.posZ, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.NEUTRAL, 0.6F, 0.8F);
+					sidhe.rewardStage = 1;
+					sidhe.rewardTimer = POCKET_TICKS;
+					break;
+				case 1: // drop it on the ground next to it
+					sidhe.dropHandItem();
+					sidhe.swingArm(EnumHand.MAIN_HAND);
+					if (sidhe.rewardingPlayer != null && sidhe.pendingRewardKey != null) {
+						SidheDiscoveries.discover(sidhe.rewardingPlayer, sidhe.pendingRewardKey);
+					}
+					sidhe.rewardStage = 2;
+					sidhe.rewardTimer = AFTER_DROP_TICKS;
+					break;
+				default: // done
+					sidhe.despawnPoof();
+					break;
 			}
 		}
 

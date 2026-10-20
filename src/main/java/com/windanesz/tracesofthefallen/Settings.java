@@ -275,6 +275,44 @@ public class Settings {
 		@Config.RangeInt(min = 0, max = 16)
 		public int goblinCavernMaxNests = 3;
 
+		@Config.Name("Goblin Warren Spacing")
+		@Config.Comment("Average spacing, in chunks, between underground goblin warrens: one generates per spacing x spacing chunk cell. A warren is an alternative to the goblin cavern: a hall with a works, a vault and a den off its walls, joined by tunnels. Higher is rarer; 0 disables. Default: 32")
+		@Config.RangeInt(min = 0)
+		public int goblinWarrenSpacing = 32;
+
+		@Config.Name("Goblin Warren Min Y")
+		@Config.Comment("Lowest Y level for the bottom of a goblin warren's hall. The vault sits up to 8 blocks lower, so keep this above 16. Default: 20")
+		@Config.RangeInt(min = 1, max = 245)
+		public int goblinWarrenMinY = 20;
+
+		@Config.Name("Goblin Warren Max Y")
+		@Config.Comment("Highest Y level for the bottom of a goblin warren's hall. Keep this low enough that the 11 block tall hall stays below the surface. Default: 32")
+		@Config.RangeInt(min = 1, max = 245)
+		public int goblinWarrenMaxY = 32;
+
+		@Config.Name("Goblin Warren Min Nests")
+		@Config.Comment("Minimum number of goblin nests placed in a goblin warren's hall when space permits. Default: 2")
+		@Config.RangeInt(min = 0, max = 16)
+		public int goblinWarrenMinNests = 2;
+
+		@Config.Name("Goblin Warren Max Nests")
+		@Config.Comment("Maximum number of goblin nests placed in a goblin warren's hall. Default: 3")
+		@Config.RangeInt(min = 0, max = 16)
+		public int goblinWarrenMaxNests = 3;
+
+		@Config.Name("Goblin Warren Den Chance")
+		@Config.Comment("Percent chance a goblin warren has a minecrawler den off its hall. When it has none, that doorway becomes a second way in. Default: 50")
+		@Config.RangeInt(min = 0, max = 100)
+		public int goblinWarrenDenChance = 50;
+
+		@Config.Name("Goblin Warren Bore Room")
+		@Config.Comment("Whether a goblin warren has a diggers' camp, with a tunneler, between its hall and its works. Default: true")
+		public boolean goblinWarrenBoreEnabled = true;
+
+		@Config.Name("Goblin Warren Vault")
+		@Config.Comment("Whether a goblin warren has an idol vault beyond its works: a room with a brute, a rich stone chest and the idol. Default: true")
+		public boolean goblinWarrenVaultEnabled = true;
+
 		@Config.Name("Subterfuge Shop Frequency")
 		@Config.Comment("1-in-N chance per chunk to attempt a Subterfuge's shop: a small room dug into the ground, reached by stairs. Lower is more common; 0 disables. Default: 1000")
 		@Config.RangeInt(min = 0)

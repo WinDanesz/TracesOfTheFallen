@@ -40,6 +40,7 @@ public class ComponentNbtPiece extends StructureComponentTemplate {
     private static final String[] ROOMS = {"x21_7_hall_factory", "x21_9_cross_claustrophobic", "x21_9_cross_pots", "x21_10_cross_moon", "x11_9_goblin_camp", "x21_10_goblin_infestation"};
     private static final Set<String> GNOSSIC_ROOMS = new HashSet<>(Arrays.asList(ROOMS));
     private static final String MOON_ROOM = "x21_10_cross_moon";
+    private static final String GOBLIN_INFESTATION = "x21_10_goblin_infestation";
     private static final String[] ROOMS_WITHOUT_MOON = Arrays.stream(ROOMS)
             .filter(room -> !room.equals(MOON_ROOM))
             .toArray(String[]::new);
@@ -48,6 +49,15 @@ public class ComponentNbtPiece extends StructureComponentTemplate {
     private static final Set<String> CORRIDOR_TRAP_TEMPLATES = new HashSet<>(Arrays.asList(
             "x11_5_hall", "x21_7_hall_factory"
     ));
+
+    // Rooms whose baked-in stone chests always get the rich loot table; every other room's chests are usually common.
+    private static final Set<String> RICH_LOOT_ROOMS = new HashSet<>(Arrays.asList(
+            "x21_10_origin_teleporter_1", "x21_9_cross_pots"
+    ));
+    private static final Set<String> BAKED_CHEST_ROOMS = new HashSet<>(Arrays.asList(
+            "x21_10_origin_teleporter_1", "x21_9_cross_pots", "x21_10_cross_moon", "x21_7_hall_factory", "x21_9_cross_claustrophobic"
+    ));
+    private static final int RICH_LOOT_CHANCE_DENOMINATOR = 6;
 
     private static final int MAX_DEPTH = 20;
     private static final int MAX_PIECES = 20;
@@ -142,8 +152,36 @@ public class ComponentNbtPiece extends StructureComponentTemplate {
     @Override
     public boolean addComponentParts(World worldIn, Random rand, StructureBoundingBox region) {
         boolean placed = super.addComponentParts(worldIn, rand, region);
+        this.assignStoneChestLoot(worldIn, rand, region);
         this.maybeSpawnDungeonGnossic(worldIn, rand, region);
+        if (this.templateName.equals(GOBLIN_INFESTATION)) {
+            this.infestGoblinRoom(worldIn, rand, region);
+        }
         return placed;
+    }
+
+    /**
+     * Gives the stone chests baked into the room templates a loot table. Chests that already carry one
+     * (e.g. the vault's) are left alone. Each chest lies in exactly one chunk's region, so it is rolled once.
+     */
+    private void assignStoneChestLoot(World worldIn, Random rand, StructureBoundingBox region) {
+        if (!BAKED_CHEST_ROOMS.contains(this.templateName)) {
+            return;
+        }
+        boolean richRoom = RICH_LOOT_ROOMS.contains(this.templateName);
+        for (BlockPos pos : BlockPos.getAllInBox(
+                Math.max(this.boundingBox.minX, region.minX), this.boundingBox.minY, Math.max(this.boundingBox.minZ, region.minZ),
+                Math.min(this.boundingBox.maxX, region.maxX), this.boundingBox.maxY, Math.min(this.boundingBox.maxZ, region.maxZ))) {
+            if (worldIn.getBlockState(pos).getBlock() != ModBlocks.stone_chest) {
+                continue;
+            }
+            TileEntity tileEntity = worldIn.getTileEntity(pos);
+            if (!(tileEntity instanceof TileEntityStoneChest) || tileEntity.writeToNBT(new NBTTagCompound()).hasKey("LootTable")) {
+                continue;
+            }
+            boolean rich = richRoom || rand.nextInt(RICH_LOOT_CHANCE_DENOMINATOR) == 0;
+            ((TileEntityStoneChest) tileEntity).setLootTable(rich ? TileEntityStoneChest.LOOT_RICH : TileEntityStoneChest.LOOT_COMMON, rand.nextLong());
+        }
     }
 
     private void maybeSpawnDungeonGnossic(World worldIn, Random rand, StructureBoundingBox region) {
@@ -218,6 +256,14 @@ public class ComponentNbtPiece extends StructureComponentTemplate {
                 }
             }
             worldIn.setBlockState(pos, Blocks.AIR.getDefaultState(), 3);
+        } else if (function.equals("stone_chest_common") || function.equals("stone_chest_rich")) {
+            // Template marker: places a lootable stone chest of the given tier.
+            worldIn.setBlockState(pos, ModBlocks.stone_chest.getDefaultState()
+                .withProperty(BlockStoneChest.FACING, EnumFacing.HORIZONTALS[rand.nextInt(EnumFacing.HORIZONTALS.length)]), 2);
+            TileEntity tileEntity = worldIn.getTileEntity(pos);
+            if (tileEntity instanceof TileEntityStoneChest) {
+                ((TileEntityStoneChest) tileEntity).setLootTable(function.equals("stone_chest_rich") ? TileEntityStoneChest.LOOT_RICH : TileEntityStoneChest.LOOT_COMMON, rand.nextLong());
+            }
         } else if (function.startsWith("chest_")) {
             worldIn.setBlockState(pos, Blocks.CHEST.getDefaultState(), 2);
             net.minecraft.tileentity.TileEntity tileentity = worldIn.getTileEntity(pos);
@@ -428,24 +474,43 @@ public class ComponentNbtPiece extends StructureComponentTemplate {
 
     /** Like findClearDecorationPosition, but only returns a spot inside the region currently being placed. */
     private BlockPos findPositionInRegion(World worldIn, BlockPos markerPos, List<BlockPos> occupiedPositions, int minimumSeparation, boolean requireNestClearance, StructureBoundingBox region, Random rand) {
-        List<BlockPos> rejected = new ArrayList<>(occupiedPositions);
-        for (int attempt = 0; attempt < 16; attempt++) {
-            BlockPos candidate = findClearDecorationPosition(worldIn, markerPos, rejected, minimumSeparation, requireNestClearance, rand);
-            if (candidate == null) {
-                return null;
+        return findClearDecorationPosition(worldIn, markerPos, occupiedPositions, minimumSeparation, requireNestClearance, region, rand);
+    }
+
+    private void placeGoblinNests(World worldIn, BlockPos markerPos, List<BlockPos> occupiedPositions, StructureBoundingBox region, int nestCount, Random rand) {
+        for (int index = 0; index < nestCount; index++) {
+            BlockPos nestPos = findPositionInRegion(worldIn, markerPos, occupiedPositions, 4, true, region, rand);
+            if (nestPos == null) {
+                continue;
             }
-            // Nests are 3x3, so the whole footprint has to be in the region, not just its centre.
-            int margin = requireNestClearance ? 1 : 0;
-            if (region.isVecInside(candidate.add(-margin, 0, -margin)) && region.isVecInside(candidate.add(margin, 0, margin))) {
-                return candidate;
-            }
-            rejected.add(candidate);
+
+            EntityGoblinNest nest = new EntityGoblinNest(worldIn, nestPos.getX() + 0.5D, nestPos.getY(), nestPos.getZ() + 0.5D);
+            nest.setFacing(getFacingTowardRoomCenter(nestPos));
+            worldIn.spawnEntity(nest);
+            occupiedPositions.add(nestPos);
         }
-        return null;
+    }
+
+    /**
+     * The infestation template is hand-built (bonepiles and all) and carries no decor or spawn markers, so its
+     * nests and goblins are added from here. Runs for the one population region that contains the room's centre.
+     */
+    private void infestGoblinRoom(World worldIn, Random rand, StructureBoundingBox region) {
+        BlockPos centerPos = new BlockPos((this.boundingBox.minX + this.boundingBox.maxX) / 2, this.boundingBox.minY + 1, (this.boundingBox.minZ + this.boundingBox.maxZ) / 2);
+        if (!region.isVecInside(centerPos)) {
+            return;
+        }
+
+        List<BlockPos> occupiedPositions = new ArrayList<>();
+        placeGoblinNests(worldIn, centerPos, occupiedPositions, region, 2 + rand.nextInt(3), rand);
+        spawnGoblinCampInhabitants(worldIn, centerPos, occupiedPositions, region, rand);
     }
 
     private void decorateGoblinCamp(World worldIn, BlockPos markerPos, Random rand, StructureBoundingBox region) {
         List<BlockPos> occupiedPositions = new ArrayList<>();
+        // The data marker block is still in the world while it is being handled; clear it so it is neither
+        // solid to the inhabitants spawned on it nor an invalid spot for decoration.
+        worldIn.setBlockState(markerPos, Blocks.AIR.getDefaultState(), 3);
         weatherGoblinCampFloor(worldIn, markerPos.down(), rand);
 
         if (rand.nextBoolean()) {
@@ -464,18 +529,7 @@ public class ComponentNbtPiece extends StructureComponentTemplate {
             occupiedPositions.add(torchPos);
         }
 
-        int nestCount = 2 + rand.nextInt(3);
-        for (int index = 0; index < nestCount; index++) {
-            BlockPos nestPos = findPositionInRegion(worldIn, markerPos, occupiedPositions, 4, true, region, rand);
-            if (nestPos == null) {
-                continue;
-            }
-
-            EntityGoblinNest nest = new EntityGoblinNest(worldIn, nestPos.getX() + 0.5D, nestPos.getY(), nestPos.getZ() + 0.5D);
-            nest.setFacing(getFacingTowardRoomCenter(nestPos));
-            worldIn.spawnEntity(nest);
-            occupiedPositions.add(nestPos);
-        }
+        placeGoblinNests(worldIn, markerPos, occupiedPositions, region, 2 + rand.nextInt(3), rand);
 
         int bonepileClusterCount = 2 + rand.nextInt(2);
         for (int index = 0; index < bonepileClusterCount; index++) {
@@ -520,7 +574,9 @@ public class ComponentNbtPiece extends StructureComponentTemplate {
 
                 TileEntity tileEntity = worldIn.getTileEntity(chestPos);
                 if (tileEntity instanceof TileEntityStoneChest) {
-                    ((TileEntityStoneChest) tileEntity).setLidOpen(open);
+                    TileEntityStoneChest stoneChest = (TileEntityStoneChest) tileEntity;
+                    stoneChest.setLidOpen(open);
+                    stoneChest.setLootTable(rand.nextInt(4) == 0 ? TileEntityStoneChest.LOOT_RICH : TileEntityStoneChest.LOOT_COMMON, rand.nextLong());
                 }
             }
         }
@@ -706,12 +762,14 @@ public class ComponentNbtPiece extends StructureComponentTemplate {
     }
 
     private BlockPos findClearDecorationPosition(World worldIn, BlockPos markerPos, List<BlockPos> occupiedPositions, int minimumSeparation, boolean requireNestClearance, Random rand) {
+        return findClearDecorationPosition(worldIn, markerPos, occupiedPositions, minimumSeparation, requireNestClearance, null, rand);
+    }
+
+    /** When {@code region} is given, only spots whose whole footprint lies inside it are considered. */
+    private BlockPos findClearDecorationPosition(World worldIn, BlockPos markerPos, List<BlockPos> occupiedPositions, int minimumSeparation, boolean requireNestClearance, StructureBoundingBox region, Random rand) {
         for (int attempt = 0; attempt < 64; attempt++) {
             BlockPos candidate = findInteriorPosition(markerPos.getY(), rand);
-            if (!canPlaceDecorationAt(worldIn, candidate) || !isFarEnoughFrom(candidate, occupiedPositions, minimumSeparation)) {
-                continue;
-            }
-            if (!requireNestClearance || hasClearNestFootprint(worldIn, candidate)) {
+            if (isValidDecorationSpot(worldIn, candidate, occupiedPositions, minimumSeparation, requireNestClearance, region)) {
                 return candidate;
             }
         }
@@ -719,16 +777,27 @@ public class ComponentNbtPiece extends StructureComponentTemplate {
         for (int x = this.boundingBox.minX + 2; x <= this.boundingBox.maxX - 2; x++) {
             for (int z = this.boundingBox.minZ + 2; z <= this.boundingBox.maxZ - 2; z++) {
                 BlockPos candidate = new BlockPos(x, markerPos.getY(), z);
-                if (!canPlaceDecorationAt(worldIn, candidate) || !isFarEnoughFrom(candidate, occupiedPositions, minimumSeparation)) {
-                    continue;
-                }
-                if (!requireNestClearance || hasClearNestFootprint(worldIn, candidate)) {
+                if (isValidDecorationSpot(worldIn, candidate, occupiedPositions, minimumSeparation, requireNestClearance, region)) {
                     return candidate;
                 }
             }
         }
 
         return null;
+    }
+
+    private boolean isValidDecorationSpot(World worldIn, BlockPos candidate, List<BlockPos> occupiedPositions, int minimumSeparation, boolean requireNestClearance, StructureBoundingBox region) {
+        if (!canPlaceDecorationAt(worldIn, candidate) || !isFarEnoughFrom(candidate, occupiedPositions, minimumSeparation)) {
+            return false;
+        }
+        if (region != null) {
+            // Nests are 3x3, so the whole footprint has to be in the region, not just its centre.
+            int margin = requireNestClearance ? 1 : 0;
+            if (!region.isVecInside(candidate.add(-margin, 0, -margin)) || !region.isVecInside(candidate.add(margin, 0, margin))) {
+                return false;
+            }
+        }
+        return !requireNestClearance || hasClearNestFootprint(worldIn, candidate);
     }
 
     private BlockPos findStonePilePosition(World worldIn, BlockPos markerPos, List<BlockPos> occupiedPositions, Random rand) {

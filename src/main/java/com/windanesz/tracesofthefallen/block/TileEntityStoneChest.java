@@ -17,6 +17,7 @@ import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntityLockableLoot;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -26,6 +27,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TileEntityStoneChest extends TileEntityLockableLoot implements ITickable {
+
+	public static final ResourceLocation LOOT_COMMON = new ResourceLocation(TracesOfTheFallen.MODID, "blocks/stone_chest_common");
+	public static final ResourceLocation LOOT_RICH = new ResourceLocation(TracesOfTheFallen.MODID, "blocks/stone_chest_rich");
 
 	private NonNullList<ItemStack> chestContents = NonNullList.<ItemStack>withSize(27, ItemStack.EMPTY);
 	public int numPlayersUsing;

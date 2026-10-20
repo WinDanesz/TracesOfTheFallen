@@ -7,20 +7,22 @@ import com.windanesz.tracesofthefallen.entity.EntitySidhe;
 import com.windanesz.tracesofthefallen.init.ModItems;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.IDrawable;
-import mezz.jei.api.gui.IDrawableStatic;
 import mezz.jei.api.gui.IGuiItemStackGroup;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import net.minecraft.client.Minecraft;
+import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.JsonToNBT;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.oredict.OreDictionary;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,16 +39,18 @@ public class SidheCategory implements IRecipeCategory<SidheCategory.Wrapper> {
     private static final int INPUT_SLOT = 0;
     private static final int OUTPUT_SLOT = 1;
 
+    private static final int WIDTH = 130;
+    private static final int HEIGHT = 40;
+    /** Horizontal span to the right of the arrow where the result (slot or text) is shown. */
+    private static final int RESULT_LEFT = 74;
+    private static final int RESULT_RIGHT = WIDTH - 2;
+
     private final IDrawable background;
     private final IDrawable icon;
-    private final IDrawableStatic slot;
-    private final IDrawableStatic arrow;
 
     public SidheCategory(IGuiHelper guiHelper) {
-        background = guiHelper.createBlankDrawable(116, 40);
+        background = guiHelper.createDrawable(new ResourceLocation(TracesOfTheFallen.MODID, "textures/gui/gui_jei_sidhe.png"), 0, 0, WIDTH, HEIGHT);
         icon = guiHelper.createDrawableIngredient(new ItemStack(ModItems.furred_trout));
-        slot = guiHelper.getSlotDrawable();
-        arrow = guiHelper.createDrawable(new ResourceLocation("textures/gui/container/furnace.png"), 79, 34, 24, 17);
     }
 
     @Override
@@ -75,12 +79,6 @@ public class SidheCategory implements IRecipeCategory<SidheCategory.Wrapper> {
     }
 
     @Override
-    public void drawExtras(Minecraft minecraft) {
-        slot.draw(minecraft, 8, 11);
-        arrow.draw(minecraft, 46, 12);
-    }
-
-    @Override
     public void setRecipe(IRecipeLayout layout, Wrapper wrapper, IIngredients ingredients) {
         IGuiItemStackGroup stacks = layout.getItemStacks();
         stacks.init(INPUT_SLOT, true, 8, 11);
@@ -88,7 +86,7 @@ public class SidheCategory implements IRecipeCategory<SidheCategory.Wrapper> {
         // The reward slot only exists once the player has seen this trade play out; setRecipe runs each time the
         // recipe is displayed, so the reveal shows up without reloading JEI.
         if (wrapper.isDiscovered() && !wrapper.reward.isEmpty()) {
-            stacks.init(OUTPUT_SLOT, false, 90, 11);
+            stacks.init(OUTPUT_SLOT, false, 93, 11);
             stacks.set(OUTPUT_SLOT, wrapper.reward);
         }
     }
@@ -98,39 +96,48 @@ public class SidheCategory implements IRecipeCategory<SidheCategory.Wrapper> {
         for (String entry : Settings.miscSettings.sidheInteractItems) {
             String[] parts = entry.split("\\|");
             if (parts.length < 2) continue;
-            ItemStack input = parseInput(parts[0]);
-            if (!input.isEmpty()) {
-                wrappers.add(new Wrapper(parts[0], input, parts[1]));
+            // A wildcard entry becomes one recipe per variant, each discovered on its own.
+            for (ItemStack input : parseInputs(parts[0])) {
+                wrappers.add(new Wrapper(EntitySidhe.getDiscoveryKey(input), input, parts[1]));
             }
         }
         return wrappers;
     }
 
     /** Mirrors the matching rules of {@link EntitySidhe#getInteractEntry}; a missing meta means 0 and '*' means any. */
-    private static ItemStack parseInput(String pattern) {
+    private static List<ItemStack> parseInputs(String pattern) {
         String[] itemParts = pattern.split(":", 4);
-        if (itemParts.length < 2) return ItemStack.EMPTY;
+        if (itemParts.length < 2) return Collections.emptyList();
         Item item = Item.REGISTRY.getObject(new ResourceLocation(itemParts[0], itemParts[1]));
-        if (item == null) return ItemStack.EMPTY;
-        int meta = 0;
-        if (itemParts.length >= 3) {
-            if (itemParts[2].equals("*")) {
-                meta = OreDictionary.WILDCARD_VALUE;
-            } else {
+        if (item == null) return Collections.emptyList();
+
+        List<ItemStack> stacks = new ArrayList<>();
+        if (itemParts.length >= 3 && itemParts[2].equals("*")) {
+            NonNullList<ItemStack> variants = NonNullList.create();
+            item.getSubItems(CreativeTabs.SEARCH, variants);
+            for (ItemStack variant : variants) {
+                if (variant.getItem() == item) stacks.add(variant.copy());
+            }
+            if (stacks.isEmpty()) stacks.add(new ItemStack(item));
+        } else {
+            int meta = 0;
+            if (itemParts.length >= 3) {
                 try {
                     meta = Integer.parseInt(itemParts[2]);
                 } catch (NumberFormatException ignored) {
                 }
             }
+            stacks.add(new ItemStack(item, 1, meta));
         }
-        ItemStack stack = new ItemStack(item, 1, meta);
+
         if (itemParts.length >= 4) {
             try {
-                stack.setTagCompound(JsonToNBT.getTagFromJson(itemParts[3]));
+                NBTTagCompound tag = JsonToNBT.getTagFromJson(itemParts[3]);
+                for (ItemStack stack : stacks) stack.setTagCompound(tag.copy());
             } catch (Exception ignored) {
             }
         }
-        return stack;
+        return stacks;
     }
 
     public static class Wrapper implements IRecipeWrapper {
@@ -158,19 +165,38 @@ public class SidheCategory implements IRecipeCategory<SidheCategory.Wrapper> {
         @Override
         public void drawInfo(Minecraft minecraft, int recipeWidth, int recipeHeight, int mouseX, int mouseY) {
             if (!isDiscovered()) {
-                drawCentered(minecraft, "?", 99, 16, 0xA0A0A0);
+                drawCentered(minecraft, "?", 16, 0xA0A0A0, false);
             } else if (attack) {
-                drawCentered(minecraft, I18n.format("jei.totf:sidhe.attack"), 99, 16, 0xB04040);
+                drawCentered(minecraft, I18n.format("jei.totf:sidhe.attack"), 16, 0xB04040, true);
             }
         }
 
-        private void drawCentered(Minecraft minecraft, String text, int centerX, int y, int color) {
-            minecraft.fontRenderer.drawString(text, centerX - minecraft.fontRenderer.getStringWidth(text) / 2, y, color);
+        /** Draws the text centred in the result area, shrinking it if a translation is too long to fit. */
+        private void drawCentered(Minecraft minecraft, String text, int y, int color, boolean whiteBorder) {
+            int textWidth = minecraft.fontRenderer.getStringWidth(text);
+            int available = RESULT_RIGHT - RESULT_LEFT;
+            float scale = textWidth > available ? (float) available / textWidth : 1.0F;
+            float centerX = (RESULT_LEFT + RESULT_RIGHT) / 2.0F;
+            // keep the text vertically centred on the same line when scaled down
+            float drawY = y + (1.0F - scale) * minecraft.fontRenderer.FONT_HEIGHT / 2.0F;
+            GlStateManager.pushMatrix();
+            GlStateManager.translate(centerX - textWidth * scale / 2.0F, drawY, 0.0F);
+            GlStateManager.scale(scale, scale, 1.0F);
+            if (whiteBorder) {
+                // 1px white outline for contrast against the grey recipe background
+                for (int dx = -1; dx <= 1; dx++) {
+                    for (int dy = -1; dy <= 1; dy++) {
+                        if (dx != 0 || dy != 0) minecraft.fontRenderer.drawString(text, dx, dy, 0xFFFFFF);
+                    }
+                }
+            }
+            minecraft.fontRenderer.drawString(text, 0, 0, color);
+            GlStateManager.popMatrix();
         }
 
         @Override
         public List<String> getTooltipStrings(int mouseX, int mouseY) {
-            if (mouseX >= 80 && mouseX <= 116 && mouseY >= 8 && mouseY <= 32) {
+            if (mouseX >= RESULT_LEFT && mouseX <= WIDTH && mouseY >= 8 && mouseY <= 32) {
                 if (!isDiscovered()) {
                     return Collections.singletonList(I18n.format("jei.totf:sidhe.unknown.tooltip"));
                 } else if (attack) {

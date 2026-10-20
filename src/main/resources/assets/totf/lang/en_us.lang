@@ -375,8 +375,12 @@ item.totf:painting_idyillic_steppes.name=Idyillic Steppes
 item.totf:painting_sifting_winds.name=Sifting Winds
 
 jei.totf:spinning_wheel.title=Spinning Wheel
-jei.totf:spinning_wheel.requires_spinning=Wheel must be spinning
-jei.totf:spinning_wheel.requires_spinning.tooltip=Give the wheel a spin with an empty hand first.
+jei.totf:spinning_wheel.requires_spinning=Right-click to spin
+jei.totf:spinning_wheel.requires_spinning.tooltip=Right-clicking the wheel with the input in your hand spins it and crafts.
+jei.totf:spinning_wheel.hand=In hand
+jei.totf:spinning_wheel.wheel=In wheel
+jei.totf:spinning_wheel.hand.tooltip=Hold this in your main hand and right-click the wheel.
+jei.totf:spinning_wheel.wheel.tooltip=Store these sticks in the wheel first: right-click it with sticks, or sneak + right-click with an empty hand to open its inventory.
 jei.totf:sidhe.title=Sidhe Offering
 jei.totf:sidhe.unknown.tooltip=Offer this to a Sidhe to find out what it gives in return.
 jei.totf:sidhe.attack=Angers it

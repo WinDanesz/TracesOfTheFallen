@@ -154,7 +154,7 @@ public class BlockSpinningWheel extends BlockDecoration {
 
 		if (!worldIn.isRemote) {
 			if (SpinningWheelRecipes.isInput(heldItem)) {
-				SpinningWheelRecipes.Recipe recipe = SpinningWheelRecipes.find(heldItem, te.getStickCount(), te.isSpinning());
+				SpinningWheelRecipes.Recipe recipe = SpinningWheelRecipes.find(heldItem, te.getStickCount(), true); // the click itself spins the wheel
 				if (recipe != null) {
 					if (!playerIn.capabilities.isCreativeMode) {
 						heldItem.shrink(recipe.inputCount);

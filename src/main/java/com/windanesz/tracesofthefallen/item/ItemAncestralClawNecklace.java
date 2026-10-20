@@ -63,7 +63,7 @@ public class ItemAncestralClawNecklace extends Item {
 				world.spawnParticle(EnumParticleTypes.SPELL_WITCH, player.posX + (world.rand.nextDouble() - 0.5D) * 1.2D, player.posY + 1.2D + world.rand.nextDouble(), player.posZ + (world.rand.nextDouble() - 0.5D) * 1.2D, 0.0D, 0.03D, 0.0D);
 			}
 			if (usedTicks % 10 == 0) {
-				world.playSound(null, player.posX, player.posY, player.posZ, SoundEvents.ENTITY_WITHER_AMBIENT, SoundCategory.PLAYERS, 0.5F, 1.5F);
+				world.playSound(null, player.posX, player.posY, player.posZ, SoundEvents.ENTITY_WITHER_AMBIENT, SoundCategory.PLAYERS, 0.25F, 1.5F);
 			}
 		}
 	}

@@ -31,14 +31,14 @@ public class BlockGuillotine extends BlockContainer {
     public static final PropertyDirection FACING = BlockHorizontal.FACING;
     public static final PropertyEnum<EnumAttachFace> FACE = PropertyEnum.create("face", EnumAttachFace.class);
 
-    private static final AxisAlignedBB AABB_CEILING_Z = new AxisAlignedBB(0.0D, 1.0D, 0.375D, 1.0D, 1.125D, 0.625D);
-    private static final AxisAlignedBB AABB_CEILING_X = new AxisAlignedBB(0.375D, 1.0D, 0.0D, 0.625D, 1.125D, 1.0D);
-    private static final AxisAlignedBB AABB_FLOOR_Z = new AxisAlignedBB(0.0D, -0.125D, 0.375D, 1.0D, 0.0D, 0.625D);
-    private static final AxisAlignedBB AABB_FLOOR_X = new AxisAlignedBB(0.375D, -0.125D, 0.0D, 0.625D, 0.0D, 1.0D);
-    private static final AxisAlignedBB AABB_NORTH = new AxisAlignedBB(0.0D, 0.375D, 1.0D, 1.0D, 0.625D, 1.125D);
-    private static final AxisAlignedBB AABB_SOUTH = new AxisAlignedBB(0.0D, 0.375D, -0.125D, 1.0D, 0.625D, 0.0D);
-    private static final AxisAlignedBB AABB_WEST = new AxisAlignedBB(1.0D, 0.375D, 0.0D, 1.125D, 0.625D, 1.0D);
-    private static final AxisAlignedBB AABB_EAST = new AxisAlignedBB(-0.125D, 0.375D, 0.0D, 0.0D, 0.625D, 1.0D);
+    private static final AxisAlignedBB AABB_CEILING_Z = new AxisAlignedBB(0.0D, 0.875D, 0.375D, 1.0D, 1.0D, 0.625D);
+    private static final AxisAlignedBB AABB_CEILING_X = new AxisAlignedBB(0.375D, 0.875D, 0.0D, 0.625D, 1.0D, 1.0D);
+    private static final AxisAlignedBB AABB_FLOOR_Z = new AxisAlignedBB(0.0D, 0.0D, 0.375D, 1.0D, 0.125D, 0.625D);
+    private static final AxisAlignedBB AABB_FLOOR_X = new AxisAlignedBB(0.375D, 0.0D, 0.0D, 0.625D, 0.125D, 1.0D);
+    private static final AxisAlignedBB AABB_NORTH = new AxisAlignedBB(0.0D, 0.375D, 0.875D, 1.0D, 0.625D, 1.0D);
+    private static final AxisAlignedBB AABB_SOUTH = new AxisAlignedBB(0.0D, 0.375D, 0.0D, 1.0D, 0.625D, 0.125D);
+    private static final AxisAlignedBB AABB_WEST = new AxisAlignedBB(0.875D, 0.375D, 0.0D, 1.0D, 0.625D, 1.0D);
+    private static final AxisAlignedBB AABB_EAST = new AxisAlignedBB(0.0D, 0.375D, 0.0D, 0.125D, 0.625D, 1.0D);
 
     public BlockGuillotine(Material materialIn) {
         super(materialIn);

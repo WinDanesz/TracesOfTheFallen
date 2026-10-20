@@ -7,11 +7,14 @@ public class StructureRegistry {
         // Register the structure start
         MapGenStructureIO.registerStructure(StructureMultipartStart.class, "TOTF_MultipartDungeon");
         MapGenStructureIO.registerStructure(StructureGoblinCavernStart.class, "TOTF_GoblinCavern");
+        MapGenStructureIO.registerStructure(StructureGoblinWarrenStart.class, "TOTF_GoblinWarren");
 
         // Register the component pieces
         MapGenStructureIO.registerStructureComponent(ComponentNbtPiece.class, "TOTF_NbtPiece");
         MapGenStructureIO.registerStructureComponent(ComponentMinecrawlerNest.class, "TOTF_MinecrawlerNest");
         MapGenStructureIO.registerStructureComponent(ComponentMinecrawlerShaft.class, "TOTF_MinecrawlerShaft");
         MapGenStructureIO.registerStructureComponent(ComponentGoblinCavern.class, "TOTF_GoblinCavernPiece");
+        MapGenStructureIO.registerStructureComponent(ComponentGoblinWarrenRoom.class, "TOTF_GoblinWarrenRoom");
+        MapGenStructureIO.registerStructureComponent(ComponentGoblinWarrenTunnel.class, "TOTF_GoblinWarrenTunnel");
     }
 }
