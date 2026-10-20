@@ -18,8 +18,8 @@ public class ParticleBlueFlame extends Particle {
 		this.motionX = motionX + (this.rand.nextDouble() - 0.5D) * 0.01D;
 		this.motionY = motionY + 0.01D + this.rand.nextDouble() * 0.015D;
 		this.motionZ = motionZ + (this.rand.nextDouble() - 0.5D) * 0.01D;
-		this.particleRed = 0.15F + this.rand.nextFloat() * 0.15F;
-		this.particleGreen = 0.45F + this.rand.nextFloat() * 0.2F;
+		this.particleRed = 0.35F + this.rand.nextFloat() * 0.15F;
+		this.particleGreen = 0.8F + this.rand.nextFloat() * 0.15F;
 		this.particleBlue = 1.0F;
 		this.particleAlpha = 0.95F;
 		this.baseScale = 1.8F + this.rand.nextFloat() * 0.7F;
@@ -56,15 +56,15 @@ public class ParticleBlueFlame extends Particle {
         float remaining = 1.0F - life;
         this.particleScale = this.baseScale * (0.3F + 0.7F * remaining);
         this.particleAlpha = 0.75F * remaining * remaining;
-        this.particleRed = 0.08F;
-        this.particleGreen = 0.35F + 0.3F * remaining;
+        this.particleRed = 0.35F + 0.15F * remaining;
+        this.particleGreen = 0.75F + 0.2F * remaining;
         this.particleBlue = 1.0F;
         super.renderParticle(buffer, camera, partialTicks, rotationX, rotationZ, rotationYZ, rotationXY, rotationXZ);
         // A smaller, hot core gives the flame depth without changing global blend state.
         this.particleScale *= 0.48F;
         this.particleAlpha = 0.9F * remaining;
-        this.particleRed = 0.55F * remaining;
-        this.particleGreen = 0.75F + 0.2F * remaining;
+        this.particleRed = 0.75F + 0.2F * remaining;
+        this.particleGreen = 0.95F;
         super.renderParticle(buffer, camera, partialTicks, rotationX, rotationZ, rotationYZ, rotationXY, rotationXZ);
     }
 

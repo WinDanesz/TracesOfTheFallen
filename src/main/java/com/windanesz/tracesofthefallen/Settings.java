@@ -871,6 +871,7 @@ public class Settings {
 				"Format: 'modid:item_name:meta|action'",
 				"Meta is optional (defaults to 0 or any if *). NBT can be appended as JSON string if needed, e.g. modid:item:meta:{NBT}.",
 				"Action can be 'attack' to make the Sidhe retaliate, or an item stack to return as a reward (e.g. 'minecraft:diamond:0*1').",
+				"Several rewards can be listed separated by ';', in which case one of them is picked at random every time (e.g. 'minecraft:diamond:0*1;minecraft:emerald:0*2').",
 				"Examples: 'minecraft:fish:*|attack', 'totf:furred_trout:0|minecraft:diamond:0*1'"
 		})
 		public String[] sidheInteractItems = {
@@ -878,6 +879,48 @@ public class Settings {
 				"minecraft:cooked_fish:*|attack",
 				"totf:furred_trout:0|totf:ancestral_claw_necklace:0*1"
 		};
+
+		@Config.Name("Randomize Sidhe Barter")
+		@Config.Comment({
+				"If enabled, the outcomes of the items in 'Sidhe Interactions' are mixed up for every player, good and bad alike: about half of the items",
+				"become rewards and half make the Sidhe angry, no matter what the list says for them. Rewards come from the rewards in the list",
+				"plus 'Sidhe Random Rewards'. Items in 'Sidhe Guaranteed Reward Items' never anger the Sidhe, they always give a (random) reward.",
+				"The result is derived from the world seed and the player's UUID, so every player gets their own, stable, set of outcomes.",
+				"If disabled, the 'Sidhe Interactions' list is used exactly as written for everyone."
+		})
+		public boolean randomizeSidheBarter = true;
+
+		@Config.Name("Sidhe Guaranteed Reward Items")
+		@Config.Comment({
+				"Items that must never anger the Sidhe when 'Randomize Sidhe Barter' is enabled. They always give a randomly picked reward.",
+				"Format: 'modid:item_name:meta' (like the input of 'Sidhe Interactions', meta is optional and * means any). Default: the furred trout."
+		})
+		public String[] sidheGuaranteedRewardItems = {
+				"totf:furred_trout:0"
+		};
+
+		@Config.Name("Sidhe Random Rewards")
+		@Config.Comment({
+				"Extra pool of rewards the Sidhe can give for randomized items, besides the ones in 'Sidhe Interactions'. Format: 'modid:item_name:meta*count' (meta and count are optional).",
+				"Every randomized item that turns out to be a reward gets its own set of 'Sidhe Random Reward Choices' items from this pool, per player.",
+				"Only used if 'Randomize Sidhe Barter' is enabled. If this list is empty (or has no valid items), randomized items always anger the Sidhe."
+		})
+		public String[] sidheRandomRewards = {
+				"totf:mysterious_fur:0*1",
+				"totf:pemmican:0*2",
+				"totf:silk_rope:0*1",
+				"totf:incense:0*2",
+				"totf:spirited_away_tea_leaves:0*2",
+				"totf:living_silver_speck:0*3"
+		};
+
+		@Config.Name("Sidhe Random Reward Choices")
+		@Config.Comment({
+				"How many different rewards each randomized item can give. For every trade the Sidhe picks one of them at random,",
+				"and all of them are shown in JEI once the trade is discovered. Capped by the size of 'Sidhe Random Rewards'. Default: 3"
+		})
+		@Config.RangeInt(min = 1, max = 16)
+		public int sidheRandomRewardChoices = 3;
 
 		@Config.Name("Brass Fabricator Custom Fuels")
 		@Config.Comment({

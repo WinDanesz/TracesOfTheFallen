@@ -34,6 +34,8 @@ public class ModItems {
 	public static final Item ancestral_claw_necklace = placeholder();
 	public static final Item pemmican = placeholder();
 	public static final Item furred_trout = placeholder();
+	/** Stands in for a Sidhe reward the player has not received yet in recipe viewers. */
+	public static final Item sidhe_unknown_reward = placeholder();
 	public static final Item mysterious_fur = placeholder();
 	public static final Item veiled_mask = placeholder();
 	public static final Item berserker_helmet = placeholder();
@@ -99,6 +101,7 @@ public class ModItems {
 		registerItem(registry, "ancestral_claw_necklace", new ItemAncestralClawNecklace().setCreativeTab(ModCreativeTab.TOTF_TAB));
 		registerItem(registry, "pemmican", new ItemFood(10, 0.8f, true).setCreativeTab(ModCreativeTab.TOTF_TAB));
 		registerItem(registry, "furred_trout", new ItemFood(2, 0.1f, false).setCreativeTab(ModCreativeTab.TOTF_TAB));
+		registerItem(registry, "sidhe_unknown_reward", new Item());
 
 		registerItem(registry, "painting_in_the_woods", new ItemModPainting(ItemModPainting.EnumPainting.PAINTING_IN_THE_WOODS).setCreativeTab(ModCreativeTab.TOTF_TAB));
 		registerItem(registry, "painting_portrait", new ItemModPainting(ItemModPainting.EnumPainting.PAINTING_PORTRAIT).setCreativeTab(ModCreativeTab.TOTF_TAB));

@@ -1,6 +1,7 @@
 package com.windanesz.tracesofthefallen.compat.jei;
 
 import com.windanesz.tracesofthefallen.Settings;
+import com.windanesz.tracesofthefallen.SidheBarter;
 import com.windanesz.tracesofthefallen.SidheDiscoveries;
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
 import com.windanesz.tracesofthefallen.entity.EntitySidhe;
@@ -13,6 +14,7 @@ import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
@@ -41,6 +43,8 @@ public class SidheCategory implements IRecipeCategory<SidheCategory.Wrapper> {
 
     private static final int WIDTH = 130;
     private static final int HEIGHT = 40;
+    private static final ResourceLocation BACKGROUND = new ResourceLocation(TracesOfTheFallen.MODID, "textures/gui/gui_jei_sidhe.png");
+    private static final ResourceLocation BACKGROUND_ANGRY = new ResourceLocation(TracesOfTheFallen.MODID, "textures/gui/gui_jei_sidhe_angry.png");
     /** Horizontal span to the right of the arrow where the result (slot or text) is shown. */
     private static final int RESULT_LEFT = 74;
     private static final int RESULT_RIGHT = WIDTH - 2;
@@ -49,7 +53,8 @@ public class SidheCategory implements IRecipeCategory<SidheCategory.Wrapper> {
     private final IDrawable icon;
 
     public SidheCategory(IGuiHelper guiHelper) {
-        background = guiHelper.createDrawable(new ResourceLocation(TracesOfTheFallen.MODID, "textures/gui/gui_jei_sidhe.png"), 0, 0, WIDTH, HEIGHT);
+        // Left blank: every recipe draws its own background (see Wrapper#drawInfo), as angering trades use a different one
+        background = guiHelper.createBlankDrawable(WIDTH, HEIGHT);
         icon = guiHelper.createDrawableIngredient(new ItemStack(ModItems.furred_trout));
     }
 
@@ -85,9 +90,11 @@ public class SidheCategory implements IRecipeCategory<SidheCategory.Wrapper> {
         stacks.set(INPUT_SLOT, ingredients.getInputs(ItemStack.class).get(0));
         // The reward slot only exists once the player has seen this trade play out; setRecipe runs each time the
         // recipe is displayed, so the reveal shows up without reloading JEI.
-        if (wrapper.isDiscovered() && !wrapper.reward.isEmpty()) {
+        // With several possible rewards JEI cycles through them
+        List<ItemStack> rewards = wrapper.getRewards();
+        if (wrapper.isDiscovered() && !rewards.isEmpty()) {
             stacks.init(OUTPUT_SLOT, false, 93, 11);
-            stacks.set(OUTPUT_SLOT, wrapper.reward);
+            stacks.set(OUTPUT_SLOT, rewards);
         }
     }
 
@@ -97,64 +104,57 @@ public class SidheCategory implements IRecipeCategory<SidheCategory.Wrapper> {
             String[] parts = entry.split("\\|");
             if (parts.length < 2) continue;
             // A wildcard entry becomes one recipe per variant, each discovered on its own.
-            for (ItemStack input : parseInputs(parts[0])) {
+            for (ItemStack input : SidheBarter.expandInputs(parts[0])) {
                 wrappers.add(new Wrapper(EntitySidhe.getDiscoveryKey(input), input, parts[1]));
             }
         }
         return wrappers;
     }
 
-    /** Mirrors the matching rules of {@link EntitySidhe#getInteractEntry}; a missing meta means 0 and '*' means any. */
-    private static List<ItemStack> parseInputs(String pattern) {
-        String[] itemParts = pattern.split(":", 4);
-        if (itemParts.length < 2) return Collections.emptyList();
-        Item item = Item.REGISTRY.getObject(new ResourceLocation(itemParts[0], itemParts[1]));
-        if (item == null) return Collections.emptyList();
-
-        List<ItemStack> stacks = new ArrayList<>();
-        if (itemParts.length >= 3 && itemParts[2].equals("*")) {
-            NonNullList<ItemStack> variants = NonNullList.create();
-            item.getSubItems(CreativeTabs.SEARCH, variants);
-            for (ItemStack variant : variants) {
-                if (variant.getItem() == item) stacks.add(variant.copy());
-            }
-            if (stacks.isEmpty()) stacks.add(new ItemStack(item));
-        } else {
-            int meta = 0;
-            if (itemParts.length >= 3) {
-                try {
-                    meta = Integer.parseInt(itemParts[2]);
-                } catch (NumberFormatException ignored) {
-                }
-            }
-            stacks.add(new ItemStack(item, 1, meta));
-        }
-
-        if (itemParts.length >= 4) {
-            try {
-                NBTTagCompound tag = JsonToNBT.getTagFromJson(itemParts[3]);
-                for (ItemStack stack : stacks) stack.setTagCompound(tag.copy());
-            } catch (Exception ignored) {
-            }
-        }
-        return stacks;
-    }
-
     public static class Wrapper implements IRecipeWrapper {
         private final String key;
         private final ItemStack input;
-        private final boolean attack;
-        private final ItemStack reward;
+        private final String configuredAction;
 
         Wrapper(String key, ItemStack input, String action) {
             this.key = key;
             this.input = input;
-            this.attack = action.equals("attack");
-            this.reward = attack ? ItemStack.EMPTY : EntitySidhe.parseRewardItem(action);
+            this.configuredAction = action;
+        }
+
+        /** What the server recorded for this player, or null if undiscovered or unknown. Outcomes can be randomized per player. */
+        private SidheDiscoveries.Info getInfo() {
+            return Settings.miscSettings.randomizeSidheBarter ? SidheDiscoveries.getInfo(key) : null;
+        }
+
+        private boolean isAttack() {
+            SidheDiscoveries.Info info = getInfo();
+            return info != null ? info.attack : configuredAction.equals(SidheBarter.ATTACK);
+        }
+
+        /**
+         * With randomization on, the rewards the player has received so far, followed by a question mark for each one they
+         * haven't. Otherwise all the rewards listed in the config.
+         */
+        List<ItemStack> getRewards() {
+            SidheDiscoveries.Info info = getInfo();
+            if (info == null) return Settings.miscSettings.randomizeSidheBarter ? Collections.emptyList() : EntitySidhe.parseRewardItems(configuredAction);
+            List<ItemStack> rewards = new ArrayList<>();
+            for (String seen : info.seen) {
+                ItemStack reward = EntitySidhe.parseRewardItem(seen);
+                if (!reward.isEmpty()) rewards.add(reward);
+            }
+            for (int i = rewards.size(); i < info.total; i++) {
+                rewards.add(new ItemStack(ModItems.sidhe_unknown_reward));
+            }
+            return rewards;
         }
 
         boolean isDiscovered() {
-            return SidheDiscoveries.isDiscovered(key);
+            if (!SidheDiscoveries.isDiscovered(key)) return false;
+            // Discovered before outcomes were recorded: with randomization on the config doesn't say what this player
+            // gets, so keep it a secret until they try the offering again
+            return !Settings.miscSettings.randomizeSidheBarter || getInfo() != null;
         }
 
         @Override
@@ -164,9 +164,14 @@ public class SidheCategory implements IRecipeCategory<SidheCategory.Wrapper> {
 
         @Override
         public void drawInfo(Minecraft minecraft, int recipeWidth, int recipeHeight, int mouseX, int mouseY) {
+            minecraft.getTextureManager().bindTexture(isDiscovered() && isAttack() ? BACKGROUND_ANGRY : BACKGROUND);
+            GlStateManager.enableBlend();
+            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+            Gui.drawModalRectWithCustomSizedTexture(0, 0, 0, 0, WIDTH, HEIGHT, 256.0F, 256.0F);
+
             if (!isDiscovered()) {
                 drawCentered(minecraft, "?", 16, 0xA0A0A0, false);
-            } else if (attack) {
+            } else if (isAttack()) {
                 drawCentered(minecraft, I18n.format("jei.totf:sidhe.attack"), 16, 0xB04040, true);
             }
         }
@@ -199,7 +204,7 @@ public class SidheCategory implements IRecipeCategory<SidheCategory.Wrapper> {
             if (mouseX >= RESULT_LEFT && mouseX <= WIDTH && mouseY >= 8 && mouseY <= 32) {
                 if (!isDiscovered()) {
                     return Collections.singletonList(I18n.format("jei.totf:sidhe.unknown.tooltip"));
-                } else if (attack) {
+                } else if (isAttack()) {
                     return Collections.singletonList(I18n.format("jei.totf:sidhe.attack.tooltip"));
                 }
             }

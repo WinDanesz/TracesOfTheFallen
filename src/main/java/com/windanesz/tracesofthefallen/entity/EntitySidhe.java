@@ -1,6 +1,7 @@
 package com.windanesz.tracesofthefallen.entity;
 
 import com.windanesz.tracesofthefallen.Settings;
+import com.windanesz.tracesofthefallen.SidheBarter;
 import com.windanesz.tracesofthefallen.SidheDiscoveries;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -26,6 +27,9 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class EntitySidhe extends EntityMob {
 
@@ -53,6 +57,8 @@ public class EntitySidhe extends EntityMob {
 	public EntityPlayer rewardingPlayer = null;
 	public String pendingRewardAction = null;
 	public String pendingRewardKey = null;
+	/** The reward action picked for this trade, one of the alternatives in pendingRewardAction. */
+	private String pendingRewardChosen = null;
 	/** 0 = holding the offering in its mouth, 1 = taking the reward out of its pocket, 2 = reward dropped, about to poof. */
 	private int rewardStage = 0;
 
@@ -254,7 +260,8 @@ public class EntitySidhe extends EntityMob {
 	protected boolean processInteract(EntityPlayer player, EnumHand hand) {
 		ItemStack stack = player.getHeldItem(hand);
 		String[] entry = getInteractEntry(stack);
-		String action = entry == null ? null : entry[1];
+		// The outcome depends on the world seed, which only the server knows; the client just needs to know the item is accepted
+		String action = entry == null ? null : this.world.isRemote ? entry[1] : SidheBarter.resolveAction(player, stack, entry);
 		if (action != null) {
 			if (!this.world.isRemote && this.tiltTimer <= 0 && this.rewardTimer <= 0 && !this.isStanding()) {
 				// Capture before shrinking: a depleted stack reports as air
@@ -267,7 +274,7 @@ public class EntitySidhe extends EntityMob {
 				}
 				
 				if (action.equals("attack")) {
-					SidheDiscoveries.discover(player, discoveryKey);
+					SidheDiscoveries.discover(player, discoveryKey, action, null);
 					this.tiltTimer = MOUTH_HOLD_TICKS; // hold the item, tilting its head, then spit it out
 					this.pendingTarget = player;
 					this.dataManager.set(TILTING, true);
@@ -345,6 +352,27 @@ public class EntitySidhe extends EntityMob {
 			}
 		}
 		return null;
+	}
+
+	/** All rewards an action can give: a single stack, or several separated by ';' of which one is picked per trade. */
+	public static List<ItemStack> parseRewardItems(String action) {
+		List<ItemStack> rewards = new ArrayList<>();
+		if (action == null || action.equals(SidheBarter.ATTACK)) return rewards;
+		for (String part : action.split(SidheBarter.REWARD_SEPARATOR)) {
+			ItemStack reward = parseRewardItem(part.trim());
+			if (!reward.isEmpty()) rewards.add(reward);
+		}
+		return rewards;
+	}
+
+	/** Picks one of the alternative rewards of an action at random; null if there is none. */
+	private String pickRewardAction(String action) {
+		if (action == null || action.equals(SidheBarter.ATTACK)) return null;
+		List<String> options = new ArrayList<>();
+		for (String part : action.split(SidheBarter.REWARD_SEPARATOR)) {
+			if (!parseRewardItem(part.trim()).isEmpty()) options.add(part.trim());
+		}
+		return options.isEmpty() ? null : options.get(this.rand.nextInt(options.size()));
 	}
 
 	public static ItemStack parseRewardItem(String action) {
@@ -504,7 +532,8 @@ public class EntitySidhe extends EntityMob {
 			EntitySidhe sidhe = this.sidhe;
 			switch (sidhe.rewardStage) {
 				case 0: // offering accepted (it stays in its mouth): take the reward out of its pocket
-					ItemStack reward = sidhe.pendingRewardAction == null ? ItemStack.EMPTY : parseRewardItem(sidhe.pendingRewardAction);
+					sidhe.pendingRewardChosen = sidhe.pickRewardAction(sidhe.pendingRewardAction);
+					ItemStack reward = parseRewardItem(sidhe.pendingRewardChosen);
 					if (reward.isEmpty()) {
 						sidhe.despawnPoof();
 						return;
@@ -519,7 +548,7 @@ public class EntitySidhe extends EntityMob {
 					sidhe.dropHandItem();
 					sidhe.swingArm(EnumHand.MAIN_HAND);
 					if (sidhe.rewardingPlayer != null && sidhe.pendingRewardKey != null) {
-						SidheDiscoveries.discover(sidhe.rewardingPlayer, sidhe.pendingRewardKey);
+						SidheDiscoveries.discover(sidhe.rewardingPlayer, sidhe.pendingRewardKey, sidhe.pendingRewardAction, sidhe.pendingRewardChosen);
 					}
 					sidhe.rewardStage = 2;
 					sidhe.rewardTimer = AFTER_DROP_TICKS;

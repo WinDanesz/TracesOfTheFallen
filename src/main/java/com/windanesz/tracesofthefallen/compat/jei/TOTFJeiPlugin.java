@@ -1,6 +1,7 @@
 package com.windanesz.tracesofthefallen.compat.jei;
 
 import com.windanesz.tracesofthefallen.init.ModBlocks;
+import com.windanesz.tracesofthefallen.init.ModItems;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.IModRegistry;
 import mezz.jei.api.JEIPlugin;
@@ -37,6 +38,7 @@ public class TOTFJeiPlugin implements IModPlugin {
         for (Block block : hiddenBlocks) {
             hideIfPresent(blacklist, block);
         }
+        blacklist.addIngredientToBlacklist(new ItemStack(ModItems.sidhe_unknown_reward));
 
         registry.addRecipeCatalyst(new ItemStack(ModBlocks.brass_fabricator), mezz.jei.api.recipe.VanillaRecipeCategoryUid.CRAFTING);
         registry.addRecipeClickArea(com.windanesz.tracesofthefallen.client.gui.GuiBrassFabricator.class, 89, 35, 24, 17, mezz.jei.api.recipe.VanillaRecipeCategoryUid.CRAFTING);
