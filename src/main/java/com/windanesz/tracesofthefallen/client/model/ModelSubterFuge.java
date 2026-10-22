@@ -7,13 +7,13 @@ import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 
-public class ModelSubterFuge2 extends ModelBase {
+public class ModelSubterFuge extends ModelBase {
 	private final ModelRenderer body;
     private final ModelRenderer head;
     private final ModelRenderer rightArm;
 	private final ModelRenderer rightForearm;
 
-    public ModelSubterFuge2() {
+    public ModelSubterFuge() {
 		textureWidth = 64;
 		textureHeight = 64;
 
