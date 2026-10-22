@@ -359,7 +359,13 @@ public class WorldGenMinecrawlerLair implements IWorldGenerator {
 
 		// Heavy floor coverage - most of the nest floor is coated one way or another, only a
 		// minority of bare stone peeks through.
+		// Rooms can be anchored in open air (a tunnel that broke into a natural cave, or one room
+		// overlapping another), so only coat floor cells that actually have rock under them -
+		// otherwise the wax cubes hang in mid-air.
 		float floorRoll = random.nextFloat();
+		if (!isCoatableSolid(world, groundPos)) {
+			return;
+		}
 		if (floorRoll < 0.5F) {
 			BlockPos puddlePos = floorPos.add(dx, 1, dz);
 			if (world.isAirBlock(puddlePos)) {

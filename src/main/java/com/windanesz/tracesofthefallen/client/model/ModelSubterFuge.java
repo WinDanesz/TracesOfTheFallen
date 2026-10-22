@@ -27,10 +27,11 @@ public class ModelSubterFuge2 extends ModelBase {
 		torso.cubeList.add(new ModelBox(torso, 8, 16, -4.0F, -11.0F, -4.0F, 8, 11, 4, 0.0F, false));
 
         ModelRenderer chest_r1 = new ModelRenderer(this);
-		chest_r1.setRotationPoint(0.145F, -6.2824F, -4.2071F);
+		chest_r1.setRotationPoint(0.0F, -6.2824F, -4.2071F);
 		torso.addChild(chest_r1);
 		setRotationAngle(chest_r1, 0.0F, -0.7854F, 1.5708F);
-		chest_r1.cubeList.add(new ModelBox(chest_r1, 31, 53, -2.15F, -3.4F, -0.5F, 3, 8, 4, 0.0F, false));
+		// after the 90deg roll the box's 8px length runs along x: -4..4 = exactly the torso width, centred
+		chest_r1.cubeList.add(new ModelBox(chest_r1, 31, 52,-2.15F, -4.0F, -0.5F, 3, 8, 4, 0.0F, false));
 
 		head = new ModelRenderer(this);
 		head.setRotationPoint(0.0F, -11.0F, -3.0F);

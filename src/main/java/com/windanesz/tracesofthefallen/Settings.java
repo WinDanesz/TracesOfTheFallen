@@ -314,7 +314,7 @@ public class Settings {
 		public boolean goblinWarrenVaultEnabled = true;
 
 		@Config.Name("Subterfuge Shop Frequency")
-		@Config.Comment("1-in-N chance per chunk to attempt a Subterfuge's shop: a small room dug into the ground, reached by stairs. Lower is more common; 0 disables. Default: 1000")
+		@Config.Comment("1-in-N chance per chunk to attempt a Subterfuge's shop: a small room dug into the ground, reached by stairs. Lower is more common; 0 disables. Default: 500")
 		@Config.RangeInt(min = 0)
 		public int subterfugeShopFrequency = 1000;
 
@@ -497,8 +497,7 @@ public class Settings {
 				"totf:serenity|2|60"
 		})
 		public String[] skeletonFlowerAuraEffects = {
-				"minecraft:poison|1|120",
-				"totf:serenity|2|60"
+				"minecraft:poison|1|120"
 		};
 
 		@Config.Name("Incense Potion Effect Whitelist")
@@ -952,6 +951,10 @@ public class Settings {
 		@Config.Comment("If true, the white variant of the Floater is enabled and registered. Default: false")
 		@Config.RequiresMcRestart
 		public boolean enableWhiteFloater = false;
+
+		@Config.Name("Baubles Integration")
+		@Config.Comment("If true and Baubles is installed, the arcane skulls can be worn in charm slots and activated with a keybind. Default: true")
+		public boolean baublesIntegration = true;
     }
 
     public static class ClientSettings {

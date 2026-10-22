@@ -14,9 +14,14 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.event.ClickEvent;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.IChunkProvider;
@@ -139,7 +144,21 @@ public class WorldGenSubterfugeShop implements IWorldGenerator {
 		spawnKeeper(world, random, frame, bounds, balances, centre, keeperRow);
 
 		TracesOfTheFallen.LOGGER.info("Generated a Subterfuge shop near {}", frame.at(centre, 0, roomStart));
+		announceShop(world, frame.at(centre, 1, keeperRow));
 		return true;
+	}
+
+	/** Debug: tells every player where a shop just generated, with a click-to-suggest teleport command. */
+	private static void announceShop(World world, BlockPos keeperPos) {
+		MinecraftServer server = world.getMinecraftServer();
+		if (server == null) {
+			return;
+		}
+		String command = String.format("/tp %d %d %d", keeperPos.getX(), keeperPos.getY(), keeperPos.getZ());
+		ITextComponent message = new TextComponentString("[TotF] Subterfuge shop generated (dim " + world.provider.getDimension() + "): " + command);
+		message.getStyle().setColor(TextFormatting.LIGHT_PURPLE)
+				.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, command));
+		server.getPlayerList().sendMessage(message);
 	}
 
 	// ---------------------------------------------------------------------------------------------------
@@ -151,6 +170,10 @@ public class WorldGenSubterfugeShop implements IWorldGenerator {
 	private static Integer surfaceY(World world, int x, int z) {
 		BlockPos ground = world.getTopSolidOrLiquidBlock(new BlockPos(x, 0, z)).down();
 		if (ground.getY() < 1) {
+			return null;
+		}
+		// getTopSolidOrLiquidBlock only stops at blocks that block movement, so it sees the bed under water.
+		if (world.getBlockState(ground.up()).getMaterial().isLiquid()) {
 			return null;
 		}
 		Material material = world.getBlockState(ground).getMaterial();

@@ -40,6 +40,9 @@ final class WarrenLayout {
     /** Open cells with natural ground below and two blocks of headroom, in a fixed scan order. */
     final List<BlockPos> standCells = new ArrayList<>();
     final Set<BlockPos> standSet = new HashSet<>();
+    /** Template terrain is only placed where it supports the room interior. */
+    final Set<BlockPos> terrainCells = new HashSet<>();
+    final Set<BlockPos> floorCells = new HashSet<>();
     final List<Exit> exits = new ArrayList<>();
     /** The fire rune block a hall's shaman is stationed beside; null if the template has none. */
     BlockPos fireRune;
@@ -80,6 +83,21 @@ final class WarrenLayout {
         }
 
         WarrenLayout layout = new WarrenLayout(sizeX, sizeZ);
+        for (int x = 0; x < sizeX; x++) {
+            for (int y = 0; y < sizeY; y++) {
+                for (int z = 0; z < sizeZ; z++) {
+                    if (isFloor(states, floor, x, y, z)) {
+                        BlockPos cell = new BlockPos(x, y, z);
+                        layout.terrainCells.add(cell);
+                        // Include ground beneath furnishings as well as empty standing cells.
+                        if (y + 1 < sizeY && states[x][y + 1][z] >= 0
+                                && !isFloor(states, floor, x, y + 1, z)) {
+                            layout.floorCells.add(cell);
+                        }
+                    }
+                }
+            }
+        }
         for (int index = 0; index < blocks.tagCount(); index++) {
             NBTTagCompound block = blocks.getCompoundTagAt(index);
             if (fireRune[block.getInteger("state")]) {

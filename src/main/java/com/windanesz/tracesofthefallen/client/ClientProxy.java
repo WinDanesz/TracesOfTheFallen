@@ -72,6 +72,7 @@ public class ClientProxy extends CommonProxy {
 		OBJLoader.INSTANCE.addDomain(TracesOfTheFallen.MODID);
 		registerEntityRenderers();
 		registerTileEntityRenderers();
+		RelicKeyBindings.register();
 	}
 
 	@Override

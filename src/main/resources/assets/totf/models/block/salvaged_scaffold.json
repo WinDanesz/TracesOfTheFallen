@@ -3,6 +3,7 @@
 	"credit": "Made by Foreck with Blockbench",
 	"parent": "block/block",
 	"textures": {
+		"particle": "totf:blocks/salvaged_scaffold",
 		"totf:blocks/salvaged_scaffold": "totf:blocks/salvaged_scaffold"
 	},
 	"elements": [

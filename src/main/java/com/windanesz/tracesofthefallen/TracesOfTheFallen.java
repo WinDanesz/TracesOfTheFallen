@@ -2,6 +2,7 @@ package com.windanesz.tracesofthefallen;
 
 import com.windanesz.tracesofthefallen.capability.HauntingCapability;
 import com.windanesz.tracesofthefallen.command.CommandGetHauntingProgress;
+import com.windanesz.tracesofthefallen.compat.baubles.TotfBaublesIntegration;
 import com.windanesz.tracesofthefallen.command.CommandSetHauntingProgress;
 import com.windanesz.tracesofthefallen.entity.EntityDungeonSlug;
 import com.windanesz.tracesofthefallen.entity.EntityFrostling;
@@ -36,7 +37,7 @@ import org.apache.logging.log4j.Logger;
 import java.util.Arrays;
 import java.util.List;
 
-@Mod(modid = Tags.MOD_ID, name = Tags.MOD_NAME, version = Tags.VERSION)
+@Mod(modid = Tags.MOD_ID, name = Tags.MOD_NAME, version = Tags.VERSION, dependencies = "after:baubles")
 public class TracesOfTheFallen implements ForgeChunkManager.LoadingCallback {
 
 	/**
@@ -58,6 +59,7 @@ public class TracesOfTheFallen implements ForgeChunkManager.LoadingCallback {
 		ForgeChunkManager.setForcedChunkLoadingCallback(instance, this);
 		NetworkRegistry.INSTANCE.registerGuiHandler(instance, new ModGuiHandler());
 		proxy.preInit(event);
+		TotfBaublesIntegration.init();
 		ModBlocks.registerTileEntities();
 		ModLootTables.register();
 		HauntingCapability.register();

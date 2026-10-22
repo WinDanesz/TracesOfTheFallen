@@ -2,6 +2,7 @@ package com.windanesz.tracesofthefallen.world.structure;
 
 import com.windanesz.tracesofthefallen.Settings;
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -28,7 +29,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * One room of a goblin warren: an NBT template (a stone shell with the room hollowed out of it) that knows what
+ * One room of a goblin warren: an NBT template carved into the surrounding terrain that knows what
  * the room is for. The role decides who lives there. Placed one population region at a time, so everything is
  * deterministic from the piece's seed and only touches blocks inside the region it is handed.
  */
@@ -165,7 +166,28 @@ public class ComponentGoblinWarrenRoom extends StructureComponentTemplate {
             return true;
         }
 
-        super.addComponentParts(world, random, region);
+        this.placeSettings.setBoundingBox(region);
+        this.template.addBlocksToWorld(world, this.templatePosition, (level, pos, block) -> {
+            if (!region.isVecInside(pos)) {
+                return null;
+            }
+            if (this.layout.terrainCells.contains(block.pos)) {
+                // The template's rectangular shell describes the room, not rock to build in a cave.
+                // Keep native stone (including modded variants), and bridge only missing interior floor.
+                if (!this.layout.floorCells.contains(block.pos)) {
+                    return null;
+                }
+                IBlockState existing = level.getBlockState(pos);
+                if (existing.isTopSolid() || existing.getBlock().hasTileEntity(existing)
+                        || existing.getBlockHardness(level, pos) < 0) {
+                    return null;
+                }
+            }
+            return block;
+        }, this.placeSettings, 18);
+        for (Map.Entry<BlockPos, String> marker : this.template.getDataBlocks(this.templatePosition, this.placeSettings).entrySet()) {
+            handleDataMarker(marker.getValue(), marker.getKey(), world, random, region);
+        }
         populate(world, region);
 
         this.generatedSections.add(section);
