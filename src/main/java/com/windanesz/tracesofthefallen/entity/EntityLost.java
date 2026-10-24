@@ -91,8 +91,9 @@ public class EntityLost extends EntityMob {
     public boolean getCanSpawnHere() {
         net.minecraft.util.math.BlockPos pos = new net.minecraft.util.math.BlockPos(this.posX, this.getEntityBoundingBox().minY, this.posZ);
         
-        // Only spawn deep underground and away from sky access
-        if (pos.getY() >= 60 || this.world.canBlockSeeSky(pos)) {
+        // Only spawn at mining depth (diamond level by default), away from sky access, and never in the Nether/End
+        if (pos.getY() < Settings.mobSettings.lostSpawnMinY || pos.getY() > Settings.mobSettings.lostSpawnMaxY
+                || !this.world.provider.isSurfaceWorld() || this.world.canBlockSeeSky(pos)) {
             return false;
         }
         

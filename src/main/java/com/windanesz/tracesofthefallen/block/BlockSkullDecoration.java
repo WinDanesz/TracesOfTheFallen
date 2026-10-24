@@ -73,6 +73,15 @@ public class BlockSkullDecoration extends BlockContainer {
 	}
 
 	@Override
+	public boolean canPlaceBlockOnSide(World worldIn, BlockPos pos, EnumFacing side) {
+		// Mirrors getStateForPlacement: the ceiling face is treated as a floor placement.
+		EnumFacing facing = side.getAxis() == EnumFacing.Axis.Y ? EnumFacing.UP : side;
+		BlockPos supportPos = pos.offset(facing.getOpposite());
+		return super.canPlaceBlockOnSide(worldIn, pos, side)
+				&& worldIn.getBlockState(supportPos).isSideSolid(worldIn, supportPos, facing);
+	}
+
+	@Override
 	public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
 		EnumFacing facing = state.getValue(FACING);
 		BlockPos supportPos = pos.offset(facing.getOpposite());

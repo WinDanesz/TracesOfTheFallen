@@ -1,10 +1,10 @@
 package com.windanesz.tracesofthefallen.block;
 
+import com.windanesz.tracesofthefallen.Settings;
 import net.minecraft.util.EnumFacing;
 
 public class TileEntityIncense extends TileEntityBurningIncense {
 
-	private static final int BURN_DURATION_TICKS = 20 * 20;
 	private static final double INITIAL_PARTICLE_OFFSET = 0.2D;
 	private static final double PARTICLE_STAGE_STEP = 1.0D / 16.0D;
 	private int lastBurnStage = -1;
@@ -15,7 +15,7 @@ public class TileEntityIncense extends TileEntityBurningIncense {
 
 	@Override
 	protected int getInitialBurnTime() {
-		return BURN_DURATION_TICKS;
+		return Math.max(20, Settings.miscSettings.incenseStickBurnDuration);
 	}
 
 	@Override

@@ -33,7 +33,7 @@ public class ItemModPainting extends Item {
 		PAINTING_SUBTERFUGE("painting_subterfuge", 16, 32, 64, 64, true),
 		PAINTING_RESTING_MISCHIEF("painting_resting_mischief", 48, 32, 0, 128, false),
 		PAINTING_IDYLLIC_STEPPES("painting_idyillic_steppes", 64, 32, 0, 224, false),
-		PAINTING_SIFTING_WINDS("painting_sifting_winds", 96, 48, 128, 0, false);
+		PAINTING_SIFTING_WINDS("painting_sifting_winds", 96, 48, 128, 0, true);
 
 		public final String name;
 		public final int sizeX;

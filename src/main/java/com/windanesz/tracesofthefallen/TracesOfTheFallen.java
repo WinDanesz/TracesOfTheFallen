@@ -6,6 +6,7 @@ import com.windanesz.tracesofthefallen.compat.baubles.TotfBaublesIntegration;
 import com.windanesz.tracesofthefallen.command.CommandSetHauntingProgress;
 import com.windanesz.tracesofthefallen.entity.EntityDungeonSlug;
 import com.windanesz.tracesofthefallen.entity.EntityFrostling;
+import com.windanesz.tracesofthefallen.entity.EntityLost;
 import com.windanesz.tracesofthefallen.entity.EntityMinecrawler;
 import com.windanesz.tracesofthefallen.entity.EntitySidhe;
 import com.windanesz.tracesofthefallen.init.ModBlocks;
@@ -88,6 +89,7 @@ public class TracesOfTheFallen implements ForgeChunkManager.LoadingCallback {
 		GameRegistry.registerWorldGenerator(new WorldGenAbandonedTentWithTotem(), 1);
 		GameRegistry.registerWorldGenerator(new WorldGenBushCrate(), 1);
 		GameRegistry.registerWorldGenerator(new WorldGenMinecrawlerLair(), 1);
+		GameRegistry.registerWorldGenerator(new WorldGenLostPit(), 2);
 		GameRegistry.registerWorldGenerator(new com.windanesz.tracesofthefallen.world.structure.WorldGenMultipartDelegate(), 1);
 		GameRegistry.registerWorldGenerator(new com.windanesz.tracesofthefallen.world.structure.WorldGenGoblinCavernDelegate(), 1);
 		GameRegistry.registerWorldGenerator(new com.windanesz.tracesofthefallen.world.structure.WorldGenGoblinWarrenDelegate(), 1);
@@ -105,6 +107,9 @@ public class TracesOfTheFallen implements ForgeChunkManager.LoadingCallback {
 		List<ResourceLocation> dungeonSlugWhite = Arrays.asList(Settings.toResourceLocations(Settings.mobSettings.dungeonSlugBiomeWhitelist));
 		List<ResourceLocation> dungeonSlugBlack = Arrays.asList(Settings.toResourceLocations(Settings.mobSettings.dungeonSlugBiomeBlacklist));
 
+		List<ResourceLocation> lostWhite = Arrays.asList(Settings.toResourceLocations(Settings.mobSettings.lostBiomeWhitelist));
+		List<ResourceLocation> lostBlack = Arrays.asList(Settings.toResourceLocations(Settings.mobSettings.lostBiomeBlacklist));
+
 		for (Biome biome : ForgeRegistries.BIOMES) {
 			if (biome != null && !biome.getSpawnableList(EnumCreatureType.MONSTER).isEmpty()) {
 				ResourceLocation biomeName = biome.getRegistryName();
@@ -120,6 +125,9 @@ public class TracesOfTheFallen implements ForgeChunkManager.LoadingCallback {
 				}
 				if (Settings.mobSettings.dungeonSlugSpawnWeight > 0 && isValidBiome(biomeName, dungeonSlugWhite, dungeonSlugBlack)) {
 					EntityRegistry.addSpawn(EntityDungeonSlug.class, Settings.mobSettings.dungeonSlugSpawnWeight, Settings.mobSettings.dungeonSlugSpawnMinGroup, Settings.mobSettings.dungeonSlugSpawnMaxGroup, EnumCreatureType.MONSTER, biome);
+					}
+					if (Settings.mobSettings.lostSpawnWeight > 0 && isValidBiome(biomeName, lostWhite, lostBlack)) {
+						EntityRegistry.addSpawn(EntityLost.class, Settings.mobSettings.lostSpawnWeight, Settings.mobSettings.lostSpawnMinGroup, Settings.mobSettings.lostSpawnMaxGroup, EnumCreatureType.MONSTER, biome);
 				}
 			}
 		}

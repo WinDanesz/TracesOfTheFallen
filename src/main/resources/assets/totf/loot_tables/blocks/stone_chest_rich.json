@@ -178,6 +178,34 @@
                             }
                         }
                     ]
+                },
+                {
+                    "type": "item",
+                    "name": "totf:zap_charge",
+                    "weight": 3,
+                    "functions": [
+                        {
+                            "function": "minecraft:set_count",
+                            "count": {
+                                "min": 1,
+                                "max": 3
+                            }
+                        }
+                    ]
+                },
+                {
+                    "type": "item",
+                    "name": "totf:wrought_bomb",
+                    "weight": 3,
+                    "functions": [
+                        {
+                            "function": "minecraft:set_count",
+                            "count": {
+                                "min": 1,
+                                "max": 2
+                            }
+                        }
+                    ]
                 }
             ]
         },
@@ -305,6 +333,88 @@
                 {
                     "condition": "minecraft:random_chance",
                     "chance": 0.75
+                }
+            ]
+        },
+        {
+            "name": "stone_chest_rich_curios",
+            "rolls": 1,
+            "conditions": [
+                {
+                    "condition": "minecraft:random_chance",
+                    "chance": 0.3
+                }
+            ],
+            "entries": [
+                {
+                    "type": "item",
+                    "name": "totf:armillary",
+                    "weight": 1
+                },
+                {
+                    "type": "item",
+                    "name": "totf:dioptra",
+                    "weight": 1
+                },
+                {
+                    "type": "item",
+                    "name": "totf:telescope",
+                    "weight": 1
+                },
+                {
+                    "type": "item",
+                    "name": "totf:censer",
+                    "weight": 1
+                },
+                {
+                    "type": "item",
+                    "name": "totf:incense_burner_gold",
+                    "weight": 1
+                },
+                {
+                    "type": "item",
+                    "name": "totf:incense_burner_green",
+                    "weight": 1
+                },
+                {
+                    "type": "item",
+                    "name": "totf:incense_burner_white",
+                    "weight": 1
+                },
+                {
+                    "type": "item",
+                    "name": "totf:idol_vessel",
+                    "weight": 1
+                },
+                {
+                    "type": "item",
+                    "name": "totf:ancestral_sifter_golden",
+                    "weight": 1
+                },
+                {
+                    "type": "item",
+                    "name": "totf:ancestral_sifter_red",
+                    "weight": 1
+                },
+                {
+                    "type": "item",
+                    "name": "totf:balance",
+                    "weight": 1
+                },
+                {
+                    "type": "item",
+                    "name": "totf:desk_bell",
+                    "weight": 1
+                },
+                {
+                    "type": "item",
+                    "name": "totf:porcelain_cup",
+                    "weight": 3
+                },
+                {
+                    "type": "item",
+                    "name": "totf:porcelain_pot",
+                    "weight": 1
                 }
             ]
         }

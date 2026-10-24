@@ -1,0 +1,55 @@
+{
+    "pools": [
+        {
+            "name": "curios_cargo",
+            "rolls": 1,
+            "entries": [
+                {
+                    "type": "item",
+                    "name": "totf:censer",
+                    "weight": 1
+                },
+                {
+                    "type": "item",
+                    "name": "totf:incense_burner_gold",
+                    "weight": 1
+                },
+                {
+                    "type": "item",
+                    "name": "totf:incense_burner_green",
+                    "weight": 1
+                },
+                {
+                    "type": "item",
+                    "name": "totf:incense_burner_white",
+                    "weight": 1
+                },
+                {
+                    "type": "item",
+                    "name": "totf:idol_vessel",
+                    "weight": 1
+                },
+                {
+                    "type": "item",
+                    "name": "totf:ancestral_sifter_golden",
+                    "weight": 1
+                },
+                {
+                    "type": "item",
+                    "name": "totf:ancestral_sifter_red",
+                    "weight": 1
+                },
+                {
+                    "type": "item",
+                    "name": "totf:balance",
+                    "weight": 1
+                },
+                {
+                    "type": "item",
+                    "name": "totf:desk_bell",
+                    "weight": 1
+                }
+            ]
+        }
+    ]
+}

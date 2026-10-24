@@ -220,6 +220,37 @@ public class Settings {
 		@Config.Comment("1-in-N chance per chunk for a small underground Minecrawler lair to generate. Lower is more common. Default: 360")
 		public int minecrawlerLairFrequency = 360;
 
+		@Config.Name("Lost Pits Enabled")
+		public boolean lostPitsEnabled = true;
+
+		@Config.Name("Lost Pit Frequency")
+		@Config.Comment("1-in-N generation attempt per new Overworld chunk. Unsuitable sites are skipped. 0 disables. Does not change natural Lost spawning.")
+		@Config.RangeInt(min = 0)
+		public int lostPitFrequency = 600;
+
+		@Config.Name("Lost Pit Min Y")
+		@Config.RangeInt(min = 4, max = 240)
+		public int lostPitMinY = 4;
+
+		@Config.Name("Lost Pit Max Y")
+		@Config.Comment("Inclusive floor depth limits; chambers must also fit beneath local terrain.")
+		@Config.RangeInt(min = 4, max = 240)
+		public int lostPitMaxY = 240;
+
+		@Config.Name("Lost Pit Surface Chance")
+		@Config.RangeDouble(min = 0, max = 1)
+		public double lostPitSurfaceChance = 0.1D;
+
+		@Config.Name("Lost Pit Ledge Chance")
+		@Config.Comment("Chance an ordinary pit has a walkable descent instead of a sheer drop.")
+		@Config.RangeDouble(min = 0, max = 1)
+		public double lostPitLedgeChance = 0.5D;
+
+		@Config.Name("Lost Pit Pair Chance")
+		@Config.Comment("Chance of two persistent Lost instead of one. No special respawning or AI changes.")
+		@Config.RangeDouble(min = 0, max = 1)
+		public double lostPitPairChance = 0.2D;
+
 		@Config.Name("Minecrawler Lair Min Y")
 		@Config.Comment("Lowest Y level a Minecrawler lair's floor can generate at. Default: 15")
 		@Config.RangeInt(min = 1, max = 245)
@@ -314,7 +345,7 @@ public class Settings {
 		public boolean goblinWarrenVaultEnabled = true;
 
 		@Config.Name("Subterfuge Shop Frequency")
-		@Config.Comment("1-in-N chance per chunk to attempt a Subterfuge's shop: a small room dug into the ground, reached by stairs. Lower is more common; 0 disables. Default: 500")
+		@Config.Comment("1-in-N chance per chunk to attempt a Subterfuge's shop: a small room dug into the ground, reached by stairs. Lower is more common; 0 disables. Default: 1000")
 		@Config.RangeInt(min = 0)
 		public int subterfugeShopFrequency = 1000;
 
@@ -1244,6 +1275,36 @@ public class Settings {
 		@Config.Comment("Melee attack damage for the Dungeon Slug once revealed. Default: 4.0")
 		@Config.RangeDouble(min = 0.0D, max = 10000.0D)
 		public double dungeonSlugAttackDamage = 4.0D;
+
+		@Config.Name("Lost Spawn Weight")
+		@Config.Comment("Spawn weight for the Lost, a rare ambusher of deep cave miners. Default: 1 (0 to disable)")
+		public int lostSpawnWeight = 1;
+
+		@Config.Name("Lost Spawn Min Group")
+		@Config.Comment("Minimum group size for the Lost. Default: 1")
+		public int lostSpawnMinGroup = 1;
+
+		@Config.Name("Lost Spawn Max Group")
+		@Config.Comment("Maximum group size for the Lost. Default: 1")
+		public int lostSpawnMaxGroup = 1;
+
+		@Config.Name("Lost Spawn Min Y")
+		@Config.Comment("Lowest Y level the Lost can naturally spawn at. Default: 1")
+		@Config.RangeInt(min = 0, max = 255)
+		public int lostSpawnMinY = 1;
+
+		@Config.Name("Lost Spawn Max Y")
+		@Config.Comment("Highest Y level the Lost can naturally spawn at. Default: 16 (diamond depth)")
+		@Config.RangeInt(min = 0, max = 255)
+		public int lostSpawnMaxY = 16;
+
+		@Config.Name("Lost Biome Whitelist")
+		@Config.Comment("Biomes where the Lost can spawn (empty = all allowed). Format: modid:biome")
+		public String[] lostBiomeWhitelist = new String[0];
+
+		@Config.Name("Lost Biome Blacklist")
+		@Config.Comment("Biomes where the Lost cannot spawn. Format: modid:biome")
+		public String[] lostBiomeBlacklist = new String[0];
 
 		@Config.Name("Ink Slug Max Health")
 		@Config.Comment("Max health for the Ink Slug. Default: 20.0")

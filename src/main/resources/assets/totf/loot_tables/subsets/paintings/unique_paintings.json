@@ -45,6 +45,16 @@
                     "name": "totf:painting_sifting_winds",
                     "entryName": "painting_sifting_winds",
                     "weight": 1
+                },
+                {
+                    "type": "item",
+                    "name": "totf:painting_wizardry",
+                    "weight": 1
+                },
+                {
+                    "type": "item",
+                    "name": "totf:painting_subterfuge",
+                    "weight": 1
                 }
             ]
         }

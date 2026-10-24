@@ -6,13 +6,13 @@
             "entries": [
                 {
                     "type": "loot_table",
-                    "name": "totf:blocks/lost_crate_potions/potions",
+                    "name": "totf:subsets/lost_crate_potions/potions",
                     "weight": 2,
                     "quality": 1
                 },
                 {
                     "type": "loot_table",
-                    "name": "totf:blocks/lost_crate_potions/alchemical_ingredients",
+                    "name": "totf:subsets/lost_crate_potions/alchemical_ingredients",
                     "weight": 1,
                     "quality": 1
                 }

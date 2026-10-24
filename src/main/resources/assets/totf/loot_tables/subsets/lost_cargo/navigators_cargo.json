@@ -1,0 +1,25 @@
+{
+    "pools": [
+        {
+            "name": "navigators_cargo",
+            "rolls": 1,
+            "entries": [
+                {
+                    "type": "item",
+                    "name": "totf:dioptra",
+                    "weight": 1
+                },
+                {
+                    "type": "item",
+                    "name": "totf:telescope",
+                    "weight": 1
+                },
+                {
+                    "type": "item",
+                    "name": "totf:armillary",
+                    "weight": 1
+                }
+            ]
+        }
+    ]
+}

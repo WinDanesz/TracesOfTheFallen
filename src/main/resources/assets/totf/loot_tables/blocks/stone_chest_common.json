@@ -278,6 +278,35 @@
                             }
                         }
                     ]
+                },
+                {
+                    "type": "item",
+                    "name": "totf:porcelain_cup",
+                    "weight": 4
+                },
+                {
+                    "type": "item",
+                    "name": "totf:porcelain_pot",
+                    "weight": 2
+                },
+                {
+                    "type": "item",
+                    "name": "totf:zap_charge",
+                    "weight": 3,
+                    "functions": [
+                        {
+                            "function": "minecraft:set_count",
+                            "count": {
+                                "min": 1,
+                                "max": 2
+                            }
+                        }
+                    ]
+                },
+                {
+                    "type": "item",
+                    "name": "totf:wrought_bomb",
+                    "weight": 3
                 }
             ],
             "conditions": [

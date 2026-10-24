@@ -1,35 +1,21 @@
 {
     "pools": [
         {
-            "name": "common_items",
+            "name": "bountiful_cargo",
             "rolls": {
                 "min": 1,
-                "max": 3
+                "max": 4
             },
             "entries": [
                 {
                     "type": "item",
-                    "name": "minecraft:stick",
-                    "weight": 20,
+                    "name": "minecraft:leather",
+                    "weight": 10,
                     "functions": [
                         {
                             "function": "minecraft:set_count",
                             "count": {
-                                "min": 1,
-                                "max": 4
-                            }
-                        }
-                    ]
-                },
-                {
-                    "type": "item",
-                    "name": "minecraft:wheat_seeds",
-                    "weight": 18,
-                    "functions": [
-                        {
-                            "function": "minecraft:set_count",
-                            "count": {
-                                "min": 2,
+                                "min": 3,
                                 "max": 5
                             }
                         }
@@ -37,8 +23,22 @@
                 },
                 {
                     "type": "item",
-                    "name": "minecraft:string",
-                    "weight": 15,
+                    "name": "totf:wonder_fertilizer",
+                    "weight": 6,
+                    "functions": [
+                        {
+                            "function": "minecraft:set_count",
+                            "count": {
+                                "min": 3,
+                                "max": 4
+                            }
+                        }
+                    ]
+                },
+                {
+                    "type": "item",
+                    "name": "totf:silk_spindle",
+                    "weight": 6,
                     "functions": [
                         {
                             "function": "minecraft:set_count",
@@ -51,8 +51,8 @@
                 },
                 {
                     "type": "item",
-                    "name": "minecraft:feather",
-                    "weight": 15,
+                    "name": "totf:bundle_of_lost_letters",
+                    "weight": 3,
                     "functions": [
                         {
                             "function": "minecraft:set_count",
@@ -65,8 +65,27 @@
                 },
                 {
                     "type": "item",
-                    "name": "minecraft:leather",
-                    "weight": 12,
+                    "name": "totf:old_world_tinkers_kit",
+                    "weight": 2
+                },
+                {
+                    "type": "item",
+                    "name": "minecraft:book",
+                    "weight": 1,
+                    "functions": [
+                        {
+                            "function": "minecraft:set_count",
+                            "count": {
+                                "min": 4,
+                                "max": 11
+                            }
+                        }
+                    ]
+                },
+                {
+                    "type": "item",
+                    "name": "totf:porcelain_cup",
+                    "weight": 4,
                     "functions": [
                         {
                             "function": "minecraft:set_count",
@@ -79,59 +98,27 @@
                 },
                 {
                     "type": "item",
-                    "name": "minecraft:iron_nugget",
-                    "weight": 14,
-                    "functions": [
-                        {
-                            "function": "minecraft:set_count",
-                            "count": {
-                                "min": 2,
-                                "max": 6
-                            }
-                        }
-                    ]
-                },
-                {
-                    "type": "item",
-                    "name": "minecraft:gold_nugget",
-                    "weight": 10,
+                    "name": "totf:porcelain_pot",
+                    "weight": 2,
                     "functions": [
                         {
                             "function": "minecraft:set_count",
                             "count": {
                                 "min": 1,
-                                "max": 4
+                                "max": 2
                             }
                         }
                     ]
                 },
                 {
                     "type": "item",
-                    "name": "minecraft:wheat",
-                    "weight": 12,
-                    "functions": [
-                        {
-                            "function": "minecraft:set_count",
-                            "count": {
-                                "min": 2,
-                                "max": 7
-                            }
-                        }
-                    ]
+                    "name": "totf:plaque",
+                    "weight": 3
                 },
                 {
                     "type": "item",
-                    "name": "minecraft:arrow",
-                    "weight": 16,
-                    "functions": [
-                        {
-                            "function": "minecraft:set_count",
-                            "count": {
-                                "min": 3,
-                                "max": 8
-                            }
-                        }
-                    ]
+                    "name": "totf:spinning_wheel",
+                    "weight": 3
                 }
             ]
         }
