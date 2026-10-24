@@ -1,6 +1,6 @@
 package com.windanesz.tracesofthefallen.client.model;
 
-import com.windanesz.tracesofthefallen.entity.EntityGoblin;
+import com.windanesz.tracesofthefallen.entity.living.EntityGoblin;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.GlStateManager;

@@ -1,7 +1,7 @@
 package com.windanesz.tracesofthefallen.entity;
 
 import com.windanesz.tracesofthefallen.Settings;
-import com.windanesz.tracesofthefallen.SifterLootResolver;
+import com.windanesz.tracesofthefallen.misc.SifterLootResolver;
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
 import com.windanesz.tracesofthefallen.block.BlockAncestralSifter;
 import net.minecraft.entity.Entity;

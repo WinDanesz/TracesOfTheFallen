@@ -2,7 +2,7 @@ package com.windanesz.tracesofthefallen.client.renderer;
 
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
 import com.windanesz.tracesofthefallen.client.model.ModelSeekingOrb;
-import com.windanesz.tracesofthefallen.entity.EntitySeekingOrb;
+import com.windanesz.tracesofthefallen.entity.projectile.EntitySeekingOrb;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.entity.Render;

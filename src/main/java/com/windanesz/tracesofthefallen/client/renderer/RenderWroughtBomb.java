@@ -2,7 +2,7 @@ package com.windanesz.tracesofthefallen.client.renderer;
 
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
 import com.windanesz.tracesofthefallen.client.model.ModelWroughtBomb;
-import com.windanesz.tracesofthefallen.entity.EntityGoblinEngineer;
+import com.windanesz.tracesofthefallen.entity.living.EntityGoblinEngineer;
 import com.windanesz.tracesofthefallen.entity.EntityWroughtBomb;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.Render;

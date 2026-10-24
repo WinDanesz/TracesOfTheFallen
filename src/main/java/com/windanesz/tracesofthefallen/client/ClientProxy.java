@@ -1,7 +1,9 @@
 package com.windanesz.tracesofthefallen.client;
 
 import com.windanesz.tracesofthefallen.CommonProxy;
-import com.windanesz.tracesofthefallen.PorcelainLiquids;
+import com.windanesz.tracesofthefallen.entity.living.*;
+import com.windanesz.tracesofthefallen.entity.projectile.*;
+import com.windanesz.tracesofthefallen.misc.PorcelainLiquids;
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
 import com.windanesz.tracesofthefallen.block.*;
 import com.windanesz.tracesofthefallen.capability.HauntingCapability;

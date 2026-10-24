@@ -1,7 +1,7 @@
 package com.windanesz.tracesofthefallen.client.renderer;
 
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
-import com.windanesz.tracesofthefallen.entity.EntityGoblinNest;
+import com.windanesz.tracesofthefallen.entity.living.EntityGoblinNest;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;

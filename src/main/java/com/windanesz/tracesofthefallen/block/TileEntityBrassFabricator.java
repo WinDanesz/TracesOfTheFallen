@@ -2,7 +2,7 @@ package com.windanesz.tracesofthefallen.block;
 
 import com.windanesz.tracesofthefallen.Settings;
 import com.windanesz.tracesofthefallen.api.ILampheadInteractable;
-import com.windanesz.tracesofthefallen.entity.EntityLamphead;
+import com.windanesz.tracesofthefallen.entity.living.EntityLamphead;
 import com.windanesz.tracesofthefallen.init.ModSounds;
 import com.windanesz.tracesofthefallen.inventory.ContainerBrassFabricator;
 import net.minecraft.inventory.InventoryCrafting;

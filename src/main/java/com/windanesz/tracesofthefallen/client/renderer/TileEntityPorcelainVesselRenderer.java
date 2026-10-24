@@ -1,6 +1,6 @@
 package com.windanesz.tracesofthefallen.client.renderer;
 
-import com.windanesz.tracesofthefallen.PorcelainLiquids;
+import com.windanesz.tracesofthefallen.misc.PorcelainLiquids;
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
 import com.windanesz.tracesofthefallen.block.BlockDecoration;
 import com.windanesz.tracesofthefallen.block.TileEntityPorcelainVessel;

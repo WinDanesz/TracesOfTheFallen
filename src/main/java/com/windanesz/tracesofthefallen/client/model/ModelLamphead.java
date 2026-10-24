@@ -1,6 +1,6 @@
 package com.windanesz.tracesofthefallen.client.model;
 
-import com.windanesz.tracesofthefallen.entity.EntityLamphead;
+import com.windanesz.tracesofthefallen.entity.living.EntityLamphead;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelBox;
 import net.minecraft.client.model.ModelRenderer;

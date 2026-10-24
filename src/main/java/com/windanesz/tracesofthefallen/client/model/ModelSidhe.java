@@ -1,6 +1,6 @@
 package com.windanesz.tracesofthefallen.client.model;
 
-import com.windanesz.tracesofthefallen.entity.EntitySidhe;
+import com.windanesz.tracesofthefallen.entity.living.EntitySidhe;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelBox;

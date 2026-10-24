@@ -1,6 +1,6 @@
 package com.windanesz.tracesofthefallen.item;
 
-import com.windanesz.tracesofthefallen.PorcelainLiquids;
+import com.windanesz.tracesofthefallen.misc.PorcelainLiquids;
 import com.windanesz.tracesofthefallen.block.TileEntityPorcelainVessel;
 import com.windanesz.tracesofthefallen.init.ModBlocks;
 import net.minecraft.block.Block;

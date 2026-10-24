@@ -1,7 +1,7 @@
 package com.windanesz.tracesofthefallen.entity.ai;
 
 import com.windanesz.tracesofthefallen.api.ILampheadInteractable;
-import com.windanesz.tracesofthefallen.entity.EntityLamphead;
+import com.windanesz.tracesofthefallen.entity.living.EntityLamphead;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;

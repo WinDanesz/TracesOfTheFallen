@@ -2,6 +2,8 @@ package com.windanesz.tracesofthefallen.init;
 
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
 import com.windanesz.tracesofthefallen.entity.*;
+import com.windanesz.tracesofthefallen.entity.living.*;
+import com.windanesz.tracesofthefallen.entity.projectile.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.RegistryEvent;

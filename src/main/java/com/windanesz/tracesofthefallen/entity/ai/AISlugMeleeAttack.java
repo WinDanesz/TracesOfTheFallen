@@ -1,6 +1,6 @@
 package com.windanesz.tracesofthefallen.entity.ai;
 
-import com.windanesz.tracesofthefallen.entity.EntitySlug;
+import com.windanesz.tracesofthefallen.entity.living.EntitySlug;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIAttackMelee;
 

@@ -2,7 +2,7 @@ package com.windanesz.tracesofthefallen.item;
 
 import com.google.common.collect.Multimap;
 import com.windanesz.tracesofthefallen.Settings;
-import com.windanesz.tracesofthefallen.entity.EntityFetidDagger;
+import com.windanesz.tracesofthefallen.entity.projectile.EntityFetidDagger;
 import com.windanesz.tracesofthefallen.init.ModCreativeTab;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;

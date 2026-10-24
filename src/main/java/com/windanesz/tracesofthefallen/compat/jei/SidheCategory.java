@@ -1,10 +1,10 @@
 package com.windanesz.tracesofthefallen.compat.jei;
 
 import com.windanesz.tracesofthefallen.Settings;
-import com.windanesz.tracesofthefallen.SidheBarter;
-import com.windanesz.tracesofthefallen.SidheDiscoveries;
+import com.windanesz.tracesofthefallen.item.SidheBarter;
+import com.windanesz.tracesofthefallen.misc.SidheDiscoveries;
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
-import com.windanesz.tracesofthefallen.entity.EntitySidhe;
+import com.windanesz.tracesofthefallen.entity.living.EntitySidhe;
 import com.windanesz.tracesofthefallen.init.ModItems;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.IDrawable;
@@ -15,15 +15,9 @@ import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.init.Items;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.JsonToNBT;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 
 import java.util.ArrayList;

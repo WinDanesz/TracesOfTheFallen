@@ -2,7 +2,7 @@ package com.windanesz.tracesofthefallen.client.render.entity.layers;
 
 import com.windanesz.tracesofthefallen.client.model.ModelSidhe;
 import com.windanesz.tracesofthefallen.client.render.entity.RenderSidhe;
-import com.windanesz.tracesofthefallen.entity.EntitySidhe;
+import com.windanesz.tracesofthefallen.entity.living.EntitySidhe;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;

@@ -1,6 +1,7 @@
 package com.windanesz.tracesofthefallen.entity;
 
 import com.windanesz.tracesofthefallen.Settings;
+import com.windanesz.tracesofthefallen.entity.living.EntityGoblinEngineer;
 import com.windanesz.tracesofthefallen.init.ModBlocks;
 import net.minecraft.entity.*;
 import net.minecraft.entity.player.EntityPlayer;

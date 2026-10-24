@@ -1,6 +1,6 @@
 package com.windanesz.tracesofthefallen.entity.ai;
 
-import com.windanesz.tracesofthefallen.entity.EntityGoblin;
+import com.windanesz.tracesofthefallen.entity.living.EntityGoblin;
 import com.windanesz.tracesofthefallen.entity.EntityWroughtBomb;
 import com.windanesz.tracesofthefallen.init.ModBlocks;
 import net.minecraft.entity.Entity;

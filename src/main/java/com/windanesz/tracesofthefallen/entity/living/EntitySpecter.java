@@ -1,0 +1,733 @@
+package com.windanesz.tracesofthefallen.entity.living;
+
+import com.google.common.base.Predicate;
+import com.windanesz.tracesofthefallen.Settings;
+import com.windanesz.tracesofthefallen.TracesOfTheFallen;
+import com.windanesz.tracesofthefallen.entity.shaman.ShamanSpells;
+import com.windanesz.tracesofthefallen.init.ModPotions;
+import com.windanesz.tracesofthefallen.init.ModSounds;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.*;
+import net.minecraft.entity.ai.*;
+import net.minecraft.entity.monster.EntityMob;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.SoundEvents;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.datasync.DataParameter;
+import net.minecraft.network.datasync.DataSerializers;
+import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvent;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+
+import javax.annotation.Nullable;
+import java.util.Random;
+import java.util.UUID;
+
+public class EntitySpecter extends EntityMob implements IEntityOwnable {
+
+    protected static final DataParameter<Boolean> ATTACKING = EntityDataManager.createKey(EntitySpecter.class, DataSerializers.BOOLEAN);
+    protected static final DataParameter<String> OWNER_UNIQUE_ID = EntityDataManager.createKey(EntitySpecter.class, DataSerializers.STRING);
+    public static final ResourceLocation LOOT_TABLE = new ResourceLocation(TracesOfTheFallen.MODID, "entities/specter");
+    private EntityLivingBase cachedOwner;
+    private int lifespan = 3600;
+    private int ambientSoundCooldown = 800;
+    private int hostileSoundCooldown = 0;
+    public boolean useLeftHand = false;
+    private static final byte DASH_TRAIL_STATUS = 61;
+    private static final int DASH_TRAIL_DURATION = 14;
+    private int dashTrailTicks;
+
+    public EntitySpecter(World worldIn) {
+        super(worldIn);
+        this.setSize(0.6F, 1.8F);
+        this.isImmuneToFire = true;
+        this.moveHelper = new SpecterMoveHelper(this);
+        this.setNoGravity(true);
+    }
+
+    @Override
+    protected void initEntityAI() {
+        this.tasks.addTask(4, new AIAttack(this));
+        this.tasks.addTask(5, new AISpecterFollowOwner(this, 1.0D, 5.0F, 3.0F));
+        this.tasks.addTask(6, new AIRandomFly(this));
+        this.tasks.addTask(7, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
+        this.targetTasks.addTask(1, new AISpecterOwnerHurtByTarget(this));
+        this.targetTasks.addTask(2, new AISpecterOwnerHurtTarget(this));
+        this.targetTasks.addTask(3, new EntityAIHurtByTarget(this, true, new Class[0]));
+        this.targetTasks.addTask(4, new AIFindPlayerToAttack(this));
+    }
+
+    @Override
+    protected void applyEntityAttributes() {
+        super.applyEntityAttributes();
+        this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(Settings.goblinSettings.specterMaxHealth);
+        this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(32.0D);
+        this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.2D);
+        this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(Settings.goblinSettings.specterAttackDamage);
+    }
+
+    @Override
+    protected void entityInit() {
+        super.entityInit();
+        this.dataManager.register(ATTACKING, false);
+        this.dataManager.register(OWNER_UNIQUE_ID, "");
+    }
+
+    @Override
+    @Nullable
+    public UUID getOwnerId() {
+        try {
+            String s = this.dataManager.get(OWNER_UNIQUE_ID);
+            return s.isEmpty() ? null : UUID.fromString(s);
+        } catch (IllegalArgumentException illegalargumentexception) {
+            return null;
+        }
+    }
+
+    public void setOwnerId(@Nullable UUID ownerId) {
+        this.dataManager.set(OWNER_UNIQUE_ID, ownerId == null ? "" : ownerId.toString());
+    }
+
+    @Override
+    @Nullable
+    public EntityLivingBase getOwner() {
+        try {
+            UUID uuid = this.getOwnerId();
+            if (uuid == null) return null;
+            if (this.cachedOwner != null && !this.cachedOwner.isDead && uuid.equals(this.cachedOwner.getUniqueID())) {
+                return this.cachedOwner;
+            }
+            EntityPlayer player = this.world.getPlayerEntityByUUID(uuid);
+            if (player != null) {
+                this.cachedOwner = player;
+                return player;
+            }
+            for (Entity entity : this.world.loadedEntityList) {
+                if (entity instanceof EntityLivingBase && uuid.equals(entity.getUniqueID())) {
+                    this.cachedOwner = (EntityLivingBase) entity;
+                    return this.cachedOwner;
+                }
+            }
+            return null;
+        } catch (IllegalArgumentException illegalargumentexception) {
+            return null;
+        }
+    }
+
+    public void setOwner(@Nullable EntityLivingBase owner) {
+        this.cachedOwner = owner;
+        this.setOwnerId(owner == null ? null : owner.getUniqueID());
+    }
+
+    public boolean isOwner(Entity entityIn) {
+        return entityIn != null && entityIn == this.getOwner();
+    }
+
+    public void setAttacking(boolean attacking) {
+        this.dataManager.set(ATTACKING, attacking);
+    }
+
+    public boolean isAttacking() {
+        return this.dataManager.get(ATTACKING);
+    }
+
+    @Override
+    public void setAttackTarget(@Nullable EntityLivingBase entitylivingbaseIn) {
+        if (this.isOwner(entitylivingbaseIn)) {
+            super.setAttackTarget(null);
+            return;
+        }
+        if (this.getOwner() instanceof EntityGoblinShaman && ShamanSpells.isAlly((EntityGoblinShaman) this.getOwner(), entitylivingbaseIn)) {
+            super.setAttackTarget(null);
+            return;
+        }
+        if (entitylivingbaseIn instanceof EntitySpecter || entitylivingbaseIn instanceof EntityFamiliarSpecter) {
+            super.setAttackTarget(null);
+            return;
+        }
+        super.setAttackTarget(entitylivingbaseIn);
+    }
+
+    @Override
+    public boolean attackEntityFrom(DamageSource source, float amount) {
+        if (this.isEntityInvulnerable(source)) {
+            return false;
+        }
+        if (source.getTrueSource() != null) {
+            if (source.getTrueSource() instanceof EntitySpecter || source.getTrueSource() instanceof EntityFamiliarSpecter) {
+                return false;
+            }
+            if (this.isOwner(source.getTrueSource())) {
+                return false;
+            }
+            if (this.getOwner() instanceof EntityGoblinShaman && ShamanSpells.isAlly((EntityGoblinShaman) this.getOwner(), source.getTrueSource())) {
+                return false;
+            }
+        }
+        if (source.getTrueSource() instanceof EntityPlayer) {
+            return super.attackEntityFrom(source, amount);
+        }
+        if (source.getTrueSource() instanceof IEntityOwnable) {
+            // Tamed pets (wolves, cats, ...) deal plain mob damage, which would otherwise be ignored.
+            // Never let them hurt a specter that belongs to their own owner.
+            UUID petOwnerId = ((IEntityOwnable) source.getTrueSource()).getOwnerId();
+            if (petOwnerId != null && !petOwnerId.equals(this.getOwnerId())) {
+                return super.attackEntityFrom(source, amount);
+            }
+        }
+        if (source.isProjectile() || source.isMagicDamage()) {
+            return super.attackEntityFrom(source, amount);
+        }
+        if (source == DamageSource.IN_WALL) {
+            return false;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean attackEntityAsMob(Entity entityIn) {
+        EntityLivingBase owner = this.getOwner();
+        return entityIn.attackEntityFrom(DamageSource.causeIndirectMagicDamage(this, owner != null ? owner : this), (float) this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).getAttributeValue());
+    }
+
+    /** Server: tells clients to leave a blue flame trail while this specter dashes away. */
+    public void triggerDashTrail() {
+        if (!this.world.isRemote) {
+            this.world.setEntityState(this, DASH_TRAIL_STATUS);
+        }
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void handleStatusUpdate(byte id) {
+        if (id == DASH_TRAIL_STATUS) {
+            this.dashTrailTicks = DASH_TRAIL_DURATION;
+        } else {
+            super.handleStatusUpdate(id);
+        }
+    }
+
+    public boolean isDashing() {
+        return this.dashTrailTicks > 0;
+    }
+
+    private void spawnDashTrail() {
+        double dx = this.posX - this.prevPosX;
+        double dy = this.posY - this.prevPosY;
+        double dz = this.posZ - this.prevPosZ;
+        double distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
+        // Distance-based sampling keeps the flame connected during fast movement.
+        int samples = Math.min(24, Math.max(3, (int) Math.ceil(distance / 0.12D)));
+        for (int i = 0; i < samples; i++) {
+            double t = distance > 8.0D ? 1.0D : (i + 1.0D) / samples;
+            double px = this.prevPosX + dx * t;
+            double py = this.prevPosY + dy * t + this.height * 0.55D;
+            double pz = this.prevPosZ + dz * t;
+            TracesOfTheFallen.proxy.spawnBlueFlameParticle(this.world,
+                    px + (this.rand.nextDouble() - 0.5D) * 0.12D,
+                    py + (this.rand.nextDouble() - 0.5D) * 0.18D,
+                    pz + (this.rand.nextDouble() - 0.5D) * 0.12D,
+                    0.0D, 0.015D, 0.0D);
+        }
+    }
+
+    @Override
+    public void onLivingUpdate() {
+        super.onLivingUpdate();
+        this.noClip = true;
+
+        if (this.world.isRemote && this.dashTrailTicks > 0) {
+            this.dashTrailTicks--;
+            this.spawnDashTrail();
+        }
+
+        if (this.isSwingInProgress && this.ticksExisted % 3 != 0) {
+            this.swingProgressInt--;
+        }
+
+        if (!this.world.isRemote) {
+            if (this.ambientSoundCooldown > 0) {
+                this.ambientSoundCooldown--;
+            } else {
+                double offsetX = (this.rand.nextDouble() - 0.5) * 16.0;
+                double offsetY = (this.rand.nextDouble() - 0.5) * 4.0;
+                double offsetZ = (this.rand.nextDouble() - 0.5) * 16.0;
+                this.world.playSound(null, this.posX + offsetX, this.posY + offsetY, this.posZ + offsetZ, ModSounds.SPECTER_AMBIENT, this.getSoundCategory(), 1.0F, 1.0F);
+                this.ambientSoundCooldown = 800 + this.rand.nextInt(200);
+            }
+
+            if (this.getAttackTarget() != null) {
+                if (this.hostileSoundCooldown > 0) {
+                    this.hostileSoundCooldown--;
+                } else {
+                    double offsetX = (this.rand.nextDouble() - 0.5) * 16.0;
+                    double offsetY = (this.rand.nextDouble() - 0.5) * 4.0;
+                    double offsetZ = (this.rand.nextDouble() - 0.5) * 16.0;
+                    this.world.playSound(null, this.posX + offsetX, this.posY + offsetY, this.posZ + offsetZ, ModSounds.SPECTER_HOSTILE, this.getSoundCategory(), 1.0F, 1.0F);
+                    this.hostileSoundCooldown = 400 + this.rand.nextInt(200);
+                }
+            } else {
+                if (this.hostileSoundCooldown <= 0) {
+                    this.hostileSoundCooldown = 20;
+                }
+            }
+        }
+
+        if (!this.world.isRemote && this.getOwnerId() != null) {
+            if (--this.lifespan <= 0 || (this.getOwner() == null && this.ticksExisted > 600)) {
+                if (this.world instanceof WorldServer) {
+                    ((WorldServer) this.world).spawnParticle(EnumParticleTypes.SMOKE_LARGE, this.posX, this.posY + 1.0D, this.posZ, 20, 0.3D, 0.5D, 0.3D, 0.05D);
+                }
+                this.world.playSound(null, this.posX, this.posY, this.posZ, SoundEvents.ENTITY_VEX_DEATH, this.getSoundCategory(), 1.0F, 1.0F);
+                this.setDead();
+            }
+        }
+    }
+
+    @Override
+    public void writeEntityToNBT(NBTTagCompound compound) {
+        super.writeEntityToNBT(compound);
+        compound.setInteger("Lifespan", this.lifespan);
+        if (this.getOwnerId() == null) {
+            compound.setString("OwnerUUID", "");
+        } else {
+            compound.setString("OwnerUUID", this.getOwnerId().toString());
+        }
+    }
+
+    @Override
+    public void readEntityFromNBT(NBTTagCompound compound) {
+        super.readEntityFromNBT(compound);
+        if (compound.hasKey("Lifespan")) {
+            this.lifespan = compound.getInteger("Lifespan");
+        }
+        if (compound.hasKey("OwnerUUID", 8)) {
+            String s = compound.getString("OwnerUUID");
+            if (!s.isEmpty()) {
+                this.setOwnerId(UUID.fromString(s));
+            }
+        }
+    }
+
+    @Nullable
+    @Override
+    protected ResourceLocation getLootTable() {
+        return LOOT_TABLE;
+    }
+
+    @Override
+    public boolean getCanSpawnHere() {
+        return this.world.checkNoEntityCollision(this.getEntityBoundingBox())
+                && this.world.getCollisionBoxes(this, this.getEntityBoundingBox()).isEmpty()
+                && !this.world.containsAnyLiquid(this.getEntityBoundingBox());
+    }
+
+    @Override
+    public int getTalkInterval() {
+        return 160;
+    }
+
+    @Override
+    protected SoundEvent getAmbientSound() {
+        return null;
+    }
+
+    @Override
+    protected SoundEvent getDeathSound() {
+        return SoundEvents.ENTITY_VEX_DEATH;
+    }
+
+    @Override
+    protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
+        return ModSounds.SPECTER_HURT;
+    }
+
+    @Override
+    public boolean isEntityUndead() {
+        return true;
+    }
+
+    @Override
+    public float getEyeHeight() {
+        return 1.6F;
+    }
+
+    @Override
+    public void fall(float distance, float damageMultiplier) {
+    }
+
+    @Override
+    protected void updateFallState(double y, boolean onGroundIn, IBlockState landedState, BlockPos pos) {
+    }
+
+// ... (keep existing imports)
+
+// ... (inside EntitySpecter class)
+        static class AIAttack extends EntityAIBase {
+            private final EntitySpecter parentEntity;
+            private int attackCooldown;
+            private int dashCooldown;
+            private int windupTicks;
+
+            public AIAttack(EntitySpecter specter) {
+                this.parentEntity = specter;
+                this.setMutexBits(1);
+            }
+
+            @Override
+            public boolean shouldExecute() {
+                return this.parentEntity.getAttackTarget() != null;
+            }
+
+            @Override
+            public boolean shouldContinueExecuting() {
+                return this.parentEntity.getAttackTarget() != null && this.parentEntity.getAttackTarget().isEntityAlive();
+            }
+
+            @Override
+            public void startExecuting() {
+                this.parentEntity.setAttacking(true);
+                this.attackCooldown = 0;
+                this.dashCooldown = 0;
+                this.windupTicks = 0;
+            }
+
+            @Override
+            public void resetTask() {
+                this.parentEntity.setAttacking(false);
+                if (this.parentEntity.getMoveHelper() instanceof SpecterMoveHelper) {
+                    ((SpecterMoveHelper) this.parentEntity.getMoveHelper()).startCooldown(0);
+                }
+            }
+
+            @Override
+            public void updateTask() {
+                EntityLivingBase target = this.parentEntity.getAttackTarget();
+                if (target == null) return;
+
+                if (this.dashCooldown > 0) {
+                    --this.dashCooldown;
+                } else {
+                    this.parentEntity.getLookHelper().setLookPositionWithEntity(target, 10.0F, 10.0F);
+                    this.parentEntity.getMoveHelper().setMoveTo(target.posX, target.posY, target.posZ, 1.0D);
+
+                    if (this.attackCooldown > 0) {
+                        --this.attackCooldown;
+                    }
+
+                    double distanceSq = this.parentEntity.getDistanceSq(target);
+                    
+                    if (this.windupTicks > 0) {
+                        --this.windupTicks;
+                        if (this.windupTicks == 0) {
+                            if (this.parentEntity.getDistanceSq(target) < 4.0D) {
+                                this.parentEntity.attackEntityAsMob(target);
+                                this.dashCooldown = 20;
+
+                                if (target instanceof EntityPlayer) {
+                                    Random random = this.parentEntity.getRNG();
+                                    EntityPlayer player = (EntityPlayer) target;
+                                    Vec3d playerLook = player.getLookVec();
+
+                                    Vec3d forward = new Vec3d(playerLook.x, 0, playerLook.z).normalize();
+                                    Vec3d right = new Vec3d(-playerLook.z, 0, playerLook.x).normalize();
+
+                                    Vec3d[] directions = {
+                                        forward,
+                                        forward.scale(-1),
+                                        right,
+                                        right.scale(-1)
+                                    };
+
+                                    Vec3d chosenDir = directions[random.nextInt(directions.length)];
+
+                                    double distance = 2.0;
+
+                                    double destX = player.posX + chosenDir.x * distance;
+                                    double destY = player.posY + 1.0;
+                                    double destZ = player.posZ + chosenDir.z * distance;
+
+                                    double moveVecX = destX - this.parentEntity.posX;
+                                    double moveVecY = destY - this.parentEntity.posY;
+                                    double moveVecZ = destZ - this.parentEntity.posZ;
+                                    double moveLen = MathHelper.sqrt(moveVecX*moveVecX + moveVecY*moveVecY + moveVecZ*moveVecZ);
+
+                                    if (moveLen > 0) {
+                                        double dashSpeed = 1.8;
+                                        this.parentEntity.motionX = (moveVecX / moveLen) * dashSpeed;
+                                        this.parentEntity.motionY = (moveVecY / moveLen) * dashSpeed * 0.1;
+                                        this.parentEntity.motionZ = (moveVecZ / moveLen) * dashSpeed;
+                                        this.parentEntity.triggerDashTrail();
+
+                                        if (this.parentEntity.getMoveHelper() instanceof SpecterMoveHelper) {
+                                            ((SpecterMoveHelper) this.parentEntity.getMoveHelper()).startCooldown(10);
+                                        }
+                                    }
+                                }
+                            }
+                            this.attackCooldown = 20;
+                        }
+                    } else if (distanceSq < 2.25D && this.attackCooldown <= 0) {
+                        this.parentEntity.useLeftHand = !this.parentEntity.useLeftHand;
+                        this.parentEntity.swingArm(this.parentEntity.useLeftHand ? net.minecraft.util.EnumHand.OFF_HAND : net.minecraft.util.EnumHand.MAIN_HAND);
+                        this.windupTicks = 10;
+                    }
+                }
+            }
+        }
+
+    static class AIFindPlayerToAttack extends EntityAINearestAttackableTarget<EntityPlayer> {
+        public AIFindPlayerToAttack(EntityCreature mob) {
+            super(mob, EntityPlayer.class, 10, true, false, new Predicate<EntityPlayer>() {
+                @Override
+                public boolean apply(@Nullable EntityPlayer player) {
+                    return player != null && !player.isPotionActive(ModPotions.serenity);
+                }
+            });
+        }
+
+        @Override
+        public boolean shouldExecute() {
+            if (((EntitySpecter)this.taskOwner).getOwnerId() != null) {
+                return false;
+            }
+            this.shouldCheckSight = !this.taskOwner.getEntityData().getBoolean("HauntingSpawned");
+            return super.shouldExecute();
+        }
+    }
+
+    static class AIRandomFly extends EntityAIBase {
+        private final EntitySpecter parentEntity;
+
+        public AIRandomFly(EntitySpecter specter) {
+            this.parentEntity = specter;
+            this.setMutexBits(1);
+        }
+
+        @Override
+        public boolean shouldExecute() {
+            if (this.parentEntity.getRNG().nextInt(60) != 0) {
+                return false;
+            }
+            if (this.parentEntity.getOwnerId() != null && this.parentEntity.getAttackTarget() == null && this.parentEntity.getOwner() != null && this.parentEntity.getDistanceSq(this.parentEntity.getOwner()) > 64.0D) {
+                return false;
+            }
+            EntityMoveHelper entitymovehelper = this.parentEntity.getMoveHelper();
+            if (!entitymovehelper.isUpdating()) {
+                return true;
+            } else {
+                double d0 = entitymovehelper.getX() - this.parentEntity.posX;
+                double d1 = entitymovehelper.getY() - this.parentEntity.posY;
+                double d2 = entitymovehelper.getZ() - this.parentEntity.posZ;
+                double d3 = d0 * d0 + d1 * d1 + d2 * d2;
+                return d3 < 1.0D || d3 > 3600.0D;
+            }
+        }
+
+        @Override
+        public boolean shouldContinueExecuting() {
+            return false;
+        }
+
+        @Override
+        public void startExecuting() {
+            Random random = this.parentEntity.getRNG();
+            double d0 = this.parentEntity.posX + (double) ((random.nextFloat() * 2.0F - 1.0F) * 4.0F);
+            double d1 = this.parentEntity.posY + (double) ((random.nextFloat() * 2.0F - 1.0F) * 4.0F);
+            double d2 = this.parentEntity.posZ + (double) ((random.nextFloat() * 2.0F - 1.0F) * 4.0F);
+            this.parentEntity.getMoveHelper().setMoveTo(d0, d1, d2, 0.4D);
+        }
+    }
+
+    static class AISpecterFollowOwner extends EntityAIBase {
+        private final EntitySpecter specter;
+        private EntityLivingBase owner;
+        private final double followSpeed;
+        private final float minDist;
+        private final float maxDist;
+        private int timeToRecalcPath;
+
+        public AISpecterFollowOwner(EntitySpecter specter, double speed, float min, float max) {
+            this.specter = specter;
+            World world = specter.world;
+            this.followSpeed = speed;
+            this.minDist = min;
+            this.maxDist = max;
+            this.setMutexBits(3);
+        }
+
+        @Override
+        public boolean shouldExecute() {
+            EntityLivingBase owner = this.specter.getOwner();
+            if (owner == null) {
+                return false;
+            } else if (this.specter.getDistanceSq(owner) < (double) (this.minDist * this.minDist)) {
+                return false;
+            } else {
+                this.owner = owner;
+                return true;
+            }
+        }
+
+        @Override
+        public boolean shouldContinueExecuting() {
+            return this.specter.getDistanceSq(this.owner) > (double) (this.maxDist * this.maxDist);
+        }
+
+        @Override
+        public void startExecuting() {
+            this.timeToRecalcPath = 0;
+        }
+
+        @Override
+        public void resetTask() {
+            this.owner = null;
+            this.specter.getMoveHelper().action = EntityMoveHelper.Action.WAIT;
+        }
+
+        @Override
+        public void updateTask() {
+            this.specter.getLookHelper().setLookPositionWithEntity(this.owner, 10.0F, (float) this.specter.getVerticalFaceSpeed());
+            if (--this.timeToRecalcPath <= 0) {
+                this.timeToRecalcPath = 10;
+                this.specter.getMoveHelper().setMoveTo(this.owner.posX, this.owner.posY + 1.5D, this.owner.posZ, this.followSpeed);
+            }
+        }
+    }
+
+    static class AISpecterOwnerHurtByTarget extends EntityAITarget {
+        EntitySpecter specter;
+        EntityLivingBase attacker;
+        private int timestamp;
+
+        public AISpecterOwnerHurtByTarget(EntitySpecter specter) {
+            super(specter, false);
+            this.specter = specter;
+            this.setMutexBits(1);
+        }
+
+        @Override
+        public boolean shouldExecute() {
+            EntityLivingBase owner = this.specter.getOwner();
+            if (owner == null) {
+                return false;
+            } else {
+                this.attacker = owner.getRevengeTarget();
+                int i = owner.getRevengeTimer();
+                return i != this.timestamp && this.isSuitableTarget(this.attacker, false);
+            }
+        }
+
+        @Override
+        public void startExecuting() {
+            this.taskOwner.setAttackTarget(this.attacker);
+            EntityLivingBase owner = this.specter.getOwner();
+            if (owner != null) {
+                this.timestamp = owner.getRevengeTimer();
+            }
+            super.startExecuting();
+        }
+    }
+
+    static class AISpecterOwnerHurtTarget extends EntityAITarget {
+        EntitySpecter specter;
+        EntityLivingBase target;
+        private int timestamp;
+
+        public AISpecterOwnerHurtTarget(EntitySpecter specter) {
+            super(specter, false);
+            this.specter = specter;
+            this.setMutexBits(1);
+        }
+
+        @Override
+        public boolean shouldExecute() {
+            EntityLivingBase owner = this.specter.getOwner();
+            if (owner == null) {
+                return false;
+            } else {
+                this.target = owner.getLastAttackedEntity();
+                int i = owner.getLastAttackedEntityTime();
+                return i != this.timestamp && this.isSuitableTarget(this.target, false);
+            }
+        }
+
+        @Override
+        public void startExecuting() {
+            this.taskOwner.setAttackTarget(this.target);
+            EntityLivingBase owner = this.specter.getOwner();
+            if (owner != null) {
+                this.timestamp = owner.getLastAttackedEntityTime();
+            }
+            super.startExecuting();
+        }
+    }
+
+    static class SpecterMoveHelper extends EntityMoveHelper {
+        private final EntitySpecter parentEntity;
+        private int cooldown;
+
+        public SpecterMoveHelper(EntitySpecter specter) {
+            super(specter);
+            this.parentEntity = specter;
+        }
+
+        public void startCooldown(int ticks) {
+            this.cooldown = ticks;
+        }
+
+        @Override
+        public void onUpdateMoveHelper() {
+            if (this.cooldown > 0) {
+                --this.cooldown;
+                return;
+            }
+
+            if (this.action == EntityMoveHelper.Action.MOVE_TO) {
+                double d0 = this.posX - this.parentEntity.posX;
+                double d1 = this.posY - this.parentEntity.posY;
+                double d2 = this.posZ - this.parentEntity.posZ;
+                double d3 = d0 * d0 + d1 * d1 + d2 * d2;
+
+                if (d3 < 0.1D) {
+                    this.action = Action.WAIT;
+                    this.parentEntity.motionX = 0.0D;
+                    this.parentEntity.motionY = 0.0D;
+                    this.parentEntity.motionZ = 0.0D;
+                    return;
+                }
+
+                d3 = (double) MathHelper.sqrt(d3);
+
+                d0 /= d3;
+                d1 /= d3;
+                d2 /= d3;
+
+                float speed = (float) (this.speed * this.parentEntity.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).getAttributeValue());
+
+                this.parentEntity.motionX = d0 * speed;
+                this.parentEntity.motionY = d1 * speed;
+                this.parentEntity.motionZ = d2 * speed;
+
+                float f = (float) (MathHelper.atan2(this.parentEntity.motionZ, this.parentEntity.motionX) * (180D / Math.PI)) - 90.0F;
+                this.parentEntity.rotationYaw = this.limitAngle(this.parentEntity.rotationYaw, f, 90.0F);
+                this.parentEntity.renderYawOffset = this.parentEntity.rotationYaw;
+
+            } else {
+                this.parentEntity.motionX *= 0.5D;
+                this.parentEntity.motionY *= 0.5D;
+                this.parentEntity.motionZ *= 0.5D;
+            }
+        }
+    }
+}
+

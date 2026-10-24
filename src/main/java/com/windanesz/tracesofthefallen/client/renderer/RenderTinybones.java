@@ -2,7 +2,7 @@ package com.windanesz.tracesofthefallen.client.renderer;
 
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
 import com.windanesz.tracesofthefallen.client.model.ModelTinyBones;
-import com.windanesz.tracesofthefallen.entity.EntityTinybones;
+import com.windanesz.tracesofthefallen.entity.living.EntityTinybones;
 import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.util.ResourceLocation;

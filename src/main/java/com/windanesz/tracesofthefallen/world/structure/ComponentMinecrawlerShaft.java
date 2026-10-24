@@ -5,7 +5,7 @@ import com.windanesz.tracesofthefallen.block.BlockCrawlerWaxWet;
 import com.windanesz.tracesofthefallen.block.BlockSkeletonCorpse;
 import com.windanesz.tracesofthefallen.block.BlockTOFT;
 import com.windanesz.tracesofthefallen.block.TileEntitySkeletonCorpse;
-import com.windanesz.tracesofthefallen.entity.EntityMinecrawler;
+import com.windanesz.tracesofthefallen.entity.living.EntityMinecrawler;
 import com.windanesz.tracesofthefallen.init.ModBlocks;
 import net.minecraft.block.BlockFalling;
 import net.minecraft.block.BlockPlanks;

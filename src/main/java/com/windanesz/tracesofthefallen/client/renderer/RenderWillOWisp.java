@@ -1,7 +1,7 @@
 package com.windanesz.tracesofthefallen.client.renderer;
 
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
-import com.windanesz.tracesofthefallen.entity.EntityWillOWisp;
+import com.windanesz.tracesofthefallen.entity.projectile.EntityWillOWisp;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;

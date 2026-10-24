@@ -1,6 +1,6 @@
 package com.windanesz.tracesofthefallen.item;
 
-import com.windanesz.tracesofthefallen.entity.EntityFamiliarSpecter;
+import com.windanesz.tracesofthefallen.entity.living.EntityFamiliarSpecter;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;

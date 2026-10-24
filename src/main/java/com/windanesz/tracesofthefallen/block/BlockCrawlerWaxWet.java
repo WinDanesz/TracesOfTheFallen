@@ -1,6 +1,6 @@
 package com.windanesz.tracesofthefallen.block;
 
-import com.windanesz.tracesofthefallen.entity.EntityMinecrawler;
+import com.windanesz.tracesofthefallen.entity.living.EntityMinecrawler;
 import com.windanesz.tracesofthefallen.init.ModCreativeTab;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;

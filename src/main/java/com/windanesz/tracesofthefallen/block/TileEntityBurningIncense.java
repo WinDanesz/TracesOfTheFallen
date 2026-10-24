@@ -1,6 +1,6 @@
 package com.windanesz.tracesofthefallen.block;
 
-import com.windanesz.tracesofthefallen.IncenseEffects;
+import com.windanesz.tracesofthefallen.misc.IncenseEffects;
 import com.windanesz.tracesofthefallen.init.ModPotions;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;

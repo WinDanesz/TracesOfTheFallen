@@ -1,7 +1,7 @@
 package com.windanesz.tracesofthefallen.entity.ai;
 
-import com.windanesz.tracesofthefallen.entity.EntityGoblin;
-import com.windanesz.tracesofthefallen.entity.EntityGoblinShaman;
+import com.windanesz.tracesofthefallen.entity.living.EntityGoblin;
+import com.windanesz.tracesofthefallen.entity.living.EntityGoblinShaman;
 import net.minecraft.block.Block;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.init.Blocks;

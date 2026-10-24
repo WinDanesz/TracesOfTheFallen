@@ -1,5 +1,6 @@
 package com.windanesz.tracesofthefallen.entity;
 
+import com.windanesz.tracesofthefallen.entity.living.EntityLamphead;
 import com.windanesz.tracesofthefallen.init.ModSounds;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;

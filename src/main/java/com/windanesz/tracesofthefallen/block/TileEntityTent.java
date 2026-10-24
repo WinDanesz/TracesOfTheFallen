@@ -1,9 +1,10 @@
 package com.windanesz.tracesofthefallen.block;
 
 import com.windanesz.tracesofthefallen.Settings;
-import com.windanesz.tracesofthefallen.entity.EntityGoblin;
-import com.windanesz.tracesofthefallen.entity.EntityGoblinStarved;
-import com.windanesz.tracesofthefallen.entity.EntityGoblinWayfarer;
+import com.windanesz.tracesofthefallen.entity.living.EntityGoblin;
+import com.windanesz.tracesofthefallen.entity.living.EntityGoblinStarved;
+import com.windanesz.tracesofthefallen.entity.living.EntityGoblinWayfarer;
+import com.windanesz.tracesofthefallen.entity.living.EntityLost;
 import com.windanesz.tracesofthefallen.init.ModBlocks;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
@@ -53,6 +54,17 @@ public class TileEntityTent extends TileEntityLostLoot implements ITickable {
 				world.rand.nextInt(Settings.miscSettings.tentGoblinMaxCount - Settings.miscSettings.tentGoblinMinCount + 1);
 
 		boolean isAbandoned = (block == ModBlocks.tent_abandoned || block == ModBlocks.tent_abandoned_idol);
+
+		// Rarely, something worse than starved goblins is camping in an abandoned tent
+		if (isAbandoned && world.rand.nextDouble() < Settings.miscSettings.abandonedTentLostChance) {
+			EntityLost lost = new EntityLost(world);
+			lost.setPosition(pos.getX() + 0.5, pos.getY() + 0.3, pos.getZ() + 0.5);
+			lost.enablePersistence();
+			world.spawnEntity(lost);
+			hasSpawnedGoblins = true;
+			markDirty();
+			return;
+		}
 
 		// Spawn goblins at tent position with 0.3y offset
 		for (int i = 0; i < goblinCount; i++) {

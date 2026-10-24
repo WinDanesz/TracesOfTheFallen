@@ -1,6 +1,6 @@
 package com.windanesz.tracesofthefallen.entity.shaman;
 
-import com.windanesz.tracesofthefallen.entity.EntityGoblinShaman;
+import com.windanesz.tracesofthefallen.entity.living.EntityGoblinShaman;
 import net.minecraft.entity.EntityLivingBase;
 
 /**

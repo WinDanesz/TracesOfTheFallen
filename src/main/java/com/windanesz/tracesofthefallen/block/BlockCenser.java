@@ -1,6 +1,6 @@
 package com.windanesz.tracesofthefallen.block;
 
-import com.windanesz.tracesofthefallen.IncenseEffects;
+import com.windanesz.tracesofthefallen.misc.IncenseEffects;
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;

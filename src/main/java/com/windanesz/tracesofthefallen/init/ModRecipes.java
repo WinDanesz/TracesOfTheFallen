@@ -1,8 +1,8 @@
 package com.windanesz.tracesofthefallen.init;
 
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
-import com.windanesz.tracesofthefallen.crafting.RecipeTallieCollectorCombine;
-import com.windanesz.tracesofthefallen.crafting.RecipeTallieCollectorSplit;
+import com.windanesz.tracesofthefallen.recipe.RecipeTallieCollectorCombine;
+import com.windanesz.tracesofthefallen.recipe.RecipeTallieCollectorSplit;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;

@@ -1,7 +1,7 @@
 package com.windanesz.tracesofthefallen.block;
 
 import com.windanesz.tracesofthefallen.api.ILampheadInteractable;
-import com.windanesz.tracesofthefallen.entity.EntityLamphead;
+import com.windanesz.tracesofthefallen.entity.living.EntityLamphead;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;

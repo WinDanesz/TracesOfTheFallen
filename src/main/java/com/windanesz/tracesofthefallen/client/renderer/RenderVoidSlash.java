@@ -2,7 +2,7 @@ package com.windanesz.tracesofthefallen.client.renderer;
 
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
 import com.windanesz.tracesofthefallen.client.model.ModelVoidSlash;
-import com.windanesz.tracesofthefallen.entity.EntityVoidSlash;
+import com.windanesz.tracesofthefallen.entity.projectile.EntityVoidSlash;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.entity.Render;

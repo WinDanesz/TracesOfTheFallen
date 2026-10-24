@@ -1,6 +1,6 @@
 package com.windanesz.tracesofthefallen.entity.ai;
 
-import com.windanesz.tracesofthefallen.entity.*;
+import com.windanesz.tracesofthefallen.entity.living.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;

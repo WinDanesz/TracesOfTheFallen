@@ -2,7 +2,7 @@ package com.windanesz.tracesofthefallen.client.renderer;
 
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
 import com.windanesz.tracesofthefallen.client.model.ModelDungeonSlug;
-import com.windanesz.tracesofthefallen.entity.EntityDungeonSlug;
+import com.windanesz.tracesofthefallen.entity.living.EntityDungeonSlug;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.util.ResourceLocation;
 

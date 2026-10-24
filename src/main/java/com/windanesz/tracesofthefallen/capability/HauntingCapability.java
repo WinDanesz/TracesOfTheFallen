@@ -2,10 +2,10 @@ package com.windanesz.tracesofthefallen.capability;
 
 import com.windanesz.tracesofthefallen.Settings;
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
-import com.windanesz.tracesofthefallen.Utils;
+import com.windanesz.tracesofthefallen.misc.PosUtils;
 import com.windanesz.tracesofthefallen.block.BlockSubtorch;
-import com.windanesz.tracesofthefallen.entity.EntitySpecter;
-import com.windanesz.tracesofthefallen.entity.EntitySpecterGrasper;
+import com.windanesz.tracesofthefallen.entity.living.EntitySpecter;
+import com.windanesz.tracesofthefallen.entity.living.EntitySpecterGrasper;
 import com.windanesz.tracesofthefallen.network.PacketHandler;
 import com.windanesz.tracesofthefallen.packet.PacketPlayerSync;
 import net.minecraft.advancements.Advancement;
@@ -327,7 +327,7 @@ public class HauntingCapability implements INBTSerializable<NBTTagCompound> {
 							List<EntitySpecter> specters = player.world.getEntitiesWithinAABB(EntitySpecter.class, new AxisAlignedBB(player.getPosition()).grow(30));
 
 							if (specters.isEmpty()) {
-								BlockPos pos = Utils.findNearbyAirSpace(player.world, player.getPosition(), 6);
+								BlockPos pos = PosUtils.findNearbyAirSpace(player.world, player.getPosition(), 6);
 								if (pos != null) {
 									EntitySpecter specter;
 									if (hauntingProg >= 85 && player.world.rand.nextBoolean()) {

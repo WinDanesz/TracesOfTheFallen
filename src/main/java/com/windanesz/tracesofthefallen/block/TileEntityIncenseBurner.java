@@ -1,6 +1,6 @@
 package com.windanesz.tracesofthefallen.block;
 
-import com.windanesz.tracesofthefallen.IncenseEffects;
+import com.windanesz.tracesofthefallen.misc.IncenseEffects;
 import net.minecraft.util.math.AxisAlignedBB;
 
 public class TileEntityIncenseBurner extends TileEntityBurningIncense {

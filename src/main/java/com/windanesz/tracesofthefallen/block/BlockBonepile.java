@@ -1,7 +1,7 @@
 package com.windanesz.tracesofthefallen.block;
 
 import com.windanesz.tracesofthefallen.Settings;
-import com.windanesz.tracesofthefallen.entity.EntityGoblin;
+import com.windanesz.tracesofthefallen.entity.living.EntityGoblin;
 import com.windanesz.tracesofthefallen.init.ModSounds;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;

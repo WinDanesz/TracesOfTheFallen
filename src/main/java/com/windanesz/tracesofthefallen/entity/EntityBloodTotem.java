@@ -1,6 +1,7 @@
 package com.windanesz.tracesofthefallen.entity;
 
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
+import com.windanesz.tracesofthefallen.entity.living.EntityGoblin;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MoverType;
 import net.minecraft.init.MobEffects;

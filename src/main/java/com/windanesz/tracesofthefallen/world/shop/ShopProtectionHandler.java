@@ -2,7 +2,7 @@ package com.windanesz.tracesofthefallen.world.shop;
 
 import com.windanesz.tracesofthefallen.Settings;
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
-import com.windanesz.tracesofthefallen.entity.EntitySubterfuge;
+import com.windanesz.tracesofthefallen.entity.living.EntitySubterfuge;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;

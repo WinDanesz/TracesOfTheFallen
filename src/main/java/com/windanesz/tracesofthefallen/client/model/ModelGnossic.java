@@ -1,6 +1,6 @@
 package com.windanesz.tracesofthefallen.client.model;// Made with Blockbench 5.1.6
 
-import com.windanesz.tracesofthefallen.entity.EntityGnossic;
+import com.windanesz.tracesofthefallen.entity.living.EntityGnossic;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelBox;

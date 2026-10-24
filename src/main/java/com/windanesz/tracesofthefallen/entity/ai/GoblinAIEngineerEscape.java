@@ -1,7 +1,7 @@
 package com.windanesz.tracesofthefallen.entity.ai;
 
 import com.windanesz.tracesofthefallen.Settings;
-import com.windanesz.tracesofthefallen.entity.EntityGoblinEngineer;
+import com.windanesz.tracesofthefallen.entity.living.EntityGoblinEngineer;
 import com.windanesz.tracesofthefallen.entity.EntityWroughtBomb;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;

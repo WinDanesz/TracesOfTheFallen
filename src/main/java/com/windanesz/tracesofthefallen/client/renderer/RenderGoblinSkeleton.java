@@ -2,7 +2,7 @@ package com.windanesz.tracesofthefallen.client.renderer;
 
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
 import com.windanesz.tracesofthefallen.client.model.ModelGoblinSkeleton;
-import com.windanesz.tracesofthefallen.entity.EntityGoblinSkeleton;
+import com.windanesz.tracesofthefallen.entity.living.EntityGoblinSkeleton;
 import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.util.ResourceLocation;

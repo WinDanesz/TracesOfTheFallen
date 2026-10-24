@@ -3,7 +3,7 @@ package com.windanesz.tracesofthefallen.world;
 import com.windanesz.tracesofthefallen.Settings;
 import com.windanesz.tracesofthefallen.block.BlockBonepile;
 import com.windanesz.tracesofthefallen.block.BlockSkeletonCorpse;
-import com.windanesz.tracesofthefallen.entity.EntityLost;
+import com.windanesz.tracesofthefallen.entity.living.EntityLost;
 import com.windanesz.tracesofthefallen.init.ModBlocks;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockSkull;

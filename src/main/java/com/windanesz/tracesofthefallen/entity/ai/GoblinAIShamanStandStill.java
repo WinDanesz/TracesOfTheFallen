@@ -1,6 +1,6 @@
 package com.windanesz.tracesofthefallen.entity.ai;
 
-import com.windanesz.tracesofthefallen.entity.EntityGoblinShaman;
+import com.windanesz.tracesofthefallen.entity.living.EntityGoblinShaman;
 import com.windanesz.tracesofthefallen.entity.shaman.ShamanSpell;
 import com.windanesz.tracesofthefallen.entity.shaman.ShamanSpells;
 import net.minecraft.entity.ai.EntityAIBase;

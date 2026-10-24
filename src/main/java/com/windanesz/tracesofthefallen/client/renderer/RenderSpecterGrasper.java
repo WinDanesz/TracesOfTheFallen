@@ -2,7 +2,7 @@ package com.windanesz.tracesofthefallen.client.renderer;
 
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
 import com.windanesz.tracesofthefallen.client.model.ModelSpecterGrasper;
-import com.windanesz.tracesofthefallen.entity.EntitySpecterGrasper;
+import com.windanesz.tracesofthefallen.entity.living.EntitySpecterGrasper;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.client.renderer.entity.RenderManager;

@@ -1,6 +1,6 @@
 package com.windanesz.tracesofthefallen.client.model;// Made with Blockbench 5.1.4
 
-import com.windanesz.tracesofthefallen.entity.EntityGoblin;
+import com.windanesz.tracesofthefallen.entity.living.EntityGoblin;
 import net.minecraft.client.model.ModelBox;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.Entity;

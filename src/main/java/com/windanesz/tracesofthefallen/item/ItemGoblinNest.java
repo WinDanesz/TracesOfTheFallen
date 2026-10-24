@@ -1,6 +1,6 @@
 package com.windanesz.tracesofthefallen.item;
 
-import com.windanesz.tracesofthefallen.entity.EntityGoblinNest;
+import com.windanesz.tracesofthefallen.entity.living.EntityGoblinNest;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;

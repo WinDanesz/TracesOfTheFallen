@@ -2,7 +2,7 @@ package com.windanesz.tracesofthefallen.client.renderer;
 
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
 import com.windanesz.tracesofthefallen.client.model.ModelMagmaBlast;
-import com.windanesz.tracesofthefallen.entity.EntityMagmaBlast;
+import com.windanesz.tracesofthefallen.entity.projectile.EntityMagmaBlast;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.entity.Render;

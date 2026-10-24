@@ -1,6 +1,6 @@
 package com.windanesz.tracesofthefallen.packet;
 
-import com.windanesz.tracesofthefallen.SidheDiscoveries;
+import com.windanesz.tracesofthefallen.misc.SidheDiscoveries;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.common.network.ByteBufUtils;

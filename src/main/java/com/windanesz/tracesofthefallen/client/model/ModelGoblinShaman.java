@@ -1,6 +1,6 @@
 package com.windanesz.tracesofthefallen.client.model;
 
-import com.windanesz.tracesofthefallen.entity.EntityGoblinShaman;
+import com.windanesz.tracesofthefallen.entity.living.EntityGoblinShaman;
 import net.minecraft.client.model.ModelBox;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.Entity;

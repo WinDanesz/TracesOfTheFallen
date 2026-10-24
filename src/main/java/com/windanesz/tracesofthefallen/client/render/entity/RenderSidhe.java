@@ -5,7 +5,7 @@ import com.windanesz.tracesofthefallen.client.model.ModelSidhe;
 import com.windanesz.tracesofthefallen.client.render.entity.layers.LayerSidheEyes;
 import com.windanesz.tracesofthefallen.client.render.entity.layers.LayerSidheHandItem;
 import com.windanesz.tracesofthefallen.client.render.entity.layers.LayerSidheMouthItem;
-import com.windanesz.tracesofthefallen.entity.EntitySidhe;
+import com.windanesz.tracesofthefallen.entity.living.EntitySidhe;
 import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.util.ResourceLocation;

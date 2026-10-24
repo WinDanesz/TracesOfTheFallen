@@ -2,7 +2,7 @@ package com.windanesz.tracesofthefallen.world.structure;
 
 import com.windanesz.tracesofthefallen.Settings;
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
-import com.windanesz.tracesofthefallen.entity.EntityGoblinNest;
+import com.windanesz.tracesofthefallen.entity.living.EntityGoblinNest;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;

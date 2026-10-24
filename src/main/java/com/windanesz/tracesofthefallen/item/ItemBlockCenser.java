@@ -1,6 +1,6 @@
 package com.windanesz.tracesofthefallen.item;
 
-import com.windanesz.tracesofthefallen.IncenseEffects;
+import com.windanesz.tracesofthefallen.misc.IncenseEffects;
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
 import com.windanesz.tracesofthefallen.block.TileEntityBurningIncense;
 import com.windanesz.tracesofthefallen.block.TileEntityCenser;

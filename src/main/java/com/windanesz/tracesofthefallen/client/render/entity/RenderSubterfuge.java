@@ -2,7 +2,7 @@ package com.windanesz.tracesofthefallen.client.render.entity;
 
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
 import com.windanesz.tracesofthefallen.client.model.ModelSubterFuge;
-import com.windanesz.tracesofthefallen.entity.EntitySubterfuge;
+import com.windanesz.tracesofthefallen.entity.living.EntitySubterfuge;
 import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.util.ResourceLocation;

@@ -1,7 +1,7 @@
 package com.windanesz.tracesofthefallen.entity.ai;
 
 import com.windanesz.tracesofthefallen.Settings;
-import com.windanesz.tracesofthefallen.entity.EntitySubterfuge;
+import com.windanesz.tracesofthefallen.entity.living.EntitySubterfuge;
 import com.windanesz.tracesofthefallen.network.PacketHandler;
 import com.windanesz.tracesofthefallen.packet.PacketSpawnGodSlapParticle;
 import net.minecraft.entity.EntityLivingBase;

@@ -3,7 +3,7 @@ package com.windanesz.tracesofthefallen.client.model;// Made with Blockbench 5.1
 // Paste this class into your mod and generate all required imports
 
 
-import com.windanesz.tracesofthefallen.entity.EntityFrostling;
+import com.windanesz.tracesofthefallen.entity.living.EntityFrostling;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelBox;
 import net.minecraft.client.model.ModelRenderer;

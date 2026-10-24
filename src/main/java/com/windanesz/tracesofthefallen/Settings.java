@@ -652,6 +652,11 @@ public class Settings {
 		@Config.Comment("Chance (0.0 - 1.0) for bush crates to spawn goblins when a player is nearby. 0.0 = never, 1.0 = always. Default: 0.5 (50%)")
 		public double bushCrateGoblinSpawnChance = 0.5D;
 
+		@Config.Name("Abandoned Tent Lost Chance")
+		@Config.Comment("Chance (0.0 - 1.0) for an abandoned tent to spawn a single Lost instead of its starved goblins when a player approaches. 0.0 = never. Default: 0.1 (10%)")
+		@Config.RangeDouble(min = 0.0D, max = 1.0D)
+		public double abandonedTentLostChance = 0.1D;
+
 		@Config.Name("Veiled Mask Durability")
 		@Config.Comment("The total durability of the Veiled Mask. Default: 500")
 		@Config.RequiresMcRestart

@@ -1,6 +1,6 @@
 package com.windanesz.tracesofthefallen.client.renderer;
 
-import com.windanesz.tracesofthefallen.entity.EntityFetidDagger;
+import com.windanesz.tracesofthefallen.entity.projectile.EntityFetidDagger;
 import com.windanesz.tracesofthefallen.init.ModItems;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;

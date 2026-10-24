@@ -2,7 +2,7 @@ package com.windanesz.tracesofthefallen.client.render.entity;
 
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
 import com.windanesz.tracesofthefallen.client.model.ModelGnossic;
-import com.windanesz.tracesofthefallen.entity.EntityGnossic;
+import com.windanesz.tracesofthefallen.entity.living.EntityGnossic;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.client.renderer.entity.RenderManager;

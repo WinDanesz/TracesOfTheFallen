@@ -1,7 +1,7 @@
 package com.windanesz.tracesofthefallen.item;
 
 import com.windanesz.tracesofthefallen.Settings;
-import com.windanesz.tracesofthefallen.entity.EntityVoidSlash;
+import com.windanesz.tracesofthefallen.entity.projectile.EntityVoidSlash;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;

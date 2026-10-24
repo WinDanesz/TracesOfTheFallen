@@ -3,7 +3,7 @@ package com.windanesz.tracesofthefallen.client.renderer;
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
 import com.windanesz.tracesofthefallen.client.model.ModelFrostlingRoll;
 import com.windanesz.tracesofthefallen.client.model.ModelFrostlingStand;
-import com.windanesz.tracesofthefallen.entity.EntityFrostling;
+import com.windanesz.tracesofthefallen.entity.living.EntityFrostling;
 import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.util.ResourceLocation;

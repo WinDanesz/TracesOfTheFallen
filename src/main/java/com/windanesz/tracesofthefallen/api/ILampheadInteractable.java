@@ -1,6 +1,6 @@
 package com.windanesz.tracesofthefallen.api;
 
-import com.windanesz.tracesofthefallen.entity.EntityLamphead;
+import com.windanesz.tracesofthefallen.entity.living.EntityLamphead;
 import net.minecraft.util.math.BlockPos;
 
 public interface ILampheadInteractable {

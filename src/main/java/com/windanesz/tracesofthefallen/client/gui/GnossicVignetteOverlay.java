@@ -1,7 +1,7 @@
 package com.windanesz.tracesofthefallen.client.gui;
 
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
-import com.windanesz.tracesofthefallen.entity.EntityGnossic;
+import com.windanesz.tracesofthefallen.entity.living.EntityGnossic;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;

@@ -1,9 +1,9 @@
 package com.windanesz.tracesofthefallen.entity.ai;
 
-import com.windanesz.tracesofthefallen.entity.EntityGoblin;
-import com.windanesz.tracesofthefallen.entity.EntityGoblinEngineer;
-import com.windanesz.tracesofthefallen.entity.EntityGoblinSapper;
-import com.windanesz.tracesofthefallen.entity.EntityGoblinTunneler;
+import com.windanesz.tracesofthefallen.entity.living.EntityGoblin;
+import com.windanesz.tracesofthefallen.entity.living.EntityGoblinEngineer;
+import com.windanesz.tracesofthefallen.entity.living.EntityGoblinSapper;
+import com.windanesz.tracesofthefallen.entity.living.EntityGoblinTunneler;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.init.Blocks;
 import net.minecraft.pathfinding.PathNavigate;

@@ -2,7 +2,7 @@ package com.windanesz.tracesofthefallen.entity.ai;
 
 import com.windanesz.tracesofthefallen.Settings;
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
-import com.windanesz.tracesofthefallen.entity.EntityGoblinTunneler;
+import com.windanesz.tracesofthefallen.entity.living.EntityGoblinTunneler;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLadder;
 import net.minecraft.block.BlockTorch;

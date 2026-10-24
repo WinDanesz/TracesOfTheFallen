@@ -3,6 +3,8 @@ package com.windanesz.tracesofthefallen.entity.shaman;
 import com.windanesz.tracesofthefallen.Settings;
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
 import com.windanesz.tracesofthefallen.entity.*;
+import com.windanesz.tracesofthefallen.entity.living.*;
+import com.windanesz.tracesofthefallen.entity.projectile.*;
 import com.windanesz.tracesofthefallen.init.ModItems;
 import com.windanesz.tracesofthefallen.network.PacketHandler;
 import com.windanesz.tracesofthefallen.packet.PacketSpawnCrumbs;

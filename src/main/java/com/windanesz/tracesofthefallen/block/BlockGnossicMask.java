@@ -2,7 +2,7 @@ package com.windanesz.tracesofthefallen.block;
 
 import com.windanesz.tracesofthefallen.Settings;
 import com.windanesz.tracesofthefallen.client.ClientProxy;
-import com.windanesz.tracesofthefallen.entity.EntityGnossic;
+import com.windanesz.tracesofthefallen.entity.living.EntityGnossic;
 import com.windanesz.tracesofthefallen.init.ModCreativeTab;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
