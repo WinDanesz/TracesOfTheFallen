@@ -37,6 +37,12 @@ public class ModelMinecrawler extends ModelBase {
     private static final float LEG_LIFT = 0.45F;
     private static final float KNEE_FOLD = 0.75F;
     private static final float KNEE_REST = 0.7854F;
+    private static final float ATTACK_RAISE_END = 8.0F;
+    private static final float ATTACK_COIL_END = 10.0F;
+    private static final float ATTACK_SLASH_END = 12.5F;
+    private static final float ATTACK_RECOVER_START = 17.0F;
+    private static final float SLASH_DEPTH = 0.7F;
+    private static final float SLASH_LEAN = 0.4F;
 
     public ModelMinecrawler() {
         textureWidth = 128;
@@ -189,12 +195,35 @@ public class ModelMinecrawler extends ModelBase {
         // Attack/taunt poses own the arms, so fade the arm gait out while they play.
         float attack = this.swingProgress;
         float tauntRaise = 0.0F;
+        boolean slashRight = false;
         if (entityIn instanceof EntityMinecrawler) {
             EntityMinecrawler crawler = (EntityMinecrawler) entityIn;
-            attack = crawler.getAttackAnimationProgress(0.0F);
-            tauntRaise = crawler.getTauntRaiseAmount(0.0F);
+            float partialTicks = ageInTicks - entityIn.ticksExisted;
+            attack = crawler.getAttackAnimationProgress(partialTicks);
+            tauntRaise = crawler.getTauntRaiseAmount(partialTicks);
+            slashRight = crawler.isSlashingWithRightArm();
         }
-        float armGait = legSwingAmount * (1.0F - tauntRaise) * (1.0F - MathHelper.clamp(attack / 0.35F, 0.0F, 1.0F));
+
+        // Attack timeline (ticks): raise -> brief coil -> one arm slashes -> hold -> recover into the gait.
+        // Damage lands at EntityMinecrawler.ATTACK_HIT_TICK, at the end of the slash.
+        float attackTicks = attack * EntityMinecrawler.ATTACK_ANIMATION_DURATION;
+        float attackWeight = 0.0F;
+        float raise = 0.0F;
+        float slash = 0.0F;
+        float slashPose = 0.0F;
+        if (attack > 0.0F) {
+            float raiseT = MathHelper.clamp(attackTicks / ATTACK_RAISE_END, 0.0F, 1.0F);
+            float slashT = MathHelper.clamp((attackTicks - ATTACK_COIL_END) / (ATTACK_SLASH_END - ATTACK_COIL_END), 0.0F, 1.0F);
+            float recoverT = MathHelper.clamp((attackTicks - ATTACK_RECOVER_START)
+                    / (EntityMinecrawler.ATTACK_ANIMATION_DURATION - ATTACK_RECOVER_START), 0.0F, 1.0F);
+            float fade = 1.0F - recoverT * recoverT * (3.0F - 2.0F * recoverT);
+            raise = MathHelper.sin(raiseT * ((float) Math.PI * 0.5F));
+            slashPose = slashT * slashT * (3.0F - 2.0F * slashT);
+            attackWeight = raise * fade;
+            raise = attackWeight;
+            slash = slashPose * fade;
+        }
+        float armGait = legSwingAmount * (1.0F - tauntRaise) * (1.0F - attackWeight);
 
         // Tripod gait: front-left/right-mid/rear-left (A) alternate with front-right/left-mid/rear-right (B).
         float cycleA = phase / ((float) Math.PI * 2.0F);
@@ -232,10 +261,6 @@ public class ModelMinecrawler extends ModelBase {
             }
         }
 
-        // Attack timeline:
-        // 0.0 -> 0.35 : raise quickly
-        // 0.35 -> 0.75 : hold raised
-        // 0.75 -> 1.0 : strike down while body leans forward
         if (tauntRaise > 0.0F) {
             float leftRaiseX = -0.5002F, leftRaiseY = 0.8584F, leftRaiseZ = -0.2327F;
             float rightRaiseX = leftRaiseX, rightRaiseY = -leftRaiseY, rightRaiseZ = -leftRaiseZ;
@@ -252,13 +277,6 @@ public class ModelMinecrawler extends ModelBase {
         }
 
         if (attack > 0.0F) {
-            float raisePhase = Math.min(attack / 0.35F, 1.0F);
-            float strikePhase = Math.max((attack - 0.82F) / 0.18F, 0.0F);
-
-            float raise = MathHelper.sin(raisePhase * ((float) Math.PI * 0.5F));
-            float strike = MathHelper.sin(strikePhase * ((float) Math.PI * 0.5F));
-            float strikeFast = MathHelper.sqrt(strike);
-
             // Target poses from user-provided Blockbench angles (converted with this model's sign convention):
             // Raise (left):  28.6593, -49.1827, -13.3327 -> code: -0.5002, 0.8584, -0.2327
             // Slash (left): -41.0037, -40.5333,  73.2256 -> code:  0.7157, 0.7074,  1.2780
@@ -268,22 +286,23 @@ public class ModelMinecrawler extends ModelBase {
             float rightRaiseX = leftRaiseX, rightRaiseY = -leftRaiseY, rightRaiseZ = -leftRaiseZ;
             float rightSlashX = leftSlashX, rightSlashY = -leftSlashY, rightSlashZ = -leftSlashZ;
 
-            float leftX = lerp(arm_left.rotateAngleX, leftRaiseX, raise);
-            float leftY = lerp(arm_left.rotateAngleY, leftRaiseY, raise);
-            float leftZ = lerp(arm_left.rotateAngleZ, leftRaiseZ, raise);
-            arm_left.rotateAngleX = lerp(leftX, leftSlashX, strikeFast);
-            arm_left.rotateAngleY = lerp(leftY, leftSlashY, strikeFast);
-            arm_left.rotateAngleZ = lerp(leftZ, leftSlashZ, strikeFast);
+            // Both arms rise together, only one follows through; the other draws back slightly.
+            float leftSlash = slashRight ? 0.0F : slashPose * SLASH_DEPTH;
+            float rightSlash = slashRight ? slashPose * SLASH_DEPTH : 0.0F;
+            float leftDrawBack = slashRight ? 0.15F * slashPose : 0.0F;
+            float rightDrawBack = slashRight ? 0.0F : 0.15F * slashPose;
 
-            float rightX = lerp(arm_right.rotateAngleX, rightRaiseX, raise);
-            float rightY = lerp(arm_right.rotateAngleY, rightRaiseY, raise);
-            float rightZ = lerp(arm_right.rotateAngleZ, rightRaiseZ, raise);
-            arm_right.rotateAngleX = lerp(rightX, rightSlashX, strikeFast);
-            arm_right.rotateAngleY = lerp(rightY, rightSlashY, strikeFast);
-            arm_right.rotateAngleZ = lerp(rightZ, rightSlashZ, strikeFast);
+            arm_left.rotateAngleX = lerp(arm_left.rotateAngleX, lerp(leftRaiseX, leftSlashX, leftSlash) - leftDrawBack, attackWeight);
+            arm_left.rotateAngleY = lerp(arm_left.rotateAngleY, lerp(leftRaiseY, leftSlashY, leftSlash), attackWeight);
+            arm_left.rotateAngleZ = lerp(arm_left.rotateAngleZ, lerp(leftRaiseZ, leftSlashZ, leftSlash), attackWeight);
 
-            torax.rotateAngleX += -0.25F * raise + 0.7F * strikeFast;
-            head.rotateAngleX += 0.16F * strikeFast;
+            arm_right.rotateAngleX = lerp(arm_right.rotateAngleX, lerp(rightRaiseX, rightSlashX, rightSlash) - rightDrawBack, attackWeight);
+            arm_right.rotateAngleY = lerp(arm_right.rotateAngleY, lerp(rightRaiseY, rightSlashY, rightSlash), attackWeight);
+            arm_right.rotateAngleZ = lerp(arm_right.rotateAngleZ, lerp(rightRaiseZ, rightSlashZ, rightSlash), attackWeight);
+
+            torax.rotateAngleX += -0.25F * raise + SLASH_LEAN * slash;
+            torax.rotateAngleY += (slashRight ? -0.22F : 0.22F) * slash;
+            head.rotateAngleX += 0.16F * slash;
         }
     }
 

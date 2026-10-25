@@ -30,11 +30,13 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 public class EntityMinecrawler extends EntityMob {
-    private static final int ATTACK_ANIMATION_DURATION = 30;
+    public static final int ATTACK_ANIMATION_DURATION = 30;
+    public static final int ATTACK_HIT_TICK = 12;
     private static final int TAUNT_MIN_TICKS = 40;
     private static final int TAUNT_MAX_TICKS = 60;
     public static final ResourceLocation LOOT_TABLE = new ResourceLocation(TracesOfTheFallen.MODID, "entities/minecrawler");
     private static final DataParameter<Integer> ATTACK_ANIMATION_TICKS = EntityDataManager.createKey(EntityMinecrawler.class, DataSerializers.VARINT);
+    private static final DataParameter<Boolean> ATTACK_RIGHT_ARM = EntityDataManager.createKey(EntityMinecrawler.class, DataSerializers.BOOLEAN);
     private static final DataParameter<Integer> TAUNT_TICKS = EntityDataManager.createKey(EntityMinecrawler.class, DataSerializers.VARINT);
     private static final DataParameter<Integer> TAUNT_DURATION = EntityDataManager.createKey(EntityMinecrawler.class, DataSerializers.VARINT);
     private boolean hadTargetLastTick;
@@ -49,6 +51,7 @@ public class EntityMinecrawler extends EntityMob {
     protected void entityInit() {
         super.entityInit();
         this.dataManager.register(ATTACK_ANIMATION_TICKS, 0);
+        this.dataManager.register(ATTACK_RIGHT_ARM, false);
         this.dataManager.register(TAUNT_TICKS, 0);
         this.dataManager.register(TAUNT_DURATION, 0);
     }
@@ -212,8 +215,13 @@ public class EntityMinecrawler extends EntityMob {
 
     public void startAttackAnimation() {
         if (!this.world.isRemote) {
+            this.dataManager.set(ATTACK_RIGHT_ARM, !this.dataManager.get(ATTACK_RIGHT_ARM));
             this.dataManager.set(ATTACK_ANIMATION_TICKS, ATTACK_ANIMATION_DURATION);
         }
+    }
+
+    public boolean isSlashingWithRightArm() {
+        return this.dataManager.get(ATTACK_RIGHT_ARM);
     }
 
     private void startTaunt(int durationTicks) {

@@ -5,7 +5,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIAttackMelee;
 
 public class AIMinecrawlerAttack extends EntityAIAttackMelee {
-    private static final int WINDUP_TICKS = 10;
+    private static final int WINDUP_TICKS = EntityMinecrawler.ATTACK_HIT_TICK - 1;
     private final EntityMinecrawler crawler;
     private int windupTicks;
     private boolean windingUp;
