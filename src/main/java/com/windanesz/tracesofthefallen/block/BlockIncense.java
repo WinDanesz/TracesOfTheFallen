@@ -1,6 +1,7 @@
 package com.windanesz.tracesofthefallen.block;
 
 import com.windanesz.tracesofthefallen.misc.IncenseEffects;
+import com.windanesz.tracesofthefallen.tile.TileEntityIncense;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.BlockStateContainer;

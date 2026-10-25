@@ -1,9 +1,9 @@
 package com.windanesz.tracesofthefallen.network;
 
-import com.windanesz.tracesofthefallen.block.TileEntityBrassFabricator;
-import com.windanesz.tracesofthefallen.block.TileEntitySpinningWheel;
-import com.windanesz.tracesofthefallen.block.TileEntityStoneChest;
-import com.windanesz.tracesofthefallen.block.TileEntityStoneCompartment;
+import com.windanesz.tracesofthefallen.tile.TileEntityBrassFabricator;
+import com.windanesz.tracesofthefallen.tile.TileEntitySpinningWheel;
+import com.windanesz.tracesofthefallen.tile.TileEntityStoneChest;
+import com.windanesz.tracesofthefallen.tile.TileEntityStoneCompartment;
 import com.windanesz.tracesofthefallen.client.gui.GuiBrassFabricator;
 import com.windanesz.tracesofthefallen.client.gui.GuiSpinningWheel;
 import com.windanesz.tracesofthefallen.client.gui.GuiStoneChest;

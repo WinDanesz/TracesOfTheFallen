@@ -2,7 +2,7 @@ package com.windanesz.tracesofthefallen.world.shop;
 
 import com.windanesz.tracesofthefallen.Settings;
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
-import com.windanesz.tracesofthefallen.block.TileEntityBalance;
+import com.windanesz.tracesofthefallen.tile.TileEntityBalance;
 import com.windanesz.tracesofthefallen.entity.living.EntitySubterfuge;
 import com.windanesz.tracesofthefallen.init.ModItems;
 import com.windanesz.tracesofthefallen.item.ItemTallieCollector;

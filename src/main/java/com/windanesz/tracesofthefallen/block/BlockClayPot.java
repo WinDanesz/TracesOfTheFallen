@@ -2,6 +2,7 @@ package com.windanesz.tracesofthefallen.block;
 
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
 import com.windanesz.tracesofthefallen.init.ModCreativeTab;
+import com.windanesz.tracesofthefallen.tile.TileEntityClayPot;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyInteger;
@@ -25,6 +26,9 @@ import net.minecraft.world.WorldServer;
 import net.minecraft.world.storage.loot.LootContext;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.event.entity.ProjectileImpactEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import javax.annotation.Nullable;
 
@@ -35,6 +39,7 @@ import javax.annotation.Nullable;
  * stored item or rolling loot for an empty pot, never dropping the pot itself); Silk Touch drops the pot with the stored item
  * baked into its NBT so it is restored when re-placed.
  */
+@Mod.EventBusSubscriber(modid = TracesOfTheFallen.MODID)
 public class BlockClayPot extends Block {
 
 	public static final ResourceLocation LOOT_TABLE = new ResourceLocation(TracesOfTheFallen.MODID, "blocks/clay_pot");
@@ -207,5 +212,23 @@ public class BlockClayPot extends Block {
 			stack.setTagCompound(tag);
 		}
 		return stack;
+	}
+
+	@SubscribeEvent
+	public static void onProjectileImpact(ProjectileImpactEvent event) {
+		RayTraceResult result = event.getRayTraceResult();
+		if (result.typeOfHit != RayTraceResult.Type.BLOCK) {
+			return;
+		}
+
+		World world = event.getEntity().world;
+		if (world.isRemote) {
+			return;
+		}
+
+		BlockPos pos = result.getBlockPos();
+		if (world.getBlockState(pos).getBlock() instanceof BlockClayPot) {
+			world.destroyBlock(pos, true);
+		}
 	}
 }

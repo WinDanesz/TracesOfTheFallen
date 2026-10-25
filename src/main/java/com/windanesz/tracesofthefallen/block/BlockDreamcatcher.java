@@ -1,6 +1,7 @@
 package com.windanesz.tracesofthefallen.block;
 
 import com.windanesz.tracesofthefallen.client.ClientProxy;
+import com.windanesz.tracesofthefallen.tile.TileEntityDreamcatcher;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;

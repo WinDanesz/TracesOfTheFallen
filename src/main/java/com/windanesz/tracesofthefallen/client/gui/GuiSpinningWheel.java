@@ -1,6 +1,6 @@
 package com.windanesz.tracesofthefallen.client.gui;
 
-import com.windanesz.tracesofthefallen.block.TileEntitySpinningWheel;
+import com.windanesz.tracesofthefallen.tile.TileEntitySpinningWheel;
 import com.windanesz.tracesofthefallen.inventory.ContainerSpinningWheel;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;

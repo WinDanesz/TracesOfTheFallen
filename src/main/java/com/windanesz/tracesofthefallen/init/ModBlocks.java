@@ -3,6 +3,7 @@ package com.windanesz.tracesofthefallen.init;
 import com.windanesz.tracesofthefallen.Settings;
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
 import com.windanesz.tracesofthefallen.block.*;
+import com.windanesz.tracesofthefallen.tile.*;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDoublePlant;
 import net.minecraft.block.material.Material;

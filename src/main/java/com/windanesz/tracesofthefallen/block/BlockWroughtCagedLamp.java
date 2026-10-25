@@ -1,5 +1,6 @@
 package com.windanesz.tracesofthefallen.block;
 
+import com.windanesz.tracesofthefallen.tile.TileEntityWroughtCagedLamp;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;

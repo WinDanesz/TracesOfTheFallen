@@ -5,6 +5,7 @@ import com.windanesz.tracesofthefallen.TracesOfTheFallen;
 import com.windanesz.tracesofthefallen.capability.HauntingCapability;
 import com.windanesz.tracesofthefallen.init.ModBlocks;
 import com.windanesz.tracesofthefallen.init.ModPotions;
+import com.windanesz.tracesofthefallen.tile.TileEntityGraveMarker;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockFlower;

@@ -3,7 +3,7 @@ package com.windanesz.tracesofthefallen.client.renderer;
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
 import com.windanesz.tracesofthefallen.block.BalanceMode;
 import com.windanesz.tracesofthefallen.block.BlockBalance;
-import com.windanesz.tracesofthefallen.block.TileEntityBalance;
+import com.windanesz.tracesofthefallen.tile.TileEntityBalance;
 import com.windanesz.tracesofthefallen.item.ItemTallieCollector;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;

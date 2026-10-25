@@ -1,7 +1,7 @@
 package com.windanesz.tracesofthefallen.client.gui;
 
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
-import com.windanesz.tracesofthefallen.block.TileEntityStoneCompartment;
+import com.windanesz.tracesofthefallen.tile.TileEntityStoneCompartment;
 import com.windanesz.tracesofthefallen.inventory.ContainerStoneCompartment;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;

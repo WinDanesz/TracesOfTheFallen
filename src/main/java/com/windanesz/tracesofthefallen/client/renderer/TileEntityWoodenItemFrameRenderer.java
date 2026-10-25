@@ -1,7 +1,7 @@
 package com.windanesz.tracesofthefallen.client.renderer;
 
 import com.windanesz.tracesofthefallen.block.BlockWoodenItemFrame;
-import com.windanesz.tracesofthefallen.block.TileEntityWoodenItemFrame;
+import com.windanesz.tracesofthefallen.tile.TileEntityWoodenItemFrame;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;

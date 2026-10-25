@@ -2,8 +2,8 @@ package com.windanesz.tracesofthefallen.item;
 
 import com.windanesz.tracesofthefallen.misc.IncenseEffects;
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
-import com.windanesz.tracesofthefallen.block.TileEntityBurningIncense;
-import com.windanesz.tracesofthefallen.block.TileEntityCenser;
+import com.windanesz.tracesofthefallen.tile.TileEntityBurningIncense;
+import com.windanesz.tracesofthefallen.tile.TileEntityCenser;
 import com.windanesz.tracesofthefallen.init.ModPotions;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;

@@ -3,7 +3,7 @@ package com.windanesz.tracesofthefallen.entity.living;
 import com.windanesz.tracesofthefallen.Settings;
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
 import com.windanesz.tracesofthefallen.entity.ai.EntityAISubterfugeGodslap;
-import com.windanesz.tracesofthefallen.block.TileEntityBalance;
+import com.windanesz.tracesofthefallen.tile.TileEntityBalance;
 import com.windanesz.tracesofthefallen.init.ModBlocks;
 import com.windanesz.tracesofthefallen.network.PacketHandler;
 import com.windanesz.tracesofthefallen.packet.PacketSpawnGodSlapParticle;

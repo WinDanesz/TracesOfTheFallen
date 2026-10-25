@@ -1,6 +1,7 @@
 package com.windanesz.tracesofthefallen.block;
 
 import com.windanesz.tracesofthefallen.init.ModCreativeTab;
+import com.windanesz.tracesofthefallen.tile.TileEntitySkullDecoration;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;

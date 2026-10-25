@@ -4,6 +4,7 @@ import com.windanesz.tracesofthefallen.TracesOfTheFallen;
 import com.windanesz.tracesofthefallen.init.ModBlocks;
 import com.windanesz.tracesofthefallen.network.ModGuiHandler;
 import com.windanesz.tracesofthefallen.recipe.SpinningWheelRecipes;
+import com.windanesz.tracesofthefallen.tile.TileEntitySpinningWheel;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;

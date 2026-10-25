@@ -1,7 +1,7 @@
 package com.windanesz.tracesofthefallen.item;
 
-import com.windanesz.tracesofthefallen.block.TileEntityDanCoil;
-import com.windanesz.tracesofthefallen.block.TileEntityWroughtCagedLamp;
+import com.windanesz.tracesofthefallen.tile.TileEntityDanCoil;
+import com.windanesz.tracesofthefallen.tile.TileEntityWroughtCagedLamp;
 import com.windanesz.tracesofthefallen.client.ClientProxy;
 import com.windanesz.tracesofthefallen.entity.EntityZapLightning;
 import com.windanesz.tracesofthefallen.init.ModItems;

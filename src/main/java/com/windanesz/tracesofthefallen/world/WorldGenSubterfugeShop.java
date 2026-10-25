@@ -4,7 +4,7 @@ import com.windanesz.tracesofthefallen.Settings;
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
 import com.windanesz.tracesofthefallen.block.BlockDecoration;
 import com.windanesz.tracesofthefallen.block.BlockLampBase;
-import com.windanesz.tracesofthefallen.block.TileEntityBalance;
+import com.windanesz.tracesofthefallen.tile.TileEntityBalance;
 import com.windanesz.tracesofthefallen.entity.living.EntitySubterfuge;
 import com.windanesz.tracesofthefallen.init.ModBlocks;
 import com.windanesz.tracesofthefallen.world.shop.ShopTrades;

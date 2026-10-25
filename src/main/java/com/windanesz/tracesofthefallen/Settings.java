@@ -1,7 +1,7 @@
 package com.windanesz.tracesofthefallen;
 
-import com.windanesz.tracesofthefallen.block.TileEntityBrassFabricator;
-import com.windanesz.tracesofthefallen.block.TileEntityPorcelainVessel;
+import com.windanesz.tracesofthefallen.tile.TileEntityBrassFabricator;
+import com.windanesz.tracesofthefallen.tile.TileEntityPorcelainVessel;
 import com.windanesz.tracesofthefallen.capability.HauntingCapability;
 import com.windanesz.tracesofthefallen.entity.ai.GoblinAITunnelerDig;
 import net.minecraft.util.ResourceLocation;

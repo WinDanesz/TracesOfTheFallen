@@ -21,6 +21,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.EnumHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.util.math.MathHelper;
 
 public class ItemFloater extends ItemArmor {
 
@@ -109,5 +110,28 @@ public class ItemFloater extends ItemArmor {
 		}
 
 		return EnumActionResult.FAIL;
+	}
+
+	@Override
+	public void onArmorTick(World world, EntityPlayer player, ItemStack itemStack) {
+		if (!player.isInWater()) {
+			return;
+		}
+
+		// The floater ring renders roughly 0.65 to 0.9 blocks above the player's feet.
+		// A 2-tier check creates a smooth equilibrium zone, sitting the player 2px deeper in the water.
+		BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos(MathHelper.floor(player.posX), MathHelper.floor(player.posY + 1.025D), MathHelper.floor(player.posZ));
+		boolean aboveWaist = world.getBlockState(pos).getMaterial().isLiquid();
+		boolean atWaist = !aboveWaist && world.getBlockState(pos.setPos(player.posX, player.posY + 0.775D, player.posZ)).getMaterial().isLiquid();
+
+		if (aboveWaist) {
+			// Deep in water. Push up towards the surface.
+			player.motionY += 0.04D;
+		} else if (atWaist) {
+			player.motionY += 0.02D;
+		}
+
+		// Ensure they don't take fall damage when hitting the water
+		player.fallDistance = 0.0F;
 	}
 }

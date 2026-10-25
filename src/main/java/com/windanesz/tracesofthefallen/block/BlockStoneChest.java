@@ -1,5 +1,6 @@
 package com.windanesz.tracesofthefallen.block;
 
+import com.windanesz.tracesofthefallen.tile.TileEntityStoneChest;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;

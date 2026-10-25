@@ -1,5 +1,7 @@
 package com.windanesz.tracesofthefallen.block;
 
+import com.windanesz.tracesofthefallen.TracesOfTheFallen;
+import com.windanesz.tracesofthefallen.entity.living.EntityGoblin;
 import com.windanesz.tracesofthefallen.init.ModBlocks;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -7,8 +9,12 @@ import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Biomes;
+import net.minecraft.init.MobEffects;
+import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -16,9 +22,15 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.event.entity.player.PlayerSetSpawnEvent;
+import net.minecraftforge.event.entity.player.PlayerWakeUpEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 import javax.annotation.Nullable;
 
+@Mod.EventBusSubscriber(modid = TracesOfTheFallen.MODID)
 public class BlockHayBed extends BlockTOFT implements IProxyMainBlock {
 
     public static final PropertyBool OCCUPIED = PropertyBool.create("occupied");
@@ -169,6 +181,112 @@ public class BlockHayBed extends BlockTOFT implements IProxyMainBlock {
                 worldIn.newExplosion(null, pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D, 5.0F, true, true);
                 return true;
             }
+        }
+    }
+
+    /**
+     * Resolves a position to the hay bed's main block: returns pos itself if it is a hay bed, the owning bed if it is
+     * the technical proxy block of one, or null otherwise.
+     */
+    @Nullable
+    private static BlockPos findMainBed(World world, BlockPos pos) {
+        Block block = world.getBlockState(pos).getBlock();
+        if (block instanceof BlockHayBed) {
+            return pos;
+        }
+        if (block == ModBlocks.technical_block) {
+            for (EnumFacing facing : EnumFacing.HORIZONTALS) {
+                BlockPos candidate = pos.offset(facing);
+                if (world.getBlockState(candidate).getBlock() instanceof BlockHayBed
+                        && ((BlockHayBed) world.getBlockState(candidate).getBlock()).isMainBlockForProxy(world, candidate, pos)) {
+                    return candidate;
+                }
+            }
+        }
+        return null;
+    }
+
+    @SubscribeEvent
+    public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
+        EntityPlayer player = event.player;
+        if (event.phase != TickEvent.Phase.END || player.world.isRemote
+                || !player.isPlayerSleeping() || player.sleepTimer != 40 || player.bedLocation == null) {
+            return;
+        }
+
+        World world = player.world;
+        if (!world.isBlockLoaded(player.bedLocation)) {
+            return;
+        }
+
+        BlockPos pos = findMainBed(world, player.bedLocation);
+        if (pos == null) {
+            return;
+        }
+
+        BlockPos proxyPos = pos.offset(world.getBlockState(pos).getValue(FACING).getOpposite());
+        boolean exposedToSky = world.canSeeSky(pos.up()) || (world.isBlockLoaded(proxyPos) && world.canSeeSky(proxyPos.up()));
+        if (!exposedToSky) {
+            return;
+        }
+
+        player.wakeUpPlayer(true, false, false);
+        player.sendMessage(new TextComponentTranslation("tile.bed.notSafeSky"));
+
+        int monsterCount = 1 + world.rand.nextInt(2);
+        for (int i = 0; i < monsterCount; i++) {
+            spawnIntruder(world, pos, player);
+        }
+    }
+
+    private static void spawnIntruder(World world, BlockPos bedPos, EntityPlayer target) {
+        EntityLiving monster = world.rand.nextBoolean() ? new EntityGoblin(world) : new EntityZombie(world);
+        BlockPos spawnPos = null;
+        for (int attempts = 0; attempts < 15; attempts++) {
+            int dx = world.rand.nextInt(5) - 2;
+            int dz = world.rand.nextInt(5) - 2;
+            if (Math.abs(dx) < 2 && Math.abs(dz) < 2) {
+                // keep the intruders out of the bed's immediate surroundings: push onto the outer ring
+                dx = world.rand.nextBoolean() ? 2 : -2;
+            }
+            BlockPos candidate = world.getTopSolidOrLiquidBlock(bedPos.add(dx, 0, dz));
+            if (world.isAirBlock(candidate) && world.isAirBlock(candidate.up())
+                    && world.getBlockState(candidate.down()).isSideSolid(world, candidate.down(), EnumFacing.UP)) {
+                spawnPos = candidate;
+                break;
+            }
+        }
+        if (spawnPos == null) {
+            spawnPos = bedPos.up();
+        }
+        monster.setPosition(spawnPos.getX() + 0.5D, spawnPos.getY(), spawnPos.getZ() + 0.5D);
+        monster.onInitialSpawn(world.getDifficultyForLocation(spawnPos), null);
+        world.spawnEntity(monster);
+        monster.setAttackTarget(target);
+    }
+
+    @SubscribeEvent
+    public static void onPlayerSetSpawn(PlayerSetSpawnEvent event) {
+        BlockPos pos = event.getNewSpawn();
+        if (pos == null) return;
+        World world = event.getEntityPlayer().world;
+        if (world == null || !world.isBlockLoaded(pos)) return;
+
+        if (findMainBed(world, pos) != null) {
+            event.setCanceled(true);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onPlayerWakeUp(PlayerWakeUpEvent event) {
+        EntityPlayer player = event.getEntityPlayer();
+        World world = player.world;
+        if (world.isRemote || player.bedLocation == null || !world.isBlockLoaded(player.bedLocation)) return;
+
+        BlockPos mainPos = findMainBed(world, player.bedLocation);
+        if (mainPos != null && (event.shouldSetSpawn() || player.sleepTimer >= 100)) {
+            player.addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, 600, 0));
+            world.destroyBlock(mainPos, false);
         }
     }
 

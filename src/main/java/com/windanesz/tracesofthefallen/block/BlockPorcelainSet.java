@@ -1,6 +1,8 @@
 package com.windanesz.tracesofthefallen.block;
 
 import com.windanesz.tracesofthefallen.init.ModBlocks;
+import com.windanesz.tracesofthefallen.tile.TileEntityPorcelainSet;
+import com.windanesz.tracesofthefallen.tile.TileEntityPorcelainVessel;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyEnum;
@@ -298,7 +300,7 @@ public class BlockPorcelainSet extends BlockDecoration {
 			return northBoundingBox;
 		}
 
-		int getCupCount() {
+		public int getCupCount() {
 			return cupCount;
 		}
 
@@ -306,7 +308,7 @@ public class BlockPorcelainSet extends BlockDecoration {
 			return potCount;
 		}
 
-		int[] getCupSlots() {
+		public int[] getCupSlots() {
 			return this == CUPS || this == FULL ? new int[]{0, 1} : this == POT_AND_CUP ? new int[]{0} : new int[0];
 		}
 
@@ -425,11 +427,11 @@ public class BlockPorcelainSet extends BlockDecoration {
 		}
 	}
 
-	static final class RemovalResult {
-		final IBlockState replacementState;
+	public static final class RemovalResult {
+		public final IBlockState replacementState;
 		final Item removedItem;
 		final int removedCupSlot;
-		final int replacementCupSourceSlot;
+		public final int replacementCupSourceSlot;
 
 		RemovalResult(IBlockState replacementState, Item removedItem, int removedCupSlot, int replacementCupSourceSlot) {
 			this.replacementState = replacementState;

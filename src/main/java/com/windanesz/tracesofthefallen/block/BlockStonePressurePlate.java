@@ -3,6 +3,7 @@ package com.windanesz.tracesofthefallen.block;
 import com.windanesz.tracesofthefallen.Settings;
 import com.windanesz.tracesofthefallen.init.ModBlocks;
 import com.windanesz.tracesofthefallen.init.ModCreativeTab;
+import com.windanesz.tracesofthefallen.tile.TileEntityStoneReceiver;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.material.Material;

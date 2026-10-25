@@ -1,7 +1,7 @@
 package com.windanesz.tracesofthefallen.client.gui;
 
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
-import com.windanesz.tracesofthefallen.block.TileEntityBrassFabricator;
+import com.windanesz.tracesofthefallen.tile.TileEntityBrassFabricator;
 import com.windanesz.tracesofthefallen.inventory.ContainerBrassFabricator;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;

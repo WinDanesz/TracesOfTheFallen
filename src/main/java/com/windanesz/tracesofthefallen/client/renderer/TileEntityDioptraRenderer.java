@@ -2,7 +2,7 @@ package com.windanesz.tracesofthefallen.client.renderer;
 
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
 import com.windanesz.tracesofthefallen.block.BlockDecoration;
-import com.windanesz.tracesofthefallen.block.TileEntityDioptra;
+import com.windanesz.tracesofthefallen.tile.TileEntityDioptra;
 import com.windanesz.tracesofthefallen.entity.EntityDioptraSeat;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;

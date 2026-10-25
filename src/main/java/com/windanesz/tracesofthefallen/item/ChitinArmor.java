@@ -21,10 +21,17 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.EnumHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import com.windanesz.tracesofthefallen.TracesOfTheFallen;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.init.Enchantments;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
+@Mod.EventBusSubscriber(modid = TracesOfTheFallen.MODID)
 public class ChitinArmor extends ItemArmor {
 	@SideOnly(Side.CLIENT)
 	private ModelBiped model;
@@ -112,5 +119,27 @@ public class ChitinArmor extends ItemArmor {
 
 	private static boolean isChitinPiece(ItemStack stack, Item expected) {
 		return !stack.isEmpty() && stack.getItem() == expected;
+	}
+
+	@SubscribeEvent
+	public static void onLivingHurt(LivingHurtEvent event) {
+		if (!(event.getEntityLiving() instanceof EntityPlayer)) {
+			return;
+		}
+
+		Entity source = event.getSource().getTrueSource();
+		if (!(source instanceof EntityLivingBase)) {
+			return;
+		}
+
+		int baneLevel = EnchantmentHelper.getEnchantmentLevel(Enchantments.BANE_OF_ARTHROPODS, ((EntityLivingBase) source).getHeldItemMainhand());
+		if (baneLevel <= 0) {
+			return;
+		}
+
+		EntityPlayer player = (EntityPlayer) event.getEntityLiving();
+		if (!player.world.isRemote && isWearingFullSet(player)) {
+			event.setAmount(event.getAmount() + (2.5F * baneLevel));
+		}
 	}
 }

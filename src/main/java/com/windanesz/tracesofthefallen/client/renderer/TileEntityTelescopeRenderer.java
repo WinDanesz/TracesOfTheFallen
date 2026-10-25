@@ -2,7 +2,7 @@ package com.windanesz.tracesofthefallen.client.renderer;
 
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
 import com.windanesz.tracesofthefallen.block.BlockDecoration;
-import com.windanesz.tracesofthefallen.block.TileEntityTelescope;
+import com.windanesz.tracesofthefallen.tile.TileEntityTelescope;
 import com.windanesz.tracesofthefallen.entity.EntityTelescopeSeat;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;

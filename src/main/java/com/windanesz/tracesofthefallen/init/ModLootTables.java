@@ -2,7 +2,7 @@ package com.windanesz.tracesofthefallen.init;
 
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
 import com.windanesz.tracesofthefallen.block.BlockClayPot;
-import com.windanesz.tracesofthefallen.block.TileEntityStoneChest;
+import com.windanesz.tracesofthefallen.tile.TileEntityStoneChest;
 import com.windanesz.tracesofthefallen.entity.living.EntitySpecter;
 import com.windanesz.tracesofthefallen.entity.living.EntitySpecterGrasper;
 import net.minecraft.entity.item.EntityItem;

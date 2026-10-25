@@ -3,6 +3,7 @@ package com.windanesz.tracesofthefallen.block;
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
 import com.windanesz.tracesofthefallen.init.ModCreativeTab;
 import com.windanesz.tracesofthefallen.network.ModGuiHandler;
+import com.windanesz.tracesofthefallen.tile.TileEntityBrassFabricator;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyDirection;

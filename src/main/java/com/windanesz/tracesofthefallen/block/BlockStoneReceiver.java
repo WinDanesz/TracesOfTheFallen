@@ -1,6 +1,7 @@
 package com.windanesz.tracesofthefallen.block;
 
 import com.windanesz.tracesofthefallen.init.ModCreativeTab;
+import com.windanesz.tracesofthefallen.tile.TileEntityStoneReceiver;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;

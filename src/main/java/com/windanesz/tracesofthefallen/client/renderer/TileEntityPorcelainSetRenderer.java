@@ -3,7 +3,7 @@ package com.windanesz.tracesofthefallen.client.renderer;
 import com.windanesz.tracesofthefallen.misc.PorcelainLiquids;
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
 import com.windanesz.tracesofthefallen.block.BlockPorcelainSet;
-import com.windanesz.tracesofthefallen.block.TileEntityPorcelainSet;
+import com.windanesz.tracesofthefallen.tile.TileEntityPorcelainSet;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;

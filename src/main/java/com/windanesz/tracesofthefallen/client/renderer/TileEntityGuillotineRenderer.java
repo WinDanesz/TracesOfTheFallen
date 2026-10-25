@@ -2,7 +2,7 @@ package com.windanesz.tracesofthefallen.client.renderer;
 
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
 import com.windanesz.tracesofthefallen.block.BlockGuillotine;
-import com.windanesz.tracesofthefallen.block.TileEntityGuillotine;
+import com.windanesz.tracesofthefallen.tile.TileEntityGuillotine;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockRendererDispatcher;

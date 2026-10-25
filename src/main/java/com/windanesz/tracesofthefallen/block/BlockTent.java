@@ -1,5 +1,7 @@
 package com.windanesz.tracesofthefallen.block;
 
+import com.windanesz.tracesofthefallen.tile.TileEntityLostLoot;
+import com.windanesz.tracesofthefallen.tile.TileEntityTent;
 import net.minecraft.block.material.Material;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;

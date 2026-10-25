@@ -1,6 +1,6 @@
 package com.windanesz.tracesofthefallen.inventory;
 
-import com.windanesz.tracesofthefallen.block.TileEntitySpinningWheel;
+import com.windanesz.tracesofthefallen.tile.TileEntitySpinningWheel;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;

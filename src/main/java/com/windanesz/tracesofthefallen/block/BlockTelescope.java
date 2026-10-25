@@ -1,6 +1,7 @@
 package com.windanesz.tracesofthefallen.block;
 
 import com.windanesz.tracesofthefallen.entity.EntityTelescopeSeat;
+import com.windanesz.tracesofthefallen.tile.TileEntityTelescope;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;

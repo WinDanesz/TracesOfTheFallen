@@ -2,7 +2,7 @@ package com.windanesz.tracesofthefallen.client.renderer;
 
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
 import com.windanesz.tracesofthefallen.block.BlockArmillary;
-import com.windanesz.tracesofthefallen.block.TileEntityArmillary;
+import com.windanesz.tracesofthefallen.tile.TileEntityArmillary;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;

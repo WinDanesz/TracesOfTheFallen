@@ -5,6 +5,8 @@ import com.windanesz.tracesofthefallen.block.*;
 import com.windanesz.tracesofthefallen.entity.living.EntityGnossic;
 import com.windanesz.tracesofthefallen.entity.living.EntityGoblinNest;
 import com.windanesz.tracesofthefallen.init.ModBlocks;
+import com.windanesz.tracesofthefallen.tile.TileEntitySkeletonCorpse;
+import com.windanesz.tracesofthefallen.tile.TileEntityStoneChest;
 import net.minecraft.block.BlockStairs;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;

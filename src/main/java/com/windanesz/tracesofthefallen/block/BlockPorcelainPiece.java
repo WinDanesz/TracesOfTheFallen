@@ -2,6 +2,7 @@ package com.windanesz.tracesofthefallen.block;
 
 import com.windanesz.tracesofthefallen.misc.PorcelainLiquids;
 import com.windanesz.tracesofthefallen.init.ModBlocks;
+import com.windanesz.tracesofthefallen.tile.TileEntityPorcelainVessel;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
@@ -604,7 +605,7 @@ public class BlockPorcelainPiece extends BlockDecoration {
 		return tileEntity instanceof TileEntityPorcelainVessel ? (TileEntityPorcelainVessel) tileEntity : null;
 	}
 
-	static void syncFilledState(World world, BlockPos pos, @Nullable TileEntityPorcelainVessel vessel) {
+	public static void syncFilledState(World world, BlockPos pos, @Nullable TileEntityPorcelainVessel vessel) {
 		IBlockState state = world.getBlockState(pos);
 		if (!(state.getBlock() instanceof BlockPorcelainPiece)) {
 			return;

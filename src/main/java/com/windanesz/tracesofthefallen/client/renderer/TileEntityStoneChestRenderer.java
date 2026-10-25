@@ -2,7 +2,7 @@ package com.windanesz.tracesofthefallen.client.renderer;
 
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
 import com.windanesz.tracesofthefallen.block.BlockStoneChest;
-import com.windanesz.tracesofthefallen.block.TileEntityStoneChest;
+import com.windanesz.tracesofthefallen.tile.TileEntityStoneChest;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockRendererDispatcher;
 import net.minecraft.client.renderer.GlStateManager;

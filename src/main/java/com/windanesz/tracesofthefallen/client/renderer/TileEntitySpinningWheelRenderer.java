@@ -2,7 +2,7 @@ package com.windanesz.tracesofthefallen.client.renderer;
 
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
 import com.windanesz.tracesofthefallen.block.BlockDecoration;
-import com.windanesz.tracesofthefallen.block.TileEntitySpinningWheel;
+import com.windanesz.tracesofthefallen.tile.TileEntitySpinningWheel;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;

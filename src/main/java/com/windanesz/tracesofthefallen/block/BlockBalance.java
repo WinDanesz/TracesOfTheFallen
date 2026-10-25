@@ -1,5 +1,6 @@
 package com.windanesz.tracesofthefallen.block;
 
+import com.windanesz.tracesofthefallen.tile.TileEntityBalance;
 import com.windanesz.tracesofthefallen.world.shop.ShopTrades;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;

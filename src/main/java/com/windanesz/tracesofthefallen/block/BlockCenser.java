@@ -2,6 +2,8 @@ package com.windanesz.tracesofthefallen.block;
 
 import com.windanesz.tracesofthefallen.misc.IncenseEffects;
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
+import com.windanesz.tracesofthefallen.tile.TileEntityBurningIncense;
+import com.windanesz.tracesofthefallen.tile.TileEntityCenser;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;

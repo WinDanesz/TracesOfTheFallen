@@ -2,6 +2,7 @@ package com.windanesz.tracesofthefallen.block;
 
 import com.windanesz.tracesofthefallen.TracesOfTheFallen;
 import com.windanesz.tracesofthefallen.network.ModGuiHandler;
+import com.windanesz.tracesofthefallen.tile.TileEntityStoneCompartment;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.SoundType;

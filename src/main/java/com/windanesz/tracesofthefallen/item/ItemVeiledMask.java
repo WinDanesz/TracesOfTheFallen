@@ -16,10 +16,16 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.EnumHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import com.windanesz.tracesofthefallen.TracesOfTheFallen;
+import net.minecraft.entity.monster.AbstractSkeleton;
+import net.minecraftforge.event.entity.living.LivingSetAttackTargetEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
+@Mod.EventBusSubscriber(modid = TracesOfTheFallen.MODID)
 public class ItemVeiledMask extends ItemArmor {
 
     // Create a custom armor material for the Veiled Mask
@@ -68,4 +74,14 @@ public class ItemVeiledMask extends ItemArmor {
 		ClientProxy.addMultiLineDescription(tooltip, TextFormatting.BOLD + "" + TextFormatting.GRAY + I18n.format("item.totf:veiled_mask.desc"));
 		ClientProxy.addMultiLineDescription(tooltip, TextFormatting.DARK_GRAY + I18n.format("item.totf:veiled_mask.desc2"));
 	}
+
+    @SubscribeEvent
+    public static void onSetAttackTarget(LivingSetAttackTargetEvent event) {
+        if (event.getEntity() instanceof AbstractSkeleton && event.getTarget() instanceof EntityPlayer) {
+            EntityPlayer player = (EntityPlayer) event.getTarget();
+            if (player.getItemStackFromSlot(EntityEquipmentSlot.HEAD).getItem() instanceof ItemVeiledMask) {
+                ((AbstractSkeleton) event.getEntity()).setAttackTarget(null);
+            }
+        }
+    }
 }

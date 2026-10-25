@@ -1,7 +1,7 @@
 package com.windanesz.tracesofthefallen.client.renderer;
 
 import com.windanesz.tracesofthefallen.block.BlockSkeletonCorpse;
-import com.windanesz.tracesofthefallen.block.TileEntitySkeletonCorpse;
+import com.windanesz.tracesofthefallen.tile.TileEntitySkeletonCorpse;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockModelRenderer;

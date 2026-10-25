@@ -1,6 +1,8 @@
 package com.windanesz.tracesofthefallen.block;
 
 import com.windanesz.tracesofthefallen.init.ModItems;
+import com.windanesz.tracesofthefallen.tile.TileEntityStoneCircle;
+import com.windanesz.tracesofthefallen.tile.TileEntityWroughtCagedLamp;
 import com.windanesz.tracesofthefallen.world.FlatMultiblockPattern;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;

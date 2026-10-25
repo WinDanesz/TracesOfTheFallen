@@ -2,6 +2,7 @@ package com.windanesz.tracesofthefallen.block;
 
 import com.windanesz.tracesofthefallen.capability.HauntingCapability;
 import com.windanesz.tracesofthefallen.init.ModCreativeTab;
+import com.windanesz.tracesofthefallen.tile.TileEntityArmillary;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyDirection;
