@@ -1,6 +1,7 @@
 {
   "variants": {
     "facing=up": { "model": "totf:crystal_skull" },
+    "facing=down": { "model": "totf:crystal_skull" },
     "facing=north": { "model": "totf:crystal_skull" },
     "facing=south": { "model": "totf:crystal_skull" },
     "facing=east": { "model": "totf:crystal_skull" },

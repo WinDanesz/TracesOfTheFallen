@@ -23,6 +23,20 @@ public class ModelMinecrawler extends ModelBase {
     private final ModelRenderer head;
     private final ModelRenderer madible_left;
     private final ModelRenderer madible_right;
+    private final ModelRenderer knee_right_1;
+    private final ModelRenderer knee_left_1;
+    private final ModelRenderer knee_right_2;
+    private final ModelRenderer knee_left_2;
+    private final ModelRenderer knee_arm_left;
+    private final ModelRenderer knee_arm_right;
+
+    private static final float SWING_FRACTION = 0.45F;
+    private static final float ARM_SWEEP = 0.40F;
+    private static final float MID_SWEEP = 0.44F;
+    private static final float REAR_SWEEP = 0.32F;
+    private static final float LEG_LIFT = 0.45F;
+    private static final float KNEE_FOLD = 0.75F;
+    private static final float KNEE_REST = 0.7854F;
 
     public ModelMinecrawler() {
         textureWidth = 128;
@@ -39,7 +53,7 @@ public class ModelMinecrawler extends ModelBase {
         setRotationAngle(leg_right_1, 0.0F, -0.3927F, -0.3927F);
         leg_right_1.cubeList.add(new ModelBox(leg_right_1, 38, 36, -10.0F, -1.0F, -1.6F, 12, 3, 3, 0.0F, true));
 
-        ModelRenderer cube_r1 = new ModelRenderer(this);
+        ModelRenderer cube_r1 = knee_right_1 = new ModelRenderer(this);
         cube_r1.setRotationPoint(-10.7071F, 1.1213F, 7.9F);
         leg_right_1.addChild(cube_r1);
         setRotationAngle(cube_r1, 0.0F, 0.0F, 0.7854F);
@@ -51,7 +65,7 @@ public class ModelMinecrawler extends ModelBase {
         setRotationAngle(leg_left_1, 0.0F, 0.3927F, 0.3927F);
         leg_left_1.cubeList.add(new ModelBox(leg_left_1, 38, 36, -2.0F, -1.0F, -1.6F, 12, 3, 3, 0.0F, false));
 
-        ModelRenderer cube_r2 = new ModelRenderer(this);
+        ModelRenderer cube_r2 = knee_left_1 = new ModelRenderer(this);
         cube_r2.setRotationPoint(10.7071F, 1.1213F, 7.9F);
         leg_left_1.addChild(cube_r2);
         setRotationAngle(cube_r2, 0.0F, 0.0F, -0.7854F);
@@ -63,7 +77,7 @@ public class ModelMinecrawler extends ModelBase {
         setRotationAngle(leg_right_2, 0.0F, 0.3927F, -0.3927F);
         leg_right_2.cubeList.add(new ModelBox(leg_right_2, 38, 36, -10.0F, -1.0F, -1.5F, 12, 3, 3, 0.0F, true));
 
-        ModelRenderer cube_r3 = new ModelRenderer(this);
+        ModelRenderer cube_r3 = knee_right_2 = new ModelRenderer(this);
         cube_r3.setRotationPoint(-10.7071F, 1.1213F, 8.0F);
         leg_right_2.addChild(cube_r3);
         setRotationAngle(cube_r3, 0.0F, 0.0F, 0.7854F);
@@ -75,7 +89,7 @@ public class ModelMinecrawler extends ModelBase {
         setRotationAngle(leg_left_2, 0.0F, -0.3927F, 0.3927F);
         leg_left_2.cubeList.add(new ModelBox(leg_left_2, 38, 36, -2.0F, -1.0F, -1.5F, 12, 3, 3, 0.0F, false));
 
-        ModelRenderer cube_r4 = new ModelRenderer(this);
+        ModelRenderer cube_r4 = knee_left_2 = new ModelRenderer(this);
         cube_r4.setRotationPoint(10.7071F, 1.1213F, 8.0F);
         leg_left_2.addChild(cube_r4);
         setRotationAngle(cube_r4, 0.0F, 0.0F, -0.7854F);
@@ -93,7 +107,7 @@ public class ModelMinecrawler extends ModelBase {
         setRotationAngle(arm_left, -0.5002F, 0.8584F, -0.2327F);
         arm_left.cubeList.add(new ModelBox(arm_left, 38, 36, 0.2894F, -2.1534F, -1.4333F, 12, 3, 3, 0.0F, false));
 
-        ModelRenderer cube_r5 = new ModelRenderer(this);
+        ModelRenderer cube_r5 = knee_arm_left = new ModelRenderer(this);
         cube_r5.setRotationPoint(7.8646F, -5.2193F, 2.4463F);
         arm_left.addChild(cube_r5);
         setRotationAngle(cube_r5, 0.0F, 0.0F, -0.7854F);
@@ -106,7 +120,7 @@ public class ModelMinecrawler extends ModelBase {
         setRotationAngle(arm_right, -0.5002F, -0.8584F, 0.2327F);
         arm_right.cubeList.add(new ModelBox(arm_right, 38, 36, -12.2894F, -2.1534F, -1.4333F, 12, 3, 3, 0.0F, true));
 
-        ModelRenderer cube_r6 = new ModelRenderer(this);
+        ModelRenderer cube_r6 = knee_arm_right = new ModelRenderer(this);
         cube_r6.setRotationPoint(-7.8646F, -5.2193F, 2.4463F);
         arm_right.addChild(cube_r6);
         setRotationAngle(cube_r6, 0.0F, 0.0F, 0.7854F);
@@ -164,45 +178,36 @@ public class ModelMinecrawler extends ModelBase {
     }
 
     @Override
-    public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw,
-                                  float headPitch, float scaleFactor, Entity entityIn) {
+    public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn) {
         final float legSwingAmount = Math.min(1.0F, limbSwingAmount) * 0.95F;
         final float gaitFrequency = 1.05F;
 
         resetAnimatedPose();
 
         float phase = limbSwing * gaitFrequency;
-        float groupA = MathHelper.cos(phase) * legSwingAmount;
-        float groupB = MathHelper.cos(phase + (float) Math.PI) * legSwingAmount;
-        // Half-wave rectified: only the tripod currently in recovery swing lifts, the other
-        // stays grounded for its power stroke. liftA and liftB are never both > 0 at once.
-        float liftA = Math.max(0.0F, MathHelper.sin(phase)) * legSwingAmount;
-        float liftB = Math.max(0.0F, MathHelper.sin(phase + (float) Math.PI)) * legSwingAmount;
 
-        // Tripod-like 6-leg gait: front-left/right-mid/rear-left alternate with front-right/left-mid/rear-right.
-        arm_left.rotateAngleX += groupA * 0.65F - liftA * 0.15F;
-        arm_left.rotateAngleY += groupA * 0.18F;
-        arm_left.rotateAngleZ += liftA * 0.22F;
+        // Attack/taunt poses own the arms, so fade the arm gait out while they play.
+        float attack = this.swingProgress;
+        float tauntRaise = 0.0F;
+        if (entityIn instanceof EntityMinecrawler) {
+            EntityMinecrawler crawler = (EntityMinecrawler) entityIn;
+            attack = crawler.getAttackAnimationProgress(0.0F);
+            tauntRaise = crawler.getTauntRaiseAmount(0.0F);
+        }
+        float armGait = legSwingAmount * (1.0F - tauntRaise) * (1.0F - MathHelper.clamp(attack / 0.35F, 0.0F, 1.0F));
 
-        leg_right_1.rotateAngleX += groupA * 1.05F - liftA * 0.2F;
-        leg_right_1.rotateAngleY += groupA * 0.22F;
-        leg_right_1.rotateAngleZ += liftA * 0.2F;
+        // Tripod gait: front-left/right-mid/rear-left (A) alternate with front-right/left-mid/rear-right (B).
+        float cycleA = phase / ((float) Math.PI * 2.0F);
+        cycleA -= MathHelper.floor(cycleA);
+        float cycleB = (cycleA + 0.5F) % 1.0F;
 
-        leg_left_2.rotateAngleX += groupA * 1.05F - liftA * 0.2F;
-        leg_left_2.rotateAngleY += groupA * 0.22F;
-        leg_left_2.rotateAngleZ -= liftA * 0.2F;
+        poseLeg(arm_left, knee_arm_left, -1.0F, cycleA, ARM_SWEEP, legSwingAmount, armGait);
+        poseLeg(leg_right_1, knee_right_1, 1.0F, cycleA, MID_SWEEP, legSwingAmount, legSwingAmount);
+        poseLeg(leg_left_2, knee_left_2, -1.0F, cycleA, REAR_SWEEP, legSwingAmount, legSwingAmount);
 
-        arm_right.rotateAngleX += groupB * 0.65F - liftB * 0.15F;
-        arm_right.rotateAngleY -= groupB * 0.18F;
-        arm_right.rotateAngleZ -= liftB * 0.22F;
-
-        leg_left_1.rotateAngleX += groupB * 1.05F - liftB * 0.2F;
-        leg_left_1.rotateAngleY -= groupB * 0.22F;
-        leg_left_1.rotateAngleZ -= liftB * 0.2F;
-
-        leg_right_2.rotateAngleX += groupB * 1.05F - liftB * 0.2F;
-        leg_right_2.rotateAngleY -= groupB * 0.22F;
-        leg_right_2.rotateAngleZ += liftB * 0.2F;
+        poseLeg(arm_right, knee_arm_right, 1.0F, cycleB, ARM_SWEEP, legSwingAmount, armGait);
+        poseLeg(leg_left_1, knee_left_1, -1.0F, cycleB, MID_SWEEP, legSwingAmount, legSwingAmount);
+        poseLeg(leg_right_2, knee_right_2, 1.0F, cycleB, REAR_SWEEP, legSwingAmount, legSwingAmount);
 
         // Subtle body bob for smoother movement.
         abdomen.rotationPointY = 16.0F + MathHelper.cos(phase * 2.0F) * legSwingAmount * 0.45F;
@@ -231,14 +236,6 @@ public class ModelMinecrawler extends ModelBase {
         // 0.0 -> 0.35 : raise quickly
         // 0.35 -> 0.75 : hold raised
         // 0.75 -> 1.0 : strike down while body leans forward
-        float attack = this.swingProgress;
-        float tauntRaise = 0.0F;
-        if (entityIn instanceof EntityMinecrawler) {
-            EntityMinecrawler crawler = (EntityMinecrawler) entityIn;
-            attack = crawler.getAttackAnimationProgress(0.0F);
-            tauntRaise = crawler.getTauntRaiseAmount(0.0F);
-        }
-
         if (tauntRaise > 0.0F) {
             float leftRaiseX = -0.5002F, leftRaiseY = 0.8584F, leftRaiseZ = -0.2327F;
             float rightRaiseX = leftRaiseX, rightRaiseY = -leftRaiseY, rightRaiseZ = -leftRaiseZ;
@@ -290,7 +287,31 @@ public class ModelMinecrawler extends ModelBase {
         }
     }
 
+    private void poseLeg(ModelRenderer upper, ModelRenderer knee, float side, float cycle, float sweepAmp, float sweepScale, float liftScale) {
+        float stance = 1.0F - SWING_FRACTION;
+        float sweep;
+        float lift;
+        if (cycle < stance) {
+            sweep = 1.0F - 2.0F * cycle / stance;
+            lift = 0.0F;
+        } else {
+            float s = (cycle - stance) / SWING_FRACTION;
+            sweep = -1.0F + 2.0F * (s * s * (3.0F - 2.0F * s));
+            lift = MathHelper.sin(s * (float) Math.PI);
+        }
+        upper.rotateAngleY -= side * sweep * sweepAmp * sweepScale;
+        upper.rotateAngleZ += side * lift * LEG_LIFT * liftScale;
+        knee.rotateAngleZ -= side * lift * KNEE_FOLD * liftScale;
+    }
+
     private void resetAnimatedPose() {
+        knee_right_1.rotateAngleZ = KNEE_REST;
+        knee_right_2.rotateAngleZ = KNEE_REST;
+        knee_arm_right.rotateAngleZ = KNEE_REST;
+        knee_left_1.rotateAngleZ = -KNEE_REST;
+        knee_left_2.rotateAngleZ = -KNEE_REST;
+        knee_arm_left.rotateAngleZ = -KNEE_REST;
+
         abdomen.rotationPointY = 16.0F;
 
         leg_right_1.rotateAngleX = 0.0F;

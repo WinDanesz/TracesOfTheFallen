@@ -1,5 +1,10 @@
 {
   "variants": {
-    "variant=0": { "model": "totf:clay_pot" }
+    "variant=0": { "model": "totf:clay_pot" },
+    "variant=1": { "model": "totf:clay_pot" },
+    "variant=2": { "model": "totf:clay_pot" },
+    "variant=3": { "model": "totf:clay_pot" },
+    "variant=4": { "model": "totf:clay_pot" },
+    "variant=5": { "model": "totf:clay_pot" }
   }
 }
